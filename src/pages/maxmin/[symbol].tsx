@@ -13,6 +13,7 @@ interface Quote {
 	open: number;
 	close: number;
 	date: string;
+	prevClose: number;
 	change: number;
 	percentChange: number;
 }
@@ -26,7 +27,7 @@ export default function MaxMin() {
 	});
 	const fetcher = url => fetch(url).then(r => r.json())
 	const {data, error, isValidating} = useSWR(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${router.query.symbol}&apikey=${key}&outputsize=full`, fetcher);
-	if (error) {
+	if (error || isValidating) {
 		return <Layout>
 			{error}
 		</Layout>;
@@ -40,12 +41,14 @@ export default function MaxMin() {
 				date: dates[i],
 				open: parseFloat(ts[dates[i]]["1. open"]),
 				close: parseFloat(ts[dates[i]]["4. close"]),
+				prevClose: 0,
 				change: 0,
 				percentChange: 0
 			});
 			const today = tableData[i];
 			const yesterday = i > 0 ? tableData[i-1] : null;
 			if (yesterday) {
+				today.prevClose = yesterday.close;
 				today.change = today.open - yesterday.close;
 				today.percentChange = (today.change) / yesterday.close;
 			}
@@ -86,6 +89,12 @@ export default function MaxMin() {
 					<Col sm={6}>
 						<DataGrid dataSource={tableData}>
 							<Column dataField="date" dataType="date" />
+							<Column
+								dataField="prevClose"
+								dataType="number"
+								calculateSortValue={row => parseFloat(row.prevClose)}
+								calculateDisplayValue={(row) => row.prevClose && row.prevClose.toFixed(2)}
+							/>
 							<Column
 								dataField="open"
 								dataType="number"
@@ -128,7 +137,7 @@ export default function MaxMin() {
 								width={'100%'}
 							>
 								<Item dataField="stockPrice" editorType="dxNumberBox" />
-								<Item dataField="annualizedImpliedVolatility" editorType="dxNumberBox" />
+								<Item dataField="annualizedImpliedVolatility" editorType="dxNumberBox" title="Annualized Implied Volatility (%)" />
 								<Item dataField="daysToExpiration" editorType="dxNumberBox" />
 							</Form>
 							<Button

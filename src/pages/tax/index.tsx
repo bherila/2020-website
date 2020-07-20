@@ -3,7 +3,7 @@ import TaxLayout from "./TaxLayout";
 import SelectBox from 'devextreme-react/select-box';
 import Button from "devextreme-react/button";
 import TextBox from "devextreme-react/text-box";
-import usePersist from "./usePersist";
+import usePersist from "../../hooks/usePersist";
 import Employer from "./Employer";
 import _ from 'underscore';
 

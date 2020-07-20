@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import {optional, required} from "./schemaHelpers";
 import {Argument, IEntity, ISchema} from "./schema";
 import {gCsType} from "./cstypes";
@@ -915,16 +914,16 @@ namespace UC.Models {
 `;
 }
 
-for (const x of Object.keys(schema)) {
-    fs.writeFileSync(`generated/Models.${camel(x)}.cs`, buildEntity(x, schema[x]));
-
-    const sqlFile = buildSql(x, schema[x]);
-    if (sqlFile) {
-        fs.writeFileSync(`generated/Sql.${camel(x)}.cs`, sqlFile);
-    }
-
-    const tblFile = buildTableHelper(x, schema[x]);
-    if (tblFile) {
-        fs.writeFileSync(`generated/NoSql.${camel(x)}.cs`, tblFile);
-    }
-}
+// for (const x of Object.keys(schema)) {
+//     fs.writeFileSync(`generated/Models.${camel(x)}.cs`, buildEntity(x, schema[x]));
+//
+//     const sqlFile = buildSql(x, schema[x]);
+//     if (sqlFile) {
+//         fs.writeFileSync(`generated/Sql.${camel(x)}.cs`, sqlFile);
+//     }
+//
+//     const tblFile = buildTableHelper(x, schema[x]);
+//     if (tblFile) {
+//         fs.writeFileSync(`generated/NoSql.${camel(x)}.cs`, tblFile);
+//     }
+// }
