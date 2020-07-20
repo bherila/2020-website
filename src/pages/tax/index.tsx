@@ -25,8 +25,8 @@ const defaultEmployer = [
 function remapW2<T>(data: T[]): T[] {
 	if (!Array.isArray(data)) return data;
 	return data.map(row => {
-		let newData: T = {} as any;
-		for (let key of Object.keys(row)) {
+		const newData: T = {} as any;
+		for (const key of Object.keys(row)) {
 			if (key === 'payslips') {
 				newData[key] = remapW2(row[key]);
 			}

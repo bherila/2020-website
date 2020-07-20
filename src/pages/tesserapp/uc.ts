@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import {getParamsWithUuid, optional, required} from "./schemaHelpers";
-import {ApiDescription, Argument, IEntity, ISchema} from "./schema";
+import {optional, required} from "./schemaHelpers";
+import {Argument, IEntity, ISchema} from "./schema";
 import {gCsType} from "./cstypes";
 
 const header = "// WARNING: This file is auto generated! Manual changes may be lost.";
@@ -21,9 +21,9 @@ const schema: ISchema = {
             identityProperty: 'batchId',
             columnOverride: {
                 batchId: 'ship_batch_id',
-                batchCreated: 'ship_batch_created', 
-                batchPrintDate: 'ship_batch_print_date', 
-                batchComment: 'ship_batch_comment', 
+                batchCreated: 'ship_batch_created',
+                batchPrintDate: 'ship_batch_print_date',
+                batchComment: 'ship_batch_comment',
                 batchFlag: 'ship_batch_flag'
             }
         }
@@ -223,7 +223,7 @@ const schema: ISchema = {
           orderDateCreated: required('timestamp'),
           orderDateFulfilled: optional('timestamp'),
           orderDateRejected: optional('timestamp'),
-          
+
           // Finance fields.
           // We don't really care about whether it was a "credit" or "promo" but rather which "account"
           // is paying for the purchase.
@@ -232,26 +232,26 @@ const schema: ISchema = {
           amtPaidByMarketing: required('decimal'), // marketing discounts/credits (i.e. end of month promo)
           amtPaidByGiftCard: required('decimal'), // customer's credit balance
           amtPaidByCard: required('decimal'), // amount charged to customer's card
-          
+
           // COGS Fields.
           orderEstimatedCogs: required('decimal'), // estimated COGS "liability" at time order is placed
           orderEstimatedShipCost: required('decimal'), // estimated Shipping Cost "liability" at time order is placed
           orderEstimatedLaborCost: required('decimal'), // estimated labor cost "liability" at time order is placed
-          
+
           // Credit card payment fields.
           ccPaymentId: optional('uuid'),
           ccTransactionId: optional('string'),
           ccTransactionAuthCode: optional('string'),
           ccRefundId: optional('string'),
           ccRefundAuthCode: optional('string')
-      }  
+      }
     },
     orderDerivedData: { // Calculated when requested, not stored in database directly.
       properties: {
           // keys (for looking up in SQL VIEW order_derived_data)
           user_guid: required('uuid'),
           order_guid: required('uuid'),
-          
+
           // existing calculated metrics fields:
           order_timestamp: required('uuid'),
           order_user_nth: required('int'),
@@ -260,10 +260,10 @@ const schema: ISchema = {
           order_days_since_signup: required('int'),
           user_email: required('string'),
           user_is_testaccount: required('bool'),
-          
+
           // new
           orderCurrentCogs: required('int'), // COGS of the manifests CURRENTLY allocated to order i.e. after swaps
-      }  
+      }
     },
     orderLineItem: { // Created when the order is placed. For an order from daily offer, there would be 1 line item to order X bottles from the offer.
         properties: {
@@ -272,7 +272,7 @@ const schema: ISchema = {
             itemQty: required('int'),
             itemUnitPrice: required('decimal'),
             itemTax: required('decimal'),
-            
+
         }
     },
     promoAllowed: {
@@ -509,14 +509,14 @@ function buildSql(name: string, model: IEntity) {
     function csType(modelPropName: string) {
         return gCsType(model, model.properties[modelPropName]);
     }
-    
+
     function emitSql() {
         if (!model.sql) return '';
         const propNames = Object.keys(model.properties)
-            .filter(property => 
-                !model.properties[property].noStore && 
+            .filter(property =>
+                !model.properties[property].noStore &&
                 model.properties[property].type.indexOf('<') < 0);
-        
+
         const cn = camel(name);
         const genericType = `<${cn}>`;
         const colNames: Record<string, string> = {};
@@ -794,7 +794,7 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
         }
         `;
     }
-    
+
     function equalsAndHashCode() {
         const cn = camel(name);
         const propNames = Object.keys(model.properties);
@@ -828,7 +828,7 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
     function buildValidationLogic(propName: string, prop: Argument) {
         let code = `var @value = this.${camel(propName)};`;
         if (prop.type === 'string') {
-            if (!!prop.required) {
+            if (prop.required) {
                 code += `
                 if (String.IsNullOrWhiteSpace(@value)) {
                     throw new ValidationException($"${camel(propName)} cannot be null"); 
@@ -846,7 +846,7 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
                     throw new ValidationException($"${camel(propName)} must be no longer than ${prop.maxLength} characters."); 
                 }`;
             }
-            if ('minLength' in prop && 'maxLength' in prop && !!prop.maxLength && !!prop.minLength && prop.maxLength < prop.minLength) {
+            if ('minLength' in prop && 'maxLength' in prop && prop.maxLength && prop.minLength && prop.maxLength < prop.minLength) {
                 throw `Property ${propName} has maxLength < minLength!`;
             }
             return code;
@@ -855,8 +855,8 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
         if (['int', 'bool', 'decimal'].indexOf(csType || prop.type) >= 0) {
             return '';
         }
-        if (!!csType) {
-            if (!!prop.required) {
+        if (csType) {
+            if (prop.required) {
                 code += `
                 if (@value == default(${csType})) {
                     throw new ValidationException($"${camel(propName)} cannot be null/empty"); 
@@ -917,14 +917,14 @@ namespace UC.Models {
 
 for (const x of Object.keys(schema)) {
     fs.writeFileSync(`generated/Models.${camel(x)}.cs`, buildEntity(x, schema[x]));
-    
+
     const sqlFile = buildSql(x, schema[x]);
-    if (!!sqlFile) {
+    if (sqlFile) {
         fs.writeFileSync(`generated/Sql.${camel(x)}.cs`, sqlFile);
     }
-    
+
     const tblFile = buildTableHelper(x, schema[x]);
-    if (!!tblFile) {
+    if (tblFile) {
         fs.writeFileSync(`generated/NoSql.${camel(x)}.cs`, tblFile);
     }
 }

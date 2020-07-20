@@ -62,9 +62,7 @@ export interface ICronJob {
     actions: Callback[];
 }
 
-export interface IService {
-    
-}
+export interface IService {}
 
 export interface ApiDescription {
     backgroundJobs: Record<string, IQueueJob | ICronJob>;

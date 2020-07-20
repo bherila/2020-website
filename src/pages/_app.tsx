@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react';
 import Head from "next/head";
 
-declare var DocumentTouch;
-declare var WebFont;
+declare let DocumentTouch;
+declare let WebFont;
 
 export default function App({Component, pageProps}) {
 	useEffect(() => {

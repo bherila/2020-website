@@ -1,7 +1,5 @@
 import React, {useState} from "react";
-import TextArea from "devextreme-react/text-area";
 import Button from "devextreme-react/button";
-import TabPanel from "devextreme-react/tab-panel";
 import DataGrid, {Editing} from "devextreme-react/data-grid";
 import {Container, Row, Col} from 'reactstrap';
 
