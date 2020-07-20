@@ -8,8 +8,8 @@
     "build": "next build",
     "start": "next start",
     "type-check": "tsc --pretty --noEmit",
-    "format": "prettier --write \"**/*.{js,ts,tsx}\"",
-    "lint": "eslint . --ext ts --ext tsx --ext js",
+    "format": "prettier --write \"src/**/*.{js,ts,tsx}\"",
+    "lint": "eslint src --ext ts --ext tsx --ext js",
     "test": "jest",
     "test-all": "yarn lint && yarn type-check && yarn test"
   },
@@ -26,9 +26,14 @@
     ]
   },
   "dependencies": {
+    "@types/underscore": "^1.10.10",
+    "devextreme": "^20.1.6",
+    "devextreme-react": "^20.1.6",
     "next": "latest",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "reactstrap": "^8.5.1",
+    "underscore": "^1.10.2"
   },
   "devDependencies": {
     "@testing-library/react": "^10.0.1",
