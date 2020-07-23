@@ -15,6 +15,8 @@ interface Quote {
 	date: string;
 	prevClose: number;
 	change: number;
+	min: number;
+	max: number;
 	percentChange: number;
 }
 
@@ -22,18 +24,26 @@ export default function MaxMin() {
 	const router = useRouter();
 	const [inputs, setInputs] = useState({
 		stockPrice: 0,
-		annualizedImpliedVolatility: 1.3,
+		annualizedImpliedVolatilityPercent: 1.3,
 		daysToExpiration: 5,
 	});
 	const fetcher = url => fetch(url).then(r => r.json())
-	const {data, error, isValidating} = useSWR(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${router.query.symbol}&apikey=${key}&outputsize=full`, fetcher);
-	if (error || isValidating) {
+	const {data, error, isValidating} = useSWR(
+		`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${router.query.symbol}&apikey=${key}&outputsize=full`,
+		fetcher,
+		{revalidateOnFocus: false});
+	if (error || !data) {
 		return <Layout>
 			{error}
 		</Layout>;
 	}
 	if (data) {
 		const ts = data["Time Series (Daily)"];
+		if (!ts) {
+			return <Layout>
+				<p>No data from time series...</p>
+			</Layout>
+		}
 		const dates = Object.keys(ts).sort();
 		const tableData: Quote[] = [];
 		for (let i = 0; i < dates.length; ++i) {
@@ -41,6 +51,8 @@ export default function MaxMin() {
 				date: dates[i],
 				open: parseFloat(ts[dates[i]]["1. open"]),
 				close: parseFloat(ts[dates[i]]["4. close"]),
+				max: parseFloat(ts[dates[i]]["2. max'"]),
+				min: parseFloat(ts[dates[i]]["3. min'"]),
 				prevClose: 0,
 				change: 0,
 				percentChange: 0
@@ -53,33 +65,29 @@ export default function MaxMin() {
 				today.percentChange = (today.change) / yesterday.close;
 			}
 		}
-
 		tableData.sort((a, b) => a.percentChange - b.percentChange);
-
-		const sorted = Array.from(tableData).sort((a, b) => a.percentChange - b.percentChange);
-
-		const sd1 = inputs.stockPrice * inputs.annualizedImpliedVolatility * Math.sqrt(inputs.daysToExpiration / 365);
+		const sd1 = inputs.stockPrice * inputs.annualizedImpliedVolatilityPercent * Math.sqrt(inputs.daysToExpiration / 365);
 		const outputs = [
 			{
 				N_SD: 1,
 				SD_Value: sd1,
 				Min: inputs.stockPrice - sd1,
 				Max: inputs.stockPrice + sd1,
-				Percentile: 68.20
+				Probability: 68.20
 			},
 			{
 				N_SD: 2,
 				SD_Value: sd1 * 2,
 				Min: inputs.stockPrice - sd1 * 2,
 				Max: inputs.stockPrice + sd1 * 2,
-				Percentile: 95.40
+				Probability: 95.40
 			},
 			{
 				N_SD: 3,
 				SD_Value: sd1 * 3,
 				Min: inputs.stockPrice - sd1 * 3,
 				Max: inputs.stockPrice + sd1 * 3,
-				Percentile: 99.70
+				Probability: 99.70
 			},
 		]
 
@@ -87,7 +95,10 @@ export default function MaxMin() {
 			<Container>
 				<Row>
 					<Col sm={6}>
-						<DataGrid dataSource={tableData}>
+						<DataGrid
+							dataSource={tableData}
+							focusedRowEnabled={true}
+						>
 							<Column dataField="date" dataType="date" />
 							<Column
 								dataField="prevClose"
@@ -137,7 +148,14 @@ export default function MaxMin() {
 								width={'100%'}
 							>
 								<Item dataField="stockPrice" editorType="dxNumberBox" />
-								<Item dataField="annualizedImpliedVolatility" editorType="dxNumberBox" title="Annualized Implied Volatility (%)" />
+								<Item
+									dataField="annualizedImpliedVolatilityPercent"
+									editorType="dxNumberBox"
+									editorOptions={{
+										format: "#0%"
+									}}
+									title="Annualized Implied Volatility (%)"
+								/>
 								<Item dataField="daysToExpiration" editorType="dxNumberBox" />
 							</Form>
 							<Button
