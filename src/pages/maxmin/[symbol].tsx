@@ -22,6 +22,7 @@ import Chart, {
 } from 'devextreme-react/chart'
 
 const key = '07HZXPDVA6CKI94B'
+const fetcher = (url) => fetch(url).then((r) => r.json())
 
 interface Quote {
   open: number
@@ -101,8 +102,8 @@ function DetailChart(props: {
         argument={centerDate}
         value={filterData[Math.floor(filterData.length / 2)].max}
         type="text"
-        text="Center date"
-        color="#333"
+        text="⭐️"
+        color="transparent"
       />
     </Chart>
   )
@@ -111,10 +112,41 @@ function DetailChart(props: {
 export default function MaxMin() {
   const router = useRouter()
   const symbol = router.query.symbol
+  const quote = useSWR(
+    'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo',
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnMount: false,
+      revalidateOnReconnect: false,
+    }
+  )
+  // {
+  //   "Global Quote": {
+  //   "01. symbol": "IBM",
+  //     "02. open": "129.1000",
+  //     "03. high": "129.3700",
+  //     "04. low": "127.1500",
+  //     "05. price": "127.3300",
+  //     "06. volume": "4160885",
+  //     "07. latest trading day": "2020-07-23",
+  //     "08. previous close": "128.6700",
+  //     "09. change": "-1.3400",
+  //     "10. change percent": "-1.0414%"
+  // }
+  // }
+  let sp = 0
+  if (quote.data) {
+    sp = parseFloat(quote.data['Global Quote']['05. price'])
+  }
+
+  if (!(sp > 0)) {
+    return <Layout bootstrap>Waiting for quote</Layout>
+  }
   if (typeof symbol === 'string') {
     return (
       <Layout bootstrap={true}>
-        <MaxMinInternal symbol={symbol} />
+        <MaxMinInternal symbol={symbol} stockPrice={sp} />
       </Layout>
     )
   } else {
@@ -122,14 +154,8 @@ export default function MaxMin() {
   }
 }
 
-function MaxMinInternal({ symbol }) {
-  const [inputs, setInputs] = useState({
-    stockPrice: 0,
-    annualizedImpliedVolatilityPercent: 1.3,
-    daysToExpiration: 5,
-  })
+function MaxMinInternal({ symbol, stockPrice }) {
   const [selectedDate, setSelectedDate] = useState(null)
-  const fetcher = (url) => fetch(url).then((r) => r.json())
   const {
     data,
     error,
@@ -138,6 +164,12 @@ function MaxMinInternal({ symbol }) {
     fetcher,
     { revalidateOnFocus: false }
   )
+  const [inputs, setInputs] = useState({
+    stockPrice,
+    annualizedImpliedVolatilityPercent: 1.3,
+    daysToExpiration: 5,
+  })
+
   if (error || !data || typeof symbol !== 'string') {
     return <>{error}</>
   }
