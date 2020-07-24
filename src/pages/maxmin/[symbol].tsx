@@ -140,9 +140,9 @@ export default function MaxMin() {
     sp = parseFloat(quote.data['Global Quote']['05. price'])
   }
 
-  if (!(sp > 0)) {
-    return <Layout bootstrap>Waiting for quote</Layout>
-  }
+  // if (!(sp > 0)) {
+  //   return <Layout bootstrap>Waiting for quote</Layout>
+  // }
   if (typeof symbol === 'string') {
     return (
       <Layout bootstrap={true}>
