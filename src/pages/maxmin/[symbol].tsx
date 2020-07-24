@@ -112,12 +112,13 @@ function DetailChart(props: {
 export default function MaxMin() {
   const router = useRouter()
   const symbol = router.query.symbol
+  const [skip, setSkip] = useState(false)
   const quote = useSWR(
     'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo',
     fetcher,
     {
       revalidateOnFocus: false,
-      revalidateOnMount: false,
+      revalidateOnMount: true,
       revalidateOnReconnect: false,
     }
   )
@@ -140,9 +141,14 @@ export default function MaxMin() {
     sp = parseFloat(quote.data['Global Quote']['05. price'])
   }
 
-  // if (!(sp > 0)) {
-  //   return <Layout bootstrap>Waiting for quote</Layout>
-  // }
+  if (!(sp > 0) && !skip) {
+    return (
+      <Layout bootstrap>
+        <p>Waiting for quote</p>
+        <button onClick={(e) => setSkip(true)}>Skip</button>
+      </Layout>
+    )
+  }
   if (typeof symbol === 'string') {
     return (
       <Layout bootstrap={true}>
@@ -156,13 +162,13 @@ export default function MaxMin() {
 
 function MaxMinInternal({ symbol, stockPrice }) {
   const [selectedDate, setSelectedDate] = useState(null)
-  const {
-    data,
-    error,
-  } = useSWR(
+  const { data, error } = useSWR(
     `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${key}&outputsize=full`,
     fetcher,
-    { revalidateOnFocus: false }
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   )
   const [inputs, setInputs] = useState({
     stockPrice,
@@ -243,7 +249,7 @@ function MaxMinInternal({ symbol, stockPrice }) {
                 keyExpr="date"
                 focusedRowKey={selectedDate}
                 onFocusedRowChanged={({ row }) =>
-                  setSelectedDate(row.data.date)
+                  setSelectedDate(row?.data?.date)
                 }
               >
                 <Column dataField="date" dataType="date" />
