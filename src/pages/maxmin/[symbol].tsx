@@ -4,6 +4,7 @@ import useSWR from 'swr'
 import Layout from '../../components/layout'
 import DataGrid, { Column } from 'devextreme-react/data-grid'
 import { Container, Row, Col } from 'reactstrap'
+import CheckBox from 'devextreme-react/check-box'
 import Form, { Item } from 'devextreme-react/form'
 import Button from 'devextreme-react/button'
 import Chart, {
@@ -20,6 +21,7 @@ import Chart, {
   Tooltip,
   Annotation,
 } from 'devextreme-react/chart'
+import useEarnings from '../../hooks/useEarnings'
 
 const key = '07HZXPDVA6CKI94B'
 const fetcher = (url) => fetch(url).then((r) => r.json())
@@ -33,6 +35,7 @@ interface Quote {
   min: number
   max: number
   percentChange: number
+  nearEarnings: number | null
 }
 
 function asc(a, b) {
@@ -87,6 +90,7 @@ function DetailChart(props: {
       </Series>
       <ArgumentAxis workdaysOnly={true}>
         <Label format="shortDate" />
+        {/*<ConstantLine value={centerDate}/>*/}
       </ArgumentAxis>
       <ValueAxis>
         <Title text="US dollars" />
@@ -104,6 +108,7 @@ function DetailChart(props: {
         type="text"
         text="⭐️"
         color="transparent"
+        border={{ visible: false }}
       />
     </Chart>
   )
@@ -143,7 +148,7 @@ export default function MaxMin() {
 
   if (!(sp > 0) && !skip) {
     return (
-      <Layout bootstrap>
+      <Layout bootstrap hideNav>
         <p>Waiting for quote</p>
         <button onClick={(e) => setSkip(true)}>Skip</button>
       </Layout>
@@ -151,17 +156,22 @@ export default function MaxMin() {
   }
   if (typeof symbol === 'string') {
     return (
-      <Layout bootstrap={true}>
+      <Layout bootstrap hideNav>
         <MaxMinInternal symbol={symbol} stockPrice={sp} />
       </Layout>
     )
   } else {
-    return <Layout bootstrap={true}>Loading!</Layout>
+    return (
+      <Layout bootstrap hideNav>
+        Loading!
+      </Layout>
+    )
   }
 }
 
 function MaxMinInternal({ symbol, stockPrice }) {
   const [selectedDate, setSelectedDate] = useState(null)
+  const [onlyNearEarnings, setOnlyNearEarnings] = useState(false)
   const { data, error } = useSWR(
     `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${key}&outputsize=full`,
     fetcher,
@@ -170,6 +180,7 @@ function MaxMinInternal({ symbol, stockPrice }) {
       revalidateOnReconnect: false,
     }
   )
+  const earnings = useEarnings(symbol)
   const [inputs, setInputs] = useState({
     stockPrice,
     annualizedImpliedVolatilityPercent: 1.3,
@@ -188,8 +199,8 @@ function MaxMinInternal({ symbol, stockPrice }) {
         </>
       )
     }
+    let tableData: Quote[] = []
     const dates = Object.keys(ts).sort()
-    const tableData: Quote[] = []
     for (let i = 0; i < dates.length; ++i) {
       tableData.push({
         date: dates[i],
@@ -200,6 +211,7 @@ function MaxMinInternal({ symbol, stockPrice }) {
         prevClose: 0,
         change: 0,
         percentChange: 0,
+        nearEarnings: null,
       })
       const today = tableData[i]
       const yesterday = i > 0 ? tableData[i - 1] : null
@@ -209,6 +221,25 @@ function MaxMinInternal({ symbol, stockPrice }) {
         today.percentChange = today.change / yesterday.close
       }
     }
+
+    // flag rows near earnings dates
+    if (earnings.data) {
+      const c = 5
+      const earningsDates = earnings.data.map((ed) => ed.date)
+      const allDates = tableData.map((td) => td.date) // index maps into tableData
+      for (const earningDate of earningsDates) {
+        const tableIndex = allDates.indexOf(earningDate)
+        const startIndex = Math.max(0, tableIndex - c)
+        const endIndex = Math.min(tableIndex + c + 1, tableData.length - 1)
+        for (let i = startIndex; i <= endIndex; ++i) {
+          tableData[i].nearEarnings = i - tableIndex
+        }
+      }
+      if (onlyNearEarnings) {
+        tableData = tableData.filter((x) => x.nearEarnings !== null)
+      }
+    }
+
     tableData.sort((a, b) => a.percentChange - b.percentChange)
     const sd1 =
       inputs.stockPrice *
@@ -294,7 +325,20 @@ function MaxMinInternal({ symbol, stockPrice }) {
                     (100 * row.percentChange).toFixed(2) + '%'
                   }
                 />
+                <Column
+                  dataField="nearEarnings"
+                  dataType="number"
+                  calculateSortValue={(row) => parseFloat(row.nearEarnings)}
+                  calculateDisplayValue={(row) =>
+                    row.nearEarnings === 0 ? '⭐️' : row.nearEarnings
+                  }
+                />
               </DataGrid>
+              <CheckBox
+                value={onlyNearEarnings}
+                text="Only show rows near earnings dates"
+                onValueChanged={({ value }) => setOnlyNearEarnings(value)}
+              />
             </Col>
             <Col sm={6}>
               <h3>Inputs</h3>
