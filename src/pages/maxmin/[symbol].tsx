@@ -236,7 +236,7 @@ function MaxMinInternal({ symbol, stockPrice }) {
         }
       }
       if (onlyNearEarnings) {
-        tableData = tableData.filter((x) => x.nearEarnings >= 0)
+        tableData = tableData.filter((x) => x.nearEarnings !== null)
       }
     }
 
