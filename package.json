@@ -29,6 +29,8 @@
     "@types/underscore": "^1.10.10",
     "devextreme": "^20.1.6",
     "devextreme-react": "^20.1.6",
+    "dotenv": "^8.2.0",
+    "mysql2": "^2.1.0",
     "next": "latest",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
