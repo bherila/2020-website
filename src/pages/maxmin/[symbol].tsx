@@ -119,7 +119,7 @@ export default function MaxMin() {
   const symbol = router.query.symbol
   const [skip, setSkip] = useState(false)
   const quote = useSWR(
-    'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo',
+    `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${key}`,
     fetcher,
     {
       revalidateOnFocus: false,
