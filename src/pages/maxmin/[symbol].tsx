@@ -22,6 +22,7 @@ import Chart, {
   Annotation,
 } from 'devextreme-react/chart'
 import useEarnings from '../../hooks/useEarnings'
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 
 const key = '07HZXPDVA6CKI94B'
 const fetcher = (url) => fetch(url).then((r) => r.json())
@@ -30,12 +31,12 @@ interface Quote {
   open: number
   close: number
   date: string
-  prevClose: number
-  change: number
+  prevClose?: number
+  change?: number
   min: number
   max: number
-  percentChange: number
-  nearEarnings: number | null
+  pctChg?: number
+  nearEarnings?: number
 }
 
 function asc(a, b) {
@@ -114,7 +115,63 @@ function DetailChart(props: {
   )
 }
 
-export default function MaxMin() {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const tableData: Quote[] = []
+  let error: any = null
+  try {
+    if (typeof context.query.symbol === 'string') {
+      const symbol = context.query.symbol
+      const quoteResponse = await fetch(
+        `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${key}&outputsize=full`
+      )
+      const quoteData = await quoteResponse.json()
+      const ts = quoteData['Time Series (Daily)']
+      const dates = Object.keys(ts).sort()
+      for (let i = 0; i < dates.length; ++i) {
+        //   "Global Quote": {
+        //   "01. symbol": "IBM",
+        //     "02. open": "129.1000",
+        //     "03. high": "129.3700",
+        //     "04. low": "127.1500",
+        //     "05. price": "127.3300",
+        //     "06. volume": "4160885",
+        //     "07. latest trading day": "2020-07-23",
+        //     "08. previous close": "128.6700",
+        //     "09. change": "-1.3400",
+        //     "10. change percent": "-1.0414%"
+        // }
+        tableData.push({
+          date: dates[i],
+          open: parseFloat(ts[dates[i]]['1. open']),
+          close: parseFloat(ts[dates[i]]['4. close']),
+          max: parseFloat(ts[dates[i]]['2. high']),
+          min: parseFloat(ts[dates[i]]['3. low']),
+        })
+      }
+    }
+  } catch (err) {
+    error = err
+  }
+  if (tableData.length === 0) {
+    context.res.statusCode = 404
+  } else {
+    context.res.setHeader(
+      'Cache-Control',
+      'max-age=60000, public, stale-while-revalidate'
+    )
+  }
+  return {
+    props: {
+      tableData,
+      error,
+    },
+  }
+}
+
+export default function MaxMin({
+  tableData,
+  error,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter()
   const symbol = router.query.symbol
   const [skip, setSkip] = useState(false)
@@ -127,20 +184,6 @@ export default function MaxMin() {
       revalidateOnReconnect: false,
     }
   )
-  // {
-  //   "Global Quote": {
-  //   "01. symbol": "IBM",
-  //     "02. open": "129.1000",
-  //     "03. high": "129.3700",
-  //     "04. low": "127.1500",
-  //     "05. price": "127.3300",
-  //     "06. volume": "4160885",
-  //     "07. latest trading day": "2020-07-23",
-  //     "08. previous close": "128.6700",
-  //     "09. change": "-1.3400",
-  //     "10. change percent": "-1.0414%"
-  // }
-  // }
   let sp = 0
   if (quote.data) {
     sp = parseFloat(quote.data['Global Quote']['05. price'])
@@ -157,7 +200,7 @@ export default function MaxMin() {
   if (typeof symbol === 'string') {
     return (
       <Layout bootstrap hideNav>
-        <MaxMinInternal symbol={symbol} stockPrice={sp} />
+        <MaxMinInternal symbol={symbol} stockPrice={sp} tableData={tableData} />
       </Layout>
     )
   } else {
@@ -169,225 +212,192 @@ export default function MaxMin() {
   }
 }
 
-function MaxMinInternal({ symbol, stockPrice }) {
+function MaxMinInternal(props: {
+  symbol: string
+  stockPrice: number
+  tableData: Quote[]
+}) {
+  const { symbol, stockPrice } = props
   const [selectedDate, setSelectedDate] = useState(null)
   const [onlyNearEarnings, setOnlyNearEarnings] = useState(false)
-  const { data, error } = useSWR(
-    `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${key}&outputsize=full`,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    }
-  )
   const earnings = useEarnings(symbol)
   const [inputs, setInputs] = useState({
     stockPrice,
     annualizedImpliedVolatilityPercent: 1.3,
     daysToExpiration: 5,
   })
-
-  if (error || !data || typeof symbol !== 'string') {
-    return <>{error}</>
+  let tableData = [...props.tableData]
+  for (let i = 0; i < tableData.length; ++i) {
+    const today = tableData[i]
+    const yesterday = i > 0 ? tableData[i - 1] : null
+    if (yesterday) {
+      today.prevClose = yesterday.close
+      today.change = today.open - yesterday.close
+      today.pctChg = today.change / yesterday.close
+    }
   }
-  if (data) {
-    const ts = data['Time Series (Daily)']
-    if (!ts) {
-      return (
-        <>
-          <p>No data from time series...</p>
-        </>
-      )
-    }
-    let tableData: Quote[] = []
-    const dates = Object.keys(ts).sort()
-    for (let i = 0; i < dates.length; ++i) {
-      tableData.push({
-        date: dates[i],
-        open: parseFloat(ts[dates[i]]['1. open']),
-        close: parseFloat(ts[dates[i]]['4. close']),
-        max: parseFloat(ts[dates[i]]['2. high']),
-        min: parseFloat(ts[dates[i]]['3. low']),
-        prevClose: 0,
-        change: 0,
-        percentChange: 0,
-        nearEarnings: null,
-      })
-      const today = tableData[i]
-      const yesterday = i > 0 ? tableData[i - 1] : null
-      if (yesterday) {
-        today.prevClose = yesterday.close
-        today.change = today.open - yesterday.close
-        today.percentChange = today.change / yesterday.close
+
+  // flag rows near earnings dates
+  if (earnings.data) {
+    const c = 5
+    const earningsDates = earnings.data.map((ed) => ed.date)
+    const allDates = tableData.map((td) => td.date) // index maps into tableData
+    for (const earningDate of earningsDates) {
+      const tableIndex = allDates.indexOf(earningDate)
+      const startIndex = Math.max(0, tableIndex - c)
+      const endIndex = Math.min(tableIndex + c + 1, tableData.length - 1)
+      for (let i = startIndex; i <= endIndex; ++i) {
+        tableData[i].nearEarnings = i - tableIndex
       }
     }
-
-    // flag rows near earnings dates
-    if (earnings.data) {
-      const c = 5
-      const earningsDates = earnings.data.map((ed) => ed.date)
-      const allDates = tableData.map((td) => td.date) // index maps into tableData
-      for (const earningDate of earningsDates) {
-        const tableIndex = allDates.indexOf(earningDate)
-        const startIndex = Math.max(0, tableIndex - c)
-        const endIndex = Math.min(tableIndex + c + 1, tableData.length - 1)
-        for (let i = startIndex; i <= endIndex; ++i) {
-          tableData[i].nearEarnings = i - tableIndex
-        }
-      }
-      if (onlyNearEarnings) {
-        tableData = tableData.filter((x) => x.nearEarnings !== null)
-      }
+    if (onlyNearEarnings) {
+      tableData = tableData.filter((x) => typeof x.nearEarnings === 'number')
     }
+  }
 
-    tableData.sort((a, b) => a.percentChange - b.percentChange)
-    const sd1 =
-      inputs.stockPrice *
-      inputs.annualizedImpliedVolatilityPercent *
-      Math.sqrt(inputs.daysToExpiration / 365)
-    const outputs = [
-      {
-        N_SD: 1,
-        SD_Value: sd1,
-        Min: inputs.stockPrice - sd1,
-        Max: inputs.stockPrice + sd1,
-        Probability: 68.2,
-      },
-      {
-        N_SD: 2,
-        SD_Value: sd1 * 2,
-        Min: inputs.stockPrice - sd1 * 2,
-        Max: inputs.stockPrice + sd1 * 2,
-        Probability: 95.4,
-      },
-      {
-        N_SD: 3,
-        SD_Value: sd1 * 3,
-        Min: inputs.stockPrice - sd1 * 3,
-        Max: inputs.stockPrice + sd1 * 3,
-        Probability: 99.7,
-      },
-    ]
+  tableData.sort((a, b) => a.pctChg - b.pctChg)
+  const sd1 =
+    inputs.stockPrice *
+    inputs.annualizedImpliedVolatilityPercent *
+    Math.sqrt(inputs.daysToExpiration / 365)
+  const outputs = [
+    {
+      N_SD: 1,
+      SD_Value: sd1,
+      Min: inputs.stockPrice - sd1,
+      Max: inputs.stockPrice + sd1,
+      Probability: 68.2,
+    },
+    {
+      N_SD: 2,
+      SD_Value: sd1 * 2,
+      Min: inputs.stockPrice - sd1 * 2,
+      Max: inputs.stockPrice + sd1 * 2,
+      Probability: 95.4,
+    },
+    {
+      N_SD: 3,
+      SD_Value: sd1 * 3,
+      Min: inputs.stockPrice - sd1 * 3,
+      Max: inputs.stockPrice + sd1 * 3,
+      Probability: 99.7,
+    },
+  ]
 
-    return (
-      <>
-        <Container fluid>
-          <Row>
-            <Col sm={6}>
-              <DataGrid
-                dataSource={tableData}
-                focusedRowEnabled={true}
-                keyExpr="date"
-                focusedRowKey={selectedDate}
-                onFocusedRowChanged={({ row }) =>
-                  setSelectedDate(row?.data?.date)
+  return (
+    <>
+      <Container fluid>
+        <Row>
+          <Col sm={6}>
+            <DataGrid
+              dataSource={tableData}
+              focusedRowEnabled={true}
+              keyExpr="date"
+              focusedRowKey={selectedDate}
+              onFocusedRowChanged={({ row }) =>
+                setSelectedDate(row?.data?.date)
+              }
+            >
+              <Column dataField="date" dataType="date" />
+              <Column
+                dataField="prevClose"
+                dataType="number"
+                calculateSortValue={(row) => parseFloat(row.prevClose)}
+                calculateDisplayValue={(row) =>
+                  row.prevClose && row.prevClose.toFixed(2)
                 }
-              >
-                <Column dataField="date" dataType="date" />
-                <Column
-                  dataField="prevClose"
-                  dataType="number"
-                  calculateSortValue={(row) => parseFloat(row.prevClose)}
-                  calculateDisplayValue={(row) =>
-                    row.prevClose && row.prevClose.toFixed(2)
-                  }
-                />
-                <Column
-                  dataField="open"
-                  dataType="number"
-                  calculateSortValue={(row) => parseFloat(row.open)}
-                  calculateDisplayValue={(row) =>
-                    row.open && row.open.toFixed(2)
-                  }
-                />
-                <Column
-                  dataField="close"
-                  dataType="number"
-                  calculateSortValue={(row) => parseFloat(row.close)}
-                  calculateDisplayValue={(row) =>
-                    row.close && row.close.toFixed(2)
-                  }
-                />
-                <Column
-                  dataField="change"
-                  dataType="number"
-                  calculateSortValue={(row) => parseFloat(row.change)}
-                  calculateDisplayValue={(row) =>
-                    row.change && row.change.toFixed(2)
-                  }
-                />
-                <Column
-                  dataField="percentChange"
-                  dataType="number"
-                  calculateSortValue={(row) => parseFloat(row.percentChange)}
-                  calculateDisplayValue={(row) =>
-                    row.percentChange &&
-                    (100 * row.percentChange).toFixed(2) + '%'
-                  }
-                />
-                <Column
-                  dataField="nearEarnings"
-                  dataType="number"
-                  calculateSortValue={(row) => parseFloat(row.nearEarnings)}
-                  calculateDisplayValue={(row) =>
-                    row.nearEarnings === 0 ? '⭐️' : row.nearEarnings
-                  }
-                />
-              </DataGrid>
-              <CheckBox
-                value={onlyNearEarnings}
-                text="Only show rows near earnings dates"
-                onValueChanged={({ value }) => setOnlyNearEarnings(value)}
               />
-            </Col>
-            <Col sm={6}>
-              <h3>Inputs</h3>
-              <form
-                onSubmit={(e) => {
-                  setInputs(Object.assign({}, inputs))
-                  e.preventDefault()
-                }}
+              <Column
+                dataField="open"
+                dataType="number"
+                calculateSortValue={(row) => parseFloat(row.open)}
+                calculateDisplayValue={(row) => row.open && row.open.toFixed(2)}
+              />
+              <Column
+                dataField="close"
+                dataType="number"
+                calculateSortValue={(row) => parseFloat(row.close)}
+                calculateDisplayValue={(row) =>
+                  row.close && row.close.toFixed(2)
+                }
+              />
+              <Column
+                dataField="change"
+                dataType="number"
+                calculateSortValue={(row) => parseFloat(row.change)}
+                calculateDisplayValue={(row) =>
+                  row.change && row.change.toFixed(2)
+                }
+              />
+              <Column
+                dataField="pctChg"
+                dataType="number"
+                calculateSortValue={(row) => parseFloat(row.pctChg)}
+                calculateDisplayValue={(row) =>
+                  row.pctChg && (100 * row.pctChg).toFixed(2) + '%'
+                }
+              />
+              <Column
+                dataField="nearEarnings"
+                dataType="number"
+                calculateSortValue={(row) => parseFloat(row.nearEarnings)}
+                calculateDisplayValue={(row) =>
+                  row.nearEarnings === 0 ? '⭐️' : row.nearEarnings
+                }
+              />
+            </DataGrid>
+            <CheckBox
+              value={onlyNearEarnings}
+              text="Only show rows near earnings dates"
+              onValueChanged={({ value }) => setOnlyNearEarnings(value)}
+            />
+          </Col>
+          <Col sm={6}>
+            <h3>Inputs</h3>
+            <form
+              onSubmit={(e) => {
+                setInputs(Object.assign({}, inputs))
+                e.preventDefault()
+              }}
+            >
+              <Form
+                id="form"
+                formData={inputs}
+                readOnly={false}
+                showColonAfterLabel={true}
+                labelLocation={'left'}
+                colCount={1}
+                width={'100%'}
               >
-                <Form
-                  id="form"
-                  formData={inputs}
-                  readOnly={false}
-                  showColonAfterLabel={true}
-                  labelLocation={'left'}
-                  colCount={1}
-                  width={'100%'}
-                >
-                  <Item dataField="stockPrice" editorType="dxNumberBox" />
-                  <Item
-                    dataField="annualizedImpliedVolatilityPercent"
-                    editorType="dxNumberBox"
-                    editorOptions={{
-                      format: '#0%',
-                    }}
-                    title="Annualized Implied Volatility (%)"
-                  />
-                  <Item dataField="daysToExpiration" editorType="dxNumberBox" />
-                </Form>
-                <Button
-                  text="Recalculate"
-                  type="normal"
-                  stylingMode="outlined"
-                  useSubmitBehavior={true}
+                <Item dataField="stockPrice" editorType="dxNumberBox" />
+                <Item
+                  dataField="annualizedImpliedVolatilityPercent"
+                  editorType="dxNumberBox"
+                  editorOptions={{
+                    format: '#0%',
+                  }}
+                  title="Annualized Implied Volatility (%)"
                 />
-              </form>
-              <DataGrid dataSource={outputs} style={{ paddingTop: '1em' }} />
-              {selectedDate && tableData ? (
-                <DetailChart
-                  data={tableData}
-                  centerDate={selectedDate}
-                  symbol={symbol}
-                />
-              ) : null}
-            </Col>
-          </Row>
-        </Container>
-      </>
-    )
-  }
-  return <Layout>Loading...</Layout>
+                <Item dataField="daysToExpiration" editorType="dxNumberBox" />
+              </Form>
+              <Button
+                text="Recalculate"
+                type="normal"
+                stylingMode="outlined"
+                useSubmitBehavior={true}
+              />
+            </form>
+            <DataGrid dataSource={outputs} style={{ paddingTop: '1em' }} />
+            {selectedDate && tableData ? (
+              <DetailChart
+                data={tableData}
+                centerDate={selectedDate}
+                symbol={symbol}
+              />
+            ) : null}
+          </Col>
+        </Row>
+      </Container>
+    </>
+  )
 }
