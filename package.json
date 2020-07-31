@@ -37,6 +37,7 @@
     "react-dom": "^16.13.1",
     "reactstrap": "^8.5.1",
     "swr": "^0.2.3",
+    "twilio": "^3.48.1",
     "underscore": "^1.10.2"
   },
   "devDependencies": {
