@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@types/underscore": "^1.10.10",
+    "azure-devops-node-api": "^10.1.1",
     "devextreme": "^20.1.6",
     "devextreme-react": "^20.1.6",
     "dotenv": "^8.2.0",
