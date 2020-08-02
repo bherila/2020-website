@@ -27,10 +27,12 @@
   },
   "dependencies": {
     "@types/underscore": "^1.10.10",
+    "aws-sdk": "^2.725.0",
     "azure-devops-node-api": "^10.1.1",
     "devextreme": "^20.1.6",
     "devextreme-react": "^20.1.6",
     "dotenv": "^8.2.0",
+    "moment": "^2.27.0",
     "mysql2": "^2.1.0",
     "next": "latest",
     "react": "^16.13.1",
