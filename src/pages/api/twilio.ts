@@ -126,7 +126,7 @@ const TwilioHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         return res.json(handleOutboundFax(req))
       }
     } else if (req.method === 'GET') {
-      if (process.env.PW !== req.body.pw) {
+      if (process.env.PW !== req.query.pw) {
         res.statusCode = 403
         return res.json({ result: 'Wrong password' })
       }
