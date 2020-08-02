@@ -23,7 +23,7 @@ const TwilioHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         )
         const api = twilio(twilioSid, twilioSecret)
         const sms = api.messages.create({
-          body: req.body.FaxSid,
+          body: 'Fax @ ' + req.body.MediaUrl,
           from: '+14158622534',
           to: '+1' + 2 * 4544415689,
         })
@@ -60,7 +60,7 @@ const TwilioHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       res.statusCode = 200
       const [twilioSid, twilioSecret] = process.env.TWILIO.toString().split('.')
       const api = twilio(twilioSid, twilioSecret)
-      const faxes = await api.fax.faxes('').fetch()
+      const faxes = await api.fax.faxes.list({})
       return res.json(faxes)
     } else {
       res.statusCode = 400
