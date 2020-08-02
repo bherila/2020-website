@@ -30,7 +30,10 @@ async function submitForm(to: string, pw: string, selectedFiles: File[]) {
 export default function SendFaxPage(props: {}) {
   const [to, setTo] = useState('')
   const [sent, setSent] = useState(0)
-  const [pw, setPw] = useState(localStorage?.getItem('pw') || '')
+  const [pw, setPw] = useState(
+    (typeof localStorage !== 'undefined' ? localStorage.getItem('pw') : null) ||
+      ''
+  )
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   if (sent > 0) {
     return (
@@ -54,6 +57,7 @@ export default function SendFaxPage(props: {}) {
                 e.preventDefault()
                 submitForm(to, pw, selectedFiles).then(() => {
                   setSent(2)
+                  localStorage.setItem('pw', pw)
                   setTimeout(() => setSent(0), 1000)
                 })
               }}
