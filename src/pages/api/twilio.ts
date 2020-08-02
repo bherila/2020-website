@@ -9,7 +9,11 @@ require('dotenv').config()
 const FAX_FROM = '+14158622534'
 
 function getOutboundFilename() {
-  return 'outbound' + new Date().getUTCMilliseconds()
+  return 'outbound' + new Date().getTime()
+}
+
+function getInboundFilename(sid) {
+  return 'inbound' + new Date().getTime() + '_' + sid
 }
 
 function getTwilio() {
@@ -85,7 +89,7 @@ async function uploadFaxBlob(
     const params: AWS.S3.Types.PutObjectRequest = {
       Body: faxFileBuffer,
       Bucket: 'bwh',
-      Key: `fax${sid}.pdf`,
+      Key: `${getInboundFilename(sid)}.pdf`,
     }
     const uploadJob = new Promise<PutObjectOutput>((resolve, reject) => {
       s3.putObject(params, (err, data) => {

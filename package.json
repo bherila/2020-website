@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@types/node-fetch": "^2.5.7",
+    "@types/reactstrap": "^8.5.0",
     "@types/underscore": "^1.10.10",
     "aws-sdk": "^2.725.0",
     "azure-devops-node-api": "^10.1.1",

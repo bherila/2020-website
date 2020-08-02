@@ -50,39 +50,80 @@ export default function SendFaxPage(props: {}) {
     <Layout bootstrap={true}>
       <RS.Container>
         <RS.Row>
-          <RS.Col xs={12} sm={6}>
+          <RS.Col
+            xs={{ size: 10, push: 1 }}
+            sm={{ size: 9, push: 3 }}
+            style={{
+              background: '#222',
+              margin: '0 auto',
+              padding: '1em',
+              textAlign: 'center',
+            }}
+          >
             <h2>Send a fax</h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault()
-                submitForm(to, pw, selectedFiles).then(() => {
+                submitForm('+1' + to, pw, selectedFiles).then(() => {
                   setSent(2)
                   localStorage.setItem('pw', pw)
                   setTimeout(() => setSent(0), 1000)
                 })
               }}
             >
-              <label>
-                Password
-                <TextBox
-                  value={pw}
-                  mode="password"
-                  onValueChanged={(e) => setPw(e.value)}
-                />
-              </label>
-              <label>
-                To
-                <TextBox
-                  value={to}
-                  mode="tel"
-                  onValueChanged={(e) => setTo(e.value)}
-                />
-              </label>
-              <FileUploader
-                onValueChanged={(e) => setSelectedFiles(e.value)}
-                multiple={false}
-              />
-              <Button useSubmitBehavior={true}>Send fax to {to}</Button>
+              <RS.Container fluid>
+                <RS.Row>
+                  <RS.Col xs={4}>
+                    <label>
+                      Password
+                      <TextBox
+                        value={pw}
+                        mode="password"
+                        onValueChanged={(e) => setPw(e.value)}
+                      />
+                    </label>
+                  </RS.Col>
+                  <RS.Col xs={4}>
+                    <label>
+                      To
+                      <TextBox
+                        value={to}
+                        mode="tel"
+                        mask="+1X000000000"
+                        maskRules={{ X: /[02-9]/ }}
+                        onValueChanged={(e) => setTo(e.value)}
+                      />
+                    </label>
+                  </RS.Col>
+                  <RS.Col xs={4}>
+                    <FileUploader
+                      onValueChanged={(e) => setSelectedFiles(e.value)}
+                      multiple={false}
+                      value={selectedFiles}
+                    />
+                  </RS.Col>
+                </RS.Row>
+                <RS.Row>
+                  <RS.Col xs={12} style={{ textAlign: 'center' }}>
+                    {(() => {
+                      if (pw === '') {
+                        return 'Enter pw'
+                      }
+                      if (to.length < 10) {
+                        return 'Enter target phone #'
+                      }
+                      if (selectedFiles.length !== 1) {
+                        return 'File is required'
+                      }
+                      return (
+                        <Button useSubmitBehavior={true}>
+                          Send fax to +1{to}
+                        </Button>
+                      )
+                    })()}
+                  </RS.Col>
+                </RS.Row>
+              </RS.Container>
             </form>
           </RS.Col>
         </RS.Row>
