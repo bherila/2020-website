@@ -109,34 +109,67 @@ async function uploadFaxBlob(
 }
 
 const TwilioHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  async function listFaxes() {
+    if (process.env.PW !== req.query.pw) {
+      res.statusCode = 403
+      return res.json({ result: 'Wrong password' })
+    }
+    return res.json(await handleGet(req, res))
+  }
+
+  async function delFax() {
+    const api = getTwilio()
+    if (typeof req.query.sid === 'string') {
+      await api.fax.faxes(req.query.sid).remove()
+      res.statusCode = 200
+      return res.json({ result: 'deleted' })
+    } else {
+      res.statusCode = 400
+      return res.json({ result: 'missing sid' })
+    }
+  }
+
+  async function sendFax() {
+    if (process.env.PW !== req.body.pw) {
+      res.statusCode = 403
+      return res.json({ result: 'Wrong password' })
+    }
+    return res.json(await handleOutboundFax(req))
+  }
+
   try {
     res.statusCode = 200
+    // HTTP POST
     if (req.method === 'POST') {
       res.statusCode = 200
-      if (req.query.action === 'sent') {
+      const { action } = req.query
+      if (action === 'sent') {
         const response = `<Response><Receive action="/api/twilio?action=recv"/></Response>`
         return sendXml(res, response)
-      } else if (req.query.action === 'recv') {
-        return res.json(
-          await handleReceivedFax(req.body.MediaUrl, req.body.FaxSid)
-        )
-      } else if (typeof req.body.to === 'string') {
-        if (process.env.PW !== req.body.pw) {
-          res.statusCode = 403
-          return res.json({ result: 'Wrong password' })
-        }
-        return res.json(await handleOutboundFax(req))
+      } else if (action === 'recv') {
+        const { MediaUrl, FaxSid } = req.body
+        return res.json(await handleReceivedFax(MediaUrl, FaxSid))
+      } else if (action === 'send' || typeof req.body.to === 'string') {
+        return await sendFax()
+      } else if (action === 'list') {
+        return await listFaxes()
       }
-    } else if (req.method === 'GET') {
-      if (process.env.PW !== req.query.pw) {
-        res.statusCode = 403
-        return res.json({ result: 'Wrong password' })
-      }
-      return res.json(await handleGet(req, res))
-    } else {
+    }
+    // HTTP GET
+    else if (req.method === 'GET') {
+      return await listFaxes()
+    }
+    // HTTP DELETE
+    else if (req.method === 'DELETE') {
+      return await delFax()
+    }
+    // OTHERS
+    else {
       res.statusCode = 400
       return res.json({ error: 'Wrong body type' })
     }
+
+    // ERROR
   } catch (err) {
     if (err.status) {
       res.statusCode = err.status
