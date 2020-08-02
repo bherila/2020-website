@@ -117,20 +117,22 @@ const TwilioHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         const response = `<Response><Receive action="/api/twilio?action=recv"/></Response>`
         return sendXml(res, response)
       } else if (req.query.action === 'recv') {
-        return res.json(handleReceivedFax(req.body.MediaUrl, req.body.FaxSid))
+        return res.json(
+          await handleReceivedFax(req.body.MediaUrl, req.body.FaxSid)
+        )
       } else if (typeof req.body.to === 'string') {
         if (process.env.PW !== req.body.pw) {
           res.statusCode = 403
           return res.json({ result: 'Wrong password' })
         }
-        return res.json(handleOutboundFax(req))
+        return res.json(await handleOutboundFax(req))
       }
     } else if (req.method === 'GET') {
       if (process.env.PW !== req.query.pw) {
         res.statusCode = 403
         return res.json({ result: 'Wrong password' })
       }
-      return res.json(handleGet(req, res))
+      return res.json(await handleGet(req, res))
     } else {
       res.statusCode = 400
       return res.json({ error: 'Wrong body type' })
