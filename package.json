@@ -26,6 +26,7 @@
     ]
   },
   "dependencies": {
+    "@types/node-fetch": "^2.5.7",
     "@types/underscore": "^1.10.10",
     "aws-sdk": "^2.725.0",
     "azure-devops-node-api": "^10.1.1",
@@ -35,6 +36,7 @@
     "moment": "^2.27.0",
     "mysql2": "^2.1.0",
     "next": "latest",
+    "node-fetch": "^2.6.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "reactstrap": "^8.5.1",
