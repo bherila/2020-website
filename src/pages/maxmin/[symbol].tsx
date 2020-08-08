@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import Layout from '../../components/layout'
@@ -7,6 +7,7 @@ import { Container, Row, Col } from 'reactstrap'
 import CheckBox from 'devextreme-react/check-box'
 import Form, { Item } from 'devextreme-react/form'
 import Button from 'devextreme-react/button'
+import moment from 'moment'
 import Chart, {
   CommonSeriesSettings,
   Series,
@@ -21,8 +22,9 @@ import Chart, {
   Tooltip,
   Annotation,
 } from 'devextreme-react/chart'
-import useEarnings from '../../hooks/useEarnings'
+import useEarnings, { IEarnings } from '../../hooks/useEarnings'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import { createEntrypoints } from 'next/dist/build/entries'
 
 const key = '07HZXPDVA6CKI94B'
 const fetcher = (url) => fetch(url).then((r) => r.json())
@@ -66,15 +68,18 @@ function centerDataAround(data: Quote[], date: string, n: number) {
 function DetailChart(props: {
   symbol: string
   data: Quote[]
-  centerDate: string
+  centerDate?: string
 }) {
   const { symbol, data, centerDate } = props
   const [n] = useState(21)
-  const filterData = centerDataAround(data, centerDate, n)
+  const filterData = centerDate
+    ? centerDataAround(data, centerDate, n)
+    : data.sort(asc).slice(data.length - 30)
+  const circa = centerDate ? `circa ${centerDate}` : 'past 30 days'
   return (
     <Chart
       id="chart"
-      title={`${symbol} Stock Price`}
+      title={`${symbol} Stock Price ${circa}`}
       dataSource={filterData}
       width="100%"
     >
@@ -102,15 +107,17 @@ function DetailChart(props: {
       <Legend itemTextPosition="left" visible={false} />
       <Export enabled={true} />
       <Tooltip enabled={true} location="edge" />
-      <Annotation
-        key="centerDate"
-        argument={centerDate}
-        value={filterData[Math.floor(filterData.length / 2)].max}
-        type="text"
-        text="⭐️"
-        color="transparent"
-        border={{ visible: false }}
-      />
+      {!centerDate ? null : (
+        <Annotation
+          key="centerDate"
+          argument={centerDate}
+          value={filterData[Math.floor(filterData.length / 2)].max}
+          type="text"
+          text="⭐️"
+          color="transparent"
+          border={{ visible: false }}
+        />
+      )}
     </Chart>
   )
 }
@@ -126,7 +133,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       )
       const quoteData = await quoteResponse.json()
       const ts = quoteData['Time Series (Daily)']
-      const dates = Object.keys(ts).sort()
+      const dates = Object.keys(ts || {}).sort()
       for (let i = 0; i < dates.length; ++i) {
         //   "Global Quote": {
         //   "01. symbol": "IBM",
@@ -150,7 +157,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       }
     }
   } catch (err) {
-    error = err
+    error = err.toString()
   }
   if (tableData.length === 0) {
     context.res.statusCode = 404
@@ -163,7 +170,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       tableData,
-      error,
+      error: error,
     },
   }
 }
@@ -186,7 +193,11 @@ export default function MaxMin({
   )
   let sp = 0
   if (quote.data) {
-    sp = parseFloat(quote.data['Global Quote']['05. price'])
+    try {
+      sp = parseFloat(quote.data['Global Quote']['05. price'])
+    } catch (err) {
+      console.warn(err)
+    }
   }
 
   if (!(sp > 0) && !skip) {
@@ -212,21 +223,11 @@ export default function MaxMin({
   }
 }
 
-function MaxMinInternal(props: {
-  symbol: string
-  stockPrice: number
-  tableData: Quote[]
-}) {
-  const { symbol, stockPrice } = props
-  const [selectedDate, setSelectedDate] = useState(null)
-  const [onlyNearEarnings, setOnlyNearEarnings] = useState(false)
-  const earnings = useEarnings(symbol)
-  const [inputs, setInputs] = useState({
-    stockPrice,
-    annualizedImpliedVolatilityPercent: 1.3,
-    daysToExpiration: 5,
-  })
-  let tableData = [...props.tableData]
+function prepareTableData(
+  tableData: Quote[],
+  earnings: IEarnings[],
+  onlyNearEarnings: boolean
+) {
   for (let i = 0; i < tableData.length; ++i) {
     const today = tableData[i]
     const yesterday = i > 0 ? tableData[i - 1] : null
@@ -238,9 +239,9 @@ function MaxMinInternal(props: {
   }
 
   // flag rows near earnings dates
-  if (earnings.data) {
+  if (earnings) {
     const c = 5
-    const earningsDates = earnings.data.map((ed) => ed.date)
+    const earningsDates = earnings.map((ed) => ed.date)
     const allDates = tableData.map((td) => td.date) // index maps into tableData
     for (const earningDate of earningsDates) {
       const tableIndex = allDates.indexOf(earningDate)
@@ -256,6 +257,29 @@ function MaxMinInternal(props: {
   }
 
   tableData.sort((a, b) => a.pctChg - b.pctChg)
+  return tableData
+}
+
+function MaxMinInternal(props: {
+  symbol: string
+  stockPrice: number
+  tableData: Quote[]
+}) {
+  const { symbol, stockPrice } = props
+  const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [onlyNearEarnings, setOnlyNearEarnings] = useState(false)
+  const earnings = useEarnings(symbol)
+  const [inputs, setInputs] = useState({
+    stockPrice,
+    annualizedImpliedVolatilityPercent: 1.3,
+    daysToExpiration: 5,
+  })
+  const [tableData, setTableData] = useState([])
+  useEffect(() => {
+    setTableData(
+      prepareTableData([...props.tableData], earnings.data, onlyNearEarnings)
+    )
+  }, [onlyNearEarnings, earnings.hasEarnings])
   const sd1 =
     inputs.stockPrice *
     inputs.annualizedImpliedVolatilityPercent *
@@ -264,23 +288,26 @@ function MaxMinInternal(props: {
     {
       N_SD: 1,
       SD_Value: sd1,
+      SD_Percent_Change: sd1 / inputs.stockPrice,
       Min: inputs.stockPrice - sd1,
       Max: inputs.stockPrice + sd1,
-      Probability: 68.2,
+      Probability: 0.682,
     },
     {
       N_SD: 2,
       SD_Value: sd1 * 2,
+      SD_Percent_Change: (sd1 * 2) / inputs.stockPrice,
       Min: inputs.stockPrice - sd1 * 2,
       Max: inputs.stockPrice + sd1 * 2,
-      Probability: 95.4,
+      Probability: 0.954,
     },
     {
       N_SD: 3,
       SD_Value: sd1 * 3,
+      SD_Percent_Change: (sd1 * 3) / inputs.stockPrice,
       Min: inputs.stockPrice - sd1 * 3,
       Max: inputs.stockPrice + sd1 * 3,
-      Probability: 99.7,
+      Probability: 0.997,
     },
   ]
 
@@ -293,49 +320,52 @@ function MaxMinInternal(props: {
               dataSource={tableData}
               focusedRowEnabled={true}
               keyExpr="date"
+              sorting={{
+                showSortIndexes: true,
+                mode: 'multiple',
+              }}
               focusedRowKey={selectedDate}
-              onFocusedRowChanged={({ row }) =>
-                setSelectedDate(row?.data?.date)
-              }
+              onFocusedRowChanged={(e) => {
+                if (e.row && e.row.data) {
+                  setSelectedDate(e.row.data.date)
+                }
+              }}
             >
-              <Column dataField="date" dataType="date" />
+              <Column
+                dataField="date"
+                dataType="date"
+                sortIndex={0}
+                sortOrder={'asc'}
+              />
               <Column
                 dataField="prevClose"
                 dataType="number"
                 calculateSortValue={(row) => parseFloat(row.prevClose)}
-                calculateDisplayValue={(row) =>
-                  row.prevClose && row.prevClose.toFixed(2)
-                }
+                format="$ #,##0.##"
               />
               <Column
                 dataField="open"
                 dataType="number"
                 calculateSortValue={(row) => parseFloat(row.open)}
-                calculateDisplayValue={(row) => row.open && row.open.toFixed(2)}
+                format="$ #,##0.##"
               />
               <Column
                 dataField="close"
                 dataType="number"
                 calculateSortValue={(row) => parseFloat(row.close)}
-                calculateDisplayValue={(row) =>
-                  row.close && row.close.toFixed(2)
-                }
+                format="$ #,##0.##"
               />
               <Column
                 dataField="change"
                 dataType="number"
                 calculateSortValue={(row) => parseFloat(row.change)}
-                calculateDisplayValue={(row) =>
-                  row.change && row.change.toFixed(2)
-                }
+                format="$ #,##0.##"
               />
               <Column
                 dataField="pctChg"
                 dataType="number"
                 calculateSortValue={(row) => parseFloat(row.pctChg)}
-                calculateDisplayValue={(row) =>
-                  row.pctChg && (100 * row.pctChg).toFixed(2) + '%'
-                }
+                format="#0.00%"
               />
               <Column
                 dataField="nearEarnings"
@@ -387,14 +417,45 @@ function MaxMinInternal(props: {
                 useSubmitBehavior={true}
               />
             </form>
-            <DataGrid dataSource={outputs} style={{ paddingTop: '1em' }} />
+            <DataGrid dataSource={outputs} style={{ paddingTop: '1em' }}>
+              <Column dataField="N_SD" dataType="number" format="0.0#" />
+              <Column
+                dataField="SD_Value"
+                dataType="number"
+                format="$ #,##0.##"
+              />
+              <Column
+                dataField="SD_Percent_Change"
+                dataType="number"
+                format="#0.00%"
+              />
+              <Column dataField="Min" dataType="number" format="$ #,##0.##" />
+              <Column dataField="Max" dataType="number" format="$ #,##0.##" />
+              <Column
+                dataField="Probability"
+                dataType="number"
+                format="#0.00%"
+              />
+            </DataGrid>
             {selectedDate && tableData ? (
+              <>
+                <DetailChart
+                  data={tableData}
+                  centerDate={selectedDate}
+                  symbol={symbol}
+                />
+                <Button
+                  onClick={() => setSelectedDate('')}
+                  text="Clear selected date"
+                />
+              </>
+            ) : (
               <DetailChart
                 data={tableData}
                 centerDate={selectedDate}
                 symbol={symbol}
               />
-            ) : null}
+            )}
           </Col>
         </Row>
       </Container>
