@@ -16,6 +16,7 @@ export default function useEarnings(symbol) {
     revalidateOnFocus: false,
   })
   return {
+    hasEarnings: !!result.data,
     data: result.data as IEarnings[],
     isFetching: result.isValidating,
   }

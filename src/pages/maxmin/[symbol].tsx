@@ -193,7 +193,11 @@ export default function MaxMin({
   )
   let sp = 0
   if (quote.data) {
-    sp = parseFloat(quote.data['Global Quote']['05. price'])
+    try {
+      sp = parseFloat(quote.data['Global Quote']['05. price'])
+    } catch (err) {
+      console.warn(err)
+    }
   }
 
   if (!(sp > 0) && !skip) {
@@ -270,11 +274,12 @@ function MaxMinInternal(props: {
     annualizedImpliedVolatilityPercent: 1.3,
     daysToExpiration: 5,
   })
-  const tableData = prepareTableData(
-    [...props.tableData],
-    earnings.data,
-    onlyNearEarnings
-  )
+  const [tableData, setTableData] = useState([])
+  useEffect(() => {
+    setTableData(
+      prepareTableData([...props.tableData], earnings.data, onlyNearEarnings)
+    )
+  }, [onlyNearEarnings, earnings.hasEarnings])
   const sd1 =
     inputs.stockPrice *
     inputs.annualizedImpliedVolatilityPercent *
@@ -315,14 +320,23 @@ function MaxMinInternal(props: {
               dataSource={tableData}
               focusedRowEnabled={true}
               keyExpr="date"
-              autoNavigateToFocusedRow={false}
+              sorting={{
+                showSortIndexes: true,
+                mode: 'multiple',
+              }}
               focusedRowKey={selectedDate}
-              onFocusedRowChanging={(e) =>
-                setSelectedDate(e.rows[e.newRowIndex].data.date)
-              }
-              keyboardNavigation={{ enabled: false }}
+              onFocusedRowChanged={(e) => {
+                if (e.row && e.row.data) {
+                  setSelectedDate(e.row.data.date)
+                }
+              }}
             >
-              <Column dataField="date" dataType="date" />
+              <Column
+                dataField="date"
+                dataType="date"
+                sortIndex={0}
+                sortOrder={'asc'}
+              />
               <Column
                 dataField="prevClose"
                 dataType="number"
