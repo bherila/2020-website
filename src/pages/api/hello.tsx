@@ -1,13 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
-import { NextApiRequest, NextApiResponse } from 'next'
 import mysql from 'mysql2/promise'
+import { NextApiRequest, NextApiResponse } from 'next'
 
-require('dotenv').config()
+// require('dotenv').config()
 
 const config = {
   host: process.env.DBHOST,
-  port: process.env.DBPORT,
+  port: +process.env.DBPORT,
   user: process.env.DBUSER,
   password: process.env.DBPASSWORD,
   database: process.env.DBNAME,
@@ -24,7 +24,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   } else {
     const results = await pool.query(
       `select * from earnings_latest where symbol=? order by date asc;`,
-      [req.query.symbol]
+      [req.query.symbol],
     )
     res.statusCode = 200
     return res.json(results[0])

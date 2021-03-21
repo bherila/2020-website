@@ -1,6 +1,6 @@
-import { optional, required } from './schemaHelpers'
-import { Argument, IEntity, ISchema } from './schema'
 import { gCsType } from './cstypes'
+import { Argument, IEntity, ISchema } from './schema'
+import { optional, required } from './schemaHelpers'
 
 const header =
   '// WARNING: This file is auto generated! Manual changes may be lost.'
@@ -516,7 +516,7 @@ function buildSql(name: string, model: IEntity) {
     const propNames = Object.keys(model.properties).filter(
       (property) =>
         !model.properties[property].noStore &&
-        model.properties[property].type.indexOf('<') < 0
+        model.properties[property].type.indexOf('<') < 0,
     )
 
     const cn = camel(name)
@@ -552,7 +552,7 @@ function buildSql(name: string, model: IEntity) {
                 .filter((pn) => pn !== idProp)
                 .map(
                   (pn) => `
-                ${colNames[pn]} = excluded.${colNames[pn]}`
+                ${colNames[pn]} = excluded.${colNames[pn]}`,
                 )
                 .join(',')}";
         `
@@ -567,7 +567,7 @@ function buildSql(name: string, model: IEntity) {
           .map((pn) => colNames[pn])
           .join(', ')}
             FROM ${model.sql.table || name} WHERE ${idCol} = ANY(@${camel(
-      idProp
+      idProp,
     )})";
 
         public const string PgSqlDeleteByIdentity = @"DELETE FROM ${
@@ -577,7 +577,7 @@ function buildSql(name: string, model: IEntity) {
         public static readonly string[] ColumnNames = new [] {${propNames
           .map(
             (pn) => `
-            "${colNames[pn]}"`
+            "${colNames[pn]}"`,
           )
           .join(',')}
         };
@@ -590,7 +590,7 @@ function buildSql(name: string, model: IEntity) {
         }
         
         public static IReadOnlyList${genericType} Load${cn}(this IDbConnection connection, params ${csType(
-      idProp
+      idProp,
     )}[] id) {
             return connection.Query(PgSqlSelectByIdentity, new { id })
                 .Select(BuildFromDynamicRow)
@@ -609,7 +609,7 @@ function buildSql(name: string, model: IEntity) {
                 dp.Add("@${camel(pn)}", prototype.${camel(pn)});
                 filters.Add("${colNames[pn]} = @${camel(pn)}");
             }
-            `
+            `,
               )
               .join('')}
             var sql = @"SELECT ${propNames.map((pn) => colNames[pn]).join(', ')}
@@ -643,7 +643,7 @@ function buildSql(name: string, model: IEntity) {
         (pn) => `
                 .Set${camel(pn)}((${csType(pn)})(row.${
           colNames[pn]
-        } ?? default(${csType(pn)})))`
+        } ?? default(${csType(pn)})))`,
       )
       .join('')}
                 .ValidateAndBuild();
@@ -677,7 +677,7 @@ function buildTableHelper(name: string, model: IEntity) {
     const propNames = Object.keys(model.properties).filter(
       (property) =>
         !model.properties[property].noStore &&
-        model.properties[property].type.indexOf('<') < 0
+        model.properties[property].type.indexOf('<') < 0,
     )
 
     const cn = camel(name)
@@ -688,7 +688,7 @@ function buildTableHelper(name: string, model: IEntity) {
     const dict = 'IDictionary<string, EntityProperty>'
 
     const propNamesWithoutKeys = propNames.filter(
-      (pn) => pn !== pk && pn !== rk
+      (pn) => pn !== pk && pn !== rk,
     )
 
     return `
@@ -701,7 +701,7 @@ function buildTableHelper(name: string, model: IEntity) {
 			}
 			do {
 				var queryResult = Task.Run(() => table.ExecuteQuerySegmentedAsync(q, Resolve${camel(
-          cn
+          cn,
         )}, token)).GetAwaiter().GetResult();
 				foreach (var item in queryResult.Results) yield return item;
 				token = queryResult.ContinuationToken;
@@ -715,7 +715,7 @@ function buildTableHelper(name: string, model: IEntity) {
 			var result = await client.GetTableReference("${tbl}").ExecuteAsync(operation);
 			return (${camel(cn)}) result.Result;
 		}
-		`
+		`,
           )
           .join('')}
 		private static DynamicTableEntity Entity(${camel(cn)} value) {
@@ -724,14 +724,14 @@ function buildTableHelper(name: string, model: IEntity) {
 			${propNamesWithoutKeys
         .map(
           (pn) => `
-			entity.Properties.Add("${camel(pn)}", new EntityProperty(value.${camel(pn)}));`
+			entity.Properties.Add("${camel(pn)}", new EntityProperty(value.${camel(pn)}));`,
         )
         .join('')}
 			return entity;
 		}
 		
 		private static ${camel(cn)} Resolve${camel(
-      cn
+      cn,
     )}(string pk, string rk, DateTimeOffset ds, ${dict} properties, string eTag) {
             var entity = new ${cn}.Builder()
                 .Set${camel(pk)}(pk)
@@ -741,7 +741,7 @@ function buildTableHelper(name: string, model: IEntity) {
                 (pn) => `
 			if (properties.TryGetValue("${camel(pn)}", out var ${pn})) {
 				entity.Set${camel(pn)}((${csType(pn)}) ${pn}.PropertyAsObject);
-			}`
+			}`,
               )
               .join('')}
 			return entity.Build();
@@ -776,9 +776,9 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
       .map(
         (propName) => `
         [JsonProperty("${propName}")] public ${csType(propName)} ${camel(
-          propName
+          propName,
         )} { get; protected set; } 
-        `
+        `,
       )
       .join('')
   }
@@ -793,7 +793,7 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
             ${propNames
               .map(
                 (propName) => `
-            this.${camel(propName)} = @value.${camel(propName)};`
+            this.${camel(propName)} = @value.${camel(propName)};`,
               )
               .join('')}
         }
@@ -807,13 +807,13 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
         public ${camel(name)}(${propNames
       .map(
         (propName) => `
-            ${csType(propName)} ${propName}`
+            ${csType(propName)} ${propName}`,
       )
       .join(',')}) {
                 ${propNames
                   .map(
                     (propName) => `
-            this.${camel(propName)} = ${propName};`
+            this.${camel(propName)} = ${propName};`,
                   )
                   .join('')}
         }
@@ -839,12 +839,12 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
               .map(
                 (propName) => `
             public Builder Set${camel(propName)}(${csType(propName)} new${camel(
-                  propName
+                  propName,
                 )}) {
                 _buildingObject.${camel(propName)} = new${camel(propName)};
                 return this;                
             }
-            `
+            `,
               )
               .join('')}
             
@@ -854,12 +854,12 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
                   .map(
                     (propName) => `
                 if (newValues.${camel(propName)} != default(${csType(
-                      propName
+                      propName,
                     )})) {
                     _buildingObject.${camel(propName)} = newValues.${camel(
-                      propName
+                      propName,
                     )};
-                }`
+                }`,
                   )
                   .join('')}
                 return this;
@@ -899,7 +899,7 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
             return other != null && ${propNames
               .map(
                 (propName) => `
-                   ${camel(propName)} == other.${camel(propName)}`
+                   ${camel(propName)} == other.${camel(propName)}`,
               )
               .join(' &&')};
         }
@@ -909,8 +909,8 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
               .map(
                 (propName) => `
             hashCode = hashCode * -1521134295 + EqualityComparer<${csType(
-              propName
-            )}>.Default.GetHashCode(${camel(propName)});`
+              propName,
+            )}>.Default.GetHashCode(${camel(propName)});`,
               )
               .join('')}
             return hashCode;
@@ -934,7 +934,7 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
         code += `
                 if (String.IsNullOrWhiteSpace(@value)) {
                     throw new ValidationException($"${camel(
-                      propName
+                      propName,
                     )} cannot be null"); 
                 }`
       }
@@ -946,7 +946,7 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
         code += `
                 if (@value != null && @value.Length < ${prop.minLength}) {
                     throw new ValidationException($"${camel(
-                      propName
+                      propName,
                     )} must be at least ${prop.minLength} characters."); 
                 }`
       }
@@ -958,7 +958,7 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
         code += `
                 if (@value != null && @value.Length > ${prop.maxLength}) {
                     throw new ValidationException($"${camel(
-                      propName
+                      propName,
                     )} must be no longer than ${prop.maxLength} characters."); 
                 }`
       }
@@ -983,7 +983,7 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
         code += `
                 if (@value == default(${csType})) {
                     throw new ValidationException($"${camel(
-                      propName
+                      propName,
                     )} cannot be null/empty"); 
                 }`
       }
@@ -1003,14 +1003,14 @@ function buildEntity<TModel extends IEntity>(name: string, model: TModel) {
         protected void Validate${camel(property)}() {
             ${buildValidationLogic(property, model.properties[property])}
         }
-        `
+        `,
           )
           .join('')}
         
         public void Validate() {${propNames
           .map(
             (property) => `
-            Validate${camel(property)}();`
+            Validate${camel(property)}();`,
           )
           .join('')}
         }
@@ -1039,11 +1039,11 @@ namespace UC.Models {
     
     public class ${camel(name)}NotFoundException : KeyNotFoundException {
         public ${camel(name)}NotFoundException(Guid id) : base("${camel(
-    name
+    name,
   )} not found: " + id) {
 		}
 		public ${camel(name)}NotFoundException(string id) : base("${camel(
-    name
+    name,
   )} not found: " + id) {
 		}
     }

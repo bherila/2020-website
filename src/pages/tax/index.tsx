@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
-import TaxLayout from './TaxLayout'
-import SelectBox from 'devextreme-react/select-box'
 import Button from 'devextreme-react/button'
+import SelectBox from 'devextreme-react/select-box'
 import TextBox from 'devextreme-react/text-box'
+import React, { useState } from 'react'
+import _ from 'underscore'
+
 import usePersist from '../../hooks/usePersist'
 import Employer from './Employer'
-import _ from 'underscore'
+import TaxLayout from './TaxLayout'
 
 function Block(props: { title: string; children: any }) {
   const { title, children } = props
@@ -66,7 +67,7 @@ export default function Tax() {
                     emp.payslips = payslips
                   }
                   return emp
-                })
+                }),
               )
               setEmployers(newEmployers)
               sessionEmployers.setData(newEmployers)

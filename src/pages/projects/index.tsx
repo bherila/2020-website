@@ -1,9 +1,10 @@
 import React from 'react'
+
 import ImageAndText from '../../components/image-and-text'
 import Layout from '../../components/layout'
 import PageHeader from '../../components/page-header'
 
-export default function ProjectsPage(props) {
+export default function ProjectsPage() {
   return (
     <Layout>
       <PageHeader text="Selected Projects" />

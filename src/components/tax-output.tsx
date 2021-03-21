@@ -1,5 +1,6 @@
-import React from 'react'
 import TextBox from 'devextreme-react/text-box'
+import React from 'react'
+
 import useTaxData from '../hooks/useTaxData'
 
 interface TaxOutputProps {

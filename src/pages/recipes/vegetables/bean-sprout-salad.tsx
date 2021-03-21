@@ -1,7 +1,8 @@
 import React from 'react'
+
 import Layout from '../../../components/layout'
 
-export default function () {
+export default function BeanSproutSalad() {
   return (
     <Layout>
       <h1>Bean Sprout Salad</h1>

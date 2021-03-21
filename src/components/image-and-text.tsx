@@ -1,7 +1,8 @@
-import React from 'react'
-import V3container from './v3-container'
-import Link from 'next/link'
 import cn from 'classnames'
+import Link from 'next/link'
+import React from 'react'
+
+import V3container from './v3-container'
 
 function renderCta(ctaText, ctaLink) {
   if (ctaLink.indexOf('http') === 0) {
@@ -18,6 +19,15 @@ function renderCta(ctaText, ctaLink) {
   )
 }
 
+interface ImageAndTextProps {
+  children: any
+  imageUrl: string
+  alt: string
+  ctaText: string
+  ctaLink: string
+  extraClass: string
+}
+
 export default function ImageAndText({
   children,
   imageUrl,
@@ -25,7 +35,7 @@ export default function ImageAndText({
   ctaText,
   ctaLink,
   extraClass,
-}) {
+}: ImageAndTextProps) {
   return (
     <V3container>
       <div className={cn(extraClass || 'columns', 'w-row')}>

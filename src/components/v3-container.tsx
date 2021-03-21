@@ -1,5 +1,9 @@
 import React from 'react'
 
-export default function V3container({ children }) {
+interface ContainerProps {
+  children: JSX.Element | string
+}
+
+export default function V3container({ children }: ContainerProps) {
   return <div className="v3-container">{children}</div>
 }

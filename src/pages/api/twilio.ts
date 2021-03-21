@@ -1,10 +1,8 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import twilio, { Twilio } from 'twilio'
 import AWS from 'aws-sdk'
 import { PutObjectOutput } from 'aws-sdk/clients/s3'
+import { NextApiRequest, NextApiResponse } from 'next'
 import fetch from 'node-fetch'
-
-require('dotenv').config()
+import twilio, { Twilio } from 'twilio'
 
 const FAX_FROM = '+14158622534'
 
@@ -77,7 +75,7 @@ function sendSms(api: Twilio, body: string) {
 // Uploads a fax to S3 and returns the signed URL.
 async function uploadFaxBlob(
   faxFileBuffer: AWS.S3.Body,
-  sid: string
+  sid: string,
 ): Promise<string> {
   try {
     const [awsKeyId, awsSecret] = process.env.AWSSID.toString().split('.')

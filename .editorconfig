@@ -1,0 +1,22 @@
+[*]
+end_of_line = lf
+charset = utf-8
+indent_style = space
+tab_width = 2
+indent_size = 2
+
+[{*.ts,*.tsx}]
+ij_any_align_group_field_declarations = false
+ij_any_align_multiline_parameters = false
+ij_typescript_align_multiline_ternary_operation = false
+ij_typescript_spaces_within_brackets = true
+ij_typescript_spaces_within_imports = true
+ij_typescript_spaces_within_array_initializer_brackets = false
+ij_typescript_spaces_within_object_literal_braces = false
+ij_typescript_spaces_within_object_type_braces = false
+ij_typescript_jsx_attribute_value = none
+ij_typescript_indent_chained_calls = false
+ij_any_align_multiline_chained_methods = false
+ij_any_keep_indents_on_empty_lines = false
+ij_typescript_use_chained_calls_group_indents = false
+ij_continuation_indent_size = 2
