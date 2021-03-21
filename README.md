@@ -5,6 +5,7 @@ Figured I'd make the repo public because there are lots of goodies inside. Some 
 * Tax optimization worksheet
 * Stock price min/max thing
 * My website
+* Useful eslint / prettier / .editorconfig 
 * Some recipes? Coming soon?
 
 BTW this was created with a starter kit:
