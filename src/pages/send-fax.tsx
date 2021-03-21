@@ -1,9 +1,11 @@
-import Layout from '../components/layout'
-import { useState } from 'react'
-import * as RS from 'reactstrap'
-import TextBox from 'devextreme-react/text-box'
 import Button from 'devextreme-react/button'
 import FileUploader from 'devextreme-react/file-uploader'
+import TextBox from 'devextreme-react/text-box'
+import { useState } from 'react'
+import React from 'react'
+import * as RS from 'reactstrap'
+
+import Layout from '../components/layout'
 
 async function submitForm(to: string, pw: string, selectedFiles: File[]) {
   const fileAsDataUrl = new Promise<string>((resolve, reject) => {
@@ -27,12 +29,12 @@ async function submitForm(to: string, pw: string, selectedFiles: File[]) {
   })
 }
 
-export default function SendFaxPage(props: {}) {
+export default function SendFaxPage() {
   const [to, setTo] = useState('')
   const [sent, setSent] = useState(0)
   const [pw, setPw] = useState(
     (typeof localStorage !== 'undefined' ? localStorage.getItem('pw') : null) ||
-      ''
+      '',
   )
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   if (sent > 0) {
@@ -51,8 +53,8 @@ export default function SendFaxPage(props: {}) {
       <RS.Container>
         <RS.Row>
           <RS.Col
-            xs={{ size: 10, push: 1 }}
-            sm={{ size: 9, push: 3 }}
+            xs={{ size: 10, offset: 1 }}
+            sm={{ size: 9, offset: 3 }}
             style={{
               background: '#222',
               margin: '0 auto',

@@ -1,7 +1,11 @@
-import React from 'react'
 import Head from 'next/head'
+import React from 'react'
 
-export default function TaxLayout({ children }) {
+interface TaxLayoutProps {
+  children: any
+}
+
+export default function TaxLayout({ children }: TaxLayoutProps) {
   return (
     <>
       <Head>

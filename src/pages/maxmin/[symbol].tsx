@@ -1,30 +1,31 @@
-import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
-import useSWR from 'swr'
-import Layout from '../../components/layout'
-import DataGrid, { Column } from 'devextreme-react/data-grid'
-import { Container, Row, Col } from 'reactstrap'
-import CheckBox from 'devextreme-react/check-box'
-import Form, { Item } from 'devextreme-react/form'
 import Button from 'devextreme-react/button'
-import moment from 'moment'
 import Chart, {
-  CommonSeriesSettings,
-  Series,
-  Reduction,
-  ArgumentAxis,
-  Label,
-  Format,
-  ValueAxis,
-  Title,
-  Legend,
-  Export,
-  Tooltip,
   Annotation,
+  ArgumentAxis,
+  CommonSeriesSettings,
+  Export,
+  Format,
+  Label,
+  Legend,
+  Reduction,
+  Series,
+  Title,
+  Tooltip,
+  ValueAxis,
 } from 'devextreme-react/chart'
-import useEarnings, { IEarnings } from '../../hooks/useEarnings'
+import CheckBox from 'devextreme-react/check-box'
+import DataGrid, { Column } from 'devextreme-react/data-grid'
+import Form, { Item } from 'devextreme-react/form'
+import moment from 'moment'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { createEntrypoints } from 'next/dist/build/entries'
+import { useRouter } from 'next/router'
+import React, { useEffect, useState } from 'react'
+import { Col, Container, Row } from 'reactstrap'
+import useSWR from 'swr'
+
+import Layout from '../../components/layout'
+import useEarnings, { IEarnings } from '../../hooks/useEarnings'
 
 const key = '07HZXPDVA6CKI94B'
 const fetcher = (url) => fetch(url).then((r) => r.json())
@@ -129,7 +130,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (typeof context.query.symbol === 'string') {
       const symbol = context.query.symbol
       const quoteResponse = await fetch(
-        `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${key}&outputsize=full`
+        `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${key}&outputsize=full`,
       )
       const quoteData = await quoteResponse.json()
       const ts = quoteData['Time Series (Daily)']
@@ -164,7 +165,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   } else {
     context.res.setHeader(
       'Cache-Control',
-      'max-age=60000, public, stale-while-revalidate'
+      'max-age=60000, public, stale-while-revalidate',
     )
   }
   return {
@@ -189,7 +190,7 @@ export default function MaxMin({
       revalidateOnFocus: false,
       revalidateOnMount: true,
       revalidateOnReconnect: false,
-    }
+    },
   )
   let sp = 0
   if (quote.data) {
@@ -226,7 +227,7 @@ export default function MaxMin({
 function prepareTableData(
   tableData: Quote[],
   earnings: IEarnings[],
-  onlyNearEarnings: boolean
+  onlyNearEarnings: boolean,
 ) {
   for (let i = 0; i < tableData.length; ++i) {
     const today = tableData[i]
@@ -277,7 +278,7 @@ function MaxMinInternal(props: {
   const [tableData, setTableData] = useState([])
   useEffect(() => {
     setTableData(
-      prepareTableData([...props.tableData], earnings.data, onlyNearEarnings)
+      prepareTableData([...props.tableData], earnings.data, onlyNearEarnings),
     )
   }, [onlyNearEarnings, earnings.hasEarnings])
   const sd1 =

@@ -1,8 +1,9 @@
 import React from 'react'
-import Layout from '../../components/layout'
+
 import ImageAndText from '../../components/image-and-text'
-import V3container from '../../components/v3-container'
+import Layout from '../../components/layout'
 import PageHeader from '../../components/page-header'
+import V3container from '../../components/v3-container'
 
 export default function RecipesPage(props) {
   return (

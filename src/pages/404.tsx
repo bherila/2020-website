@@ -1,5 +1,7 @@
+import React from 'react'
+import { Col, Container, Row } from 'reactstrap'
+
 import Layout from '../components/layout'
-import { Container, Row, Col } from 'reactstrap'
 
 export default function NotFound() {
   return (

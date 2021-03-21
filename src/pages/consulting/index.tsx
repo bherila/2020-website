@@ -1,6 +1,7 @@
 import React from 'react'
-import Layout from '../../components/layout'
+
 import ImageAndText from '../../components/image-and-text'
+import Layout from '../../components/layout'
 import PageHeader from '../../components/page-header'
 
 export default function ConsultingPage(props) {

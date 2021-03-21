@@ -1,12 +1,12 @@
-import React, { useState } from 'react'
 import Button from 'devextreme-react/button'
 import DataGrid, { Editing } from 'devextreme-react/data-grid'
-import { Container, Row, Col } from 'reactstrap'
+import React, { useState } from 'react'
+import { Col, Container, Row } from 'reactstrap'
 
 function parsePayslip(str): any {
   const res: any = {}
   const dates = /(Benjamin Herila).*?([/\d]{10})\s+([/\d]{10})\s*([/\d]{10})/.exec(
-    str
+    str,
   )
   if (dates) {
     res['Period begin'] = dates[2]
@@ -34,8 +34,8 @@ function parsePayslip(str): any {
     .split('\n')
     .map((line) =>
       /(Performance Bonus|SEVER|Holiday|Salary|(?:Non-Taxable )?Stipend)[^.]+\.\d{2,6}\s+([\d,]+\.\d{2,6})\s+([\d,]+\.\d{2})/i.exec(
-        line
-      )
+        line,
+      ),
     )
     .filter((x) => !!x)
   for (const match of r2) {
@@ -72,7 +72,17 @@ export function NewPayslip(props: { onSubmit?: (any) => void }) {
   )
 }
 
-export default function Employer({ name, payslips, setPayslips }) {
+interface EmployerProps {
+  name: string
+  payslips: any[]
+  setPayslips: (payslips: any[]) => void
+}
+
+export default function Employer({
+  name,
+  payslips,
+  setPayslips,
+}: EmployerProps) {
   return (
     <Container fluid>
       <Row>

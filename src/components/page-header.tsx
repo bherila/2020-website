@@ -1,8 +1,12 @@
-import React from 'react'
-import V3container from './v3-container'
 import Head from 'next/head'
+import React from 'react'
 
-export default function PageHeader({ text }) {
+import V3container from './v3-container'
+interface HeaderProps {
+  text: string
+}
+
+export default function PageHeader({ text }: HeaderProps) {
   return (
     <V3container>
       <Head>

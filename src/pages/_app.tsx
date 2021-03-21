@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react'
 import Head from 'next/head'
+import React, { useEffect } from 'react'
 
 declare let DocumentTouch
 declare let WebFont
 
-export default function App({ Component, pageProps }) {
+export default function App({ Component, pageProps }: any) {
   useEffect(() => {
     if (typeof document !== 'undefined' && typeof window !== 'undefined') {
       WebFont.load({

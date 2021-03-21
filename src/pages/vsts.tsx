@@ -1,11 +1,11 @@
-import React from 'react'
+import * as azdev from 'azure-devops-node-api'
+import { IncomingMessage } from 'http'
 import {
   GetServerSideProps,
   InferGetServerSidePropsType,
   NextPageContext,
 } from 'next'
-import { IncomingMessage } from 'http'
-import * as azdev from 'azure-devops-node-api'
+import React from 'react'
 
 /*
 {
@@ -61,7 +61,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         const tokenHandler = azdev.getPersonalAccessTokenHandler(token)
         const connection = new azdev.WebApi(
           'https://ucellar.visualstudio.com/',
-          tokenHandler
+          tokenHandler,
         )
         const parts = responseData.split(' ')
         if (!parts[0]) {
@@ -76,7 +76,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           const res = await workItemApi.updateWorkItem(
             null,
             patchDocument,
-            workItemId
+            workItemId,
           )
           responseData = 'Updated ' + res.url + ' 😎'
           handled = true
