@@ -1,7 +1,7 @@
 import React from 'react'
 
 interface ContainerProps {
-  children: JSX.Element | string
+  children: any
 }
 
 export default function V3container({ children }: ContainerProps) {
