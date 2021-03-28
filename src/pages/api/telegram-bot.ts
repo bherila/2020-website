@@ -72,14 +72,15 @@ async function configureBot(webhookUri: string): Promise<TelegramBot> {
 
 let bot: TelegramBot | null = null
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  const url = 'https://' + req.headers.host + req.url
   if (!bot) {
-    console.info(`Starting bot on ${req.url}`)
-    bot = await configureBot(req.url)
+    console.info(`Starting bot on ${url}`)
+    bot = await configureBot(url)
   }
   if (req.method === 'POST') {
     bot.processUpdate(req.body)
   } else if (req.method == 'GET') {
-    res.json('Bot started on ' + req.url)
+    res.json('Bot started on ' + url)
     res.status(200)
   } else {
     res.json('Bad Request')
