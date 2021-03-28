@@ -35,7 +35,7 @@ const staticBot = (async () => {
 
     //call create task api
     phabricatorCtrl
-      .creatTask(reqParams)
+      .createTask(reqParams)
       .then(({ error_code, message }) => {
         if (error_code) {
           bot.sendMessage(chatId, 'Error occurred: ' + error_code)

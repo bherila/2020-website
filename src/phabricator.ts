@@ -25,7 +25,7 @@ interface CreateTaskResult {
   error_code?: string
 }
 
-export async function creatTask(taskData): Promise<CreateTaskResult> {
+export async function createTask(taskData): Promise<CreateTaskResult> {
   const url = `${phabricatorURI}/maniphest.createtask`
   const user = userMap.find((item) => item.telegramUser == taskData.username)
   const body = {
