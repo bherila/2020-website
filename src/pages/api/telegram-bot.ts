@@ -79,7 +79,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     bot.processUpdate(req.body)
   } else if (req.method == 'GET') {
-    res.json('Bot started')
+    res.json('Bot started on ' + req.url)
     res.status(200)
   } else {
     res.json('Bad Request')
