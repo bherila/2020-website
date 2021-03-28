@@ -22,28 +22,52 @@ const userMap = [
 ]
 
 module.exports = {
-	creatTask
+	creatTask,
+	myTasks
 }
 
 
 
 function creatTask(taskData,callback){
 	const url = 'https://phab.bherila.net/api/maniphest.createtask';
+	var isGivenUsernameFound=true;
 
 	const body = {
 		'api.token' :phabricatorToken,
 		'title' : taskData.title
 	}
 
-	const user=userMap.filter(item=>(item.telegramUser==taskData.username));
-	if(user && user.length>0){
-		body.ownerPHID=user[0].phabricatorPHID;
-	}	
+	const assigneeUser=userMap.filter(item=>(item.telegramUser==taskData.assigneeUsername));
+	//if assingee found
+	if(assigneeUser && assigneeUser.length>0){
+		body.ownerPHID=assigneeUser[0].phabricatorPHID;
+		taskData.phabricatorUser=assigneeUser[0].phabricatorUser
+		taskData.assigneeUsername='@'+taskData.assigneeUsername;
+	}else{
+		isGivenUsernameFound=false;
+		//check with sender username
+		const senderUser=userMap.filter(item=>(item.telegramUser==taskData.senderUsername));
+		if(senderUser && senderUser.length>0){
+			body.ownerPHID=senderUser[0].phabricatorPHID;
+			taskData.phabricatorUser=senderUser[0].phabricatorUser;
+			taskData.assigneeUsername='sender';
+		}
+	}		
 
 	got.post(url,{form:body}).then(success=>{
 		const response = JSON.parse(success.body);
 		if(response.result){
-			return	callback(false,{message:'Task has been successfully created!'});
+			var taskUrl=response.result.uri;
+
+			var completeMessage = "OK! I created this task in Phabricator and assigned it to '"+taskData.phabricatorUser+"' ("+taskData.assigneeUsername+") ";
+			if(!isGivenUsernameFound){
+				completeMessage+"because @"+taskData.assigneeUsername+" is not a valid assignee."
+			}
+			var linkPart="\n <a href='"+taskUrl+"'>Review the design mock-ups</a>";
+
+			completeMessage=completeMessage+linkPart;
+
+			return	callback(false,{message: completeMessage});
 		}else{
 			console.log("success.body.error_code",response.error_code)
 			return callback(true,{error_code:response.error_code});
@@ -56,4 +80,46 @@ function creatTask(taskData,callback){
 		console.log("catch block error in create task",error)
 	})
 
+}
+
+function myTasks(taskData,callback){
+
+	/*$ curl https://phab.bherila.net/api/maniphest.search \
+	-d api.token=api-token \
+	-d constraints[assigned][0]=PHID-USER-uxe5wuymmopwrrvaroud \
+	-d constraints[statuses][0]=open*/
+	
+	const url = 'https://phab.bherila.net/api/maniphest.search';
+	var body = {
+		'api.token' :phabricatorToken,
+		'constraints[statuses][0]':'open'
+	}
+	const user=userMap.filter(item=>(item.telegramUser==taskData.username));
+	var completeMessage='No task found.';
+	if(user && user.length>0){
+		body['constraints[assigned][0]'] = user[0].phabricatorPHID;
+		got.post(url,{form:body}).then(success=>{
+			var  response=JSON.parse(success.body);
+			var taskList='';
+
+			if(response.result){
+
+				for(var i in response.result.data){
+					taskList+='\n <a href="https://phab.bherila.net/T'+response.result.data[i].id+'">'+response.result.data[i].fields.name+'</a>';
+				}
+				if(taskList!=''){
+					completeMessage='Here are your open tasks. \n'+taskList;
+				}
+				return	callback(false,{message: completeMessage});
+
+			}else{
+				return callback(true,{error_code:response.error_code});
+			}
+			
+		})
+
+	}else{
+		return	callback(false,{message: completeMessage});
+
+	}
 }

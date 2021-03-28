@@ -24,7 +24,8 @@ bot.onText(/\/fileatask/, (msg, match) => {
     var taskName = messageString.substr(messageString.indexOf(' ')+1);//match.input.split(' ')[1];
     var senderUsername = msg.from.username; //default assignee is sender
 
-    if (taskName === undefined) {
+   
+    if (!taskName || taskName.indexOf(' ')<0){
         bot.sendMessage(
             chatId,
             'Please provide task name',
@@ -32,16 +33,21 @@ bot.onText(/\/fileatask/, (msg, match) => {
         return;
     }
 
+    var reqParams={
+      title:taskName,
+      assigneeUsername:senderUsername,
+      senderUsername:senderUsername
+    }
+
    //check if @username given
-   const username = taskName.split('@')[1];
-   
+   const username = taskName.split('@')[1];   
    if(username){
-       senderUsername = username;
-       taskName=taskName.split('@')[0];
+       reqParams.assigneeUsername = username;
+       reqParams.taskName=taskName.split('@')[0];  
    }
 
    //call create task api
-   phabricatorCtrl.creatTask({title:taskName,username:senderUsername},function(error,message){
+   phabricatorCtrl.creatTask(reqParams,function(error,message){
        if(error){
            bot.sendMessage(
                chatId,
@@ -53,9 +59,35 @@ bot.onText(/\/fileatask/, (msg, match) => {
        bot.sendMessage(
            chatId,
            message.message,
+           {parse_mode: 'HTML'}
            );
        return;
    });
 
 
 });
+
+// Listener (handler) for telegram's /mytasks event
+bot.onText(/\/mytasks/, (msg, match) => {
+    const chatId = msg.chat.id;
+    const senderUsername = msg.from.username; //default assignee is sender
+
+   //call list task api
+   phabricatorCtrl.myTasks({username:senderUsername},function(error,message){
+       if(error){
+           bot.sendMessage(
+               chatId,
+               'Error occured : '+message.error_code
+               );
+           return;
+       }
+
+       bot.sendMessage(
+           chatId,
+           message.message,
+           {parse_mode: 'HTML'}
+           );
+       return;
+   });
+
+})
