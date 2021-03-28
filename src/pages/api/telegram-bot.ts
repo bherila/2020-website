@@ -73,7 +73,7 @@ async function configureBot(webhookUri: string): Promise<TelegramBot> {
 let bot: TelegramBot | null = null
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const url = 'https://' + req.headers.host + req.url
-  if (!bot) {
+  if (bot == null) {
     console.info(`Starting bot on ${url}`)
     bot = await configureBot(url)
   }
