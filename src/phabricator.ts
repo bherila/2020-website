@@ -1,5 +1,5 @@
 import got from 'got'
-const phabricatorURI = process.env.PHABRICATOR_URI || 'https://phab.bherila.net/api'
+const phabricatorURI = process.env.PHABRICATOR_URI
 const phabricatorToken = process.env.PHABRICATOR_API_TOKEN
 const userMap = [
   {

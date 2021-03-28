@@ -5,13 +5,17 @@ import TelegramBot from 'node-telegram-bot-api'
 import * as phabricatorCtrl from '../../phabricator'
 
 const config = {
-  token: process.env.TOKEN,
+  token: process.env.TELEGRAM_BOT_TOKEN,
 }
 
-const staticBot = (async () => {
+async function configureBot(webhookUri: string): Promise<TelegramBot> {
   const bot = new TelegramBot(config.token)
-  await bot.setWebHook('')
-
+  try {
+    await bot.setWebHook(webhookUri)
+  } catch (err) {
+    console.error(err)
+    return bot
+  }
   // Listener (handler) for telegram's /fileatask event
   // 'msg' is the received Message from Telegram
   // 'match' is the result of executing the regexp above on the message text
@@ -64,12 +68,23 @@ const staticBot = (async () => {
   })
 
   return bot
-})()
+}
 
+let bot: TelegramBot | null = null
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const aliveBot = await staticBot
-  aliveBot.processUpdate(req.body)
-  res.status(200)
+  if (!bot) {
+    console.info(`Starting bot on ${req.url}`)
+    bot = await configureBot(req.url)
+  }
+  if (req.method === 'POST') {
+    bot.processUpdate(req.body)
+  } else if (req.method == 'GET') {
+    res.json('Bot started')
+    res.status(200)
+  } else {
+    res.json('Bad Request')
+    res.status(400)
+  }
 }
 
 export default handler
