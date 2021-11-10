@@ -5,16 +5,16 @@ import { Col, Container, Row } from 'reactstrap'
 
 function parsePayslip(str): any {
   const res: any = {}
-  const dates = /(Benjamin Herila).*?([/\d]{10})\s+([/\d]{10})\s*([/\d]{10})/.exec(
-    str,
-  )
+  const dates =
+    /(Benjamin Herila).*?([/\d]{10})\s+([/\d]{10})\s*([/\d]{10})/.exec(str)
   if (dates) {
     res['Period begin'] = dates[2]
     res['Period end'] = dates[3]
     res['Pay date'] = dates[4]
   }
 
-  const regex = /\s+((?:Transit FSA|Performance Bonus|SEVER|OASDI|Medicare|Federal Withholding|State Tax - [A-Z]{2}|CA VDI|401\(k\)|HSA|TM Travel Coupon Q\d|LTD|Medical|SF|STD|VISION)[^\d]*)([\d,]+\.\d{2}).*?([\d,]+\.\d{2})/gi
+  const regex =
+    /\s+((?:Transit FSA|Performance Bonus|SEVER|OASDI|Medicare|Federal Withholding|State Tax - [A-Z]{2}|CA VDI|401\(k\)|HSA|TM Travel Coupon Q\d|LTD|Medical|SF|STD|VISION)[^\d]*)([\d,]+\.\d{2}).*?([\d,]+\.\d{2})/gi
   const matches = str
     .split('\n')
     .map((line) => regex.exec(line))
