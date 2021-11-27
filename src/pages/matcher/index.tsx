@@ -5,7 +5,34 @@ import { v4 as uuidv4 } from 'uuid'
 import moment from 'moment'
 import Layout from '../../components/layout'
 import _ from 'lodash'
-import { match } from 'assert'
+import CurrencyDisplay from '../../components/CurrencyDisplay'
+
+type OptionType = 'Call' | 'Put' | '?'
+class StockOptionSchema {
+  symbol: string
+  maturity: moment.Moment
+  type: OptionType
+
+  static readonly Invalid: StockOptionSchema = null
+  static readonly TypeMap = new Map<string, OptionType>([
+    ['call', 'Call'],
+    ['put', 'Put'],
+  ])
+  static tryParse(description: string): StockOptionSchema | null {
+    // AAPL Feb 12 '21 $160 Call
+    const expr = /([A-Z]+ ([^$]+)\$(\d\.+) (Call|Put))/gi
+    const match = description.match(expr)
+    if (match) {
+      const x = new StockOptionSchema()
+      x.symbol = match[0]
+      x.maturity = moment(match[1])
+      x.type = StockOptionSchema.TypeMap.get(match[2].toLowerCase()) ?? '?'
+      return x
+    } else {
+      return StockOptionSchema.Invalid
+    }
+  }
+}
 
 interface EtradeSchema {
   id: string
@@ -18,6 +45,7 @@ interface EtradeSchema {
   Price: number
   Commission: number
   Description: string
+  StockOption: StockOptionSchema | null
 }
 
 function parseEtrade(tsv: string): EtradeSchema[] {
@@ -37,7 +65,8 @@ function parseEtrade(tsv: string): EtradeSchema[] {
           Amount: parseFloat(cols[i++]),
           Price: parseFloat(cols[i++]),
           Commission: parseFloat(cols[i++]),
-          Description: cols[i++],
+          Description: cols[i],
+          StockOption: StockOptionSchema.tryParse(cols[i]),
         }
         return res
       } catch (err) {
@@ -130,6 +159,41 @@ function NulledTransactions(props: { tableData: EtradeSchema[] }) {
 
   return (
     <Container fluid={true}>
+      <Row>
+        <Col xs={4}>
+          <Table size="xs">
+            <tbody style={{ color: '#fff' }}>
+              {_.sortBy(Object.entries(groups), (group) => group[0]).map(
+                (entry) => {
+                  return (
+                    <tr>
+                      <td>{entry[0]}</td>
+                      <td>${_.sumBy(entry[1], (e) => e.Amount).toFixed(2)}</td>
+                      <Table size="xs">
+                        <tbody style={{ color: '#fff' }}>
+                          {entry[1].map((item, j) => (
+                            <tr key={j}>
+                              <td>{item.TransactionDate}</td>
+                              <td>{item.TransactionType}</td>
+                              <td>{item.Quantity}</td>
+                              <td>
+                                <CurrencyDisplay
+                                  digits={2}
+                                  value={item.Amount}
+                                />
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    </tr>
+                  )
+                },
+              )}
+            </tbody>
+          </Table>
+        </Col>
+      </Row>
       <Row>
         <Col xs={3}>
           <div>
