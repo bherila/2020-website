@@ -6,12 +6,20 @@ import moment from 'moment'
 import Layout from '../../components/layout'
 import _ from 'lodash'
 import CurrencyDisplay from '../../components/CurrencyDisplay'
+import cn from "classnames";
+import textStyle from '../../components/TextColors.module.css'
+import currency from 'currency.js'
+
+function sum(values: currency[]): currency {
+  return values.reduce((prev, cur) => prev.add(cur), currency(0))
+}
 
 type OptionType = 'Call' | 'Put' | '?'
 class StockOptionSchema {
-  symbol: string
-  maturity: moment.Moment
-  type: OptionType
+  readonly symbol: string
+  readonly maturity: moment.Moment
+  readonly type: OptionType
+  readonly strike: currency
 
   static readonly Invalid: StockOptionSchema = null
   static readonly TypeMap = new Map<string, OptionType>([
@@ -20,14 +28,15 @@ class StockOptionSchema {
   ])
   static tryParse(description: string): StockOptionSchema | null {
     // AAPL Feb 12 '21 $160 Call
-    const expr = /([A-Z]+ ([^$]+)\$(\d\.+) (Call|Put))/gi
+    const expr = /([A-Z]+)\s+([^$]+)(\$[\d.]+) (Call|Put)/i
     const match = description.match(expr)
     if (match) {
-      const x = new StockOptionSchema()
-      x.symbol = match[0]
-      x.maturity = moment(match[1])
-      x.type = StockOptionSchema.TypeMap.get(match[2].toLowerCase()) ?? '?'
-      return x
+      return {
+        symbol: match[1],
+        maturity: moment(match[2]),
+        strike: currency(match[3]),
+        type: StockOptionSchema.TypeMap.get(match[4].toLowerCase()) ?? '?'
+      }
     } else {
       return StockOptionSchema.Invalid
     }
@@ -40,10 +49,10 @@ interface EtradeSchema {
   TransactionType: string
   SecurityType: string
   Symbol: string
-  Quantity: number
-  Amount: number
-  Price: number
-  Commission: number
+  Quantity: currency
+  Amount: currency
+  Price: currency
+  Commission: currency
   Description: string
   StockOption: StockOptionSchema | null
 }
@@ -54,19 +63,18 @@ function parseEtrade(tsv: string): EtradeSchema[] {
     .map((col) => {
       try {
         const cols = col.split('\t')
-        let i = 0
         let res: EtradeSchema = {
           id: uuidv4(),
-          TransactionDate: moment(cols[i++]).format('YYYY-MM-DD'),
-          TransactionType: cols[i++],
-          SecurityType: cols[i++],
-          Symbol: cols[i++],
-          Quantity: parseFloat(cols[i++]),
-          Amount: parseFloat(cols[i++]),
-          Price: parseFloat(cols[i++]),
-          Commission: parseFloat(cols[i++]),
-          Description: cols[i],
-          StockOption: StockOptionSchema.tryParse(cols[i]),
+          TransactionDate: moment(cols[0]).format('YYYY-MM-DD'),
+          TransactionType: cols[1],
+          SecurityType: cols[2],
+          Symbol: cols[3],
+          Quantity: currency(cols[4] || 0),
+          Amount: currency(cols[5] || 0),
+          Price: currency(cols[6] || 0),
+          Commission: currency(cols[7] || 0),
+          Description: cols[8],
+          StockOption: StockOptionSchema.tryParse(cols[8]),
         }
         return res
       } catch (err) {
@@ -102,7 +110,12 @@ function ImportData(props: { onImport: (data: EtradeSchema[]) => void }) {
   )
 }
 
-function NulledTransactions(props: { tableData: EtradeSchema[] }) {
+interface Options {
+  showUnitPrice: boolean
+  showQty: boolean
+}
+
+function NulledTransactions(props: { tableData: EtradeSchema[], options: Options }) {
   const source: EtradeSchema[] = _.orderBy(props.tableData, [
     'TransactionDate',
     'TransactionType',
@@ -165,27 +178,59 @@ function NulledTransactions(props: { tableData: EtradeSchema[] }) {
             <tbody style={{ color: '#fff' }}>
               {_.sortBy(Object.entries(groups), (group) => group[0]).map(
                 (entry) => {
+                  const subTotal = sum(entry[1].map(x => x.Amount))
+                  const rowClass = cn(subTotal.value < 0 ? textStyle.redBg : null);
+                  const firstEntry = entry[1][0]
                   return (
-                    <tr>
-                      <td>{entry[0]}</td>
-                      <td>${_.sumBy(entry[1], (e) => e.Amount).toFixed(2)}</td>
+                    <tr key={entry[0]} className={rowClass}>
+                      <td>{entry[0]}{firstEntry.StockOption?.maturity?.format('YYYY-MM-DD')}</td>
+                      <td><CurrencyDisplay value={subTotal} digits={2} /></td>
+                      <td>
                       <Table size="xs">
                         <tbody style={{ color: '#fff' }}>
-                          {entry[1].map((item, j) => (
-                            <tr key={j}>
-                              <td>{item.TransactionDate}</td>
-                              <td>{item.TransactionType}</td>
-                              <td>{item.Quantity}</td>
-                              <td>
-                                <CurrencyDisplay
-                                  digits={2}
-                                  value={item.Amount}
-                                />
-                              </td>
-                            </tr>
-                          ))}
+                          {entry[1].map((item, j) => {
+                            let check = currency(item.Price)
+                            check = check.multiply(item.Quantity)
+                            check = check.multiply(100)
+                            check = check.add(item.Commission)
+                            check = check.add(item.Amount)
+
+                            return (
+                              <tr key={j} className={rowClass}>
+                                <td>{item.TransactionDate}</td>
+                                {/*<td>{item.TransactionType}</td>*/}
+                                {!props.options?.showQty ? null : <><td>{item.Quantity}</td>
+                                <td>
+                                  <CurrencyDisplay
+                                    digits={4}
+                                    value={item.Price}
+                                  />
+                                </td>
+                                <td>
+                                  <CurrencyDisplay
+                                    digits={4}
+                                    value={item.Commission}
+                                  />
+                                </td>
+                                </>}
+                                <td>
+                                  <CurrencyDisplay
+                                    digits={2}
+                                    value={item.Amount}
+                                  />
+                                </td>
+                                <td>
+                                  {Math.abs(check.value) < 0.01 ? '✅' : <CurrencyDisplay
+                                    digits={6}
+                                    value={check}
+                                    />}
+                                </td>
+                              </tr>
+                            )
+                          })}
                         </tbody>
                       </Table>
+                      </td>
                     </tr>
                   )
                 },
@@ -203,14 +248,14 @@ function NulledTransactions(props: { tableData: EtradeSchema[] }) {
             {_.sortBy(Object.entries(groups), (group) => group[0]).map(
               (entry) => {
                 return (
-                  <li>
+                  <li key={entry[0]}>
                     {entry[0]} -- subtotal = $
-                    {_.sumBy(entry[1], (e) => e.Amount).toFixed(2)}
+                    <CurrencyDisplay value={sum(entry[1].map(x => x.Amount))} digits={2} />
                     <ul>
                       {entry[1].map((item, j) => (
                         <li key={j}>
                           {item.TransactionDate} ... {item.TransactionType} ...
-                          Qty {item.Quantity} ... ${item.Amount}
+                          Qty {item.Quantity} ... <CurrencyDisplay value={item.Amount} digits={2} />
                         </li>
                       ))}
                     </ul>
@@ -222,12 +267,12 @@ function NulledTransactions(props: { tableData: EtradeSchema[] }) {
         </Col>
         <Col xs={3}>
           Unmatched (working on the logic... TODO: handle expiry), total = $
-          {_.sumBy(unmatched, (e) => e.Amount).toFixed(2)}
+          <CurrencyDisplay value={sum(unmatched.map(x => x.Amount))} digits={2} />
           <ol>
-            {unmatched.map((row) => (
-              <li>
+            {unmatched.map((row, i) => (
+              <li key={i}>
                 {row.TransactionDate} ... {row.TransactionType}{' '}
-                {row.Description} ... ${row.Amount.toFixed(2)}
+                {row.Description} ... $<CurrencyDisplay value={row.Amount} digits={2} />
               </li>
             ))}
           </ol>
@@ -235,12 +280,12 @@ function NulledTransactions(props: { tableData: EtradeSchema[] }) {
 
         <Col xs={3}>
           Other i.e. cash, bonus, interest, xfers, total = $
-          {_.sumBy(cash, (e) => e.Amount).toFixed(2)}
+          <CurrencyDisplay value={sum(cash.map(x => x.Amount))} digits={2} />
           <ol>
-            {cash.map((row) => (
-              <li>
+            {cash.map((row, i) => (
+              <li key={i}>
                 {row.TransactionDate} ... {row.Description} ... $
-                {row.Amount.toFixed(2)}
+                <CurrencyDisplay value={row.Amount} digits={2} />
               </li>
             ))}
           </ol>
@@ -277,22 +322,15 @@ export default function render() {
                 <div>
                   <ul>
                     <li>
-                      Net Commission: $
-                      {tableData
-                        .map((row) => row.Commission)
-                        .reduce((a, b) => a + b, 0)
-                        .toFixed(2)}
+                      Net Commission: $<CurrencyDisplay value= {sum(tableData.map((row) => row.Commission))} digits={2} />
                     </li>
                     <li>
-                      Net Amount: $
-                      {tableData
-                        .map((row) => row.Amount)
-                        .reduce((a, b) => a + b, 0)
-                        .toFixed(2)}
+                      Net Amount:
+                      <CurrencyDisplay value= {sum(tableData.map((row) => row.Amount))} digits={2} />
                     </li>
                   </ul>
                 </div>
-                <NulledTransactions tableData={tableData} />
+                <NulledTransactions tableData={tableData} options={{showQty: false, showUnitPrice: false}} />
                 <h1>All Transactions</h1>
                 <DataGrid
                   dataSource={tableData}
