@@ -1,0 +1,9 @@
+.toolButton {
+  border: 1px solid gray;
+  font-size: 10pt;
+  padding: 3px;
+  margin: 1px;
+  background-color: #000000;
+  color: #ffffff;
+  cursor: pointer;
+}

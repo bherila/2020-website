@@ -16,9 +16,7 @@ import Chart, {
 import CheckBox from 'devextreme-react/check-box'
 import DataGrid, { Column } from 'devextreme-react/data-grid'
 import Form, { Item } from 'devextreme-react/form'
-import moment from 'moment'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { createEntrypoints } from 'next/dist/build/entries'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { Col, Container, Row } from 'reactstrap'
@@ -178,7 +176,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 export default function MaxMin({
   tableData,
-  error,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter()
   const symbol = router.query.symbol
@@ -205,7 +202,7 @@ export default function MaxMin({
     return (
       <Layout bootstrap hideNav>
         <p>Waiting for quote</p>
-        <button onClick={(e) => setSkip(true)}>Skip</button>
+        <button onClick={() => setSkip(true)}>Skip</button>
       </Layout>
     )
   }

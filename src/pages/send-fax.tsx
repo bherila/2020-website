@@ -8,7 +8,7 @@ import * as RS from 'reactstrap'
 import Layout from '../components/layout'
 
 async function submitForm(to: string, pw: string, selectedFiles: File[]) {
-  const fileAsDataUrl = new Promise<string>((resolve, reject) => {
+  const fileAsDataUrl = new Promise<string>((resolve) => {
     const reader = new FileReader()
     reader.onload = (e) => {
       if (typeof e.target.result === 'string') {
@@ -18,7 +18,7 @@ async function submitForm(to: string, pw: string, selectedFiles: File[]) {
     reader.readAsDataURL(selectedFiles[0])
   })
 
-  const response = await fetch('/api/twilio', {
+  return await fetch('/api/twilio', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

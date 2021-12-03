@@ -1,5 +1,7 @@
-﻿import textColor from './TextColors.module.css'
-import currency from "currency.js";
+﻿import currency from 'currency.js'
+import React from 'react'
+
+import textColor from './TextColors.module.css'
 
 export default function CurrencyDisplay({
   value,
@@ -15,7 +17,7 @@ export default function CurrencyDisplay({
       return <span>${value.toFixed(digits)}</span>
     }
   } else if (value != null) {
-    return <span>{value.format({precision: digits, symbol: '$'})}</span>
+    return <span>{value.format({ precision: digits, symbol: '$' })}</span>
   } else {
     return null
   }
