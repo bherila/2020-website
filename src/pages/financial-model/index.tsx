@@ -11,7 +11,7 @@ interface BrexSchema {
 
 export default function Render(props: {}) {
   const [bankCsv, setBankCsv] = useState('')
-  const [parsedData, setParsedData] = useState<BrexSchema[]>(null);
+  const [parsedData, setParsedData] = useState<BrexSchema[]>(null)
   useEffect(() => {
     if (parsedData == null) {
       setParsedData(loadDataFromStorage())

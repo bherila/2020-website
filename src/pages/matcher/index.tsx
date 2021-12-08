@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import currency from 'currency.js'
 import DataGrid, { Column } from 'devextreme-react/data-grid'
+import _ from 'lodash'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Col, Container, Row, Table } from 'reactstrap'
 
@@ -10,11 +11,11 @@ import Layout from '../../components/layout'
 import {
   EtradeSchema,
   matchAcrossAccounts,
+  MatchedTransaction,
   parseEtrade,
   sum,
 } from '../../components/matcher'
 import textStyle from '../../components/TextColors.module.css'
-import _ from 'lodash'
 
 const cellStyle = {
   border: 'none', // '1px solid #333'
@@ -32,42 +33,56 @@ function ImportData(props: { onImport: (data: EtradeSchema[]) => void }) {
     }
   }, [importContent])
   return (
-    <div style={{border: '1px solid gray', padding: '1em'}}>
+    <div style={{ border: '1px solid gray', padding: '1em' }}>
       <Container fluid>
         <Row>
           <Col xs={12}>
             <h1>Import</h1>
             <p>
               type
-              <select value={importType} onChange={(e) => setImportType(e.currentTarget.value)}>
-                {importTypes.map(x => <option value={x}>{x}</option>)}
+              <select
+                value={importType}
+                onChange={(e) => setImportType(e.currentTarget.value)}
+              >
+                {importTypes.map((x) => (
+                  <option value={x}>{x}</option>
+                ))}
               </select>
             </p>
-            {importType === 'etrade' && <>
-              <p>etrade instructions</p>
-              <ol>
-                <li>transactions</li>
-                <li>download transactions</li>
-                <li>choose date range i.e. "from" and "to"</li>
-              </ol>
-              <p>data does not contain pass-through exchange and regulatory fees</p>
-            </>}
-            {importType === 'ib' && <>
-              <p>interactive brokers instructions</p>
-              <ol>
-                <li>coming soon</li>
-              </ol>
-           </>}
-            {importType === 'fidelity' && <>
-              <p>fidelity instructions</p>
-              <ol>
-                <li>coming soon</li>
-              </ol>
-            </>}
+            {importType === 'etrade' && (
+              <>
+                <p>etrade instructions</p>
+                <ol>
+                  <li>transactions</li>
+                  <li>download transactions</li>
+                  <li>choose date range i.e. "from" and "to"</li>
+                </ol>
+                <p>
+                  data does not contain pass-through exchange and regulatory
+                  fees
+                </p>
+              </>
+            )}
+            {importType === 'ib' && (
+              <>
+                <p>interactive brokers instructions</p>
+                <ol>
+                  <li>coming soon</li>
+                </ol>
+              </>
+            )}
+            {importType === 'fidelity' && (
+              <>
+                <p>fidelity instructions</p>
+                <ol>
+                  <li>coming soon</li>
+                </ol>
+              </>
+            )}
             <div>
               <textarea
                 className={buttonStyle.toolButton}
-                style={{width: '100%'}}
+                style={{ width: '100%' }}
                 value={importContent}
                 onChange={(e) => setImportContent(e.currentTarget.value)}
                 rows={20}
@@ -102,55 +117,54 @@ function NulledTransactions(props: {
   onDelAccount: (key: Account) => void
 }) {
   const { accounts } = props
-  const accountIDs = accounts.map((a) => a.accountID)
   const [showCash, setShowCash] = useState(false)
   const [showChecks, setShowChecks] = useState(true)
   const res = useMemo(
     () => matchAcrossAccounts(props.accounts),
     [props.accounts],
   )
-  // const showChecksComponent = useMemo(
-  //   () => (
-  //     <label>
-  //       <input
-  //         type="checkbox"
-  //         onChange={() => setShowChecks(!showChecks)}
-  //         checked={showChecks}
-  //       />
-  //       {'Check transaction totals & fees'}
-  //     </label>
-  //   ),
-  //   [showChecks],
-  // )
-  // const showCashComponent = useMemo(
-  //   () => (
-  //     <label>
-  //       <input
-  //         type="checkbox"
-  //         onChange={() => setShowCash(!showCash)}
-  //         checked={showCash}
-  //       />
-  //       {'Show cash'}
-  //     </label>
-  //   ),
-  //   [showCash],
-  // )
+
+  const capGains = new Map<number, currency>()
+  Object.values(res.overallResult).forEach((calc) =>
+    calc.accountMatches.forEach((accountTransactions) =>
+      accountTransactions.forEach((x) =>
+        x.CapGain?.forEach((gain, year) =>
+          capGains.set(year, (capGains.get(year) ?? currency(0)).add(gain)),
+        ),
+      ),
+    ),
+  )
+  const capGainsElements = []
+  capGains.forEach((amount, year) =>
+    capGainsElements.push(
+      <div key={year}>
+        {year} = <CurrencyDisplay value={amount} digits={2} />
+      </div>,
+    ),
+  )
 
   return (
     <Container fluid={true}>
       <Row>
         <Col xs={12}>
-          {/*{showChecksComponent}*/}
-          <div style={{marginBottom: '1em', ...cellStyle}}>
-            Net:
-            <CurrencyDisplay value={res.grandTotal} digits={4} />
+          <div style={{ marginBottom: '1em', ...cellStyle }}>
+            {capGainsElements}
+            <div>
+              Total:
+              <CurrencyDisplay value={res.grandTotal} digits={4} />
+            </div>
           </div>
-          <Table size="sm" style={{width: 'auto'}}>
+          <Table size="sm" style={{ width: 'auto' }}>
             <thead>
               <tr>
-                <th style={{ marginTop: '0.2em', color: '#fff' }}>Description</th>
+                <th style={{ marginTop: '0.2em', color: '#fff' }}>
+                  Description
+                </th>
                 {accounts.map((acc) => (
-                  <th key={acc.accountID} style={{ marginTop: '0.2em', color: '#fff' }}>
+                  <th
+                    key={acc.accountID}
+                    style={{ marginTop: '0.2em', color: '#fff' }}
+                  >
                     <b>{acc.accountID}</b>
                     {' - '}
                     <button
@@ -181,17 +195,17 @@ function NulledTransactions(props: {
                   subTotal.value < 0 ? textStyle.redBg : null
                 return (
                   <tr key={key} className={defaultRowClass}>
-                    <td style={{ ...cellStyle , width: '280px'}}>
-                      {key}
-                      {/*{firstEntry.StockOption?.maturity?.format('YYYY-MM-DD')}*/}
-                    </td>
+                    <td style={{ ...cellStyle, width: '280px' }}>{key}</td>
                     {accounts.map((acc) => {
                       const matches = res.overallResult[key].accountMatches.get(
                         acc.accountID,
                       )
                       const netQty = sum(matches?.map((x) => x.Quantity))
                       return (
-                        <td key={acc.accountID} style={{paddingTop: 0, ...cellStyle}}>
+                        <td
+                          key={acc.accountID}
+                          style={{ paddingTop: 0, ...cellStyle }}
+                        >
                           {matches ? (
                             <TransactionList
                               transactions={matches}
@@ -210,28 +224,9 @@ function NulledTransactions(props: {
                         </td>
                       )
                     })}
-                    {/*<td align="right" style={{ ...cellStyle }}>*/}
-                    {/*  <CurrencyDisplay value={subTotal} digits={2} />*/}
-                    {/*</td>*/}
                   </tr>
                 )
               })}
-              {/*<tr>*/}
-              {/*  <td colSpan={1 + accounts.length}>*/}
-              {/*    Grand total -- excluding cash/transfers*/}
-              {/*  </td>*/}
-              {/*  <td style={{ marginTop: '0.2em' }}>*/}
-              {/*    <CurrencyDisplay value={res.grandTotal.subtract(res.overallResult.cash.total)} digits={2} />*/}
-              {/*  </td>*/}
-              {/*</tr>*/}
-              {/*<tr>*/}
-              {/*  <td colSpan={1 + accounts.length}>*/}
-              {/*    Grand total of everything (should be ~account balance if all records are imported)*/}
-              {/*  </td>*/}
-              {/*  <td style={{ marginTop: '0.2em' }}>*/}
-              {/*    <CurrencyDisplay value={res.grandTotal} digits={2} />*/}
-              {/*  </td>*/}
-              {/*</tr>*/}
             </tbody>
           </Table>
         </Col>
@@ -247,10 +242,11 @@ function TransactionList({
   showChecks,
 }: {
   rowClass: string
-  transactions: EtradeSchema[]
+  transactions: MatchedTransaction[]
   options: Options
   showChecks: boolean
 }) {
+  const showCapGain = false
   const [cb, setCb] = useState(0)
   return (
     <Table size="sm">
@@ -268,7 +264,9 @@ function TransactionList({
               {/*<td>{item.TransactionType}</td>*/}
               {!options?.showQty ? null : (
                 <>
-                  <td align="right" style={{...cellStyle, minWidth: '50px'}}>{item.Quantity}</td>
+                  <td align="right" style={{ ...cellStyle, minWidth: '50px' }}>
+                    {currency(item.Quantity).value}
+                  </td>
                   <td align="right" style={cellStyle}>
                     <CurrencyDisplay digits={4} value={item.Price} />
                   </td>
@@ -279,13 +277,16 @@ function TransactionList({
               )}
               {showChecks && (
                 <td align="right" style={cellStyle}>
-                  {Math.abs(check.value) - Math.abs(item.Fee?.value ?? 0) < 0.01 ? (
+                  {Math.abs(check.value) - Math.abs(item.Fee?.value ?? 0) <
+                  0.01 ? (
                     ' '
                   ) : (
-                    <span onClick={() => {
-                      //item.Fee = check.multiply(-1)
-                      //setCb(cb + 1)
-                    }}>
+                    <span
+                      onClick={() => {
+                        //item.Fee = check.multiply(-1)
+                        //setCb(cb + 1)
+                      }}
+                    >
                       <CurrencyDisplay digits={6} value={check.multiply(-1)} />
                     </span>
                   )}
@@ -294,9 +295,26 @@ function TransactionList({
               <td align="right" style={cellStyle}>
                 <CurrencyDisplay digits={2} value={item.Amount} />
               </td>
-              {j === transactions.length - 1 && <td style={{fontWeight: 'bold', ...cellStyle}} align="right">
-                <CurrencyDisplay value={sum(transactions.map(x => x.Amount))} digits={2} />
-              </td>}
+              {showCapGain && (
+                <td align="right" style={cellStyle}>
+                  {!item.CapGain
+                    ? 'null'
+                    : Array.from(item.CapGain.entries()).map((ent) => (
+                        <div key={ent[0]}>
+                          {ent[0]} ={' '}
+                          <CurrencyDisplay value={ent[1]} digits={2} />
+                        </div>
+                      ))}
+                </td>
+              )}
+              {j === transactions.length - 1 && (
+                <td style={{ fontWeight: 'bold', ...cellStyle }} align="right">
+                  <CurrencyDisplay
+                    value={sum(transactions.map((x) => x.Amount))}
+                    digits={2}
+                  />
+                </td>
+              )}
             </tr>
           )
         })}
@@ -340,7 +358,7 @@ export default function render() {
     [tableData],
   )
 
-  const sortedAccounts = _.sortBy(tableData, x => x.accountID);
+  const sortedAccounts = _.sortBy(tableData, (x) => x.accountID)
 
   return (
     <Layout bootstrap hideNav>
@@ -373,8 +391,9 @@ function loadAccountsFromStorage(): Account[] {
     typeof localStorage === 'undefined'
       ? []
       : JSON.parse(localStorage.getItem(STORAGE_KEY))
-  if (!data) return []
+  if (!data || !Array.isArray(data)) return []
   if (typeof (data[0] as Account).accountID === 'string') {
+    data.forEach((account: Account) => rehydrateCurrency(account.transactions))
     return data
   }
   if (typeof (data[0] as EtradeSchema).Description === 'string') {
@@ -383,13 +402,35 @@ function loadAccountsFromStorage(): Account[] {
       {
         accountID: 'default',
         color: textStyle.green,
-        transactions: data,
+        transactions: rehydrateCurrency(data),
       },
     ]
   } else {
     return []
   }
 }
+
+function rehydrateCurrency(rows: EtradeSchema[]) {
+  rows.forEach((row) => {
+    if (typeof row.Price === 'number') {
+      row.Price = currency(row.Price)
+    }
+    if (typeof row.Quantity === 'number') {
+      row.Quantity = currency(row.Quantity)
+    }
+    if (typeof row.Amount === 'number') {
+      row.Amount = currency(row.Amount)
+    }
+    if (typeof row.Fee === 'number') {
+      row.Fee = currency(row.Fee)
+    }
+    if (typeof row.Commission === 'number') {
+      row.Commission = currency(row.Commission)
+    }
+  })
+  return rows
+}
+
 function saveAccountsToStorage(dataToSave: Account[]) {
   if (typeof localStorage === 'undefined') {
     console.error('LocalStorage is undefined!')

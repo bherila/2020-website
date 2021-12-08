@@ -11,6 +11,8 @@ export interface TradingAccount {
   transactions: EtradeSchema[]
 }
 
+export type CapitalGain = Map<number, currency>
+
 export interface EtradeSchema {
   id: string
   TransactionDate: string
@@ -26,18 +28,16 @@ export interface EtradeSchema {
   StockOption: StockOptionSchema | null
 }
 
+export interface MatchedTransaction extends EtradeSchema {
+  CapGain?: CapitalGain
+}
+
 export type AccountID = string
 export type TransactionKey = string
 
-export interface MatchedTransactions {
-  transactionKeys: TransactionKey[]
-  matches: Map<AccountID, EtradeSchema[]>
-  netGain: currency
-}
-
 class MatchedAccount {
   originalAccount: TradingAccount
-  groups: Record<string, EtradeSchema[]>
+  groups: Record<string, MatchedTransaction[]>
   unmatched: EtradeSchema[]
   cash: EtradeSchema[]
 }
@@ -47,14 +47,14 @@ function matchAccount(account: TradingAccount): MatchedAccount {
     'TransactionDate',
     'TransactionType',
   ]).filter((r) => !!r.TransactionType)
-  const groups: Record<string, EtradeSchema[]> = {}
+  const groups: Record<string, MatchedTransaction[]> = {}
   const matchedIndexes = new Set<number>()
   for (let i = 0; i < source.length; ++i) {
     if (matchedIndexes.has(i)) continue
     const isMatched = false
     const doMatch = (xOpen: string, xClose: string[]) => {
       if (source[i].TransactionType === xOpen) {
-        const group: EtradeSchema[] = [source[i]]
+        const group: MatchedTransaction[] = [source[i]]
         for (let j = 0; j < source.length; ++j) {
           if (matchedIndexes.has(j)) continue
           if (j == i) continue
@@ -63,8 +63,20 @@ function matchAccount(account: TradingAccount): MatchedAccount {
               xOpen === source[j].TransactionType) &&
             source[j].Description === source[i].Description
           ) {
+            const capGain: CapitalGain = new Map()
+            const closeYear = moment(source[j].TransactionDate).year()
+            const openVal = source[i].Amount
+            const closeVal = source[j].Amount
+            const ratio = source[j].Quantity.divide(source[i].Quantity)
+            capGain.set(
+              closeYear,
+              ratio.multiply(openVal.add(closeVal)).multiply(-1),
+            )
             matchedIndexes.add(j)
-            group.push(source[j])
+            group.push({
+              CapGain: capGain,
+              ...source[j],
+            })
           }
         }
         if (group.length > 1) {
@@ -110,30 +122,39 @@ export function matchAcrossAccounts(accounts: TradingAccount[]) {
     TransactionKey,
     {
       total: currency
-      accountMatches: Map<AccountID, EtradeSchema[]>
+      accountMatches: Map<AccountID, MatchedTransaction[]>
       totalQty: currency
     }
   > = {}
+  const yearlyGains: Map<any, number> = new Map()
   for (const acc of matchedAccounts) {
-    const handleUnmatch = (group: string, records: EtradeSchema[]) => {
-      overallResult[group] ||= {
+    const handleUnmatch = (
+      accountName: string,
+      records: MatchedTransaction[],
+    ) => {
+      overallResult[accountName] ||= {
         total: currency(0),
         accountMatches: new Map(),
         totalQty: currency(0),
       } // supply default
-      overallResult[group].accountMatches.set(
+      overallResult[accountName].accountMatches.set(
         acc.originalAccount.accountID,
         records,
       )
-      overallResult[group].total = overallResult[group].total.add(
+      overallResult[accountName].total = overallResult[accountName].total.add(
         sum(records.map((trans) => trans.Amount)),
       )
-      overallResult[group].totalQty =
-        group === 'cash'
+      overallResult[accountName].totalQty =
+        accountName === 'cash'
           ? null
-          : overallResult[group].totalQty.add(
+          : overallResult[accountName].totalQty.add(
               sum(records.map((trans) => trans.Quantity)),
             )
+
+      if (accountName !== 'cash') {
+        // cap gain
+        overallResult[accountName].accountMatches
+      }
     }
     Object.entries(acc.groups).forEach((kv) => handleUnmatch(kv[0], kv[1]))
     handleUnmatch('cash', acc.cash)
