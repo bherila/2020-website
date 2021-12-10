@@ -16,6 +16,7 @@ import {
   sum,
 } from '../../components/matcher'
 import textStyle from '../../components/TextColors.module.css'
+import moment from "moment";
 
 const cellStyle = {
   border: 'none', // '1px solid #333'
@@ -118,19 +119,23 @@ function NulledTransactions(props: {
 }) {
   const { accounts } = props
   const [showCash, setShowCash] = useState(false)
-  const [showChecks, setShowChecks] = useState(true)
+  const [showChecks, setShowChecks] = useState(false)
   const res = useMemo(
     () => matchAcrossAccounts(props.accounts),
     [props.accounts],
   )
 
   const capGains = new Map<number, currency>()
+  const fees = new Map<number, currency>()
   Object.values(res.overallResult).forEach((calc) =>
     calc.accountMatches.forEach((accountTransactions) =>
-      accountTransactions.forEach((x) =>
-        x.CapGain?.forEach((gain, year) =>
-          capGains.set(year, (capGains.get(year) ?? currency(0)).add(gain)),
-        ),
+      accountTransactions.forEach((x) => {
+          const year = moment(x.TransactionDate).year()
+          x.CapGain?.forEach((gain, year) =>
+            capGains.set(year, (capGains.get(year) ?? currency(0)).add(gain)),
+          )
+          fees.set(year, (fees.get(year) ?? currency(0)).add(x.Commission).add(x.Fee))
+        },
       ),
     ),
   )
@@ -138,7 +143,7 @@ function NulledTransactions(props: {
   capGains.forEach((amount, year) =>
     capGainsElements.push(
       <div key={year}>
-        {year} = <CurrencyDisplay value={amount} digits={2} />
+        {year} realized gain = <CurrencyDisplay value={amount} digits={2} />, total fee = <CurrencyDisplay value={fees.get(year) ?? 0} digits={2} />
       </div>,
     ),
   )
@@ -216,11 +221,11 @@ function NulledTransactions(props: {
                           ) : (
                             '-'
                           )}
-                          {netQty.value == 0 ? null : (
-                            <div className={textStyle.orange}>
-                              ⚠️ open {netQty.value}
-                            </div>
-                          )}
+                          {/*{netQty.value == 0 ? null : (*/}
+                          {/*  <div className={textStyle.orange}>*/}
+                          {/*    ⚠️ open {netQty.value}*/}
+                          {/*  </div>*/}
+                          {/*)}*/}
                         </td>
                       )
                     })}
@@ -246,7 +251,7 @@ function TransactionList({
   options: Options
   showChecks: boolean
 }) {
-  const showCapGain = false
+  const showCapGain = true
   const [cb, setCb] = useState(0)
   return (
     <Table size="sm">
@@ -295,18 +300,10 @@ function TransactionList({
               <td align="right" style={cellStyle}>
                 <CurrencyDisplay digits={2} value={item.Amount} />
               </td>
-              {showCapGain && (
-                <td align="right" style={cellStyle}>
-                  {!item.CapGain
-                    ? 'null'
-                    : Array.from(item.CapGain.entries()).map((ent) => (
-                        <div key={ent[0]}>
-                          {ent[0]} ={' '}
-                          <CurrencyDisplay value={ent[1]} digits={2} />
-                        </div>
-                      ))}
-                </td>
-              )}
+              {showCapGain && [2020, 2021].map(year =>
+                <td align="right" style={cellStyle} key={year}>
+                  <CurrencyDisplay value={item.CapGain?.get(year) ?? null} digits={2} />
+                </td>)}
               {j === transactions.length - 1 && (
                 <td style={{ fontWeight: 'bold', ...cellStyle }} align="right">
                   <CurrencyDisplay
@@ -392,11 +389,11 @@ function loadAccountsFromStorage(): Account[] {
       ? []
       : JSON.parse(localStorage.getItem(STORAGE_KEY))
   if (!data || !Array.isArray(data)) return []
-  if (typeof (data[0] as Account).accountID === 'string') {
+  if (typeof (data[0] as Account)?.accountID === 'string') {
     data.forEach((account: Account) => rehydrateCurrency(account.transactions))
     return data
   }
-  if (typeof (data[0] as EtradeSchema).Description === 'string') {
+  if (typeof (data[0] as EtradeSchema)?.Description === 'string') {
     // migrate from EtradeSchema
     return [
       {

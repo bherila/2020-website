@@ -46,7 +46,20 @@ function matchAccount(account: TradingAccount): MatchedAccount {
   const source: EtradeSchema[] = _.orderBy(account.transactions, [
     'TransactionDate',
     'TransactionType',
-  ]).filter((r) => !!r.TransactionType)
+    'Quantity'
+  ], ['asc', 'asc', 'desc']).filter((r) => !!r.TransactionType)
+  // fee populator
+  for (let i = 0; i < source.length; ++i) {
+    if (source[i].Quantity.value == 0) {
+      continue
+    }
+    const mult = source[i].SecurityType === 'OPTN' ? -100 : -1
+    const pq = source[i].Quantity.multiply(source[i].Price)
+    source[i].Fee = pq.multiply(mult).subtract(source[i].Commission).subtract(source[i].Amount)
+    // if (source[i].Fee.value != 0) {
+    //   console.log(`${source[i].Description} - ${source[i].Fee}`)
+    // }
+  }
   const groups: Record<string, MatchedTransaction[]> = {}
   const matchedIndexes = new Set<number>()
   for (let i = 0; i < source.length; ++i) {
@@ -54,24 +67,33 @@ function matchAccount(account: TradingAccount): MatchedAccount {
     const isMatched = false
     const doMatch = (xOpen: string, xClose: string[]) => {
       if (source[i].TransactionType === xOpen) {
+        let qtyOpen = source[i].Quantity
         const group: MatchedTransaction[] = [source[i]]
         for (let j = 0; j < source.length; ++j) {
+          if (sum(group.map(x => x.Quantity)).intValue == 0) break;
           if (matchedIndexes.has(j)) continue
           if (j == i) continue
+          const isClosingTransaction = xClose.indexOf(source[j].TransactionType) !== -1
           if (
-            (xClose.indexOf(source[j].TransactionType) !== -1 ||
+            (isClosingTransaction ||
               xOpen === source[j].TransactionType) &&
             source[j].Description === source[i].Description
           ) {
             const capGain: CapitalGain = new Map()
-            const closeYear = moment(source[j].TransactionDate).year()
-            const openVal = source[i].Amount
-            const closeVal = source[j].Amount
-            const ratio = source[j].Quantity.divide(source[i].Quantity)
-            capGain.set(
-              closeYear,
-              ratio.multiply(openVal.add(closeVal)).multiply(-1),
-            )
+            if (isClosingTransaction) {
+              const closeYear = moment(source[ j ].TransactionDate).year()
+              // const qtyClosed = qtyOpen.subtract(source[i].Quantity) //
+              // const ratio = qtyClosed.divide(sourc)
+              // capGain.set(
+              //   closeYear,
+              //   closeVal.add(openVal),
+              // )
+              // if (source[j].Description === "TSLA Nov 13 '20 $500 Put") {
+              //   console.log({
+              //     closeYear, openVal, closeVal, ratio
+              //   })
+              // }
+            }
             matchedIndexes.add(j)
             group.push({
               CapGain: capGain,
@@ -81,16 +103,20 @@ function matchAccount(account: TradingAccount): MatchedAccount {
         }
         if (group.length > 1) {
           matchedIndexes.add(i)
-          groups[source[i].Description] = _.sortBy(group, (x) =>
+          const existing = groups[source[i].Description] ?? []
+          groups[source[i].Description] = _.sortBy([...group, ...existing], (x) =>
             moment(x.TransactionDate),
           )
           return true
+        } else if (group.length == 1) {
+          group[0].CapGain = undefined
         }
       }
       return false
     }
-    doMatch('Bought To Open', ['Sold To Close', 'Option Expiration']) ||
-      doMatch('Sold Short', ['Bought To Cover', 'Option Expiration'])
+    doMatch('Bought To Open', ['Sold To Close', 'Option Expiration', 'Option Exercise']) ||
+    doMatch('Sold Short', ['Bought To Cover', 'Option Expiration', 'Option Assignment'])
+    doMatch('Bought', ['Sold'])
   }
 
   const cash: EtradeSchema[] = []
@@ -168,48 +194,48 @@ export function matchAcrossAccounts(accounts: TradingAccount[]) {
   }))
 
   // Sort by option, then date.
-  // keyObjects.sort((a, b) => {
-  //   if (!a.stockOption && !b.stockOption) {
-  //     if (a.key < b.key) return -1
-  //     if (a.key > b.key) return 1
-  //   }
-  //   if (a.stockOption && b.stockOption) {
-  //     if (a.stockOption.symbol < b.stockOption.symbol) return -1
-  //     if (a.stockOption.symbol > b.stockOption.symbol) return 1
-  //     else return a.stockOption.maturity.diff(b.stockOption.maturity)
-  //   }
-  //   if (a.stockOption && !b.stockOption) {
-  //     return 1
-  //   }
-  //   if (!a.stockOption && b.stockOption) {
-  //     return 1
-  //   }
-  //   return 0
-  // })
-
-  // Sort options by maturity date
   keyObjects.sort((a, b) => {
     if (!a.stockOption && !b.stockOption) {
       if (a.key < b.key) return -1
       if (a.key > b.key) return 1
     }
     if (a.stockOption && b.stockOption) {
-      const timeDiff = a.stockOption.maturity.diff(b.stockOption.maturity)
-      if (timeDiff != 0) {
-        return timeDiff
-      }
       if (a.stockOption.symbol < b.stockOption.symbol) return -1
       if (a.stockOption.symbol > b.stockOption.symbol) return 1
-      return 0
+      else return a.stockOption.maturity.diff(b.stockOption.maturity)
     }
     if (a.stockOption && !b.stockOption) {
-      return 1
+      return -1
     }
     if (!a.stockOption && b.stockOption) {
       return 1
     }
     return 0
   })
+
+  // Sort options by maturity date
+  // keyObjects.sort((a, b) => {
+  //   if (!a.stockOption && !b.stockOption) {
+  //     if (a.key < b.key) return -1
+  //     if (a.key > b.key) return 1
+  //   }
+  //   if (a.stockOption && !b.stockOption) {
+  //     return -1
+  //   }
+  //   if (!a.stockOption && b.stockOption) {
+  //     return 1
+  //   }
+  //   if (a.stockOption && b.stockOption) {
+  //     const timeDiff = a.stockOption.maturity.diff(b.stockOption.maturity)
+  //     if (timeDiff != 0) {
+  //       return timeDiff
+  //     }
+  //     if (a.stockOption.symbol < b.stockOption.symbol) return -1
+  //     if (a.stockOption.symbol > b.stockOption.symbol) return 1
+  //     return 0
+  //   }
+  //   return 0
+  // })
 
   const keys = keyObjects.map((keyObj) => keyObj.key)
   const grandTotal = sum(Object.values(overallResult).map((x) => x.total))
