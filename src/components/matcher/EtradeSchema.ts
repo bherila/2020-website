@@ -43,11 +43,11 @@ class MatchedAccount {
 }
 
 function matchAccount(account: TradingAccount): MatchedAccount {
-  const source: EtradeSchema[] = _.orderBy(account.transactions, [
-    'TransactionDate',
-    'TransactionType',
-    'Quantity'
-  ], ['asc', 'asc', 'desc']).filter((r) => !!r.TransactionType)
+  const source: EtradeSchema[] = _.orderBy(
+    account.transactions,
+    ['TransactionDate', 'TransactionType', 'Quantity'],
+    ['asc', 'asc', 'desc'],
+  ).filter((r) => !!r.TransactionType)
   // fee populator
   for (let i = 0; i < source.length; ++i) {
     if (source[i].Quantity.value == 0) {
@@ -55,13 +55,28 @@ function matchAccount(account: TradingAccount): MatchedAccount {
     }
     const mult = source[i].SecurityType === 'OPTN' ? -100 : -1
     const pq = source[i].Quantity.multiply(source[i].Price)
-    source[i].Fee = pq.multiply(mult).subtract(source[i].Commission).subtract(source[i].Amount)
+    source[i].Fee = pq
+      .multiply(mult)
+      .subtract(source[i].Commission)
+      .subtract(source[i].Amount)
     // if (source[i].Fee.value != 0) {
     //   console.log(`${source[i].Description} - ${source[i].Fee}`)
     // }
   }
+
   const groups: Record<string, MatchedTransaction[]> = {}
+
+  // pull out cash 1st
+  const cash: EtradeSchema[] = []
   const matchedIndexes = new Set<number>()
+  const tt = new Set<string>(['Journal', 'Interest', 'Transfer', 'Credit'])
+  for (let i = 0; i < source.length; ++i) {
+    if (tt.has(source[i].SecurityType)) {
+      matchedIndexes.add(i)
+      cash.push(source[i])
+    }
+  }
+
   for (let i = 0; i < source.length; ++i) {
     if (matchedIndexes.has(i)) continue
     const isMatched = false
@@ -70,18 +85,18 @@ function matchAccount(account: TradingAccount): MatchedAccount {
         let qtyOpen = source[i].Quantity
         const group: MatchedTransaction[] = [source[i]]
         for (let j = 0; j < source.length; ++j) {
-          if (sum(group.map(x => x.Quantity)).intValue == 0) break;
+          if (sum(group.map((x) => x.Quantity)).intValue == 0) break
           if (matchedIndexes.has(j)) continue
           if (j == i) continue
-          const isClosingTransaction = xClose.indexOf(source[j].TransactionType) !== -1
+          const isClosingTransaction =
+            xClose.indexOf(source[j].TransactionType) !== -1
           if (
-            (isClosingTransaction ||
-              xOpen === source[j].TransactionType) &&
+            (isClosingTransaction || xOpen === source[j].TransactionType) &&
             source[j].Description === source[i].Description
           ) {
             const capGain: CapitalGain = new Map()
             if (isClosingTransaction) {
-              const closeYear = moment(source[ j ].TransactionDate).year()
+              const closeYear = moment(source[j].TransactionDate).year()
               // const qtyClosed = qtyOpen.subtract(source[i].Quantity) //
               // const ratio = qtyClosed.divide(sourc)
               // capGain.set(
@@ -104,8 +119,9 @@ function matchAccount(account: TradingAccount): MatchedAccount {
         if (group.length > 1) {
           matchedIndexes.add(i)
           const existing = groups[source[i].Description] ?? []
-          groups[source[i].Description] = _.sortBy([...group, ...existing], (x) =>
-            moment(x.TransactionDate),
+          groups[source[i].Description] = _.sortBy(
+            [...group, ...existing],
+            (x) => moment(x.TransactionDate),
           )
           return true
         } else if (group.length == 1) {
@@ -114,12 +130,19 @@ function matchAccount(account: TradingAccount): MatchedAccount {
       }
       return false
     }
-    doMatch('Bought To Open', ['Sold To Close', 'Option Expiration', 'Option Exercise']) ||
-    doMatch('Sold Short', ['Bought To Cover', 'Option Expiration', 'Option Assignment'])
+    doMatch('Bought To Open', [
+      'Sold To Close',
+      'Option Expiration',
+      'Option Exercise',
+    ]) ||
+      doMatch('Sold Short', [
+        'Bought To Cover',
+        'Option Expiration',
+        'Option Assignment',
+      ])
     doMatch('Bought', ['Sold'])
   }
 
-  const cash: EtradeSchema[] = []
   const unmatched: EtradeSchema[] = []
   for (let i = 0; i < source.length; ++i) {
     if (!matchedIndexes.has(i)) {

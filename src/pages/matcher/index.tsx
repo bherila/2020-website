@@ -16,7 +16,7 @@ import {
   sum,
 } from '../../components/matcher'
 import textStyle from '../../components/TextColors.module.css'
-import moment from "moment";
+import moment from 'moment'
 
 const cellStyle = {
   border: 'none', // '1px solid #333'
@@ -130,20 +130,23 @@ function NulledTransactions(props: {
   Object.values(res.overallResult).forEach((calc) =>
     calc.accountMatches.forEach((accountTransactions) =>
       accountTransactions.forEach((x) => {
-          const year = moment(x.TransactionDate).year()
-          x.CapGain?.forEach((gain, year) =>
-            capGains.set(year, (capGains.get(year) ?? currency(0)).add(gain)),
-          )
-          fees.set(year, (fees.get(year) ?? currency(0)).add(x.Commission).add(x.Fee))
-        },
-      ),
+        const year = moment(x.TransactionDate).year()
+        x.CapGain?.forEach((gain, year) =>
+          capGains.set(year, (capGains.get(year) ?? currency(0)).add(gain)),
+        )
+        fees.set(
+          year,
+          (fees.get(year) ?? currency(0)).add(x.Commission).add(x.Fee),
+        )
+      }),
     ),
   )
   const capGainsElements = []
   capGains.forEach((amount, year) =>
     capGainsElements.push(
       <div key={year}>
-        {year} realized gain = <CurrencyDisplay value={amount} digits={2} />, total fee = <CurrencyDisplay value={fees.get(year) ?? 0} digits={2} />
+        {year} realized gain = <CurrencyDisplay value={amount} digits={2} />,
+        total fee = <CurrencyDisplay value={fees.get(year) ?? 0} digits={2} />
       </div>,
     ),
   )
@@ -221,11 +224,11 @@ function NulledTransactions(props: {
                           ) : (
                             '-'
                           )}
-                          {/*{netQty.value == 0 ? null : (*/}
-                          {/*  <div className={textStyle.orange}>*/}
-                          {/*    ⚠️ open {netQty.value}*/}
-                          {/*  </div>*/}
-                          {/*)}*/}
+                          {netQty.value == 0 ? null : (
+                            <div className={textStyle.orange}>
+                              ⚠️ open {netQty.value}
+                            </div>
+                          )}
                         </td>
                       )
                     })}
@@ -300,10 +303,15 @@ function TransactionList({
               <td align="right" style={cellStyle}>
                 <CurrencyDisplay digits={2} value={item.Amount} />
               </td>
-              {showCapGain && [2020, 2021].map(year =>
-                <td align="right" style={cellStyle} key={year}>
-                  <CurrencyDisplay value={item.CapGain?.get(year) ?? null} digits={2} />
-                </td>)}
+              {showCapGain &&
+                [2020, 2021].map((year) => (
+                  <td align="right" style={cellStyle} key={year}>
+                    <CurrencyDisplay
+                      value={item.CapGain?.get(year) ?? null}
+                      digits={2}
+                    />
+                  </td>
+                ))}
               {j === transactions.length - 1 && (
                 <td style={{ fontWeight: 'bold', ...cellStyle }} align="right">
                   <CurrencyDisplay
