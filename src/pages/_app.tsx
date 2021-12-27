@@ -6,7 +6,11 @@ declare let WebFont
 
 export default function App({ Component, pageProps }: any) {
   useEffect(() => {
-    if (typeof document !== 'undefined' && typeof window !== 'undefined') {
+    if (
+      typeof document !== 'undefined' &&
+      typeof window !== 'undefined' &&
+      typeof WebFont !== 'undefined'
+    ) {
       WebFont.load({
         google: {
           families: [
