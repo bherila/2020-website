@@ -1,8 +1,8 @@
 import Button from 'devextreme-react/button'
 import SelectBox from 'devextreme-react/select-box'
 import TextBox from 'devextreme-react/text-box'
-import React, { useState } from 'react'
 import _ from 'lodash'
+import React, { useState } from 'react'
 
 import usePersist from '../../hooks/usePersist'
 import Employer from './Employer'

@@ -1,19 +1,16 @@
+import { Container } from '@mui/material'
 import React from 'react'
-import { Col, Container, Row } from 'reactstrap'
 
-import Layout from '../components/layout'
+import Header from '../components/header'
 
-export default function NotFound() {
-  return (
-    <Layout bootstrap>
-      <Container>
-        <Row>
-          <Col xs={12}>
-            <h1>Not found</h1>
-            <p>The page you requested was not found.</p>
-          </Col>
-        </Row>
-      </Container>
-    </Layout>
-  )
-}
+export const Home = (): JSX.Element => (
+  <>
+    <Header />
+    <Container maxWidth="sm">
+      <h1>Not found</h1>
+      <p>The page you requested was not found.</p>
+    </Container>
+  </>
+)
+
+export default Home

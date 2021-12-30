@@ -82,7 +82,7 @@ function matchAccount(account: TradingAccount): MatchedAccount {
     const isMatched = false
     const doMatch = (xOpen: string, xClose: string[]) => {
       if (source[i].TransactionType === xOpen) {
-        let qtyOpen = source[i].Quantity
+        const qtyOpen = source[i].Quantity
         const group: MatchedTransaction[] = [source[i]]
         for (let j = 0; j < source.length; ++j) {
           if (sum(group.map((x) => x.Quantity)).intValue == 0) break

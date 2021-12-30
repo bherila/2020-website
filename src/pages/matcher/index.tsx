@@ -1,11 +1,12 @@
+import { match } from 'assert'
+import DataGrid, { Column } from 'devextreme-react/data-grid'
+import _ from 'lodash'
+import moment from 'moment'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Col, Container, Row, Table } from 'reactstrap'
-import DataGrid, { Column } from 'devextreme-react/data-grid'
 import { v4 as uuidv4 } from 'uuid'
-import moment from 'moment'
+
 import Layout from '../../components/layout'
-import _ from 'lodash'
-import { match } from 'assert'
 
 interface EtradeSchema {
   id: string
@@ -27,7 +28,7 @@ function parseEtrade(tsv: string): EtradeSchema[] {
       try {
         const cols = col.split('\t')
         let i = 0
-        let res: EtradeSchema = {
+        const res: EtradeSchema = {
           id: uuidv4(),
           TransactionDate: moment(cols[i++]).format('YYYY-MM-DD'),
           TransactionType: cols[i++],
@@ -82,7 +83,7 @@ function NulledTransactions(props: { tableData: EtradeSchema[] }) {
   const matchedIndexes = new Set<number>()
   for (let i = 0; i < source.length; ++i) {
     if (matchedIndexes.has(i)) continue
-    let isMatched = false
+    const isMatched = false
     const doMatch = (xOpen: string, xClose: string[]) => {
       if (source[i].TransactionType === xOpen) {
         const group: EtradeSchema[] = [source[i]]
