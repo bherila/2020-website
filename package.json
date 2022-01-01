@@ -38,6 +38,7 @@
     "@types/underscore": "^1.11.0",
     "aws-sdk": "^2.868.0",
     "azure-devops-node-api": "^10.2.1",
+    "currency.js": "^2.0.4",
     "devextreme": "^20.2.6",
     "devextreme-react": "^20.2.6",
     "dotenv": "^8.2.0",
