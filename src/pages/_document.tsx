@@ -58,10 +58,11 @@ MyDocument.getInitialProps = async (ctx) => {
   const cache = createEmotionCache()
   const { extractCriticalToChunks } = createEmotionServer(cache)
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   ctx.renderPage = () =>
     originalRenderPage({
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      // eslint-disable-next-line react/display-name
       enhanceApp: (App) => (props) => <App emotionCache={cache} {...props} />,
     })
 

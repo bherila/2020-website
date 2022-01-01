@@ -9,7 +9,7 @@ interface BrexSchema {
   amount: number
 }
 
-export default function Render(props: {}) {
+export default function Render() {
   const [bankCsv, setBankCsv] = useState('')
   const [parsedData, setParsedData] = useState<BrexSchema[]>(null)
   useEffect(() => {

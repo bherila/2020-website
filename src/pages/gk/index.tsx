@@ -1,6 +1,6 @@
 ﻿import React, { useState } from 'react'
 
-export default function () {
+export default function gk() {
   const [u1, s1] = useState('')
   const [u2, s2] = useState('')
   return (
