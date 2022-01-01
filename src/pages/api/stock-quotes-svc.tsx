@@ -1,9 +1,5 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-
 import mysql from 'mysql2/promise'
 import { NextApiRequest, NextApiResponse } from 'next'
-
-// require('dotenv').config()
 
 const config = {
   host: process.env.DBHOST,
@@ -15,15 +11,17 @@ const config = {
 }
 
 const pool = mysql.createPool(config)
-// module.exports = pool
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (typeof req.query.symbol !== 'string') {
     res.statusCode = 400
     return res.json({ error: 'Missing symbol' })
   } else {
     const results = await pool.query(
-      `select * from earnings_latest where symbol=? order by date asc;`,
+      `select *
+       from earnings_latest
+       where symbol = ?
+       order by date`,
       [req.query.symbol],
     )
     res.statusCode = 200

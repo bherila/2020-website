@@ -12,7 +12,7 @@ export interface IEarnings {
 const fetcher = (e) => fetch(e).then((r) => r.json())
 
 export default function useEarnings(symbol) {
-  const result = useSWR('/api/hello?symbol=' + symbol, fetcher, {
+  const result = useSWR('/api/stock-quotes-svc?symbol=' + symbol, fetcher, {
     revalidateOnFocus: false,
   })
   return {
