@@ -1,4 +1,4 @@
-import { EtradeSchema } from './EtradeSchema'
+import { EtradeSchema } from 'lib/accounting-row'
 
 export interface TradingAccounts {
   accounts: EtradeSchema[]

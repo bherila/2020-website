@@ -1,5 +1,6 @@
-import { match } from 'assert'
+import currency from 'currency.js'
 import DataGrid, { Column } from 'devextreme-react/data-grid'
+import { EtradeSchema } from 'lib/accounting-row'
 import _ from 'lodash'
 import moment from 'moment'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -7,19 +8,6 @@ import { Col, Container, Row, Table } from 'reactstrap'
 import { v4 as uuidv4 } from 'uuid'
 
 import Layout from '../../components/layout'
-
-interface EtradeSchema {
-  id: string
-  TransactionDate: string
-  TransactionType: string
-  SecurityType: string
-  Symbol: string
-  Quantity: number
-  Amount: number
-  Price: number
-  Commission: number
-  Description: string
-}
 
 function parseEtrade(tsv: string): EtradeSchema[] {
   const lines = tsv.split('\n')
@@ -29,15 +17,18 @@ function parseEtrade(tsv: string): EtradeSchema[] {
         const cols = col.split('\t')
         let i = 0
         const res: EtradeSchema = {
+          Comment: '',
+          Fee: currency(0),
+          StockOption: null,
           id: uuidv4(),
           TransactionDate: moment(cols[i++]).format('YYYY-MM-DD'),
           TransactionType: cols[i++],
           SecurityType: cols[i++],
           Symbol: cols[i++],
-          Quantity: parseFloat(cols[i++]),
-          Amount: parseFloat(cols[i++]),
-          Price: parseFloat(cols[i++]),
-          Commission: parseFloat(cols[i++]),
+          Quantity: currency(cols[i++]),
+          Amount: currency(cols[i++]),
+          Price: currency(cols[i++]),
+          Commission: currency(cols[i++]),
           Description: cols[i++],
         }
         return res
@@ -140,9 +131,9 @@ function NulledTransactions(props: { tableData: EtradeSchema[] }) {
             {_.sortBy(Object.entries(groups), (group) => group[0]).map(
               (entry) => {
                 return (
-                  <li>
+                  <li key={entry[0]}>
                     {entry[0]} -- subtotal = $
-                    {_.sumBy(entry[1], (e) => e.Amount).toFixed(2)}
+                    {_.sumBy(entry[1], (e) => e.Amount.value).toFixed(2)}
                     <ul>
                       {entry[1].map((item, j) => (
                         <li key={j}>
@@ -159,12 +150,12 @@ function NulledTransactions(props: { tableData: EtradeSchema[] }) {
         </Col>
         <Col xs={3}>
           Unmatched (working on the logic... TODO: handle expiry), total = $
-          {_.sumBy(unmatched, (e) => e.Amount).toFixed(2)}
+          {_.sumBy(unmatched, (e) => e.Amount.value).toFixed(2)}
           <ol>
             {unmatched.map((row) => (
-              <li>
+              <li key={row.id}>
                 {row.TransactionDate} ... {row.TransactionType}{' '}
-                {row.Description} ... ${row.Amount.toFixed(2)}
+                {row.Description} ... ${row.Amount.value.toFixed(2)}
               </li>
             ))}
           </ol>
@@ -172,12 +163,12 @@ function NulledTransactions(props: { tableData: EtradeSchema[] }) {
 
         <Col xs={3}>
           Other i.e. cash, bonus, interest, xfers, total = $
-          {_.sumBy(cash, (e) => e.Amount).toFixed(2)}
+          {_.sumBy(cash, (e) => e.Amount.value).toFixed(2)}
           <ol>
             {cash.map((row) => (
-              <li>
+              <li key={row.id}>
                 {row.TransactionDate} ... {row.Description} ... $
-                {row.Amount.toFixed(2)}
+                {row.Amount.value.toFixed(2)}
               </li>
             ))}
           </ol>
@@ -217,15 +208,15 @@ export default function render() {
                       Net Commission: $
                       {tableData
                         .map((row) => row.Commission)
-                        .reduce((a, b) => a + b, 0)
-                        .toFixed(2)}
+                        .reduce((a, b) => a.add(b), currency(0))
+                        .value.toFixed(2)}
                     </li>
                     <li>
                       Net Amount: $
                       {tableData
                         .map((row) => row.Amount)
-                        .reduce((a, b) => a + b, 0)
-                        .toFixed(2)}
+                        .reduce((a, b) => a.add(b), currency(0))
+                        .value.toFixed(2)}
                     </li>
                   </ul>
                 </div>

@@ -7,7 +7,7 @@ const config = {
   user: process.env.DBUSER,
   password: process.env.DBPASSWORD,
   database: process.env.DBNAME,
-  connectionLimit: 3,
+  connectionLimit: 2,
 }
 
 const pool = mysql.createPool(config)

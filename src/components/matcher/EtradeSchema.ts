@@ -1,4 +1,5 @@
 import currency from 'currency.js'
+import { EtradeSchema } from 'lib/accounting-row'
 import _ from 'lodash'
 import moment from 'moment'
 import { v4 as uuidv4 } from 'uuid'
@@ -12,21 +13,6 @@ export interface TradingAccount {
 }
 
 export type CapitalGain = Map<number, currency>
-
-export interface EtradeSchema {
-  id: string
-  TransactionDate: string
-  TransactionType: string
-  SecurityType: string
-  Symbol: string
-  Quantity: currency
-  Amount: currency
-  Price: currency
-  Commission: currency
-  Fee: currency
-  Description: string
-  StockOption: StockOptionSchema | null
-}
 
 export interface MatchedTransaction extends EtradeSchema {
   CapGain?: CapitalGain
@@ -294,6 +280,7 @@ export function parseEtrade(tsv: string): EtradeSchema[] {
           Fee: currency(0),
           Description: cols[8],
           StockOption: StockOptionSchema.tryParse(cols[8]),
+          Comment: '',
         }
         return res
       } catch (err) {
