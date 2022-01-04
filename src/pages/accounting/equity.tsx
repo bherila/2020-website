@@ -2,33 +2,44 @@ import AccountingContainer from 'components/accounting/AccountingContainer'
 import AccountingTable, {
   TableColDefinition,
 } from 'components/accounting/AccountingTable'
-import { date2string } from 'components/accounting/formatting'
+import { AccountingDbRow } from 'lib/accounting-row'
 import React from 'react'
 
-function col(
-  id: string,
-  minWidth = 100,
-  format?: (any) => string,
-): TableColDefinition {
-  return { id, minWidth, format }
+function col(id: keyof AccountingDbRow, label?: string): TableColDefinition {
+  return { id, minWidth: 100, label }
 }
+
 const columns: TableColDefinition[] = [
-  col('date', 100, date2string),
-  col('transaction_type'),
-  col('symbol', 100),
-  col('quantity'),
-  col('amount'),
-  col('price'),
-  col('commission'),
-  col('description'),
-  col('comments'),
+  col('t_date'),
+  {
+    id: 't_type',
+    minWidth: 100,
+    hide: true,
+    importFunc: (row: AccountingDbRow) => {
+      row.t_type = 'equity'
+    },
+  },
+  col('t_symbol'),
+  col('t_qty'),
+  col('t_price'),
+  col('t_commission'),
+  col('t_fee'),
+  col('t_amt'),
+  col('t_source'),
+  col('t_comment'),
 ]
 
 export default function Equity() {
   const rows = []
   return (
     <AccountingContainer>
-      <AccountingTable rows={rows} columns={columns} />
+      <AccountingTable
+        rows={rows}
+        columns={columns}
+        clientRowFilter={(row) => !!row.t_symbol && !row.opt_expiration}
+        requestRequireColumns={['t_symbol']}
+        clientSort={['t_symbol', 't_date']}
+      />
     </AccountingContainer>
   )
 }

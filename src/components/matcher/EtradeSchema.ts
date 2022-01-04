@@ -281,6 +281,9 @@ export function parseEtrade(tsv: string): EtradeSchema[] {
           Description: cols[8],
           StockOption: StockOptionSchema.tryParse(cols[8]),
           Comment: '',
+          FromDate: null,
+          ToDate: null,
+          InterestRate: null,
         }
         return res
       } catch (err) {

@@ -14,6 +14,9 @@ export class StockOptionSchema {
     ['put', 'Put'],
   ])
   static tryParse(description: string): StockOptionSchema | null {
+    if (!description) {
+      return StockOptionSchema.Invalid
+    }
     // AAPL Feb 12 '21 $160 Call
     const expr = /([A-Z]+)\s+([^$]+)(\$[\d.]+) (Call|Put)/i
     const match = description.match(expr)

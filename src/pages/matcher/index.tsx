@@ -4,7 +4,7 @@ import { EtradeSchema } from 'lib/accounting-row'
 import _ from 'lodash'
 import moment from 'moment'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Col, Container, Row, Table } from 'reactstrap'
+import { Col, Container, Row } from 'reactstrap'
 import { v4 as uuidv4 } from 'uuid'
 
 import Layout from '../../components/layout'
@@ -30,6 +30,9 @@ function parseEtrade(tsv: string): EtradeSchema[] {
           Price: currency(cols[i++]),
           Commission: currency(cols[i++]),
           Description: cols[i++],
+          FromDate: null,
+          ToDate: null,
+          InterestRate: null,
         }
         return res
       } catch (err) {

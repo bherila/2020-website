@@ -27,59 +27,42 @@ import { OptionType, StockOptionSchema } from '../components/matcher'
  */
 
 export const TransactionTypes = [
-  'Bought To Open',
-  'Sold Short',
-  'Sold To Close',
-  'Journal',
-  'Interest',
-  'Transfer',
-  'Option Expiration',
-  'Bought To Cover',
-  'Dividend',
-  'Credit',
+  'bought to open',
+  'sold short',
+  'sold to close',
+  'journal',
+  'interest',
+  'transfer',
+  'option expiration',
+  'bought to cover',
+  'dividend',
+  'credit',
+  'deposit',
+  'equity',
 ] as const
 
-export class AccountingDbRow {
+export interface AccountingDbRow {
   t_id?: number
-  t_account: string
-  t_date: string
-  t_type: typeof TransactionTypes[number]
-  t_symbol: string
-  t_qty: number
-  t_amt: number // number as string (mysql DECIMAL)
-  t_price: number // number as string (mysql DECIMAL)
-  t_commission: number // number as string (mysql DECIMAL)
-  t_fee: number // number as string (mysql DECIMAL)
-  t_method: string
-  t_source: string
-  t_origin: string
-  t_description: string
-  t_comment: string
-  opt_expiration: string
-  opt_type: OptionType
-  opt_strike: number
-
-  valuesForInsert(): (string | number)[] {
-    return [
-      this.t_account,
-      this.t_date,
-      this.t_type,
-      this.t_symbol,
-      this.t_qty,
-      this.t_amt,
-      this.t_price,
-      this.t_commission,
-      this.t_fee,
-      this.t_method,
-      this.t_source,
-      this.t_origin,
-      this.t_description,
-      this.t_comment,
-      this.opt_expiration,
-      this.opt_type,
-      this.opt_strike,
-    ]
-  }
+  t_account?: string
+  t_date?: string
+  t_type?: typeof TransactionTypes[number]
+  t_symbol?: string
+  t_qty?: number
+  t_amt?: number // number as string (mysql DECIMAL)
+  t_price?: number // number as string (mysql DECIMAL)
+  t_commission?: number // number as string (mysql DECIMAL)
+  t_fee?: number // number as string (mysql DECIMAL)
+  t_method?: string
+  t_source?: string
+  t_origin?: string
+  t_description?: string
+  t_comment?: string
+  opt_expiration?: string
+  opt_type?: OptionType
+  opt_strike?: number
+  t_from?: string
+  t_to?: string
+  t_interest_rate?: string
 }
 
 export interface EtradeSchema {
@@ -96,6 +79,9 @@ export interface EtradeSchema {
   Description: string
   Comment: string
   StockOption: StockOptionSchema | null
+  FromDate: string
+  ToDate: string
+  InterestRate: string
 }
 
 export function db2eTrade(row: AccountingDbRow): EtradeSchema {
@@ -118,28 +104,34 @@ export function db2eTrade(row: AccountingDbRow): EtradeSchema {
     },
     Description: row.t_description,
     Comment: row.t_comment,
+    FromDate: row.t_from,
+    ToDate: row.t_to,
+    InterestRate: row.t_interest_rate,
   }
 }
 
 export function eTrade2db(schema: EtradeSchema): AccountingDbRow {
-  const row = new AccountingDbRow()
-  // t_id: schema.id .. auto increment
-  row.t_account = ''
-  row.t_date = schema.TransactionDate
-  row.t_type = schema.TransactionType as typeof TransactionTypes[number]
-  row.t_symbol = schema.Symbol
-  row.t_qty = schema.Quantity.value
-  row.t_amt = schema.Amount.value
-  row.t_price = schema.Price.value
-  row.t_commission = schema.Commission.value
-  row.t_fee = schema.Fee.value
-  row.t_method = null
-  row.t_source = null
-  row.t_origin = null
-  row.t_description = schema.Description
-  row.t_comment = schema.Comment
-  row.opt_expiration = schema.StockOption?.maturity.format('YYYY-MM-DD')
-  row.opt_type = schema.StockOption?.type
-  row.opt_strike = schema.StockOption?.strike?.value
-  return row
+  return {
+    // t_id: schema.id .. auto increment
+    t_account: '',
+    t_date: schema.TransactionDate,
+    t_type: schema.TransactionType as typeof TransactionTypes[number],
+    t_symbol: schema.Symbol,
+    t_qty: schema.Quantity.value,
+    t_amt: schema.Amount.value,
+    t_price: schema.Price.value,
+    t_commission: schema.Commission.value,
+    t_fee: schema.Fee.value,
+    t_method: null,
+    t_source: null,
+    t_origin: null,
+    t_description: schema.Description,
+    t_comment: schema.Comment,
+    opt_expiration: schema.StockOption?.maturity.format('YYYY-MM-DD'),
+    opt_type: schema.StockOption?.type,
+    opt_strike: schema.StockOption?.strike?.value,
+    t_from: schema.FromDate,
+    t_to: schema.ToDate,
+    t_interest_rate: schema.InterestRate,
+  }
 }

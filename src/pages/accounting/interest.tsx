@@ -2,26 +2,37 @@ import AccountingContainer from 'components/accounting/AccountingContainer'
 import AccountingTable, {
   TableColDefinition,
 } from 'components/accounting/AccountingTable'
-import React from 'react'
+import { AccountingDbRow } from 'lib/accounting-row'
+import React, { useState } from 'react'
 
-function row(id: string, minWidth = 100): TableColDefinition {
+function row(id: keyof AccountingDbRow, minWidth = 100): TableColDefinition {
   return { id, minWidth }
 }
 
 const columns: TableColDefinition[] = [
-  row('date'),
-  row('amount'),
-  row('interest_rate'),
-  row('from_date'),
-  row('to_date'),
-  row('comment'),
+  row('t_date'),
+  row('t_amt'),
+  row('t_interest_rate'),
+  row('t_from'),
+  row('t_to'),
+  row('t_comment'),
 ]
 
 export default function IO() {
-  const rows = []
   return (
     <AccountingContainer>
-      <AccountingTable rows={rows} columns={columns} />
+      <AccountingTable
+        columns={columns}
+        clientRowFilter={(row) => {
+          return !!(
+            row.t_interest_rate != null &&
+            row.t_from != 'Invalid date' &&
+            row.t_to != 'Invalid date' &&
+            row.t_from &&
+            row.t_to
+          )
+        }}
+      />
     </AccountingContainer>
   )
 }
