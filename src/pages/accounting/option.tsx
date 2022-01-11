@@ -35,6 +35,7 @@ export default function Option() {
           !!row.opt_expiration
         }
         requestRequireColumns={['opt_type', 'opt_strike', 'opt_expiration']}
+        groupByField={'t_symbol'}
       />
     </AccountingContainer>
   )
