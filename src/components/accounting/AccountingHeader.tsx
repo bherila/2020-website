@@ -23,6 +23,7 @@ const pages = [
   ['I/O', base + '/io'],
   ['Interest', base + '/interest'],
   ['Credit/Fees', base + '/credit-and-fees'],
+  ['Matcher', base + '/matcher'],
 ]
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 

@@ -3,8 +3,10 @@ import AccountingTable, {
   TableColDefinition,
 } from 'components/accounting/AccountingTable'
 import { AccountingDbRow } from 'lib/accounting-row'
-import React from 'react'
+import React, { useState } from 'react'
 import { Spinner } from 'reactstrap'
+
+import MatcherTable from '../../components/accounting/MatcherTable'
 
 function row(id: keyof AccountingDbRow, minWidth = 100): TableColDefinition {
   return { id, minWidth }
@@ -12,22 +14,21 @@ function row(id: keyof AccountingDbRow, minWidth = 100): TableColDefinition {
 
 const columns: TableColDefinition[] = [
   row('t_date'),
-  row('t_amt'),
+  row('t_description'),
+  row('t_symbol'),
+  row('opt_type'),
+  row('opt_expiration'),
+  row('opt_strike'),
   row('t_comment'),
 ]
 
 export default function IO() {
-  const rows = []
   if (typeof window === 'undefined') {
     return <Spinner />
   }
   return (
     <AccountingContainer>
-      <AccountingTable
-        clientRowFilter={(row) => !!row.t_fee || row.t_type === 'credit'}
-        rows={rows}
-        columns={columns}
-      />
+      <MatcherTable columns={columns} />
     </AccountingContainer>
   )
 }

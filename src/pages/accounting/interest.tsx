@@ -4,6 +4,7 @@ import AccountingTable, {
 } from 'components/accounting/AccountingTable'
 import { AccountingDbRow } from 'lib/accounting-row'
 import React, { useState } from 'react'
+import { Spinner } from 'reactstrap'
 
 function row(id: keyof AccountingDbRow, minWidth = 100): TableColDefinition {
   return { id, minWidth }
@@ -19,6 +20,9 @@ const columns: TableColDefinition[] = [
 ]
 
 export default function IO() {
+  if (typeof window === 'undefined') {
+    return <Spinner />
+  }
   return (
     <AccountingContainer>
       <AccountingTable

@@ -4,6 +4,7 @@ import AccountingTable, {
 } from 'components/accounting/AccountingTable'
 import { AccountingDbRow } from 'lib/accounting-row'
 import React from 'react'
+import { Spinner } from 'reactstrap'
 
 function col(id: keyof AccountingDbRow, label?: string): TableColDefinition {
   return { id, minWidth: 100, label }
@@ -31,6 +32,9 @@ const columns: TableColDefinition[] = [
 
 export default function Equity() {
   const rows = []
+  if (typeof window === 'undefined') {
+    return <Spinner />
+  }
   return (
     <AccountingContainer>
       <AccountingTable

@@ -12,9 +12,9 @@
   TableHead,
   TableRow,
 } from '@mui/material'
+import currency from 'currency.js'
 import React, { useEffect, useMemo, useState } from 'react'
 import { ModalBody } from 'reactstrap'
-import currency from 'currency.js'
 
 interface BrexSchema {
   date: string

@@ -80,10 +80,13 @@ export default function AccountingTable(props: {
   }
 
   const combinedClientRowFilter = React.useMemo(() => {
-    if (!filterValue) return clientRowFilter
+    const safeClientRowFilter =
+      typeof clientRowFilter === 'function' ? clientRowFilter : Boolean
+    if (!filterValue || !groupByField || !clientRowFilter)
+      return safeClientRowFilter
 
     return (row: AccountingDbRow) =>
-      row[groupByField] === filterValue && clientRowFilter(row)
+      row && row[groupByField] === filterValue && safeClientRowFilter(row)
   }, [clientRowFilter, groupByField, filterValue])
 
   return (
