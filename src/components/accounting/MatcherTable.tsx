@@ -1,39 +1,23 @@
-import { Paper, TableContainer } from '@mui/material'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
+import { Grid, Table, TableBody, TableCell, TableRow } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
-import Grid from '@mui/material/Grid'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import TextColors from 'components/TextColors.module.css'
 import currency from 'currency.js'
 import { AccountingDbRow } from 'lib/accounting-row'
+import { fetchWrapper } from 'lib/fetchWrapper'
 import _ from 'lodash'
-import React, { CSSProperties } from 'react'
+import React from 'react'
 
-import { fetchWrapper } from '../../lib/fetchWrapper'
 import { sum } from '../matcher'
 import SimpleMuiAlert from '../SimpleMuiAlert'
-import { TableColDefinition } from './AccountingTable'
 
 export default function MatcherTable(props: {
   rows?: any[]
-  columns: TableColDefinition[]
   requestRequireColumns?: (keyof AccountingDbRow)[]
 }) {
-  const { rows, columns, requestRequireColumns } = props
+  const { rows, requestRequireColumns } = props
   const [dataRows, setDataRows] = React.useState<AccountingDbRow[]>(
     rows ?? null,
   )
-  const [newRows, setNewRows] = React.useState<AccountingDbRow[]>([])
   const [error, setError] = React.useState('')
-  const [isSaving, setIsSaving] = React.useState(false)
-  const [filterValue, setFilterValue] = React.useState<string | number | null>(
-    null,
-  )
 
   const reload = React.useCallback(() => {
     const query =
@@ -43,7 +27,6 @@ export default function MatcherTable(props: {
         : ''
     fetchWrapper.get('/api/accounting?' + query).then((res) => {
       setDataRows(res.t_data.filter((r) => r && r.t_qty))
-      setNewRows([])
     })
   }, [requestRequireColumns])
 

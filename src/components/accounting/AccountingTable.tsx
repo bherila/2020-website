@@ -1,12 +1,14 @@
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
-import Grid from '@mui/material/Grid'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from '@mui/material'
 import TextColors from 'components/TextColors.module.css'
 import currency from 'currency.js'
 import { AccountingDbRow } from 'lib/accounting-row'
@@ -71,7 +73,7 @@ export default function AccountingTable(props: {
       .post('/api/accounting', {
         t_data: rowsToSave.filter(clientRowFilter),
       })
-      .then((_) => reload())
+      .then(() => reload())
       .catch((err) => {
         console.error('Fail to save', err, typeof err)
         setError(JSON.stringify(err, null, 2))
@@ -174,8 +176,7 @@ const filterListItemStyle: CSSProperties = {
 }
 
 function FilterList(props: FilterListProps) {
-  const { groupByField, clientRowFilter, dataRows, selectedItem, onSelect } =
-    props
+  const { groupByField, dataRows } = props
   if (!groupByField || !dataRows) {
     return null
   }
@@ -267,7 +268,7 @@ function InternalTable({
             >
               {columns
                 .filter((r) => !r.hide)
-                .map((column, colIndex) => {
+                .map((column) => {
                   const value = row[column.id]
                   return (
                     <TableCell key={column.id} align={column.align} style={sty}>

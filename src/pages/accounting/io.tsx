@@ -1,10 +1,10 @@
+import { CircularProgress } from '@mui/material'
 import AccountingContainer from 'components/accounting/AccountingContainer'
 import AccountingTable, {
   TableColDefinition,
 } from 'components/accounting/AccountingTable'
 import { AccountingDbRow } from 'lib/accounting-row'
 import React from 'react'
-import { Spinner } from 'reactstrap'
 
 function row(id: keyof AccountingDbRow, label: string): TableColDefinition {
   return { id, minWidth: 100, label }
@@ -22,7 +22,7 @@ const columns: TableColDefinition[] = [
 
 export default function IO() {
   if (typeof window === 'undefined') {
-    return <Spinner />
+    return <CircularProgress />
   }
   return (
     <AccountingContainer>

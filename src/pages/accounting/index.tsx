@@ -1,10 +1,10 @@
+import { CircularProgress } from '@mui/material'
 import AccountingContainer from 'components/accounting/AccountingContainer'
 import React from 'react'
-import { Spinner } from 'reactstrap'
 
 export default function Index() {
   if (typeof window === 'undefined') {
-    return <Spinner />
+    return <CircularProgress />
   }
   return <AccountingContainer>Welcome</AccountingContainer>
 }

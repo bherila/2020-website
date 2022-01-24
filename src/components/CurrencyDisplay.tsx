@@ -1,12 +1,6 @@
 ﻿import currency from 'currency.js'
 import React from 'react'
 
-import textColor from './TextColors.module.css'
-
-const requestUserPermission: () => Promise<boolean> = async () => {
-  return false
-}
-
 export default function CurrencyDisplay({
   value,
   digits = 2,
