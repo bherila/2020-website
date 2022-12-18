@@ -20,14 +20,12 @@
  * with RxJS check out React + RxJS - Communicating Between
  * Components with Observable & Subject.
  */
-import getConfig from 'next/config'
 import Router from 'next/router'
 import { BehaviorSubject } from 'rxjs'
 
 import { fetchWrapper } from './fetchWrapper'
 
-const { publicRuntimeConfig } = getConfig()
-const baseUrl = `${publicRuntimeConfig.apiUrl}/users`
+const baseUrl = `${process.env.NEXT_PUBLIC_API_URL}/users`
 const userSubject = new BehaviorSubject(
   process.browser && JSON.parse(localStorage.getItem('user')),
 )

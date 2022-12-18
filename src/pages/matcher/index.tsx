@@ -140,8 +140,10 @@ function NulledTransactions(props: { tableData: EtradeSchema[] }) {
                     <ul>
                       {entry[1].map((item, j) => (
                         <li key={j}>
-                          {item.TransactionDate} ... {item.TransactionType} ...
-                          Qty {item.Quantity} ... ${item.Amount}
+                          <>
+                            {item.TransactionDate} ... {item.TransactionType}{' '}
+                            ... Qty {item.Quantity} ... ${item.Amount}
+                          </>
                         </li>
                       ))}
                     </ul>

@@ -1,4 +1,4 @@
-import TextBox from 'devextreme-react/text-box'
+import { TextBox } from 'devextreme-react'
 import React from 'react'
 
 import useTaxData from '../hooks/useTaxData'

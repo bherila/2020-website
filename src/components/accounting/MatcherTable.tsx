@@ -8,10 +8,12 @@ import React from 'react'
 
 import { sum } from '../matcher'
 import SimpleMuiAlert from '../SimpleMuiAlert'
+import { TableColDefinition } from './AccountingTable'
 
 export default function MatcherTable(props: {
   rows?: any[]
   requestRequireColumns?: (keyof AccountingDbRow)[]
+  columns: TableColDefinition[]
 }) {
   const { rows, requestRequireColumns } = props
   const [dataRows, setDataRows] = React.useState<AccountingDbRow[]>(
