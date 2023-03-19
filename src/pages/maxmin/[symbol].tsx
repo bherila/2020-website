@@ -130,7 +130,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (typeof context.query.symbol === 'string') {
       const symbol = context.query.symbol
       const quoteResponse = await fetch(
-        `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${key}&outputsize=full`,
+        `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${symbol}&apikey=${key}&outputsize=full`,
       )
       const quoteData = await quoteResponse.json()
       const ts = quoteData['Time Series (Daily)']
