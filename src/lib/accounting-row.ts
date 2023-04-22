@@ -45,7 +45,7 @@ export interface AccountingDbRow {
   t_id?: number
   t_account?: string
   t_date?: string
-  t_type?: typeof TransactionTypes[number]
+  t_type?: (typeof TransactionTypes)[number]
   t_symbol?: string
   t_qty?: number
   t_amt?: number // number as string (mysql DECIMAL)
@@ -115,7 +115,7 @@ export function eTrade2db(schema: EtradeSchema): AccountingDbRow {
     // t_id: schema.id .. auto increment
     t_account: '',
     t_date: schema.TransactionDate,
-    t_type: schema.TransactionType as typeof TransactionTypes[number],
+    t_type: schema.TransactionType as (typeof TransactionTypes)[number],
     t_symbol: schema.Symbol,
     t_qty: schema.Quantity.value,
     t_amt: schema.Amount.value,
