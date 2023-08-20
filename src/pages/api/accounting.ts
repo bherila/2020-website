@@ -1,19 +1,8 @@
 import moment from 'moment'
-import mysql from 'mysql2/promise'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 import { AccountingDbRow, TransactionTypes } from '../../lib/accounting-row'
-
-const config = {
-  host: process.env.DBHOST,
-  port: +process.env.DBPORT,
-  user: process.env.DBUSER,
-  password: process.env.DBPASSWORD,
-  database: process.env.DBNAME,
-  connectionLimit: 2,
-}
-
-const pool = mysql.createPool(config)
+import pool from '../../lib/db'
 
 export default async function handler(
   req: NextApiRequest,

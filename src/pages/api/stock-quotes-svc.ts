@@ -1,23 +1,13 @@
-import mysql from 'mysql2/promise'
 import { NextApiRequest, NextApiResponse } from 'next'
 
-const config = {
-  host: process.env.DBHOST,
-  port: +process.env.DBPORT,
-  user: process.env.DBUSER,
-  password: process.env.DBPASSWORD,
-  database: process.env.DBNAME,
-  connectionLimit: 2,
-}
-
-const pool = mysql.createPool(config)
+import mysql from '../../lib/db'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (typeof req.query.symbol !== 'string') {
     res.statusCode = 400
     return res.json({ error: 'Missing symbol' })
   } else {
-    const results = await pool.query(
+    const results = await mysql.query(
       `select *
        from earnings_latest
        where symbol = ?

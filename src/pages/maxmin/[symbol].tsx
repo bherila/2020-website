@@ -1,3 +1,4 @@
+import { Table } from '@mui/material'
 import Button from 'devextreme-react/button'
 import Chart, {
   Annotation,
@@ -229,6 +230,9 @@ function prepareTableData(
   earnings: IEarnings[],
   onlyNearEarnings: boolean,
 ) {
+  if (!tableData || !Array.isArray(tableData)) {
+    return tableData
+  }
   for (let i = 0; i < tableData.length; ++i) {
     const today = tableData[i]
     const yesterday = i > 0 ? tableData[i - 1] : null
@@ -240,7 +244,7 @@ function prepareTableData(
   }
 
   // flag rows near earnings dates
-  if (earnings) {
+  if (earnings && Array.isArray(earnings)) {
     const c = 5
     const earningsDates = earnings.map((ed) => ed.date)
     const allDates = tableData.map((td) => td.date) // index maps into tableData
