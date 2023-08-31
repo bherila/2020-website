@@ -56,7 +56,6 @@
     "sass": "^1.57.0",
     "serverless-mysql": "^1.5.5",
     "swr": "^0.5.4",
-    "twilio": "^3.58.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
