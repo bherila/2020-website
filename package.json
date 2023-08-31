@@ -32,10 +32,9 @@
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.0.0-rc.1",
     "@mui/material": "^5.0.0-rc.1",
-    "@testing-library/react": "^13.4.0",
+    "@testing-library/react": "^14.0.0",
     "@types/lodash": "^4.14.176",
     "@types/node-fetch": "^2.5.8",
-    "@types/reactstrap": "^8.7.2",
     "@types/underscore": "^1.11.0",
     "currency.js": "^2.0.4",
     "devextreme": "^20.2.6",
@@ -48,15 +47,16 @@
     "next-compose-plugins": "^2.2.1",
     "next-optimized-images": "^2.6.2",
     "node-fetch": "^2.6.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "reactstrap": "^8.9.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "reactstrap": "^9.2.0",
     "sass": "^1.57.0",
     "serverless-mysql": "^1.5.5",
     "swr": "^0.5.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.22.11",
     "@types/jest": "^26.0.21",
     "@types/testing-library__react": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
@@ -71,6 +71,7 @@
     "jest-watch-typeahead": "^0.6.1",
     "lint-staged": "^10.5.4",
     "prettier": "^2.2.1",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.3",
+    "webpack": "^5.88.2"
   }
 }
