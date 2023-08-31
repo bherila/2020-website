@@ -37,7 +37,6 @@
     "@types/node-fetch": "^2.5.8",
     "@types/reactstrap": "^8.7.2",
     "@types/underscore": "^1.11.0",
-    "azure-devops-node-api": "^10.2.1",
     "currency.js": "^2.0.4",
     "devextreme": "^20.2.6",
     "devextreme-react": "22.2.3",
