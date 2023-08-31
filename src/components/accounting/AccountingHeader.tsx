@@ -13,8 +13,6 @@ import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import * as React from 'react'
 
-import MuiNextLink from '../MuiNextLink'
-
 const name = 'Meemee 💸'
 const base = '/accounting'
 const pages = [

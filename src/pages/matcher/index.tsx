@@ -77,7 +77,6 @@ function NulledTransactions(props: { tableData: EtradeSchema[] }) {
   const matchedIndexes = new Set<number>()
   for (let i = 0; i < source.length; ++i) {
     if (matchedIndexes.has(i)) continue
-    const isMatched = false
     const doMatch = (xOpen: string, xClose: string[]) => {
       if (source[i].TransactionType === xOpen) {
         const group: EtradeSchema[] = [source[i]]
