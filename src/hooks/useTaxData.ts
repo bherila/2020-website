@@ -2,7 +2,7 @@ export default function useTaxData(key: string) {
   if (typeof localStorage === 'undefined') {
     return {
       value: '',
-      setValue: (newValue) => {
+      setValue: () => {
         console.warn('Cannot save newValue because localStorage is undefined')
       },
     }

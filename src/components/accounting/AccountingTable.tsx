@@ -8,14 +8,15 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Typography,
 } from '@mui/material'
-import TextColors from 'components/TextColors.module.css'
 import currency from 'currency.js'
-import { AccountingDbRow } from 'lib/accounting-row'
 import React, { CSSProperties } from 'react'
 
-import { fetchWrapper } from '../../lib/fetchWrapper'
-import SimpleMuiAlert from '../SimpleMuiAlert'
+import SimpleMuiAlert from '@/components/SimpleMuiAlert'
+import { AccountingDbRow } from '@/lib/accounting-row'
+import { fetchWrapper } from '@/lib/fetchWrapper'
+
 import ImportTransactionsDialog from './ImportTransactionsDialog'
 
 export interface TableColDefinition {
@@ -24,7 +25,7 @@ export interface TableColDefinition {
   minWidth: number
   align?: 'right'
   format?: (value: any) => string
-  importFunc?: (AccountingDbRow) => void
+  importFunc?: (arg: AccountingDbRow) => void
   hide?: boolean
 }
 
@@ -43,9 +44,7 @@ export default function AccountingTable(props: {
     groupByField,
     requestRequireColumns,
   } = props
-  const [dataRows, setDataRows] = React.useState<AccountingDbRow[]>(
-    rows ?? null,
-  )
+  const [dataRows, setDataRows] = React.useState<AccountingDbRow[]>(rows ?? [])
   const [newRows, setNewRows] = React.useState<AccountingDbRow[]>([])
   const [error, setError] = React.useState('')
   const [isSaving, setIsSaving] = React.useState(false)
@@ -125,15 +124,17 @@ export default function AccountingTable(props: {
           <Box display="inline">
             &Sigma; t_amt ={' '}
             {
-              dataRows.reduce((a, r) => currency(r.t_amt).add(a), currency(0))
-                .value
+              dataRows.reduce(
+                (a, r) => currency(r?.t_amt ?? 0).add(a),
+                currency(0),
+              ).value
             }
           </Box>
         )}
       </div>
       <SimpleMuiAlert
-        open={typeof error === 'string' && error != ''}
-        onClose={() => setError(null)}
+        open={!!error}
+        onClose={() => setError('')}
         text={error}
       />
       {dataRows == null ? (
@@ -186,13 +187,12 @@ function FilterList(props: FilterListProps) {
   return (
     <Table stickyHeader aria-label="sticky table">
       <TableHead>
-        <TableRow style={filterListItemStyle} className={TextColors.green}>
+        <TableRow style={filterListItemStyle}>
           <TableCell
             style={filterListItemStyle}
-            className={TextColors.green}
             onClick={() => props.onSelect('')}
           >
-            Show all {groupByField}
+            <Typography color={'green'}>Show all {groupByField}</Typography>
           </TableCell>
         </TableRow>
       </TableHead>
@@ -200,16 +200,15 @@ function FilterList(props: FilterListProps) {
         {filterItems.map((x) => (
           <TableRow
             style={filterListItemStyle}
-            className={TextColors.green}
             hover
             role="checkbox"
             tabIndex={-1}
             key={x}
             selected={x === props.selectedItem}
-            onClick={() => props.onSelect(x)}
+            onClick={() => props.onSelect(x ?? null)}
           >
-            <TableCell className={TextColors.green} style={filterListItemStyle}>
-              {x}
+            <TableCell style={filterListItemStyle}>
+              <Typography color={'green'}>{x}</Typography>
             </TableCell>
           </TableRow>
         ))}

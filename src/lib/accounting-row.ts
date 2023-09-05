@@ -1,5 +1,6 @@
 import currency from 'currency.js'
-import moment from 'moment'
+
+import { DateContainer, parseDate } from '@/lib/DateHelper'
 
 import { OptionType, StockOptionSchema } from '../components/matcher'
 
@@ -52,22 +53,22 @@ export interface AccountingDbRow {
   t_price?: number // number as string (mysql DECIMAL)
   t_commission?: number // number as string (mysql DECIMAL)
   t_fee?: number // number as string (mysql DECIMAL)
-  t_method?: string
-  t_source?: string
-  t_origin?: string
+  t_method?: string | null
+  t_source?: string | null
+  t_origin?: string | null
   t_description?: string
   t_comment?: string
   opt_expiration?: string
   opt_type?: OptionType
   opt_strike?: number
-  t_from?: string
-  t_to?: string
-  t_interest_rate?: string
+  t_from?: string | null
+  t_to?: string | null
+  t_interest_rate?: string | null
 }
 
 export interface EtradeSchema {
   id: string
-  TransactionDate: string
+  TransactionDate: DateContainer | null
   TransactionType: string
   SecurityType: string
   Symbol: string
@@ -79,34 +80,34 @@ export interface EtradeSchema {
   Description: string
   Comment: string
   StockOption: StockOptionSchema | null
-  FromDate: string
-  ToDate: string
-  InterestRate: string
+  FromDate: string | null
+  ToDate: string | null
+  InterestRate: string | null
 }
 
 export function db2eTrade(row: AccountingDbRow): EtradeSchema {
   return {
-    id: row.t_id.toString(),
-    TransactionDate: moment(row.t_date).format('YYYY-MM-DD'),
-    TransactionType: row.t_type,
+    id: row.t_id!.toString(),
+    TransactionDate: parseDate(row.t_date),
+    TransactionType: row.t_type!,
     SecurityType: '',
-    Symbol: row.t_symbol,
-    Amount: currency(row.t_amt),
-    Price: currency(row.t_price),
-    Quantity: currency(row.t_qty),
-    Commission: currency(row.t_commission),
-    Fee: currency(row.t_fee),
+    Symbol: row.t_symbol!,
+    Amount: currency(row.t_amt!),
+    Price: currency(row.t_price!),
+    Quantity: currency(row.t_qty!),
+    Commission: currency(row.t_commission!),
+    Fee: currency(row.t_fee!),
     StockOption: {
-      symbol: row.t_symbol,
-      strike: currency(row.opt_strike),
-      type: StockOptionSchema.TypeMap.get(row.opt_type.toLowerCase()) || null,
-      maturity: moment(row.opt_expiration),
+      symbol: row.t_symbol!,
+      strike: currency(row.opt_strike!),
+      type: StockOptionSchema.TypeMap.get(row.opt_type!.toLowerCase()) ?? null,
+      maturity: parseDate(row.opt_expiration),
     },
-    Description: row.t_description,
-    Comment: row.t_comment,
-    FromDate: row.t_from,
-    ToDate: row.t_to,
-    InterestRate: row.t_interest_rate,
+    Description: row.t_description ?? '',
+    Comment: row.t_comment!,
+    FromDate: row.t_from!,
+    ToDate: row.t_to!,
+    InterestRate: row.t_interest_rate!,
   }
 }
 
@@ -114,7 +115,7 @@ export function eTrade2db(schema: EtradeSchema): AccountingDbRow {
   return {
     // t_id: schema.id .. auto increment
     t_account: '',
-    t_date: schema.TransactionDate,
+    t_date: schema.TransactionDate?.formatYMD(),
     t_type: schema.TransactionType as (typeof TransactionTypes)[number],
     t_symbol: schema.Symbol,
     t_qty: schema.Quantity.value,
@@ -127,11 +128,11 @@ export function eTrade2db(schema: EtradeSchema): AccountingDbRow {
     t_origin: null,
     t_description: schema.Description,
     t_comment: schema.Comment,
-    opt_expiration: schema.StockOption?.maturity.format('YYYY-MM-DD'),
-    opt_type: schema.StockOption?.type,
+    opt_expiration: schema.StockOption?.maturity?.formatYMD(),
+    opt_type: schema.StockOption?.type ?? '?',
     opt_strike: schema.StockOption?.strike?.value,
-    t_from: schema.FromDate,
-    t_to: schema.ToDate,
-    t_interest_rate: schema.InterestRate,
+    t_from: schema.FromDate ?? null,
+    t_to: schema.ToDate ?? null,
+    t_interest_rate: schema.InterestRate ?? null,
   }
 }

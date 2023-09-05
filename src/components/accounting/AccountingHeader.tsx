@@ -26,21 +26,17 @@ const pages = [
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
 const ResponsiveAppBar = ({
-  drawerWidth,
   isFixed,
 }: {
-  drawerWidth: number
   isFixed: boolean
+  drawerWidth: number
 }) => {
-  const [anchorElNav, setAnchorElNav] = React.useState(null)
-  const [anchorElUser, setAnchorElUser] = React.useState(null)
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget)
-  }
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget)
-  }
+  const [anchorElNav, setAnchorElNav] = React.useState<
+    null | (EventTarget & HTMLButtonElement)
+  >(null)
+  const [anchorElUser, setAnchorElUser] = React.useState<
+    null | (EventTarget & HTMLButtonElement)
+  >(null)
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null)
@@ -74,7 +70,7 @@ const ResponsiveAppBar = ({
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
-              onClick={handleOpenNavMenu}
+              onClick={(event) => setAnchorElNav(event.currentTarget)}
               color="inherit"
             >
               <MenuIcon />
@@ -138,7 +134,10 @@ const ResponsiveAppBar = ({
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <IconButton
+                onClick={(event) => setAnchorElUser(event.currentTarget)}
+                sx={{ p: 0 }}
+              >
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>

@@ -1,4 +1,4 @@
-import { TextBox } from 'devextreme-react'
+import TextField from '@mui/material/TextField'
 import React from 'react'
 
 import useTaxData from '../hooks/useTaxData'
@@ -17,13 +17,14 @@ export default function TaxInput(props: TaxInputProps) {
     <tr>
       <td style={{ textAlign: 'right' }}>{title}</td>
       <td>
-        <TextBox
-          mask="$ #0.00"
+        <TextField
           value={data.value || ''}
-          readOnly={readOnly}
-          onValueChanged={(e) => {
-            data.setValue(e.value.toString())
+          InputProps={{
+            readOnly: readOnly,
           }}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            data.setValue(event.target.value)
+          }
         />
       </td>
       <td>{line}</td>

@@ -5,9 +5,10 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import TextField from '@mui/material/TextField'
-import { AccountingDbRow } from 'lib/accounting-row'
-import moment from 'moment'
 import * as React from 'react'
+
+import { AccountingDbRow } from '@/lib/accounting-row'
+import { parseDate } from '@/lib/DateHelper'
 
 import { StockOptionSchema } from '../matcher'
 import { TableColDefinition } from './AccountingTable'
@@ -35,7 +36,7 @@ export default function FormDialog(props: FormDialogProps) {
   const handleImport = () => {
     const result: AccountingDbRow[] = []
     const rows = value.split('\n').filter(Boolean)
-    rows.map((row, i) => {
+    rows.map((row) => {
       const inputCols = row.split('\t')
       const record: AccountingDbRow = {}
       for (let colIndex = 0; colIndex < inputCols.length; ++colIndex) {
@@ -50,7 +51,7 @@ export default function FormDialog(props: FormDialogProps) {
             record.t_account = inputCols[colIndex]
             break
           case 't_date':
-            record.t_date = moment(inputCols[colIndex]).format('YYYY-MM-DD')
+            record.t_date = parseDate(inputCols[colIndex])?.formatYMD()
             break
           case 't_type':
             record.t_type = inputCols[colIndex] as any
@@ -89,9 +90,7 @@ export default function FormDialog(props: FormDialogProps) {
             record.t_comment = inputCols[colIndex]
             break
           case 'opt_expiration':
-            record.opt_expiration = moment(inputCols[colIndex]).format(
-              'YYYY-MM-DD',
-            )
+            record.opt_expiration = parseDate(inputCols[colIndex])?.formatYMD()
             break
           case 'opt_type':
             record.opt_type = StockOptionSchema.TypeMap.get(
@@ -102,10 +101,10 @@ export default function FormDialog(props: FormDialogProps) {
             record.opt_strike = parseFloat(inputCols[colIndex])
             break
           case 't_from':
-            record.t_from = moment(inputCols[colIndex]).format('YYYY-MM-DD')
+            record.t_from = parseDate(inputCols[colIndex])?.formatYMD()
             break
           case 't_to':
-            record.t_to = moment(inputCols[colIndex]).format('YYYY-MM-DD')
+            record.t_to = parseDate(inputCols[colIndex])?.formatYMD()
             break
           case 't_interest_rate':
             record.t_interest_rate = inputCols[colIndex]
@@ -119,8 +118,8 @@ export default function FormDialog(props: FormDialogProps) {
       }
 
       // try to parse t_description as stock option definition...
-      const option = StockOptionSchema.tryParse(record.t_description)
-      if (option !== StockOptionSchema.Invalid) {
+      const option = StockOptionSchema.tryParse(record.t_description ?? '')
+      if (option != null && option !== StockOptionSchema.Invalid) {
         if (record.t_symbol && record.t_symbol !== option.symbol) {
           console.warn(
             `overwriting t_symbol ${record.t_symbol} with ${option.symbol}`,
@@ -128,8 +127,8 @@ export default function FormDialog(props: FormDialogProps) {
         }
         record.t_symbol = option.symbol
         record.opt_strike = option.strike.value
-        record.opt_expiration = option.maturity.format('YYYY-MM-DD')
-        record.opt_type = option.type
+        record.opt_expiration = option.maturity?.formatYMD()
+        record.opt_type = option.type ?? '?'
       }
 
       props.columns.forEach((col) => {

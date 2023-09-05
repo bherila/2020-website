@@ -1,8 +1,9 @@
 import currency from 'currency.js'
-import { EtradeSchema } from 'lib/accounting-row'
 import _ from 'lodash'
-import moment from 'moment'
-import { v4 as uuidv4 } from 'uuid'
+import uuid from 'uuid-wand'
+
+import { EtradeSchema } from '@/lib/accounting-row'
+import { parseDate } from '@/lib/DateHelper'
 
 import { StockOptionSchema } from './StockOptionSchema'
 import { sum } from './sum'
@@ -21,7 +22,7 @@ export interface MatchedTransaction extends EtradeSchema {
 export type AccountID = string
 export type TransactionKey = string
 
-class MatchedAccount {
+interface MatchedAccount {
   originalAccount: TradingAccount
   groups: Record<string, MatchedTransaction[]>
   unmatched: EtradeSchema[]
@@ -65,10 +66,10 @@ function matchAccount(account: TradingAccount): MatchedAccount {
 
   for (let i = 0; i < source.length; ++i) {
     if (matchedIndexes.has(i)) continue
-    const isMatched = false
+    // const isMatched = false
     const doMatch = (xOpen: string, xClose: string[]) => {
       if (source[i].TransactionType === xOpen) {
-        const qtyOpen = source[i].Quantity
+        // const qtyOpen = source[i].Quantity
         const group: MatchedTransaction[] = [source[i]]
         for (let j = 0; j < source.length; ++j) {
           if (sum(group.map((x) => x.Quantity)).intValue == 0) break
@@ -82,7 +83,7 @@ function matchAccount(account: TradingAccount): MatchedAccount {
           ) {
             const capGain: CapitalGain = new Map()
             if (isClosingTransaction) {
-              const closeYear = moment(source[j].TransactionDate).year()
+              // const closeYear = moment(source[j].TransactionDate).year()
               // const qtyClosed = qtyOpen.subtract(source[i].Quantity) //
               // const ratio = qtyClosed.divide(sourc)
               // capGain.set(
@@ -107,7 +108,7 @@ function matchAccount(account: TradingAccount): MatchedAccount {
           const existing = groups[source[i].Description] ?? []
           groups[source[i].Description] = _.sortBy(
             [...group, ...existing],
-            (x) => moment(x.TransactionDate),
+            (x) => x.TransactionDate?.value ?? 0,
           )
           return true
         } else if (group.length == 1) {
@@ -161,7 +162,7 @@ export function matchAcrossAccounts(accounts: TradingAccount[]) {
       totalQty: currency
     }
   > = {}
-  const yearlyGains: Map<any, number> = new Map()
+  // const yearlyGains: Map<any, number> = new Map()
   for (const acc of matchedAccounts) {
     const handleUnmatch = (
       accountName: string,
@@ -181,10 +182,10 @@ export function matchAcrossAccounts(accounts: TradingAccount[]) {
       )
       overallResult[accountName].totalQty =
         accountName === 'cash'
-          ? null
-          : overallResult[accountName].totalQty.add(
+          ? currency(0)
+          : overallResult[accountName].totalQty?.add(
               sum(records.map((trans) => trans.Quantity)),
-            )
+            ) ?? currency(0)
 
       if (accountName !== 'cash') {
         // cap gain
@@ -211,7 +212,11 @@ export function matchAcrossAccounts(accounts: TradingAccount[]) {
     if (a.stockOption && b.stockOption) {
       if (a.stockOption.symbol < b.stockOption.symbol) return -1
       if (a.stockOption.symbol > b.stockOption.symbol) return 1
-      else return a.stockOption.maturity.diff(b.stockOption.maturity)
+      else if (a.stockOption.maturity && b.stockOption.maturity)
+        return (
+          a.stockOption.maturity.value?.getTime() -
+          b.stockOption.maturity.value?.getTime()
+        )
     }
     if (a.stockOption && !b.stockOption) {
       return -1
@@ -221,30 +226,6 @@ export function matchAcrossAccounts(accounts: TradingAccount[]) {
     }
     return 0
   })
-
-  // Sort options by maturity date
-  // keyObjects.sort((a, b) => {
-  //   if (!a.stockOption && !b.stockOption) {
-  //     if (a.key < b.key) return -1
-  //     if (a.key > b.key) return 1
-  //   }
-  //   if (a.stockOption && !b.stockOption) {
-  //     return -1
-  //   }
-  //   if (!a.stockOption && b.stockOption) {
-  //     return 1
-  //   }
-  //   if (a.stockOption && b.stockOption) {
-  //     const timeDiff = a.stockOption.maturity.diff(b.stockOption.maturity)
-  //     if (timeDiff != 0) {
-  //       return timeDiff
-  //     }
-  //     if (a.stockOption.symbol < b.stockOption.symbol) return -1
-  //     if (a.stockOption.symbol > b.stockOption.symbol) return 1
-  //     return 0
-  //   }
-  //   return 0
-  // })
 
   const keys = keyObjects.map((keyObj) => keyObj.key)
   const grandTotal = sum(Object.values(overallResult).map((x) => x.total))
@@ -263,35 +244,31 @@ export function matchAcrossAccounts(accounts: TradingAccount[]) {
 
 export function parseEtrade(tsv: string): EtradeSchema[] {
   const lines = tsv.split('\n')
-  const res = lines
-    .map((col) => {
-      try {
-        const cols = col.split('\t')
-        const res: EtradeSchema = {
-          id: uuidv4(),
-          TransactionDate: moment(cols[0]).format('YYYY-MM-DD'),
-          TransactionType: cols[1],
-          SecurityType: cols[2],
-          Symbol: cols[3],
-          Quantity: currency(cols[4] || 0),
-          Amount: currency(cols[5] || 0),
-          Price: currency(cols[6] || 0),
-          Commission: currency(cols[7] || 0),
-          Fee: currency(0),
-          Description: cols[8],
-          StockOption: StockOptionSchema.tryParse(cols[8]),
-          Comment: '',
-          FromDate: null,
-          ToDate: null,
-          InterestRate: null,
-        }
-        return res
-      } catch (err) {
-        console.warn(err)
-        return null
-      }
-    })
-    .filter(Boolean)
-  console.info(res)
+  const res: EtradeSchema[] = []
+  lines.forEach((col) => {
+    try {
+      const cols = col.split('\t')
+      res.push({
+        id: uuid.v4(),
+        TransactionDate: parseDate(cols[0]),
+        TransactionType: cols[1],
+        SecurityType: cols[2],
+        Symbol: cols[3],
+        Quantity: currency(cols[4] || 0),
+        Amount: currency(cols[5] || 0),
+        Price: currency(cols[6] || 0),
+        Commission: currency(cols[7] || 0),
+        Fee: currency(0),
+        Description: cols[8],
+        StockOption: StockOptionSchema.tryParse(cols[8]),
+        Comment: '',
+        FromDate: null,
+        ToDate: null,
+        InterestRate: null,
+      })
+    } catch (err) {
+      console.warn(err)
+    }
+  })
   return res
 }

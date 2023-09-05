@@ -1,10 +1,11 @@
 import { Grid, Table, TableBody, TableCell, TableRow } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 import currency from 'currency.js'
-import { AccountingDbRow } from 'lib/accounting-row'
-import { fetchWrapper } from 'lib/fetchWrapper'
 import _ from 'lodash'
 import React from 'react'
+
+import { AccountingDbRow } from '@/lib/accounting-row'
+import { fetchWrapper } from '@/lib/fetchWrapper'
 
 import { sum } from '../matcher'
 import SimpleMuiAlert from '../SimpleMuiAlert'
@@ -16,9 +17,7 @@ export default function MatcherTable(props: {
   columns: TableColDefinition[]
 }) {
   const { rows, requestRequireColumns } = props
-  const [dataRows, setDataRows] = React.useState<AccountingDbRow[]>(
-    rows ?? null,
-  )
+  const [dataRows, setDataRows] = React.useState<AccountingDbRow[]>(rows ?? [])
   const [error, setError] = React.useState('')
 
   const reload = React.useCallback(() => {
@@ -27,17 +26,20 @@ export default function MatcherTable(props: {
         ? 'requestRequireColumns=' +
           encodeURIComponent(requestRequireColumns.join(',').toLowerCase())
         : ''
-    fetchWrapper.get('/api/accounting?' + query).then((res) => {
-      setDataRows(res.t_data.filter((r) => r && r.t_qty))
+    fetchWrapper.get('/api/accounting?' + query).then((res: any) => {
+      setDataRows(res.t_data.filter((r: any) => r && r.t_qty))
     })
   }, [requestRequireColumns])
 
   React.useEffect(() => reload(), [])
 
-  const groups: Record<string, AccountingDbRow[]> = React.useMemo(() => {
-    const groups = {}
+  const groups: { [key: string]: AccountingDbRow[] } = React.useMemo(() => {
+    const groups: { [key: string]: AccountingDbRow[] } = {}
     if (!dataRows) return groups
     for (const row of _.sortBy(dataRows.filter(Boolean), (r) => r.t_date)) {
+      if (!row.t_symbol) {
+        continue
+      }
       if (!groups[row.t_symbol]) {
         groups[row.t_symbol] = []
       }
@@ -49,8 +51,8 @@ export default function MatcherTable(props: {
   return (
     <>
       <SimpleMuiAlert
-        open={typeof error === 'string' && error != ''}
-        onClose={() => setError(null)}
+        open={!!error}
+        onClose={() => setError('')}
         text={error}
       />
       {!dataRows ? (
@@ -124,7 +126,7 @@ export default function MatcherTable(props: {
 }
 
 function SumDisplay({ rows }: { rows: AccountingDbRow[] }) {
-  const total: currency = sum(rows.map((row) => currency(row.t_amt)))
+  const total: currency = sum(rows.map((row) => currency(row.t_amt ?? 0)))
   return <p>&Sigma; = {total.format({ precision: 4 })}</p>
 }
 

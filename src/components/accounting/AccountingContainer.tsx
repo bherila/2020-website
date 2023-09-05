@@ -61,7 +61,7 @@ export default function AccountingContainer({
               <Toolbar />
               <Divider />
               <List>
-                {['AAPL', 'AMZN', 'BABA', 'BIDU'].map((text, index) => (
+                {['AAPL', 'AMZN', 'BABA', 'BIDU'].map((text) => (
                   <ListItem button key={text}>
                     <ListItemIcon>
                       <CheckCircleOutline />
@@ -72,7 +72,7 @@ export default function AccountingContainer({
               </List>
               <Divider />
               <List>
-                {['ET Bertie', 'ET Berty', 'IB Berty'].map((text, index) => (
+                {['ET Bertie', 'ET Berty', 'IB Berty'].map((text) => (
                   <ListItem button key={text}>
                     <ListItemIcon>
                       <CheckCircleOutline />
