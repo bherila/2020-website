@@ -2,8 +2,7 @@ import React from 'react'
 
 import ImageAndText from '../../components/image-and-text'
 import { Metadata } from 'next'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
+import Typography from "@/components/typography";
 
 export const metadata: Metadata = {
   title: 'Ben Herila - Projects',
@@ -19,7 +18,7 @@ export default function ProjectsPage() {
   }
   const ProjectDate = ({ children }: { children: React.ReactNode }) => {
     return (
-      <Typography variant="body1" component="p" color="gray">
+      <Typography variant="body1" component="p">
         {children}
       </Typography>
     )
@@ -28,8 +27,8 @@ export default function ProjectsPage() {
     return <Typography variant="body1">{children}</Typography>
   }
   return (
-    <Box>
-      <Typography variant="h1" gutterBottom={true}>
+    <>
+      <Typography variant="h1">
         Selected Projects
       </Typography>
       <ImageAndText
@@ -99,6 +98,6 @@ export default function ProjectsPage() {
           using N2 CMS framework and .NET 3.5. Runs on Microsoft Azure.
         </ProjectDescription>
       </ImageAndText>
-    </Box>
+    </>
   )
 }

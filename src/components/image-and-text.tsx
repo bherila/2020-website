@@ -1,7 +1,7 @@
-import { Box, Grid } from '@mui/material'
 import Link from 'next/link'
 import React from 'react'
 import Image from 'next/image'
+import Grid from "@/components/grid";
 
 export default function ImageAndText({
   children,
@@ -11,8 +11,7 @@ export default function ImageAndText({
   ctaLink,
 }: ImageAndTextProps) {
   return (
-    <Box component="div">
-      <Grid container spacing={2}>
+      <Grid container>
         <Grid item xs={12} sm={4} md={4} lg={3} px={3} py={6}>
           <img width="100%" src={imageUrl} alt={alt} />
         </Grid>
@@ -21,7 +20,6 @@ export default function ImageAndText({
           {ctaText ? <>{renderCta(ctaText, ctaLink)}</> : null}
         </Grid>
       </Grid>
-    </Box>
   )
 }
 

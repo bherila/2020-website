@@ -1,6 +1,6 @@
 import ImageAndText from '@/components/image-and-text'
 import React from 'react'
-import Typography from '@mui/material/Typography'
+import Typography from '@/components/typography'
 
 export default function RecipesPage() {
   return (
