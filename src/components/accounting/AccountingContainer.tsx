@@ -1,15 +1,3 @@
-import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline'
-import {
-  Box,
-  CssBaseline,
-  Divider,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Toolbar,
-} from '@mui/material'
 import React from 'react'
 
 import AccountingHeader from './AccountingHeader'

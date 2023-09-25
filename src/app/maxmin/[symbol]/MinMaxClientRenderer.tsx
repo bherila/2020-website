@@ -5,11 +5,11 @@ import Form, { Item } from 'devextreme-react/form'
 import Button from 'devextreme-react/button'
 import React, { useEffect, useState } from 'react'
 import currency from 'currency.js'
-import { Grid } from '@mui/material'
 import AlphaVantageEarnings from '@/lib/AlphaVantageEarnings'
 import StockQuote from '@/lib/StockQuote'
 import { StockQuoteExtended } from '@/lib/StockQuoteExtended'
 import { DetailChart } from '@/app/maxmin/[symbol]/DetailChart'
+import Grid from "@/components/grid";
 
 interface Props {
   symbol: string
@@ -69,7 +69,7 @@ export default function MinMaxClientRenderer({
   }
 
   return (
-    <Grid container spacing={2}>
+    <Grid container>
       <Grid item xs={12} sm={6}>
         <DataGrid
           dataSource={tableData}
