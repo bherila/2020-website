@@ -3,6 +3,8 @@ import React from 'react'
 import ImageAndText from '../../components/image-and-text'
 import { Metadata } from 'next'
 import Typography from '@/components/typography'
+import Container from '@/components/container'
+import MainTitle from '@/components/main-title'
 
 export const metadata: Metadata = {
   title: 'Ben Herila - Projects',
@@ -10,25 +12,17 @@ export const metadata: Metadata = {
 
 export default function ProjectsPage() {
   const ProjectTitle = ({ children }: { children: React.ReactNode }) => {
-    return (
-      <Typography variant="h3" component="h2">
-        {children}
-      </Typography>
-    )
+    return <h2>{children}</h2>
   }
   const ProjectDate = ({ children }: { children: React.ReactNode }) => {
-    return (
-      <Typography variant="body1" component="p">
-        {children}
-      </Typography>
-    )
+    return <p>{children}</p>
   }
   const ProjectDescription = ({ children }: { children: React.ReactNode }) => {
     return <Typography variant="body1">{children}</Typography>
   }
   return (
-    <>
-      <Typography variant="h1">Selected Projects</Typography>
+    <Container>
+      <MainTitle>Selected Projects</MainTitle>
       <ImageAndText
         extraClass=""
         imageUrl="/images/avocado-toast.jpg"
@@ -48,8 +42,6 @@ export default function ProjectsPage() {
         extraClass=""
         imageUrl="/images/underground-cellar-2-min.png"
         alt="Underground Cellar Screenshot"
-        ctaLink="https://www.undergroundcellar.com"
-        ctaText="www.undergroundcellar.com"
       >
         <ProjectTitle>Underground Cellar</ProjectTitle>
         <ProjectDescription>
@@ -96,6 +88,6 @@ export default function ProjectsPage() {
           using N2 CMS framework and .NET 3.5. Runs on Microsoft Azure.
         </ProjectDescription>
       </ImageAndText>
-    </>
+    </Container>
   )
 }

@@ -1,11 +1,12 @@
 import ImageAndText from '@/components/image-and-text'
 import React from 'react'
-import Typography from '@/components/typography'
+import MainTitle from '@/components/main-title'
+import Container from '@/components/container'
 
 export default function RecipesPage() {
   return (
-    <>
-      <Typography>Recipes</Typography>
+    <Container>
+      <MainTitle>Recipes</MainTitle>
       <ImageAndText
         extraClass="recipe"
         alt="Potatoes"
@@ -93,7 +94,7 @@ export default function RecipesPage() {
         imageUrl={'/images/sauteed-greens---2.jpg'}
       >
         <h3>Vegetables</h3>
-        <div className="w-richtext">
+        <Container fluid>
           <p>
             There are three steps to perfect sauteed vegetables, every time.
           </p>
@@ -114,26 +115,32 @@ export default function RecipesPage() {
             vegetables. Saute just until everything is coated and then transfer
             to a clean plate. Couldn’t be easier!
           </p>
-        </div>
-        <div className="flex-h-wrap-container">
-          {[
-            'Hot pan +chicken powder. Brown it all.',
-            'Add vegetables.',
-            'Toss to coat, they may wilt a little bit. That’s OK.',
-            'Transfer to a plate. You’re all done!',
-          ].map((r, i) => (
-            <div key={`bok${i}`} className="roommate-block">
-              <img
-                src={`/images/sauteed-greens---${i + 1}.jpg`}
-                alt="Sauteed greens"
-              />
-              <div className="caption w-richtext">
-                <p>{r}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+          <ImageAndText
+            imageUrl={'/images/sauteed-greens---1.jpg'}
+            alt={'Hot frying pan with garlic and chicken powder'}
+          >
+            Hot frying pan + chicken powder. Brown it all.
+          </ImageAndText>
+          <ImageAndText
+            imageUrl={'/images/sauteed-greens---2.jpg'}
+            alt={'Fresh gai lan in a frying pan'}
+          >
+            Add vegetables.
+          </ImageAndText>
+          <ImageAndText
+            imageUrl={'/images/sauteed-greens---3.jpg'}
+            alt={'Wilted gailan in a frying pan'}
+          >
+            Toss to coat, they may wilt a little bit. That’s OK.
+          </ImageAndText>
+          <ImageAndText
+            imageUrl={'/images/sauteed-greens---4.jpg'}
+            alt={'Sauteed gailan with garlic on a plate'}
+          >
+            Transfer to a plate. You’re all done!
+          </ImageAndText>
+        </Container>
       </ImageAndText>
-    </>
+    </Container>
   )
 }

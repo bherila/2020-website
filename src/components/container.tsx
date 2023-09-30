@@ -3,10 +3,12 @@ import RBSContainer from 'react-bootstrap/Container'
 
 export default function Container(props: {
   children?: React.ReactNode
+  fluid?: boolean
 }): React.ReactElement {
+  const { children, ...remainingProps } = props
   return (
     <main>
-      <RBSContainer>{props.children}</RBSContainer>
+      <RBSContainer {...remainingProps}>{children}</RBSContainer>
     </main>
   )
 }

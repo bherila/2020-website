@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import Typography from '@/components/typography'
 import Link from '@/components/link'
 import Container from '@/components/container'
+import MainTitle from '@/components/main-title'
 
 export const metadata: Metadata = {
   title: 'Ben Herila',
@@ -17,9 +18,7 @@ export default function HomePage() {
   )
   return (
     <Container>
-      <Typography variant="h1" component="h1">
-        Hi, {Im} Ben
-      </Typography>
+      <MainTitle>Hi, {Im} Ben</MainTitle>
 
       <Line>
         {Im} a Software Engineer at Meta. {Im} currently working on{' '}

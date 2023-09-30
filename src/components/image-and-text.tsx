@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import React from 'react'
-import Image from 'next/image'
-import Grid from '@/components/grid'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import cn from 'classnames'
 
 export default function ImageAndText({
   children,
@@ -9,17 +10,18 @@ export default function ImageAndText({
   alt,
   ctaText,
   ctaLink,
+  extraClass,
 }: ImageAndTextProps) {
   return (
-    <Grid container>
-      <Grid item xs={12} sm={4} md={4} lg={3} px={3} py={6}>
+    <Row container className={cn('pb-4', extraClass)}>
+      <Col xs={12} sm={4} md={4} lg={3}>
         <img width="100%" src={imageUrl} alt={alt} />
-      </Grid>
-      <Grid item xs={12} sm={8} md={8} lg={9}>
+      </Col>
+      <Col xs={12} sm={8} md={8} lg={9}>
         {children}
-        {ctaText ? <>{renderCta(ctaText, ctaLink)}</> : null}
-      </Grid>
-    </Grid>
+        {ctaText && ctaLink ? <>{renderCta(ctaText, ctaLink)}</> : null}
+      </Col>
+    </Row>
   )
 }
 
@@ -38,7 +40,7 @@ interface ImageAndTextProps {
   children: any
   imageUrl: string
   alt: string
-  ctaText: string
-  ctaLink: string
-  extraClass: string
+  ctaText?: string
+  ctaLink?: string
+  extraClass?: string
 }
