@@ -9,7 +9,7 @@ import AlphaVantageEarnings from '@/lib/AlphaVantageEarnings'
 import StockQuote from '@/lib/StockQuote'
 import { StockQuoteExtended } from '@/lib/StockQuoteExtended'
 import { DetailChart } from '@/app/maxmin/[symbol]/DetailChart'
-import Grid from "@/components/grid";
+import Grid from '@/components/grid'
 
 interface Props {
   symbol: string

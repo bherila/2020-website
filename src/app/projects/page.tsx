@@ -2,7 +2,7 @@ import React from 'react'
 
 import ImageAndText from '../../components/image-and-text'
 import { Metadata } from 'next'
-import Typography from "@/components/typography";
+import Typography from '@/components/typography'
 
 export const metadata: Metadata = {
   title: 'Ben Herila - Projects',
@@ -28,9 +28,7 @@ export default function ProjectsPage() {
   }
   return (
     <>
-      <Typography variant="h1">
-        Selected Projects
-      </Typography>
+      <Typography variant="h1">Selected Projects</Typography>
       <ImageAndText
         extraClass=""
         imageUrl="/images/avocado-toast.jpg"

@@ -18,44 +18,44 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: 'About Me',
       icon: HomeOutline,
-      path: '/'
+      path: '/',
     },
     {
       title: 'Projects',
       icon: AccountCogOutline,
-      path: '/projects/'
+      path: '/projects/',
     },
     {
-      sectionTitle: 'Tools'
+      sectionTitle: 'Tools',
     },
     {
       title: 'MaxMin Stock Analysis',
       icon: FormatLetterCase,
-      path: '/maxmin/MSFT'
+      path: '/maxmin/MSFT',
     },
     {
       title: 'EV Database',
       path: '/ev-database',
-      icon: GoogleCirclesExtended
+      icon: GoogleCirclesExtended,
     },
     {
       title: 'Transaction Tracer',
       icon: CreditCardOutline,
-      path: '/transaction-tracer'
+      path: '/transaction-tracer',
     },
     {
       title: 'Tax Planner',
       icon: Table,
-      path: '/tax-planner'
+      path: '/tax-planner',
     },
     {
-      sectionTitle: 'Other'
+      sectionTitle: 'Other',
     },
     {
       title: 'Login',
       icon: Login,
       path: '/pages/login',
-      openInNewTab: true
+      openInNewTab: true,
     },
     {
       title: 'Register',
