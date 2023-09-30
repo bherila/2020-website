@@ -1,23 +1,17 @@
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography,
-} from '@mui/material'
 import currency from 'currency.js'
 import React, { CSSProperties } from 'react'
 
-import SimpleMuiAlert from '@/components/SimpleMuiAlert'
 import { AccountingDbRow } from '@/lib/accounting-row'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 
 import ImportTransactionsDialog from './ImportTransactionsDialog'
+import Button from '@/components/button'
+import Container from '@/components/container'
+import Col from 'react-bootstrap/Col'
+import Spinner from 'react-bootstrap/Spinner'
+import SimpleMuiAlert from '@/components/SimpleMuiAlert'
+import Table from 'react-bootstrap/Table'
+import Typography from '@/components/typography'
 
 export interface TableColDefinition {
   id: keyof AccountingDbRow
@@ -103,7 +97,6 @@ export default function AccountingTable(props: {
         {newRows.length > 0 && (
           <>
             <Button
-              sx={{ mx: 1 }}
               disabled={isSaving}
               variant="outlined"
               onClick={() => saveNewRows(newRows)}
@@ -111,7 +104,6 @@ export default function AccountingTable(props: {
               Save Added Rows
             </Button>
             <Button
-              sx={{ mx: 1 }}
               disabled={isSaving}
               variant="outlined"
               onClick={() => setNewRows([])}
@@ -121,7 +113,7 @@ export default function AccountingTable(props: {
           </>
         )}
         {dataRows && (
-          <Box display="inline">
+          <div style={{ display: 'inline' }}>
             &Sigma; t_amt ={' '}
             {
               dataRows.reduce(
@@ -129,35 +121,33 @@ export default function AccountingTable(props: {
                 currency(0),
               ).value
             }
-          </Box>
+          </div>
         )}
       </div>
-      <SimpleMuiAlert
-        open={!!error}
-        onClose={() => setError('')}
-        text={error}
-      />
+      <SimpleMuiAlert open={!!error} onClose={() => setError('')}>
+        {error}
+      </SimpleMuiAlert>
       {dataRows == null ? (
-        <CircularProgress />
+        <Spinner />
       ) : (
-        <Grid container spacing={2} columns={12}>
+        <Container>
           {!newRows.length && (
-            <Grid item xs={2}>
+            <Col xs={2}>
               <FilterList
                 {...{ clientRowFilter, groupByField, dataRows }}
                 onSelect={(x) => setFilterValue(x)}
                 selectedItem={filterValue}
               />
-            </Grid>
+            </Col>
           )}
-          <Grid item xs={10}>
+          <Col xs={10}>
             <InternalTable
               {...{ columns, newRows, dataRows }}
               clientRowFilter={combinedClientRowFilter}
               hideInvalid={!!filterValue}
             />
-          </Grid>
-        </Grid>
+          </Col>
+        </Container>
       )}
     </>
   )
@@ -185,34 +175,30 @@ function FilterList(props: FilterListProps) {
     new Set(dataRows.map((r) => r[groupByField]).filter(Boolean)),
   ).sort()
   return (
-    <Table stickyHeader aria-label="sticky table">
-      <TableHead>
-        <TableRow style={filterListItemStyle}>
-          <TableCell
-            style={filterListItemStyle}
-            onClick={() => props.onSelect('')}
-          >
+    <Table aria-label="sticky table">
+      <th>
+        <tr style={filterListItemStyle}>
+          <td style={filterListItemStyle} onClick={() => props.onSelect('')}>
             <Typography color={'green'}>Show all {groupByField}</Typography>
-          </TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
+          </td>
+        </tr>
+      </th>
+      <tbody>
         {filterItems.map((x) => (
-          <TableRow
+          <tr
             style={filterListItemStyle}
-            hover
             role="checkbox"
             tabIndex={-1}
             key={x}
-            selected={x === props.selectedItem}
+            // selected={x === props.selectedItem}
             onClick={() => props.onSelect(x ?? null)}
           >
-            <TableCell style={filterListItemStyle}>
+            <td style={filterListItemStyle}>
               <Typography color={'green'}>{x}</Typography>
-            </TableCell>
-          </TableRow>
+            </td>
+          </tr>
         ))}
-      </TableBody>
+      </tbody>
     </Table>
   )
 }
@@ -231,23 +217,23 @@ function InternalTable({
   hideInvalid: boolean
 }) {
   return (
-    <Table stickyHeader aria-label="sticky table">
-      <TableHead>
-        <TableRow>
+    <Table aria-label="sticky table">
+      <thead>
+        <tr>
           {columns
             .filter((r) => !r.hide)
             .map((column) => (
-              <TableCell
+              <td
                 key={column.id}
                 align={column.align}
                 style={{ minWidth: column.minWidth }}
               >
                 {column.label ?? column.id}
-              </TableCell>
+              </td>
             ))}
-        </TableRow>
-      </TableHead>
-      <TableBody>
+        </tr>
+      </thead>
+      <tbody>
         {[...newRows, ...dataRows].map((row) => {
           const isNew = !row.t_id
           const isValid = clientRowFilter(row)
@@ -258,29 +244,28 @@ function InternalTable({
             ? {}
             : { textDecoration: 'line-through', color: 'red' }
           return (
-            <TableRow
-              hover
+            <tr
               role="checkbox"
               tabIndex={-1}
               key={row.t_id}
-              selected={isNew}
+              // selected={isNew}
             >
               {columns
                 .filter((r) => !r.hide)
                 .map((column) => {
                   const value = row[column.id]
                   return (
-                    <TableCell key={column.id} align={column.align} style={sty}>
+                    <td key={column.id} align={column.align} style={sty}>
                       {column.format && typeof value === 'number'
                         ? column.format(value)
                         : value}
-                    </TableCell>
+                    </td>
                   )
                 })}
-            </TableRow>
+            </tr>
           )
         })}
-      </TableBody>
+      </tbody>
     </Table>
   )
 }

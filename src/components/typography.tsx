@@ -4,6 +4,7 @@ export type VariantOrComponentType = 'body1' | 'h1'
 
 export interface TypographyProps {
   children: React.ReactNode
+  color?: 'primary' | 'green' | 'red'
   variant?: VariantOrComponentType
   component?: VariantOrComponentType
   py?: string | number

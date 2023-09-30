@@ -1,17 +1,11 @@
-import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import DialogTitle from '@mui/material/DialogTitle'
-import TextField from '@mui/material/TextField'
 import * as React from 'react'
 
 import { AccountingDbRow } from '@/lib/accounting-row'
 import { parseDate } from '@/lib/DateHelper'
-
 import { StockOptionSchema } from '../matcher'
 import { TableColDefinition } from './AccountingTable'
+import Modal from 'react-bootstrap/Modal'
+import Button from 'react-bootstrap/Button'
 
 export interface FormDialogProps {
   onImport: null | ((res: AccountingDbRow[]) => void)
@@ -152,37 +146,37 @@ export default function FormDialog(props: FormDialogProps) {
 
   return (
     <>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Import Transactions
-      </Button>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Import Data</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
+      <button onClick={handleClickOpen}>Import Transactions</button>
+      <Modal show={open} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Modal heading</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
             Paste the data you want to import. Expected columns:{' '}
             {columns.map((x) => x.label || x.id).join(', ')}. Each column
             separated with TAB (copy &amp; paste grid from Excel). Rows:{' '}
             {value.split('\n').filter(Boolean).length}
-          </DialogContentText>
-          <TextField
+          </p>
+          <textarea
             autoFocus
-            margin="dense"
             id="name"
-            label="Data"
-            type="text"
-            fullWidth
-            multiline={true}
             rows={10}
-            variant="standard"
             value={value}
-            onChange={(e) => setValue(e.currentTarget.value)}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              setValue(e.currentTarget.value)
+            }
           />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleImport}>Import</Button>
-        </DialogActions>
-      </Dialog>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleImport}>
+            Import
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   )
 }

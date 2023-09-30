@@ -1,6 +1,4 @@
-import TextField from '@mui/material/TextField'
 import React from 'react'
-
 import useTaxData from '../hooks/useTaxData'
 
 interface TaxInputProps {
@@ -17,11 +15,9 @@ export default function TaxInput(props: TaxInputProps) {
     <tr>
       <td style={{ textAlign: 'right' }}>{title}</td>
       <td>
-        <TextField
+        <input
           value={data.value || ''}
-          InputProps={{
-            readOnly: readOnly,
-          }}
+          readOnly={readOnly}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             data.setValue(event.target.value)
           }

@@ -1,15 +1,17 @@
-import { Grid, Table, TableBody, TableCell, TableRow } from '@mui/material'
-import CircularProgress from '@mui/material/CircularProgress'
 import currency from 'currency.js'
 import _ from 'lodash'
 import React from 'react'
+import Spinner from 'react-bootstrap/Spinner'
 
 import { AccountingDbRow } from '@/lib/accounting-row'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 
 import { sum } from '../matcher'
-import SimpleMuiAlert from '../SimpleMuiAlert'
 import { TableColDefinition } from './AccountingTable'
+import SimpleMuiAlert from '@/components/SimpleMuiAlert'
+import Container from '@/components/container'
+import Row from 'react-bootstrap/Row'
+import Table from 'react-bootstrap/Table'
 
 export default function MatcherTable(props: {
   rows?: any[]
@@ -56,70 +58,54 @@ export default function MatcherTable(props: {
         text={error}
       />
       {!dataRows ? (
-        <CircularProgress />
+        <Container>
+          <Spinner />
+        </Container>
       ) : (
-        <Grid container spacing={2} columns={12}>
-          <Grid item xs={12}>
+        <Container fluid>
+          <Row xs={12}>
             <SumDisplay rows={dataRows} />
             <Table>
-              <TableBody>
+              <tbody>
                 {Object.entries(groups).map(([symbol, rows]) => (
-                  <TableRow key={symbol}>
+                  <tr key={symbol}>
                     <Summary rows={rows} symbol={symbol} />
-                    <TableCell>
+                    <td>
                       <Table size="small">
                         {rows.map(
                           (row) =>
                             row && (
-                              <TableRow key={row.t_id}>
-                                <TableCell
-                                  sx={{ width: '120px' }}
-                                  align="right"
-                                >
+                              <tr key={row.t_id}>
+                                <td style={{ width: '120px' }} align="right">
                                   {row.t_date}
-                                </TableCell>
-                                <TableCell
-                                  sx={{ width: '180px' }}
-                                  align="right"
-                                >
+                                </td>
+                                <td style={{ width: '180px' }} align="right">
                                   {row.t_type}
-                                </TableCell>
-                                <TableCell
-                                  sx={{ width: '300px' }}
-                                  align="right"
-                                >
+                                </td>
+                                <td style={{ width: '300px' }} align="right">
                                   {row.t_description || row.t_symbol}
-                                </TableCell>
-                                <TableCell
-                                  sx={{ width: '160px' }}
-                                  align="right"
-                                >
+                                </td>
+                                <td style={{ width: '160px' }} align="right">
                                   {row.t_price} &times; {row.t_qty}
-                                </TableCell>
-                                <TableCell
-                                  sx={{ width: '160px' }}
-                                  align="right"
-                                >
+                                </td>
+                                <td style={{ width: '160px' }} align="right">
                                   -{row.t_commission} - {row.t_fee}
-                                </TableCell>
-                                <TableCell
-                                  sx={{ width: '120px' }}
-                                  align="right"
-                                >
+                                </td>
+                                <td style={{ width: '120px' }} align="right">
                                   {row.t_amt}
-                                </TableCell>
-                                <TableCell>{row.t_comment}</TableCell>
-                              </TableRow>
+                                </td>
+                                <td>{row.t_comment}</td>
+                              </tr>
                             ),
                         )}
                       </Table>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
+              </tbody>
             </Table>
-          </Grid>
-        </Grid>
+          </Row>
+        </Container>
       )}
     </>
   )
@@ -138,9 +124,9 @@ function Summary({
   rows: AccountingDbRow[]
 }) {
   return (
-    <TableCell style={{ verticalAlign: 'top' }}>
+    <td style={{ verticalAlign: 'top' }}>
       <p>{symbol}</p>
       <SumDisplay rows={rows} />
-    </TableCell>
+    </td>
   )
 }
