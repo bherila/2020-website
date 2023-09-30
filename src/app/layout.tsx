@@ -1,4 +1,8 @@
+import 'bootstrap/dist/css/bootstrap.css';
 import * as React from 'react'
+import Container from "@/components/container";
+import Header from "@/components/header";
+import SSRProvider from 'react-bootstrap/SSRProvider';
 
 export const metadata = {
   title: 'Ben Herila',
@@ -12,8 +16,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-              {children}
+      <body data-bs-theme="dark">
+        <Header />
+        <Container>
+          {children}
+        </Container>
       </body>
     </html>
   )
