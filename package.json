@@ -59,6 +59,7 @@
     "react-hook-form": "^7.46.2",
     "react-perfect-scrollbar": "^1.5.8",
     "sass": "^1.57.0",
+    "server-only": "^0.0.1",
     "serverless-mysql": "^1.5.5",
     "swr": "^2.2.2",
     "uuid-wand": "^1.0.1"
