@@ -4,6 +4,7 @@ import 'devextreme/dist/css/dx.common.css'
 import 'devextreme/dist/css/dx.material.purple.dark.compact.css'
 import { Metadata, ResolvingMetadata } from 'next'
 import { redirect } from 'next/navigation'
+import Container from 'react-bootstrap/Container'
 
 interface Props {
   params: { symbol: string }
@@ -33,5 +34,9 @@ export default function Page({ params }: Props) {
     return null
   }
   const symbol = params.symbol.toUpperCase()
-  return <MinMaxClientDataLoader symbol={symbol} />
+  return (
+    <Container fluid>
+      <MinMaxClientDataLoader symbol={symbol} />
+    </Container>
+  )
 }
