@@ -35,7 +35,7 @@ const Form = (props: any) => {
                 <div className="control">
                   <input
                     autoComplete="off"
-                    className={`input ${errors.email && "is-danger"}`}
+                    className={`input ${errors.email && 'is-danger'}`}
                     type="email"
                     required
                     {...register('email', { required: true })}
