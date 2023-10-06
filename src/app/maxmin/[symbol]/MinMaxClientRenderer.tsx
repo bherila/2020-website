@@ -71,7 +71,7 @@ export default function MinMaxClientRenderer({
   }
 
   return (
-    <Container fluid>
+    <Container fluid className="py-4">
       <Row>
         <Col xs={12} sm={6}>
           <DataGrid
