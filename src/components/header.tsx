@@ -5,7 +5,7 @@ import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 
-export default function Header() {
+export default function Header(props: { uid?: number }) {
   return (
     <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
       <Container>
@@ -21,8 +21,14 @@ export default function Header() {
             </NavDropdown>
           </Nav>
           <Nav>
-            <Nav.Link href="/auth/sign-in">Sign in</Nav.Link>
-            <Nav.Link href="/auth/sign-up">Sign up</Nav.Link>
+            {!props.uid ? (
+              <>
+                <Nav.Link href="/auth/sign-in">Sign in</Nav.Link>
+                <Nav.Link href="/auth/sign-up">Sign up</Nav.Link>
+              </>
+            ) : (
+              <Nav.Link href="/api/sign-out">Sign out</Nav.Link>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>

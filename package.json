@@ -62,7 +62,8 @@
     "server-only": "^0.0.1",
     "serverless-mysql": "^1.5.5",
     "swr": "^2.2.2",
-    "uuid-wand": "^1.0.1"
+    "uuid-wand": "^1.0.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@babel/core": "^7.22.11",

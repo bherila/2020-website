@@ -1,69 +1,62 @@
-'use client'
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import 'server-only'
+import { z } from 'zod'
+import React from 'react'
+import SignInForm from '@/app/auth/sign-in/SignInForm'
+import db from '@/lib/db'
+import { cookies } from 'next/headers'
+import { getSession, saveSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
 
-interface EmailPassword {
-  email?: string
-  password?: string
-}
+const User = z.object({
+  email: z.string(),
+  password: z.string(),
+})
 
-const Form = (props: any) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<EmailPassword>()
-  const [loggedIn, setLoggedIn] = useState(false)
+export default async function SignInPage() {
+  const session = await getSession()
 
-  function login(formData: EmailPassword) {
-    setLoggedIn(true)
-    redirect('/')
-    return null
+  async function signIn(formData: FormData) {
+    'use server'
+    try {
+      const user = User.parse({
+        email: formData.get('email'),
+        password: formData.get('password'),
+      })
+      const res = await db.query(
+        'select uid, email, pw from users where email = ? and pw = SHA2(CONCAT(?,CAST(salt AS char)), 0) or pw = ?',
+        [user.email, user.password, user.password],
+      )
+      if (!Array.isArray(res) || res.length == 0) {
+        // login failed
+      } else {
+        const dbObj = z
+          .object({ uid: z.number(), email: z.string(), pw: z.string() })
+          .parse(res[0])
+
+        // pw was not encrypted at rest! fix that :)
+        if (dbObj.pw === user.password) {
+          const salt = Math.round(Math.random() * Number.MAX_SAFE_INTEGER)
+          await db.query(
+            'update users set salt = ?, pw = SHA2(CONCAT(?, CAST(? as char)), 0) where uid = ?',
+            [salt, user.password, salt, dbObj.uid],
+          )
+        }
+
+        // set the cookie
+        await saveSession({ uid: dbObj.uid })
+
+        // https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations#redirecting
+        redirect('/')
+      }
+    } finally {
+      await db.end()
+    }
   }
 
   return (
-    <div className="section is-fullheight">
-      {loggedIn && redirect('/')}
-      <div className="container">
-        <div className="column is-6 is-offset-3">
-          <div className="box">
-            <h1>Login</h1>
-            <form onSubmit={handleSubmit(login)} noValidate>
-              <div className="field">
-                <label className="label">Email Address</label>
-                <div className="control">
-                  <input
-                    autoComplete="off"
-                    className={`input ${errors.email && 'is-danger'}`}
-                    type="email"
-                    required
-                    {...register('email', { required: true })}
-                  />
-                </div>
-              </div>
-              <div className="field">
-                <label className="label">Password</label>
-                <div className="control">
-                  <input
-                    className={`input ${errors.password && 'is-danger'}`}
-                    type="password"
-                    {...register('password', { required: true })}
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                className="button is-block is-info is-fullwidth"
-              >
-                Login
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+    <form action={signIn}>
+      <p>Current uid {session?.uid ?? 'null'}</p>
+      <SignInForm />
+    </form>
   )
 }
-
-export default Form
