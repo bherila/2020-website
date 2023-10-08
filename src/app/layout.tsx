@@ -17,7 +17,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body data-bs-theme="dark">
-        <Header uid={session?.uid ?? 0} />
+        <Header session={session} />
         <main>{children}</main>
       </body>
     </html>
