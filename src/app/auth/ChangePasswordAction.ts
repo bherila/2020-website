@@ -12,10 +12,9 @@ export default async function ChangePasswordAction(formData: FormData) {
       uid: (await getSession())?.uid,
     })
   const newSalt = Math.random() * Number.MAX_SAFE_INTEGER
-  await db.query('update users set pw = ?, salt = ? where uid = ?', [
-    sanitized.password,
-    newSalt,
-    sanitized.uid,
-  ])
+  await db.query(
+    'update users set pw = SHA2(CONCAT(?,CAST(? AS char)), 0), salt = ? where uid = ?',
+    [sanitized.password, newSalt, newSalt, sanitized.uid],
+  )
   return { message: 'ok' }
 }

@@ -1,5 +1,4 @@
-'use server'
-import { getSession, saveSession } from '@/lib/session'
+import { getSession } from '@/lib/session'
 import Container from '@/components/container'
 import MainTitle from '@/components/main-title'
 

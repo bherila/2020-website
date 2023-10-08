@@ -1,12 +1,7 @@
-import 'server-only'
-import { z } from 'zod'
 import React from 'react'
 import SignInForm from '@/app/auth/sign-in/SignInForm'
-import db from '@/lib/db'
-import { cookies } from 'next/headers'
-import { getSession, saveSession } from '@/lib/session'
-import { redirect } from 'next/navigation'
-import SignInAction from '@/app/auth/sign-in/SigninAction'
+import { getSession } from '@/lib/session'
+import SignInAction from '@/app/auth/SigninAction'
 
 export default async function SignInPage() {
   const session = await getSession()

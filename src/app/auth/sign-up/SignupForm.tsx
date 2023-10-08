@@ -1,12 +1,10 @@
 'use client'
 
-import { useTransition } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { SignupType } from '@/app/auth/sign-up/SignupSchema'
-import { SignupAction } from '@/app/auth/sign-up/SignupAction'
+import { useForm } from 'react-hook-form'
+import { SignupType } from '@/app/auth/SignupSchema'
+import { SignupAction } from '@/app/auth/SignupAction'
 
 export default function SignupForm() {
-  const [isPending, startTransition] = useTransition()
   const { register, handleSubmit } = useForm<SignupType>()
 
   // Not ready yet--

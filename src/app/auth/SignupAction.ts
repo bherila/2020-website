@@ -1,11 +1,11 @@
 'use server'
 
-import { SignupZod } from '@/app/auth/sign-up/SignupSchema'
+import { SignupZod } from '@/app/auth/SignupSchema'
+import SignInAction from '@/app/auth/SigninAction'
 import db from '@/lib/db'
 import { ZodError } from 'zod'
 import { saveSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
-import SignInAction from '@/app/auth/sign-in/SigninAction'
 
 export async function SignupAction(
   formData: FormData,
