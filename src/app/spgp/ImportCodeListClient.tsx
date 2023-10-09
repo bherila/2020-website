@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ParsedSPGPPassType } from '@/app/spgp/SPGPPassTypes'
 import Form from 'react-bootstrap/Form'
 import { fetchWrapper } from '@/lib/fetchWrapper'
@@ -12,9 +12,7 @@ export default function ImportCodeListClient({
   passTypes: ParsedSPGPPassType[]
 }) {
   const [tsv, setTsv] = useState<string>('')
-  const [sel, setSel] = useState<string>(
-    passTypes[0]?.passtype_id?.toString() || '',
-  )
+  const [sel, setSel] = useState<string>('')
 
   const errors = new Set<string>()
   const data = tsv
@@ -53,9 +51,9 @@ export default function ImportCodeListClient({
             value={sel}
             onChange={(x) => setSel(x.currentTarget.value)}
           >
-            {passTypes.map((pt) => (
+            {passTypes?.map((pt) => (
               <option key={pt.passtype_id} value={pt.passtype_id}>
-                {pt.display_name} exp {pt.expiry.toDateString()}
+                {pt.display_name} exp {pt.expiry}
               </option>
             ))}
           </select>

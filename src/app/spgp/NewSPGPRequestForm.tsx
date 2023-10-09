@@ -4,31 +4,38 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { ParsedSPGPPassType } from '@/app/spgp/SPGPPassTypes'
 import Row from 'react-bootstrap/Row'
+import {
+  SPGPRequestSchema,
+  SPGPRequestType,
+} from '@/app/spgp/SPGPRequestSchema'
 
-const schema = z.object({
-  r_name: z.string().min(1, { message: 'Required' }),
-  r_email: z.string().email(),
-  r_birthdate: z.date(),
-  r_previous_passid: z.string().regex(/I\d{8,25}|^$/i), // either iXXXXX or empty
-  passtype_id: z.coerce.number().gt(0),
-})
-
-const NewSPGPRequestForm = (props: { passTypes?: ParsedSPGPPassType[] }) => {
+const NewSPGPRequestForm = ({
+  passTypes,
+}: {
+  passTypes: ParsedSPGPPassType[]
+}) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+  } = useForm<SPGPRequestType>({
+    resolver: zodResolver(SPGPRequestSchema),
   })
 
   return (
     <form onSubmit={handleSubmit((d) => console.log(d))}>
       <Row>
         <label>
-          Full name (must match photo ID): <input {...register('r_name')} />
+          First name (must match photo ID): <input {...register('r_first')} />
         </label>
-        {errors.r_name?.message && <p>{errors.r_name?.message as string}</p>}
+        {errors.r_first?.message && <p>{errors.r_first?.message as string}</p>}
+      </Row>
+
+      <Row>
+        <label>
+          Last name (must match photo ID): <input {...register('r_last')} />
+        </label>
+        {errors.r_last?.message && <p>{errors.r_last?.message as string}</p>}
       </Row>
 
       <Row>
@@ -51,7 +58,7 @@ const NewSPGPRequestForm = (props: { passTypes?: ParsedSPGPPassType[] }) => {
       <Row>
         <label>
           Type requested:
-          {props.passTypes?.map((passType) => (
+          {passTypes?.map((passType) => (
             <label key={passType.passtype_id}>
               <input
                 type="radio"
