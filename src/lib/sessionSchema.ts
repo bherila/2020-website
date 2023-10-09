@@ -9,4 +9,11 @@ export const sessionSchema = z.object({
   ax_spgp: z.boolean().optional().default(false),
 })
 
-export type sessionType = z.infer<typeof sessionSchema>
+export interface sessionType {
+  uid: number
+  ax_maxmin?: boolean
+  ax_homes?: boolean
+  ax_tax?: boolean
+  ax_evdb?: boolean
+  ax_spgp?: boolean
+}
