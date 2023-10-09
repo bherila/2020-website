@@ -4,8 +4,9 @@ import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
+import { sessionType } from '@/lib/sessionSchema'
 
-export default function Header(props: { uid?: number }) {
+export default function Header(props: { session: sessionType | null }) {
   return (
     <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
       <Container>
@@ -17,11 +18,18 @@ export default function Header(props: { uid?: number }) {
             <Nav.Link href="/projects">Projects</Nav.Link>
             <NavDropdown title="Tools" id="collasible-nav-dropdown">
               <NavDropdown.Item href="/maxmin/MSFT">MaxMin</NavDropdown.Item>
+
+              {props.session?.ax_spgp && (
+                <NavDropdown.Item href="/spgp">
+                  Ski Pass Group Purchase
+                </NavDropdown.Item>
+              )}
+
               {/*<NavDropdown.Divider />*/}
             </NavDropdown>
           </Nav>
           <Nav>
-            {!props.uid ? (
+            {!props.session?.uid ? (
               <>
                 <Nav.Link href="/auth/sign-in">Sign in</Nav.Link>
                 <Nav.Link href="/auth/sign-up">Sign up</Nav.Link>

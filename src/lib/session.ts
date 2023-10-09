@@ -2,7 +2,7 @@ import 'server-only'
 import type { IronSessionOptions } from 'iron-session'
 import { cookies } from 'next/headers'
 import { sealData, unsealData } from 'iron-session'
-import { z } from 'zod'
+import { sessionSchema, sessionType } from '@/lib/sessionSchema'
 
 const sessionOptions: IronSessionOptions = {
   password:
@@ -15,11 +15,7 @@ const sessionOptions: IronSessionOptions = {
   },
 }
 
-const sessionSchema = z.object({
-  uid: z.number(),
-})
-
-export async function getSession() {
+export async function getSession(): Promise<sessionType | null> {
   const cookieStore = cookies()
   const encryptedSession = cookieStore.get(sessionOptions.cookieName)?.value
   const session = encryptedSession
@@ -30,15 +26,11 @@ export async function getSession() {
   return session == null ? null : sessionSchema.parse(session)
 }
 
-export async function encryptSession(
-  session: z.infer<typeof sessionSchema>,
-): Promise<string> {
+export async function encryptSession(session: sessionType): Promise<string> {
   return await sealData(session, { password: sessionOptions.password })
 }
 
-export async function saveSession(
-  session: z.infer<typeof sessionSchema> | null,
-) {
+export async function saveSession(session: sessionType | null) {
   const cookieStore = cookies()
   if (session == null) {
     cookieStore.delete(sessionOptions.cookieName)
