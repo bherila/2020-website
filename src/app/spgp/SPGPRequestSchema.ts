@@ -4,7 +4,7 @@ export const SPGPRequestSchema = z.object({
   r_first: z.string().min(1, { message: 'Required' }),
   r_last: z.string().min(1, { message: 'Required' }),
   r_email: z.string().email(),
-  r_birthdate: z.coerce.date(),
+  r_birthdate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   r_previous_passid: z.coerce
     .string()
     .regex(/I\d{8,25}|^$/i)
@@ -24,9 +24,11 @@ export interface SPGPRequestType {
   r_first: string
   r_last: string
   r_email: string
-  r_birthdate: Date
+  r_birthdate: string
   r_previous_passid: string
+  r_used_on?: string
   passtype_id: number
+  passtype_display_name?: string
 
   r_id: number
   uid: number

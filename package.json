@@ -47,6 +47,7 @@
     "jest-environment-jsdom": "^29.6.4",
     "lodash": "^4.17.21",
     "markdown-to-jsx": "^7.3.2",
+    "moment": "^2.29.4",
     "next": "^13.4.19",
     "next-compose-plugins": "^2.2.1",
     "next-optimized-images": "^2.6.2",
