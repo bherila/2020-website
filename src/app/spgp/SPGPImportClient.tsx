@@ -8,6 +8,7 @@ import { Alert, Button } from 'react-bootstrap'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import { ParsedSPGPPassType } from '@/app/spgp/SPGPPassTypes'
 import Form from 'react-bootstrap/Form'
+import moment from 'moment'
 
 export default function SPGPImportClient({
   passTypes,
@@ -33,7 +34,13 @@ export default function SPGPImportClient({
         return null // col header
       }
       for (let i = 0; i < Math.min(colKeys.length, colData.length); ++i) {
-        rowData[colKeys[i]] = colData[i]
+        if (i == 4) {
+          rowData[colKeys[i]] = moment(colData[i]).format('yyyy-MM-DD')
+        } else if (i == 9) {
+          rowData[colKeys[i]] = colData[i].replace(/[^\d.]/g, '')
+        } else {
+          rowData[colKeys[i]] = colData[i]
+        }
       }
       try {
         return SPGPSchema.parse(rowData)

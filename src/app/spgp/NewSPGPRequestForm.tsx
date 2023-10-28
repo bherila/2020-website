@@ -4,88 +4,150 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { ParsedSPGPPassType } from '@/app/spgp/SPGPPassTypes'
 import Row from 'react-bootstrap/Row'
-import {
-  SPGPRequestSchema,
-  SPGPRequestType,
-} from '@/app/spgp/SPGPRequestSchema'
+import Form from 'react-bootstrap/Form'
+import Col from 'react-bootstrap/Col'
+import Button from 'react-bootstrap/Button'
+import { useState } from 'react'
+import { fetchWrapper } from '@/lib/fetchWrapper'
+import { parseDate } from '@/lib/DateHelper'
+import { ParsedSPGP } from '@/app/spgp/SPGPSchema'
+import { Alert } from 'react-bootstrap'
 
 const NewSPGPRequestForm = ({
   passTypes,
+  refetch,
+  defaultEmail,
 }: {
   passTypes: ParsedSPGPPassType[]
+  refetch: () => void
+  defaultEmail: string
 }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SPGPRequestType>({
-    resolver: zodResolver(SPGPRequestSchema),
-  })
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState(defaultEmail)
+  const [birthDate, setBirthDate] = useState('')
+  const [passType, setPassType] = useState(0)
+  const [previousPassId, setPreviousPassId] = useState('')
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault()
+    fetchWrapper
+      .post('/api/spgp/', {
+        renewOrNew: !previousPassId ? 'new' : 'renew',
+        first: firstName,
+        last: lastName,
+        birthday: birthDate,
+        email: email,
+        notes: previousPassId,
+        passType: passType.toString(),
+      } as ParsedSPGP)
+      .then(() => refetch())
+  }
+
+  const info = passTypes.filter((pt) => pt.passtype_id === passType)[0]
 
   return (
-    <form onSubmit={handleSubmit((d) => console.log(d))}>
-      <Row>
-        <label>
-          First name (must match photo ID): <input {...register('r_first')} />
-        </label>
-        {errors.r_first?.message && <p>{errors.r_first?.message as string}</p>}
-      </Row>
+    <Form onSubmit={handleSubmit}>
+      <Form.Group className="mb-3" as={Col} controlId="firstName">
+        <Form.Label>
+          First name of pass holder (must match photo ID):
+        </Form.Label>
+        <Form.Control
+          type="text"
+          required
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+        />
+      </Form.Group>
 
-      <Row>
-        <label>
-          Last name (must match photo ID): <input {...register('r_last')} />
-        </label>
-        {errors.r_last?.message && <p>{errors.r_last?.message as string}</p>}
-      </Row>
+      <Form.Group className="mb-3" as={Col} controlId="lastName">
+        <Form.Label>Last name of pass holder (must match photo ID):</Form.Label>
+        <Form.Control
+          type="text"
+          required
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+        />
+      </Form.Group>
 
-      <Row>
-        <label>
-          Email of pass holder: <input type="email" {...register('r_email')} />
-        </label>
-        {errors.r_email?.message && <p>{errors.r_email?.message as string}</p>}
-      </Row>
+      <Form.Group className="mb-3" controlId="email">
+        <Form.Label>
+          Email of pass holder online account. Can use the same email for
+          multiple passes.
+        </Form.Label>
+        <Form.Control
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </Form.Group>
 
-      <Row>
-        <label>
-          Birth date:
-          <input type="date" {...register('r_birthdate')} />
-        </label>
-        {errors.r_birthdate?.message && (
-          <p>{errors.r_birthdate?.message as string}</p>
-        )}
-      </Row>
+      <Form.Group className="mb-3" controlId="birthDate">
+        <Form.Label>Birth date of pass holder:</Form.Label>
+        <Form.Control
+          type="text"
+          required
+          pattern="^\d{4}-\d{2}-\d{2}$"
+          title="Birth date should be in year-month-day format with 4 digit year, 2 digit month and 2 digit day"
+          value={birthDate}
+          onChange={(e) => setBirthDate(e.target.value)}
+          placeholder="yyyy-mm-dd"
+          onBlur={() =>
+            setBirthDate(parseDate(birthDate)?.formatYMD() ?? birthDate)
+          }
+        />
+      </Form.Group>
 
-      <Row>
-        <label>
-          Type requested:
-          {passTypes?.map((passType) => (
-            <label key={passType.passtype_id}>
-              <input
-                type="radio"
-                {...register('passtype_id')}
-                value={passType.passtype_id}
-              />
-              {passType.display_name}
-            </label>
-          ))}
-        </label>
-        {errors.passtype_id?.message && (
-          <p>{errors.passtype_id?.message as string}</p>
-        )}
-      </Row>
+      <Form.Group className="mb-3" controlId="passType">
+        <Form.Label>
+          Pass type you are requesting for the upcoming season
+        </Form.Label>
+        <Form.Control
+          as="select"
+          required
+          value={passType}
+          onChange={(e) => setPassType(parseInt(e.target.value))}
+        >
+          <option value="">Select Pass Type</option>
+          {passTypes.map((pt) => {
+            return (
+              <option key={pt.passtype_id} value={pt.passtype_id}>
+                {pt.display_name}
+              </option>
+            )
+          })}
+        </Form.Control>
+      </Form.Group>
 
-      <Row>
-        <label>
-          (If applicable) Previous pass ID (starts with letter I):{' '}
-          <input {...register('r_previous_passid')} />
-        </label>
-        {errors.r_previous_passid?.message && (
-          <p>{errors.r_previous_passid?.message as string}</p>
-        )}
-      </Row>
+      {info && (
+        <Alert className="mb-3">
+          <p>{info.info}</p>
+          <p>
+            <b>Request by {info.expiry}</b>
+          </p>
+        </Alert>
+      )}
 
-      <input type="submit" />
-    </form>
+      <Form.Group className="mb-3" controlId="previousPassId">
+        <Form.Label>
+          Previous pass ID (starts with letter I). Does not have to be the same
+          type as the pass you are requesting for upcoming season.
+        </Form.Label>
+        <Form.Control
+          type="text"
+          value={previousPassId}
+          pattern="^(I900\d*|)$"
+          placeholder="Provide your pass ID if renewing"
+          title="Input must be empty or start with 'I900' followed by digits"
+          onChange={(e) => setPreviousPassId(e.target.value.toUpperCase())}
+        />
+      </Form.Group>
+
+      <Button variant="primary" type="submit">
+        Submit
+      </Button>
+    </Form>
   )
 }
 

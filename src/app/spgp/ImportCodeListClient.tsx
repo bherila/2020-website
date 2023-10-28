@@ -36,9 +36,7 @@ export default function ImportCodeListClient({
 
   return (
     <Card>
-      <Card.Header>
-        <Card.Title>Import codes</Card.Title>
-      </Card.Header>
+      <Card.Header>Import codes</Card.Header>
       <Card.Body>
         <Form
           onSubmit={(e) => {
