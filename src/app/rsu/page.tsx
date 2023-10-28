@@ -5,17 +5,30 @@ import { useEffect, useState } from 'react'
 import Table from 'react-bootstrap/Table'
 import currency from 'currency.js'
 import { fetchWrapper } from '@/lib/fetchWrapper'
-import { format } from 'date-fns'
 import Spinner from 'react-bootstrap/Spinner'
-import { redirect } from 'next/navigation'
+import Col from 'react-bootstrap/Col'
+import MainTitle from '@/components/main-title'
+import { IAward } from '@/app/rsu/IAward'
+import { RsuByVestDate } from '@/app/rsu/rsuByVestDate'
+import { RsuByAward } from '@/app/rsu/rsuByAward'
+import { vestStyle } from '@/app/rsu/vestStyle'
+import dynamic from 'next/dynamic'
 
-interface IAward {
-  award_id?: string
-  grant_date?: string
-  vest_date?: string
-  share_count?: currency | number
-  symbol?: string
-}
+const RsuChartLazy = dynamic(() => import('./RsuChart'), {
+  loading: () => <Spinner />,
+})
+
+// reused 2x
+const header = (
+  <thead>
+    <tr>
+      <th>Vest date</th>
+      <th>Granted on</th>
+      <th>Shares</th>
+      <th>Grant ID</th>
+    </tr>
+  </thead>
+)
 
 export default function RSUPage() {
   const [shares, setShares] = useState<string>('')
@@ -23,18 +36,6 @@ export default function RSUPage() {
   const [awardId, setAwardId] = useState('')
   const [symbol, setSymbol] = useState('META')
   const [grantDate, setGrantDate] = useState('')
-
-  // reused 2x
-  const header = (
-    <thead>
-      <tr>
-        <th>Vest date</th>
-        <th>Granted on</th>
-        <th>Shares</th>
-        <th>Grant ID</th>
-      </tr>
-    </thead>
-  )
 
   const rowsToImport: IAward[] = shares
     .split('\n')
@@ -77,28 +78,59 @@ export default function RSUPage() {
       .finally(() => setLoading(false))
   }, [])
 
+  if (!rsu) {
+    return null
+  }
+
+  const now = new Date().toISOString().slice(0, 10)
   return (
     <Container>
       <Row>
-        <h2>All vests</h2>
-        <Table>
-          {header}
-          <tbody>
-            {rsu.map((r, i) => (
-              <tr key={i}>
-                <td>{r.vest_date}</td>
-                <td>{r.grant_date}</td>
-                <td>{r.share_count?.toString()}</td>
-                <td>{r.award_id}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-        {loading && (
-          <div style={{ textAlign: 'center' }} className="py-4">
-            <Spinner />
-          </div>
-        )}
+        <Col xs={12}>
+          <MainTitle>RSU App</MainTitle>
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={12}>
+          <RsuChartLazy rsu={rsu} />
+        </Col>
+      </Row>
+      <Row>
+        <Col md={6}>
+          <h3>All vests</h3>
+          <Table size="sm">
+            {header}
+            <tbody>
+              {rsu.map((r, i) => {
+                const vested = r.vest_date! < now
+                return (
+                  <tr key={i} style={vested ? vestStyle : {}}>
+                    <td>
+                      {vested && '✔ '}
+                      {r.vest_date}
+                    </td>
+                    <td>{r.grant_date}</td>
+                    <td>{r.share_count?.toString()}</td>
+                    <td>{r.award_id}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </Table>
+          {loading && (
+            <div style={{ textAlign: 'center' }} className="py-4">
+              <Spinner />
+            </div>
+          )}
+        </Col>
+        <Col md={3}>
+          <h3>per vest date</h3>
+          <RsuByVestDate rsu={rsu} />
+        </Col>
+        <Col md={3}>
+          <h3>per award</h3>
+          <RsuByAward rsu={rsu} />
+        </Col>
       </Row>
       <Row>
         <h3>Add an award</h3>
