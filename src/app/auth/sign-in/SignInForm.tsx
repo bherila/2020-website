@@ -1,62 +1,66 @@
 'use client'
 import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { redirect } from 'next/navigation'
 import Container from '@/components/container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import Form from 'react-bootstrap/Form'
+import Button from 'react-bootstrap/Button'
 
-interface EmailPassword {
-  email?: string
-  password?: string
-}
-
-const Form = (props: any) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<EmailPassword>()
+export default function SignInForm(props: any) {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  })
   const [loggedIn, setLoggedIn] = useState(false)
-
+  const xs = 3
   return (
-    <Container>
+    <Container fluid>
       {loggedIn && redirect('/')}
-      <div className="container">
-        <div className="column is-6 is-offset-3">
-          <div className="box">
-            <h1>Login</h1>
-            <div className="field">
-              <label className="label">Email Address</label>
-              <div className="control">
-                <input
-                  autoComplete="off"
-                  className={`input ${errors.email && 'is-danger'}`}
-                  type="email"
-                  required
-                  {...register('email', { required: true })}
-                />
-              </div>
-            </div>
-            <div className="field">
-              <label className="label">Password</label>
-              <div className="control">
-                <input
-                  className={`input ${errors.password && 'is-danger'}`}
-                  type="password"
-                  {...register('password', { required: true })}
-                />
-              </div>
-            </div>
-            <button
-              type="submit"
-              className="button is-block is-info is-fullwidth"
-            >
-              Login
-            </button>
-          </div>
-        </div>
-      </div>
+      <Form.Group as={Row} className="mb-3" controlId="email">
+        <Form.Label column xs={xs}>
+          Email
+        </Form.Label>
+        <Col xs={12 - xs}>
+          <Form.Control
+            type="email"
+            required
+            name="email"
+            placeholder="Enter your email"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+          />
+        </Col>
+      </Form.Group>
+
+      <Form.Group as={Row} className="mb-3" controlId="password">
+        <Form.Label column xs={xs}>
+          Password
+        </Form.Label>
+        <Col xs={12 - xs}>
+          <Form.Control
+            type="password"
+            required
+            name="password"
+            placeholder="Enter your password"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+          />
+        </Col>
+      </Form.Group>
+
+      <Row>
+        <Col xs={xs}></Col>
+        <Col xs={12 - xs}>
+          <Button variant="primary" type="submit">
+            Sign in
+          </Button>
+        </Col>
+      </Row>
     </Container>
   )
 }
-
-export default Form

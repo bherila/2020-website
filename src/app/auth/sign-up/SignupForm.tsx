@@ -1,68 +1,147 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
-import { SignupType } from '@/app/auth/SignupSchema'
+import { SignupZod } from '@/app/auth/SignupSchema'
 import { SignupAction } from '@/app/auth/SignupAction'
+import { useState } from 'react'
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import { z, ZodIssue } from 'zod'
+import Alert from 'react-bootstrap/Alert'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 
-export default function SignupForm() {
-  const { register, handleSubmit } = useForm<SignupType>()
+function SignupForm() {
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    inviteCode: '',
+  })
 
-  // Not ready yet--
-  // const [state, formAction] = useFormState(SignupAction, {error: ''})
+  const [validationErrors, setValidationErrors] = useState<ZodIssue[] | null>(
+    null,
+  )
+
+  const handleSubmit = (event: React.FormEvent) => {
+    try {
+      SignupZod.parse(formData)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setValidationErrors(error.errors)
+      }
+      event.preventDefault()
+    }
+  }
+
+  const xs = 4
   return (
-    <>
-      <form action={SignupAction}>
-        <div className="grid lg:grid-cols-2 space-x-4">
-          <div className="form-control">
-            <label className="label" htmlFor="username">
-              <span className="label-text">Username</span>
-            </label>
-            <input
-              className="input input-bordered"
-              id="username"
-              required
-              {...register('alias')}
-            ></input>
-          </div>
-          <div className="form-control">
-            <label className="label" htmlFor="email">
-              <span className="label-text">Email address</span>
-            </label>
-            <input
-              className="input input-bordered"
-              type="email"
-              required
-              id="email"
-              {...register('email')}
-            ></input>
-          </div>
-        </div>
-        <div className="form-control">
-          <label className="label" htmlFor="password">
-            <span className="label-text">Password</span>
-          </label>
-          <input
-            className="input input-bordered"
+    <Form onSubmit={handleSubmit} action={SignupAction}>
+      {validationErrors && (
+        <Alert variant="danger">
+          <ul>
+            {validationErrors.map((error, index) => (
+              <li key={index}>{error.message}</li>
+            ))}
+          </ul>
+        </Alert>
+      )}
+
+      <Form.Group as={Row} className="mb-3" controlId="username">
+        <Form.Label column xs={xs}>
+          Username
+        </Form.Label>
+        <Col xs={12 - xs}>
+          <Form.Control
+            autoFocus
+            type="text"
+            placeholder="Enter your username"
+            required
+            value={formData.username}
+            onChange={(e) =>
+              setFormData({ ...formData, username: e.target.value })
+            }
+          />
+        </Col>
+      </Form.Group>
+
+      <Form.Group as={Row} className="mb-3" controlId="email">
+        <Form.Label column xs={xs}>
+          Email
+        </Form.Label>
+        <Col xs={12 - xs}>
+          <Form.Control
+            type="email"
+            required
+            placeholder="Enter your email"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+          />
+        </Col>
+      </Form.Group>
+
+      <Form.Group as={Row} className="mb-3" controlId="password">
+        <Form.Label column xs={xs}>
+          Password
+        </Form.Label>
+        <Col xs={12 - xs}>
+          <Form.Control
             type="password"
             required
-            id="password"
-            {...register('password')}
-          ></input>
-        </div>
-        <div className="form-control">
-          <label className="label" htmlFor="inviteCode">
-            <span className="label-text">Invite code</span>
-          </label>
-          <input
-            className="input input-bordered"
-            id="inviteCode"
-            {...register('inviteCode')}
-          ></input>
-        </div>
-        <button className="btn btn-block btn-primary" type="submit">
-          Create account
-        </button>
-      </form>
-    </>
+            placeholder="Enter your password"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+          />
+        </Col>
+      </Form.Group>
+
+      <Form.Group as={Row} className="mb-3" controlId="confirmPassword">
+        <Form.Label column xs={xs}>
+          Confirm Password
+        </Form.Label>
+        <Col xs={12 - xs}>
+          <Form.Control
+            type="password"
+            placeholder="Confirm your password"
+            required
+            value={formData.confirmPassword}
+            onChange={(e) =>
+              setFormData({ ...formData, confirmPassword: e.target.value })
+            }
+          />
+        </Col>
+      </Form.Group>
+
+      <Form.Group as={Row} className="mb-3" controlId="inviteCode">
+        <Form.Label column xs={xs}>
+          Invite Code (Optional)
+        </Form.Label>
+        <Col xs={12 - xs}>
+          <Form.Control
+            type="text"
+            placeholder="Enter your invite code"
+            value={formData.inviteCode}
+            onChange={(e) =>
+              setFormData({ ...formData, inviteCode: e.target.value })
+            }
+          />
+        </Col>
+      </Form.Group>
+
+      <Row>
+        <Col xs={xs}></Col>
+        <Col xs={12 - xs}>
+          <Button variant="primary" type="submit">
+            Sign Up
+          </Button>
+        </Col>
+      </Row>
+    </Form>
   )
 }
+
+export default SignupForm

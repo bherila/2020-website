@@ -33,7 +33,7 @@ export async function SignupAction(
         signup.email,
         signup.password,
         Math.random() * Number.MAX_SAFE_INTEGER,
-        signup.alias,
+        signup.username,
       ],
     )) as any
 
