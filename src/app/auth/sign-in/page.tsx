@@ -6,7 +6,6 @@ import Container from '@/components/container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import MainTitle from '@/components/main-title'
-import SignupForm from '@/app/auth/sign-up/SignupForm'
 
 export default async function SignInPage() {
   const session = await getSession()
@@ -15,7 +14,7 @@ export default async function SignInPage() {
       <Row>
         <Col sm={6}>
           <MainTitle>Sign in</MainTitle>
-          <form action={SignInAction} method="post">
+          <form action={SignInAction}>
             <SignInForm />
           </form>
         </Col>
