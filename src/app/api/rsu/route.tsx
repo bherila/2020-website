@@ -6,6 +6,10 @@ import { compareAsc, format } from 'date-fns'
 
 export async function POST(req: NextRequest) {
   try {
+    const uid = (await getSession())?.uid
+    if (!uid) {
+      return NextResponse.json('Unauthorized', { status: 403 })
+    }
     const schema = z.array(
       z.object({
         award_id: z.coerce.string(),
@@ -15,10 +19,6 @@ export async function POST(req: NextRequest) {
         symbol: z.coerce.string(),
       }),
     )
-    const uid = (await getSession())?.uid
-    if (!uid) {
-      return NextResponse.json('Unauthorized', { status: 403 })
-    }
     const data = schema
       .parse(await req.json())
       .map((r) => [
