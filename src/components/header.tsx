@@ -18,7 +18,9 @@ export default function Header(props: { session: sessionType | null }) {
             <Nav.Link href="/projects">Projects</Nav.Link>
             <NavDropdown title="Tools" id="collasible-nav-dropdown">
               <NavDropdown.Item href="/maxmin/MSFT">MaxMin</NavDropdown.Item>
-              <NavDropdown.Item href="/cdkeys/">CD Keys Manager 🔑</NavDropdown.Item>
+              <NavDropdown.Item href="/cdkeys/">
+                CD Keys Manager 🔑
+              </NavDropdown.Item>
               <NavDropdown.Item href="/rsu/">Finance - RSU 🔑</NavDropdown.Item>
               {props.session?.ax_spgp && (
                 <NavDropdown.Item href="/spgp">
