@@ -77,6 +77,19 @@ export function parseEntities(json: string): fin_payslip {
     }
   }
 
+  // Special case for 401k employer match which is not extracted :(
+  if (!parsed.find((row) => row.item === '401k Employer Match')) {
+    const match = json.match(
+      /401k Employer Match\\n([\d,]+\.?\d{0,2})\\n([\d,]+\.?\d{0,2})\\n([\d,]+\.?\d{0,2})\\n([\d,]+\.?\d{0,2})\\n/,
+    )
+    if (Array.isArray(match) && match[1]) {
+      parsed.push({
+        item: '401k Employer Match',
+        amount: match[1].replace(',', ''),
+      })
+    }
+  }
+
   // Create the mapping
   const mapping: { [key: string]: fin_payslip_col } = {
     Salary: 'ps_salary',
@@ -84,17 +97,25 @@ export function parseEntities(json: string): fin_payslip {
     'Pretax Medical': 'ps_pretax_medical',
     'Medical FSA': 'ps_pretax_fsa',
     'After Tax 401k Salary': 'ps_401k_aftertax',
-    'Voluntary Legal ben': 'ps_imputed_income',
-    '*Imp Legal': 'ps_imputed_income',
-    '*Imp LTD': 'ps_imputed_income',
-    'Restricted Stock Units': 'ps_rsu',
+    'Life@ Choice': 'imp_fitness',
+    '*Imp Legal': 'imp_legal',
+    '*Imp LTD': 'imp_ltd',
+    'Restricted Stock Units': 'earnings_rsu',
+    'Performance Bonus': 'earnings_bonus',
     OASDI: 'ps_oasdi',
     Medicare: 'ps_medicare',
     'Federal Withholding': 'ps_fed_tax',
+    'RSU Tax Offset': 'ps_fed_tax',
+    'RSU Excess Refund': 'ps_fed_tax_refunded',
+    'Voluntary Legal ben': 'other',
     'State Tax CA': 'ps_state_tax',
     'CA VDI CAVDI': 'ps_state_disability',
-    net_pay: 'ps_net_pay',
-    gross_earnings: 'ps_gross_earnings',
+    'CA VDI-CAVDI': 'ps_state_disability',
+    '401k Bonus': 'ps_401k_pretax',
+    'AFTAX 401k Bonus': 'ps_401k_aftertax',
+    '401k Employer Match': 'ps_401k_employer',
+    net_pay: 'earnings_net_pay',
+    gross_earnings: 'earnings_gross',
     pay_date: 'pay_date',
     start_date: 'period_start',
     state_additional_tax: 'ps_state_tax',

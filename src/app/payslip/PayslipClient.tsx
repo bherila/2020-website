@@ -6,28 +6,49 @@ import { redirect } from 'next/navigation'
 import AuthRoutes from '@/app/auth/AuthRoutes'
 import Container from '@/components/container'
 import Row from 'react-bootstrap/Row'
-import { PayslipTable } from '@/app/payslip/PayslipTable'
+import { payslip_table_col, PayslipTable } from '@/app/payslip/PayslipTable'
 import Spinner from 'react-bootstrap/Spinner'
 import FileUploadClient from '@/app/payslip/FileUploadClient'
 import { Button } from 'react-bootstrap'
 import styles from './dropzone.module.css'
 
 export default function PayslipClient(): React.ReactElement {
-  const cols: { field: fin_payslip_col; hide?: boolean; title?: string }[] = [
-    { field: 'period_start', title: 'Period Start', hide: true },
+  const cols: payslip_table_col[] = [
+    { field: 'period_start', title: 'Period Start', hide: false },
     { field: 'period_end', title: 'Period End', hide: false },
-    { field: 'pay_date', title: 'Pay Date', hide: true },
+    { field: 'pay_date', title: 'Pay Date', hide: false },
     { field: 'ps_comment', title: 'Comment', hide: false },
-    { field: 'ps_salary', title: 'Salary', hide: false },
-    { field: 'ps_bonus', title: 'Bonus', hide: false },
-    { field: 'ps_rsu', title: 'RSU', hide: false },
-    { field: 'ps_imputed_income', title: 'Imp Income', hide: false },
+    {
+      field: [
+        { field: 'ps_salary', title: 'Salary' },
+        { field: 'earnings_bonus', title: 'Bonus' },
+        { field: 'earnings_rsu', title: 'RSU' },
+      ],
+      title: 'Salary',
+      hide: false,
+    },
+    {
+      field: [
+        { field: 'imp_ltd', title: 'LTD' },
+        { field: 'imp_legal', title: 'Legal' },
+        { field: 'imp_fitness', title: 'Gym' },
+        { field: 'imp_other', title: 'Misc' },
+      ],
+      title: 'Imputed Income',
+      hide: false,
+    },
     { field: 'ps_oasdi', title: 'OASDI', hide: false },
     { field: 'ps_medicare', title: 'Medicare', hide: false },
-    { field: 'ps_fed_tax', title: 'Federal Tax', hide: false },
+    { field: 'ps_fed_tax', title: 'Fed Income Tax', hide: false },
     { field: 'ps_state_tax', title: 'State Tax', hide: false },
     { field: 'ps_state_disability', title: 'State Disability', hide: false },
-    { field: 'ps_401k_pretax', title: '401k Pre-Tax', hide: false },
+    {
+      field: [
+        { field: 'ps_401k_pretax', title: 'Deduct', hide: false },
+        { field: 'ps_401k_employer', title: 'Match', hide: false },
+      ],
+      title: '401k Pre-Tax',
+    },
     { field: 'ps_401k_aftertax', title: '401k After-Tax', hide: false },
     { field: 'ps_fed_tax_refunded', title: 'Fed Tax Refunded', hide: false },
     { field: 'ps_payslip_file_hash', title: 'Payslip File Hash', hide: true },
@@ -63,7 +84,7 @@ export default function PayslipClient(): React.ReactElement {
       </Row>
       <Row>
         <FileUploadClient onJsonPreview={updateJsonPreview} />
-        {updateJsonPreview.length && (
+        {Array.isArray(previewData) && previewData.length > 0 && (
           <>
             <h3>Upload data preview</h3>
             <PayslipTable data={previewData} cols={cols} />

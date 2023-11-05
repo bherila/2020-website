@@ -78,29 +78,42 @@ export default function FileUploadClient(props: Props) {
         onMouseOut={(e) => {
           setIsDragging(false)
         }}
-        className={`${styles.uploadZone} ${isDragging ? styles.dragging : ''}`}
+        className={`py-2 ${styles.uploadZone} ${
+          isDragging ? styles.dragging : ''
+        }`}
       >
-        Drop payslip JSON and PDF files here
+        Drop payslip JSON and PDF files here to add them. Get JSON file from{' '}
+        <a
+          target="_blank"
+          rel="nofollow noopener noreferrer"
+          href="https://www.gstatic.com/cloud-site-ux/document_ai/document_ai.min.html"
+        >
+          Document AI
+        </a>
       </div>
-      {/*<ul>*/}
-      {/*  <li>*/}
-      {/*    <strong>JSON Files:</strong>*/}
-      {/*    <ul>*/}
-      {/*      {jsonFiles.map((file, index) => (*/}
-      {/*        <li key={index}>{file.name}</li>*/}
-      {/*      ))}*/}
-      {/*    </ul>*/}
-      {/*  </li>*/}
-      {/*  <li>*/}
-      {/*    <strong>PDF Files:</strong>*/}
-      {/*    <ul>*/}
-      {/*      {pdfFiles.map((file, index) => (*/}
-      {/*        <li key={index}>{file.name}</li>*/}
-      {/*      ))}*/}
-      {/*    </ul>*/}
-      {/*  </li>*/}
-      {/*</ul>*/}
-      <button onClick={handleUploadAll}>Upload All</button>
+      {jsonFiles.length + pdfFiles.length > 0 && (
+        <>
+          <ul>
+            <li>
+              <strong>JSON Files:</strong>
+              <ul>
+                {jsonFiles.map((file, index) => (
+                  <li key={index}>{file.name}</li>
+                ))}
+              </ul>
+            </li>
+            <li>
+              <strong>PDF Files:</strong>
+              <ul>
+                {pdfFiles.map((file, index) => (
+                  <li key={index}>{file.name}</li>
+                ))}
+              </ul>
+            </li>
+          </ul>
+          <button onClick={handleUploadAll}>Upload All</button>
+        </>
+      )}
     </div>
   )
 }

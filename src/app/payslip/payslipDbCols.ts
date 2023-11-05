@@ -7,11 +7,14 @@ export interface fin_payslip {
   period_start?: any
   period_end?: any
   pay_date?: any
-  ps_gross_earnings?: pay_data
-  ps_bonus?: pay_data
-  ps_net_pay?: pay_data
-  ps_rsu?: pay_data
-  ps_imputed_income?: pay_data
+  earnings_gross?: pay_data
+  earnings_bonus?: pay_data
+  earnings_net_pay?: pay_data
+  earnings_rsu?: pay_data
+  imp_other?: pay_data
+  imp_legal?: pay_data
+  imp_fitness?: pay_data
+  imp_ltd?: pay_data
   ps_oasdi?: pay_data
   ps_medicare?: pay_data
   ps_fed_tax?: pay_data
@@ -19,6 +22,7 @@ export interface fin_payslip {
   ps_state_disability?: pay_data
   ps_401k_pretax?: pay_data
   ps_401k_aftertax?: pay_data
+  ps_401k_employer?: pay_data
   ps_fed_tax_refunded?: pay_data
   ps_payslip_file_hash?: string | null
   ps_is_estimated?: boolean | null
@@ -36,11 +40,14 @@ export const fin_payslip_schema = z.object({
   period_start: maybeStr,
   period_end: maybeStr,
   pay_date: maybeStr,
-  ps_gross_earnings: maybeNum,
-  ps_bonus: maybeNum,
-  ps_net_pay: maybeNum,
-  ps_rsu: maybeNum,
-  ps_imputed_income: maybeNum,
+  earnings_gross: maybeNum,
+  earnings_bonus: maybeNum,
+  earnings_net_pay: maybeNum,
+  earnings_rsu: maybeNum,
+  imp_other: maybeNum,
+  imp_legal: maybeNum,
+  imp_fitness: maybeNum,
+  imp_ltd: maybeNum,
   ps_oasdi: maybeNum,
   ps_medicare: maybeNum,
   ps_fed_tax: maybeNum,
@@ -48,6 +55,7 @@ export const fin_payslip_schema = z.object({
   ps_state_disability: maybeNum,
   ps_401k_pretax: maybeNum,
   ps_401k_aftertax: maybeNum,
+  ps_401k_employer: maybeNum,
   ps_fed_tax_refunded: maybeNum,
   ps_payslip_file_hash: maybeStr,
   ps_is_estimated: z.coerce.boolean().default(false),

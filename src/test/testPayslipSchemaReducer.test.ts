@@ -4,22 +4,24 @@ describe('parse', () => {
   it('should parse the fields from the payslip', () => {
     expect(Object.keys(parsed).sort()).toEqual(
       [
-        'ps_401k_pretax',
-        'ps_pretax_medical',
-        'ps_pretax_fsa',
-        'ps_imputed_income',
-        'ps_rsu',
-        'ps_salary',
-        'ps_401k_aftertax',
-        'ps_oasdi',
-        'ps_medicare',
-        'ps_fed_tax',
-        'ps_state_tax',
-        'ps_gross_earnings',
-        'ps_net_pay',
+        'earnings_gross',
+        'earnings_net_pay',
+        'earnings_rsu',
+        'imp_legal',
+        'imp_fitness',
+        'imp_ltd',
         'pay_date',
-        'period_start',
         'period_end',
+        'period_start',
+        'ps_401k_aftertax',
+        'ps_401k_pretax',
+        'ps_fed_tax',
+        'ps_medicare',
+        'ps_oasdi',
+        'ps_pretax_fsa',
+        'ps_pretax_medical',
+        'ps_salary',
+        'ps_state_tax',
         'other',
       ].sort(),
     )
@@ -29,14 +31,15 @@ describe('parse', () => {
     expect(parsed.ps_401k_aftertax).toEqual(null)
     expect(parsed.ps_401k_pretax).toEqual(null)
     expect(parsed.ps_fed_tax).toEqual(1300 + 3361.79)
-    expect(parsed.ps_gross_earnings).toEqual(9555.93)
-    // expect(parsed.ps_imputed_income).toEqual(17.2)
+    expect(parsed.earnings_gross).toEqual(9555.93)
+    expect(parsed.imp_legal).toEqual(1.38)
+    expect(parsed.imp_ltd).toEqual(17.2)
     expect(parsed.ps_medicare).toEqual(223.54)
-    expect(parsed.ps_net_pay).toEqual(5083.53)
+    expect(parsed.earnings_net_pay).toEqual(5083.53)
     expect(parsed.ps_oasdi).toEqual(null)
     expect(parsed.ps_pretax_fsa).toEqual(38.46)
     expect(parsed.ps_pretax_medical).toEqual(24)
-    expect(parsed.ps_rsu).toEqual(null)
+    expect(parsed.earnings_rsu).toEqual(null)
     expect(parsed.ps_state_tax).toEqual(815.26)
   })
 })

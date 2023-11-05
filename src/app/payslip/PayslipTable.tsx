@@ -9,13 +9,29 @@ import {
   fin_payslip_col,
   pay_data,
 } from '@/app/payslip/payslipDbCols'
+import Badge from 'react-bootstrap/Badge'
+import Stack from 'react-bootstrap/Stack'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
+import Tooltip from 'react-bootstrap/Tooltip'
+export interface payslip_table_col {
+  field:
+    | fin_payslip_col
+    | {
+        field: fin_payslip_col
+        hide?: boolean
+        title: string
+        color?: string
+      }[]
+  hide?: boolean
+  title: string
+}
 
 interface Props {
   data: fin_payslip[]
-  cols: { field: fin_payslip_col; hide?: boolean; title?: string }[]
+  cols: payslip_table_col[]
 }
 
-function format(val: pay_data) {
+function fmtNum(val: pay_data) {
   if (val == null || val == 0) {
     return null
   }
@@ -33,57 +49,92 @@ function format(val: pay_data) {
 
 export function PayslipTable(props: Props) {
   const { data, cols } = props
+
+  function ytd(row: fin_payslip, col: fin_payslip_col) {
+    return data
+      .filter(
+        (d) =>
+          // same year and prior or equal month:
+          d.period_end <= row.period_end &&
+          d.period_end.slice(0, 4) === row.period_end.slice(0, 4),
+      )
+      .reduce((prev, cur) => currency(cur[col]).add(prev), currency(0))
+  }
+
+  function renderValueCellContents(row: fin_payslip, col: fin_payslip_col) {
+    if (currency(row[col]).value > 0) {
+      const renderTooltip = (props: any) => (
+        <Tooltip id="button-tooltip" {...props}>
+          YTD: {fmtNum(ytd(row, col))}
+        </Tooltip>
+      )
+
+      return (
+        <OverlayTrigger
+          placement="right"
+          delay={{ show: 100, hide: 400 }}
+          overlay={renderTooltip}
+        >
+          <span>{fmtNum(row[col])}</span>
+        </OverlayTrigger>
+      )
+    }
+    return <span>{fmtNum(row[col])}</span>
+  }
+
   return (
     <Table
       size="sm"
       striped
       bordered
-      style={{ fontSize: '9pt', fontFamily: 'Atkinson Hyperlegible' }}
+      style={{ fontSize: '10pt', fontFamily: 'Atkinson Hyperlegible' }}
     >
       <thead>
         <tr>
           {cols
             .filter((c) => !c.hide)
             .map((s, i) => (
-              <th key={i}>{(s.title || s.field).trim()}</th>
+              <th key={i} style={{ textAlign: 'center' }}>
+                {s.title.trim()}
+              </th>
             ))}
         </tr>
       </thead>
       <tbody>
-        {_.orderBy(data, 'pay_date').map((row, rid) => (
+        {_.orderBy(data, 'period_end').map((row, rid) => (
           <tr key={rid}>
             {cols
               .filter((c) => !c.hide)
-              .map((c, ci) => {
-                if (currency(row[c.field]).value > 0) {
+              .map((c: payslip_table_col, ci) => {
+                if (Array.isArray(c.field)) {
+                  // handle as blocks
+                  return (
+                    <td key={c.title}>
+                      <Stack direction="horizontal" gap={2}>
+                        {c.field.map((subItem) => {
+                          return (
+                            row[subItem.field] > 0 && (
+                              <div key={subItem.field} color={subItem.color}>
+                                <span
+                                  style={{ fontWeight: 'bold', opacity: 0.5 }}
+                                >
+                                  {subItem.title + ' '}
+                                </span>
+                                {renderValueCellContents(row, subItem.field)}
+                              </div>
+                            )
+                          )
+                        })}
+                      </Stack>
+                    </td>
+                  )
+                } else {
                   return (
                     <td style={{ textAlign: 'right' }} key={c.field}>
-                      <div>{format(row[c.field])}</div>
-                      <div style={{ opacity: 0.5 }}>
-                        {'Σ '}
-                        {format(
-                          data
-                            .filter(
-                              (d) =>
-                                // same year and prior or equal month:
-                                d.pay_date <= row.pay_date &&
-                                d.pay_date.slice(0, 4) ===
-                                  row.pay_date.slice(0, 4),
-                            )
-                            .reduce(
-                              (prev, cur) => currency(cur[c.field]).add(prev),
-                              currency(0),
-                            ),
-                        )}
-                      </div>
+                      {renderValueCellContents(row, c.field)}
                     </td>
                   )
                 }
-                return (
-                  <td style={{ textAlign: 'right' }} key={c.field}>
-                    {format(row[c.field])}
-                  </td>
-                )
               })}
           </tr>
         ))}
