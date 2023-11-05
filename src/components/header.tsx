@@ -22,6 +22,9 @@ export default function Header(props: { session: sessionType | null }) {
                 CD Keys Manager 🔑
               </NavDropdown.Item>
               <NavDropdown.Item href="/rsu/">Finance - RSU 🔑</NavDropdown.Item>
+              <NavDropdown.Item href="/payslip/">
+                Finance - Payslips 🔑
+              </NavDropdown.Item>
               {props.session?.ax_spgp && (
                 <NavDropdown.Item href="/spgp">
                   Ski Pass Group Purchase 🔑

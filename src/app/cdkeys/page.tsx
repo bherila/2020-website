@@ -1,11 +1,19 @@
+import 'server-only'
 import Client from '@/app/cdkeys/Client'
 import MainTitle from '@/components/main-title'
 import React from 'react'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Container from 'react-bootstrap/Container'
+import { getSession } from '@/lib/session'
+import { redirect } from 'next/navigation'
+import AuthRoutes from '@/app/auth/AuthRoutes'
 
-export default function Page() {
+export default async function Page() {
+  if (!(await getSession())?.uid) {
+    redirect(AuthRoutes.signIn)
+    return null
+  }
   return (
     <Container>
       <Row>

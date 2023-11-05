@@ -1,3 +1,4 @@
+import 'server-only'
 import React from 'react'
 import MinMaxClientDataLoader from './MinMaxClientDataLoader'
 import 'devextreme/dist/css/dx.common.css'
@@ -5,6 +6,8 @@ import 'devextreme/dist/css/dx.material.purple.dark.compact.css'
 import { Metadata, ResolvingMetadata } from 'next'
 import { redirect } from 'next/navigation'
 import Container from 'react-bootstrap/Container'
+import { getSession } from '@/lib/session'
+import AuthRoutes from '@/app/auth/AuthRoutes'
 
 interface Props {
   params: { symbol: string }
@@ -21,7 +24,11 @@ export async function generateMetadata(
   }
 }
 
-export default function Page({ params }: Props) {
+export default async function Page({ params }: Props) {
+  if (!(await getSession())?.uid) {
+    redirect(AuthRoutes.signIn)
+    return null
+  }
   if (!params.symbol) {
     return (
       <div>
