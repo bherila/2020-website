@@ -87,6 +87,7 @@ const AccountingSchema = z.object({
   t_from: z.string().nullable().optional(),
   t_to: z.string().nullable().optional(),
   t_interest_rate: z.string().nullable().optional(),
+  parent_t_id: z.number().optional(),
 })
 
 interface AccountingItem {
@@ -107,7 +108,6 @@ interface AccountingItem {
     | 'deposit'
     | 'equity'
     | null
-  t_symbol?: string | null
   t_qty?: number
   t_amt?: number
   t_price?: number
@@ -116,6 +116,7 @@ interface AccountingItem {
   t_method?: string | null
   t_source?: string | null
   t_origin?: string | null
+  t_symbol?: string | null
   opt_expiration?: string | null
   opt_type?: 'call' | 'put' | null
   opt_strike?: number
@@ -124,4 +125,5 @@ interface AccountingItem {
   t_from?: string | null
   t_to?: string | null
   t_interest_rate?: string | null
+  parent_t_id?: number
 }
