@@ -34,7 +34,7 @@ export default function Client() {
       </thead>
       <tbody>
         {rows.map((r) => (
-          <tr>
+          <tr key={r.product_key}>
             <td>{r.product_id}</td>
             <td style={{ whiteSpace: 'nowrap', fontFamily: 'monospace' }}>
               {r.product_key}
