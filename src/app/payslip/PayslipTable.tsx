@@ -9,7 +9,6 @@ import {
   fin_payslip_col,
   pay_data,
 } from '@/app/payslip/payslipDbCols'
-import Badge from 'react-bootstrap/Badge'
 import Stack from 'react-bootstrap/Stack'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
@@ -115,11 +114,13 @@ export function PayslipTable(props: Props) {
                           return (
                             row[subItem.field] > 0 && (
                               <div key={subItem.field} color={subItem.color}>
-                                <span
-                                  style={{ fontWeight: 'bold', opacity: 0.5 }}
-                                >
-                                  {subItem.title + ' '}
-                                </span>
+                                {subItem.title && (
+                                  <span
+                                    style={{ fontWeight: 'bold', opacity: 0.5 }}
+                                  >
+                                    {subItem.title + ' '}
+                                  </span>
+                                )}
                                 {renderValueCellContents(row, subItem.field)}
                               </div>
                             )

@@ -30,20 +30,19 @@ export function parseEntities(json: string): fin_payslip {
     if (o.type === 'deduction_item') {
       parsed.push({
         item: mentionText(o, 'deduction_type'),
-        amount: normVal(o, 'deduction_this_period'),
+        amount: currency(normVal(o, 'deduction_this_period') ?? 0),
         ytd: normVal(o, 'deduction_ytd'),
       })
     } else if (o.type === 'earning_item') {
       parsed.push({
         item: mentionText(o, 'earning_type'),
-        amount: normVal(o, 'earning_this_period'),
+        amount: currency(normVal(o, 'earning_this_period') ?? 0),
         ytd: normVal(o, 'earning_ytd'),
       })
     } else if (o.type === 'tax_item') {
-      console.log(o)
       parsed.push({
         item: mentionText(o, 'tax_type'),
-        amount: normVal(o, 'tax_this_period'),
+        amount: currency(normVal(o, 'tax_this_period') ?? 0),
         ytd: normVal(o, 'tax_ytd'),
       })
     } else {
@@ -64,9 +63,13 @@ export function parseEntities(json: string): fin_payslip {
       ]
       const mti = moneyTypes.indexOf(o.type)
       if (mti >= 0) {
+        console.log({
+          item: moneyTypes[mti] ?? null,
+          amount: o.normalizedValue.text,
+        })
         parsed.push({
           item: moneyTypes[mti] ?? null,
-          amount: o.normalizedValue.text, // yyyy-mm-dd
+          amount: currency(o.normalizedValue.text || 0),
         })
         continue
       }
@@ -98,8 +101,11 @@ export function parseEntities(json: string): fin_payslip {
     'Medical FSA': 'ps_pretax_fsa',
     'After Tax 401k Salary': 'ps_401k_aftertax',
     'Life@ Choice': 'imp_fitness',
+    'Life @ Choice': 'imp_fitness',
     '*Imp Legal': 'imp_legal',
     '*Imp LTD': 'imp_ltd',
+    'Imp Legal': 'imp_legal',
+    'Imp LTD': 'imp_ltd',
     'Restricted Stock Units': 'earnings_rsu',
     'Performance Bonus': 'earnings_bonus',
     OASDI: 'ps_oasdi',
@@ -118,9 +124,9 @@ export function parseEntities(json: string): fin_payslip {
     gross_earnings: 'earnings_gross',
     pay_date: 'pay_date',
     start_date: 'period_start',
-    state_additional_tax: 'ps_state_tax',
+    state_additional_tax: 'ps_state_tax_addl',
     end_date: 'period_end',
-    federal_additional_tax: 'ps_fed_tax',
+    federal_additional_tax: 'ps_fed_tax_addl',
   }
 
   // Initialize the result object

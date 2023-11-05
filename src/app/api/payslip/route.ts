@@ -13,35 +13,39 @@ export async function GET(req: NextRequest) {
   }
   let data: any[] = await db.query(
     `
-    select
-      payslip_id,
-      cast(period_start as char) as period_start,
-      cast(period_end as char) as period_end,
-      cast(pay_date as char) as pay_date,
-      earnings_bonus,
-      earnings_gross,
-      earnings_rsu,
-      imp_other,
-      imp_legal,
-      imp_fitness,
-      imp_ltd,
-      ps_401k_aftertax,
-      ps_401k_pretax,
-      ps_401k_employer,
-      ps_comment,
-      ps_fed_tax,
-      ps_fed_tax_refunded,
-      ps_is_estimated,
-      ps_medicare,
-      ps_oasdi,
-      ps_payslip_file_hash,
-      ps_pretax_fsa,
-      ps_pretax_medical,
-      ps_salary,
-      ps_state_disability,
-      ps_state_tax,
-      other
-    from fin_payslip where uid = ? order by pay_date`,
+      select payslip_id,
+             cast(period_start as char) as period_start,
+             cast(period_end as char)   as period_end,
+             cast(pay_date as char)     as pay_date,
+             earnings_gross,
+             earnings_bonus,
+             earnings_net_pay,
+             earnings_rsu,
+             imp_other,
+             imp_legal,
+             imp_fitness,
+             imp_ltd,
+             ps_oasdi,
+             ps_medicare,
+             ps_fed_tax,
+             ps_fed_tax_addl,
+             ps_state_tax,
+             ps_state_tax_addl,
+             ps_state_disability,
+             ps_401k_pretax,
+             ps_401k_aftertax,
+             ps_401k_employer,
+             ps_fed_tax_refunded,
+             ps_payslip_file_hash,
+             ps_is_estimated,
+             ps_comment,
+             ps_pretax_medical,
+             ps_pretax_fsa,
+             ps_salary,
+             other
+      from fin_payslip
+      where uid = ?
+      order by pay_date`,
     [uid],
   )
 
@@ -67,23 +71,79 @@ export async function POST(req: NextRequest) {
 
   const parsedJson = formData.get('parsed_json') as string
   if (parsedJson) {
-    const rowsToInsert: fin_payslip[] = z
+    const rowsToInsert: any[][] = z
       .array(fin_payslip_schema)
       .parse(JSON.parse(parsedJson))
-    const withUid = rowsToInsert.map(
-      (r): fin_payslip_with_uid => ({
-        uid,
-        ...r,
-      }),
-    )
+      .map((obj: fin_payslip) => {
+        return [
+          uid,
+          obj.period_start ?? null,
+          obj.period_end ?? null,
+          obj.pay_date ?? null,
+          obj.earnings_gross ?? null,
+          obj.earnings_bonus ?? null,
+          obj.earnings_net_pay ?? null,
+          obj.earnings_rsu ?? null,
+          obj.imp_other ?? null,
+          obj.imp_legal ?? null,
+          obj.imp_fitness ?? null,
+          obj.imp_ltd ?? null,
+          obj.ps_oasdi ?? null,
+          obj.ps_medicare ?? null,
+          obj.ps_fed_tax ?? null,
+          obj.ps_fed_tax_addl ?? null,
+          obj.ps_state_tax ?? null,
+          obj.ps_state_tax_addl ?? null,
+          obj.ps_state_disability ?? null,
+          obj.ps_401k_pretax ?? null,
+          obj.ps_401k_aftertax ?? null,
+          obj.ps_401k_employer ?? null,
+          obj.ps_fed_tax_refunded ?? null,
+          obj.ps_payslip_file_hash ?? null,
+          obj.ps_is_estimated ? 1 : 0,
+          obj.ps_comment ?? null,
+          obj.ps_pretax_medical ?? null,
+          obj.ps_pretax_fsa ?? null,
+          obj.ps_salary ?? null,
+          JSON.stringify(obj.other),
+        ]
+      })
     try {
-      for (const r of withUid) {
-        const { other, ...x } = r
-        await db.query(`replace into fin_payslip set ?, other=?`, [
-          x,
-          JSON.stringify(other),
-        ])
-      }
+      await db.query(
+        `
+            replace into fin_payslip ( uid, period_start
+                                     , period_end
+                                     , pay_date
+                                     , earnings_gross
+                                     , earnings_bonus
+                                     , earnings_net_pay
+                                     , earnings_rsu
+                                     , imp_other
+                                     , imp_legal
+                                     , imp_fitness
+                                     , imp_ltd
+                                     , ps_oasdi
+                                     , ps_medicare
+                                     , ps_fed_tax
+                                     , ps_fed_tax_addl
+                                     , ps_state_tax
+                                     , ps_state_tax_addl
+                                     , ps_state_disability
+                                     , ps_401k_pretax
+                                     , ps_401k_aftertax
+                                     , ps_401k_employer
+                                     , ps_fed_tax_refunded
+                                     , ps_payslip_file_hash
+                                     , ps_is_estimated
+                                     , ps_comment
+                                     , ps_pretax_medical
+                                     , ps_pretax_fsa
+                                     , ps_salary
+                                     , other)
+            values ?
+        `,
+        [rowsToInsert],
+      )
     } finally {
       await db.end()
     }
@@ -122,7 +182,8 @@ export async function POST(req: NextRequest) {
 
   try {
     await db.query(
-      `insert into fin_payslip_uploads (file_name, file_hash, parsed_json) values (?, ?, ?)`,
+      `insert into fin_payslip_uploads (file_name, file_hash, parsed_json)
+       values (?, ?, ?)`,
       [fileName, hash, JSON.stringify(parseResult)],
     )
   } finally {

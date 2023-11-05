@@ -18,7 +18,9 @@ export interface fin_payslip {
   ps_oasdi?: pay_data
   ps_medicare?: pay_data
   ps_fed_tax?: pay_data
+  ps_fed_tax_addl?: pay_data
   ps_state_tax?: pay_data
+  ps_state_tax_addl?: pay_data
   ps_state_disability?: pay_data
   ps_401k_pretax?: pay_data
   ps_401k_aftertax?: pay_data
@@ -51,8 +53,10 @@ export const fin_payslip_schema = z.object({
   ps_oasdi: maybeNum,
   ps_medicare: maybeNum,
   ps_fed_tax: maybeNum,
+  ps_fed_tax_addl: maybeNum,
   ps_state_tax: maybeNum,
   ps_state_disability: maybeNum,
+  ps_state_tax_addl: maybeNum,
   ps_401k_pretax: maybeNum,
   ps_401k_aftertax: maybeNum,
   ps_401k_employer: maybeNum,

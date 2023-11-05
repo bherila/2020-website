@@ -20,7 +20,7 @@ export default function PayslipClient(): React.ReactElement {
     { field: 'ps_comment', title: 'Comment', hide: false },
     {
       field: [
-        { field: 'ps_salary', title: 'Salary' },
+        { field: 'ps_salary', title: '' },
         { field: 'earnings_bonus', title: 'Bonus' },
         { field: 'earnings_rsu', title: 'RSU' },
       ],
@@ -39,18 +39,30 @@ export default function PayslipClient(): React.ReactElement {
     },
     { field: 'ps_oasdi', title: 'OASDI', hide: false },
     { field: 'ps_medicare', title: 'Medicare', hide: false },
-    { field: 'ps_fed_tax', title: 'Fed Income Tax', hide: false },
-    { field: 'ps_state_tax', title: 'State Tax', hide: false },
-    { field: 'ps_state_disability', title: 'State Disability', hide: false },
     {
       field: [
-        { field: 'ps_401k_pretax', title: 'Deduct', hide: false },
-        { field: 'ps_401k_employer', title: 'Match', hide: false },
+        { field: 'ps_fed_tax', title: 'WH', hide: false },
+        { field: 'ps_fed_tax_addl', title: 'Addl', hide: false },
+        { field: 'ps_fed_tax_refunded', title: 'Refund', hide: false },
+      ],
+      title: 'Fed Income Tax',
+    },
+    {
+      field: [
+        { field: 'ps_state_tax', title: 'WH', hide: false },
+        { field: 'ps_state_tax_addl', title: 'Addl', hide: false },
+      ],
+      title: 'State Tax',
+    },
+    { field: 'ps_state_disability', title: 'SDI', hide: false },
+    {
+      field: [
+        { field: 'ps_401k_pretax', title: 'Employee', hide: false },
+        { field: 'ps_401k_employer', title: 'Employer', hide: false },
       ],
       title: '401k Pre-Tax',
     },
     { field: 'ps_401k_aftertax', title: '401k After-Tax', hide: false },
-    { field: 'ps_fed_tax_refunded', title: 'Fed Tax Refunded', hide: false },
     { field: 'ps_payslip_file_hash', title: 'Payslip File Hash', hide: true },
     { field: 'ps_is_estimated', title: 'Is Estimated', hide: false },
     { field: 'other', title: 'Other', hide: false },
