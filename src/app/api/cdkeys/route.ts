@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     const productKeyData = ProductKeySchema.parse(req.body)
     const uid = (await getSession())?.uid
     if (!uid) {
-      return NextResponse.json({ error: 'not logged in' }, { status: 400 })
+      return NextResponse.json({ error: 'not logged in' }, { status: 403 })
     }
     const {
       product_id,
@@ -48,7 +48,7 @@ export async function PUT(req: Request) {
   const productKeyData = ProductKeySchema.parse(req.body)
   const uid = (await getSession())?.uid
   if (!uid) {
-    return NextResponse.json({ error: 'not logged in' }, { status: 400 })
+    return NextResponse.json({ error: 'not logged in' }, { status: 403 })
   }
 
   try {
@@ -72,7 +72,7 @@ export async function GET(req: Request) {
   try {
     const uid = (await getSession())?.uid
     if (!uid) {
-      return NextResponse.json({ error: 'not logged in' }, { status: 400 })
+      return NextResponse.json({ error: 'not logged in' }, { status: 403 })
     }
     const productKeys = await mysql.query(
       'SELECT * FROM product_keys where uid = ? order by product_name',
@@ -89,7 +89,7 @@ export async function DELETE(req: Request) {
   try {
     const uid = (await getSession())?.uid
     if (!uid) {
-      return NextResponse.json({ error: 'not logged in' }, { status: 400 })
+      return NextResponse.json({ error: 'not logged in' }, { status: 403 })
     }
     const id = z.object({ id: z.number() }).parse(await req.json())
     const result: any = await mysql.query(

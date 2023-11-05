@@ -47,31 +47,6 @@ export const TransactionTypes = Object.freeze([
   'equity',
 ])
 
-export const AccountingColumnNames = [
-  't_id',
-  't_account',
-  't_date',
-  't_type',
-  't_symbol',
-  't_qty',
-  't_amt',
-  't_price',
-  't_commission',
-  't_fee',
-  't_method',
-  't_source',
-  't_origin',
-  'opt_expiration',
-  'opt_type',
-  'opt_strike',
-  't_description',
-  't_comment',
-  't_from',
-  't_to',
-  't_interest_rate',
-  null,
-]
-
 // Define a Zod schema for the MySQL schema
 // Create a Zod schema for validation
 const AccountingSchema = z.object({
