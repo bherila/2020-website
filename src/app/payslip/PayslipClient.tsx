@@ -169,6 +169,7 @@ function totalSubtractions(data: fin_payslip[]) {
       .add(row.ps_pretax_medical ?? 0)
       .add(row.ps_pretax_fsa ?? 0)
   }
+  tot = tot.subtract(13850) //TODO: Standard deduction
   return tot
 }
 
@@ -213,6 +214,10 @@ function TotalsTable(props: { data: fin_payslip[] }) {
           <tr>
             <td>Pre-tax W-2 Subtractions</td>
             <td>{pretax.value.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td>Standard Deduction</td>
+            <td>13850.00{/*  //TODO: Standard deduction */}</td>
           </tr>
           <tr>
             <td>Estimated taxable income</td>
