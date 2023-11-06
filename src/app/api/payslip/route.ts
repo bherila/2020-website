@@ -57,10 +57,6 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(z.array(fin_payslip_schema).parse(data))
 }
 
-interface fin_payslip_with_uid extends fin_payslip {
-  uid: any
-}
-
 export async function POST(req: NextRequest) {
   const uid = (await getSession())?.uid
   if (!uid) {
@@ -147,7 +143,7 @@ export async function POST(req: NextRequest) {
     } finally {
       await db.end()
     }
-    return NextResponse.json({})
+    return await GET(req)
   }
 
   const pdfFile: any = formData.get('pdf')

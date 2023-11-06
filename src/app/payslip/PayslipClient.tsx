@@ -1,5 +1,5 @@
 'use client'
-import { fin_payslip_col } from '@/app/payslip/payslipDbCols'
+import { fin_payslip, fin_payslip_col } from '@/app/payslip/payslipDbCols'
 import { useCallback, useEffect, useState } from 'react'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import { redirect } from 'next/navigation'
@@ -11,6 +11,10 @@ import Spinner from 'react-bootstrap/Spinner'
 import FileUploadClient from '@/app/payslip/FileUploadClient'
 import { Button } from 'react-bootstrap'
 import styles from './dropzone.module.css'
+import currency from 'currency.js'
+import Table from 'react-bootstrap/Table'
+import { genBrackets } from '@/lib/taxBracket'
+import { sum } from '@/components/matcher'
 
 export default function PayslipClient(): React.ReactElement {
   const cols: payslip_table_col[] = [
@@ -65,6 +69,7 @@ export default function PayslipClient(): React.ReactElement {
     { field: 'ps_401k_aftertax', title: '401k After-Tax', hide: false },
     { field: 'ps_payslip_file_hash', title: 'Payslip File Hash', hide: true },
     { field: 'ps_is_estimated', title: 'Is Estimated', hide: false },
+    { field: 'earnings_net_pay', title: 'Net Pay' },
     { field: 'other', title: 'Other', hide: false },
   ]
 
@@ -82,17 +87,44 @@ export default function PayslipClient(): React.ReactElement {
       })
   }, [])
 
+  const editRow = async (row: fin_payslip) => {
+    setLoading(true)
+    const fd = new FormData()
+    fd.append('parsed_json', JSON.stringify([row]))
+    const response = await fetch('/api/payslip/', {
+      method: 'POST',
+      body: fd,
+      credentials: 'include', // Include cookies
+    })
+    setData(await response.json())
+    setLoading(false)
+  }
+
+  const doImport = async () => {
+    setLoading(true)
+    const fd = new FormData()
+    fd.append('parsed_json', JSON.stringify(previewData))
+    const response = await fetch('/api/payslip/', {
+      method: 'POST',
+      body: fd,
+      credentials: 'include', // Include cookies
+    })
+    setData(await response.json())
+    setLoading(false)
+  }
+
   const [previewData, setPreviewData] = useState<any[]>([])
   const updateJsonPreview = useCallback((e: any[]) => setPreviewData(e), [])
   return (
     <Container fluid>
       <Row>
-        <PayslipTable data={data} cols={cols} />
+        <PayslipTable data={data} cols={cols} onRowEdited={editRow} />
         {loading && (
           <div className={styles.center}>
             <Spinner />
           </div>
         )}
+        <TotalsTable data={data} />
       </Row>
       <Row>
         <FileUploadClient onJsonPreview={updateJsonPreview} />
@@ -103,13 +135,7 @@ export default function PayslipClient(): React.ReactElement {
             <Button
               onClick={(e) => {
                 e.preventDefault()
-                const fd = new FormData()
-                fd.append('parsed_json', JSON.stringify(previewData))
-                const response = fetch('/api/payslip/', {
-                  method: 'POST',
-                  body: fd,
-                  credentials: 'include', // Include cookies
-                })
+                doImport()
               }}
             >
               Import
@@ -118,5 +144,114 @@ export default function PayslipClient(): React.ReactElement {
         )}
       </Row>
     </Container>
+  )
+}
+
+function totalTaxableIncomeBeforeSubtractions(data: fin_payslip[]) {
+  let tot = currency(0)
+  for (const row of data) {
+    tot = tot
+      .add(row.ps_salary ?? 0)
+      .add(row.earnings_rsu ?? 0)
+      .add(row.imp_ltd ?? 0)
+      .add(row.imp_legal ?? 0)
+      .add(row.imp_fitness ?? 0)
+      .add(row.imp_other ?? 0)
+  }
+  return tot
+}
+
+function totalSubtractions(data: fin_payslip[]) {
+  let tot = currency(0)
+  for (const row of data) {
+    tot = tot
+      .add(row.ps_401k_pretax ?? 0)
+      .add(row.ps_pretax_medical ?? 0)
+      .add(row.ps_pretax_fsa ?? 0)
+  }
+  return tot
+}
+
+function totalFedWH(data: fin_payslip[]) {
+  let tot = currency(0)
+  for (const row of data) {
+    tot = tot
+      .add(row.ps_fed_tax ?? 0)
+      .add(row.ps_fed_tax_addl ?? 0)
+      .subtract(row.ps_fed_tax_refunded ?? 0)
+  }
+  return tot
+}
+
+function totalStateWH(data: fin_payslip[]) {
+  let tot = currency(0)
+  for (const row of data) {
+    tot = tot
+      .add(row.ps_state_disability ?? 0)
+      .add(row.ps_state_tax ?? 0)
+      .subtract(row.ps_state_tax_addl ?? 0)
+  }
+  return tot
+}
+
+function TotalsTable(props: { data: fin_payslip[] }) {
+  const income = totalTaxableIncomeBeforeSubtractions(props.data)
+  const fedWH = totalFedWH(props.data)
+  const pretax = totalSubtractions(props.data)
+  const estTaxIncome = income.subtract(pretax)
+  const fedBrackets = genBrackets('2023', estTaxIncome)
+  const totalTax = sum(fedBrackets.map((r) => r.tax))
+  const refund = totalTax.subtract(fedWH)
+  return (
+    <div style={{ alignContent: 'center', flexDirection: 'column' }}>
+      <Table bordered style={{ width: '700px' }}>
+        <tbody>
+          <tr>
+            <td>Estimated W-2 Income</td>
+            <td>{income.value.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td>Pre-tax W-2 Subtractions</td>
+            <td>{pretax.value.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td>Estimated taxable income</td>
+            <td>{estTaxIncome.value.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td>Federal Tax Estimation</td>
+            <td>
+              <Table bordered size="sm" striped>
+                <tbody>
+                  {fedBrackets.map((m) => (
+                    <tr key={m.bracket.value}>
+                      <td>
+                        ${m.amt.value} @ {m.bracket.value}
+                      </td>
+                      <td>{m.tax.value}</td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <td>Total:</td>
+                    <td>{totalTax.value}</td>
+                  </tr>
+                </tbody>
+              </Table>
+            </td>
+          </tr>
+          <tr>
+            <td>Federal Taxes Paid</td>
+            <td>
+              {fedWH.value.toFixed(2)} (
+              {fedWH.divide(income).multiply(100).value.toFixed(1)}%)
+            </td>
+          </tr>
+          <tr>
+            <td>Est Federal Tax Due</td>
+            <td>{refund.value.toFixed(2)}</td>
+          </tr>
+        </tbody>
+      </Table>
+    </div>
   )
 }

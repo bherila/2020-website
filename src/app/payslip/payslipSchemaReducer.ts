@@ -117,6 +117,7 @@ export function parseEntities(json: string): fin_payslip {
     'State Tax CA': 'ps_state_tax',
     'CA VDI CAVDI': 'ps_state_disability',
     'CA VDI-CAVDI': 'ps_state_disability',
+    'CA VDI - CAVDI': 'ps_state_disability',
     '401k Bonus': 'ps_401k_pretax',
     'AFTAX 401k Bonus': 'ps_401k_aftertax',
     '401k Employer Match': 'ps_401k_employer',

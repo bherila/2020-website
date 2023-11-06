@@ -12,6 +12,7 @@ import {
 import Stack from 'react-bootstrap/Stack'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
+import PayslipEditButton from '@/app/payslip/PayslipEdit'
 export interface payslip_table_col {
   field:
     | fin_payslip_col
@@ -28,6 +29,7 @@ export interface payslip_table_col {
 interface Props {
   data: fin_payslip[]
   cols: payslip_table_col[]
+  onRowEdited?: (row: fin_payslip) => void
 }
 
 function fmtNum(val: pay_data) {
@@ -97,6 +99,7 @@ export function PayslipTable(props: Props) {
                 {s.title.trim()}
               </th>
             ))}
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -137,6 +140,11 @@ export function PayslipTable(props: Props) {
                   )
                 }
               })}
+            <td>
+              {typeof props.onRowEdited === 'function' && (
+                <PayslipEditButton content={row} onSave={props.onRowEdited} />
+              )}
+            </td>
           </tr>
         ))}
       </tbody>
