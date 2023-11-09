@@ -44,5 +44,14 @@ export function parseDate(
   if (str.match(/[a-z]{3} \d{1,2} `\d{4}$/i)) {
     return new DateContainer(parse(str, 'MMM d `yyyy', new Date()))
   }
+
+  if (str.match(/^\d{1,2}-[A-Z]{3}$/i)) {
+    return new DateContainer(parse(str, 'dd-MMM', new Date()))
+  }
+
+  if (str.match(/^\d{2}[-/]\d{2}$/)) {
+    return new DateContainer(parse(str, 'MM/dd', new Date()))
+  }
+
   return null
 }
