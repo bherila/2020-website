@@ -31,6 +31,10 @@ export default function Header(props: { session: sessionType | null }) {
                 </NavDropdown.Item>
               )}
               {/*<NavDropdown.Divider />*/}
+              <NavDropdown.Item href="/accounts/">Accounts</NavDropdown.Item>
+              <NavDropdown.Item href="/bingo/">
+                Bingo card generator
+              </NavDropdown.Item>
             </NavDropdown>
           </Nav>
           <Nav>
