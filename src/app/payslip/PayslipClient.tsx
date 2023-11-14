@@ -1,5 +1,5 @@
 'use client'
-import { fin_payslip, fin_payslip_col } from '@/app/payslip/payslipDbCols'
+import { fin_payslip } from '@/app/payslip/payslipDbCols'
 import { useCallback, useEffect, useState } from 'react'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import { redirect } from 'next/navigation'
@@ -169,7 +169,6 @@ function totalSubtractions(data: fin_payslip[]) {
       .add(row.ps_pretax_medical ?? 0)
       .add(row.ps_pretax_fsa ?? 0)
   }
-  tot = tot.subtract(13850) //TODO: Standard deduction
   return tot
 }
 
@@ -199,7 +198,7 @@ function TotalsTable(props: { data: fin_payslip[] }) {
   const income = totalTaxableIncomeBeforeSubtractions(props.data)
   const fedWH = totalFedWH(props.data)
   const pretax = totalSubtractions(props.data)
-  const estTaxIncome = income.subtract(pretax)
+  const estTaxIncome = income.subtract(pretax).subtract(13850)
   const fedBrackets = genBrackets('2023', estTaxIncome)
   const totalTax = sum(fedBrackets.map((r) => r.tax))
   const refund = totalTax.subtract(fedWH)
