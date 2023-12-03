@@ -88,7 +88,10 @@ export default function BingoPage() {
       <Row>
         <Col xs={12}>
           {generatedCards.map((bingoCard, i) => (
-            <div key={i} style={{ textAlign: 'center', pageBreakBefore: 'always' }}>
+            <div
+              key={i}
+              style={{ textAlign: 'center', pageBreakBefore: 'always' }}
+            >
               <MainTitle>Card #{i}</MainTitle>
               <BingoCard data={bingoCard} />
             </div>
