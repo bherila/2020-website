@@ -10,6 +10,7 @@ import {
 } from 'type-graphql'
 import type { ViewerContext } from '@/app/api/graphql/ViewerContext'
 import db from '@/lib/db'
+import { Memoize } from "typescript-memoize";
 
 @ObjectType()
 export class UserGraphType {
@@ -31,6 +32,7 @@ export class ViewerRootResolver {
   }
 
   @FieldResolver(() => String, { name: 'email', nullable: true })
+  @Memoize(h => h.uid)
   async email(@Root() ofUser: UserGraphType) {
     try {
       const res: any = await db.query('select email from users where uid = ?', [
