@@ -23,11 +23,11 @@ const nextConfig = {
   compiler: {
     styledComponents: true,
   },
-  redirects: [
+  redirects: async () => [
     {
       source: '/wedding',
       destination:
-        'https://bherilanet.sharepoint.com/:f:/s/BethanyBrian/Eh9ELBJHHNhHvN4vyKBPrkIB5jfESBu-L5ySuphnDdvu4w',
+        'https://bherilanet.sharepoint.com/%3Af%3A/s/BethanyBrian/Eh9ELBJHHNhHvN4vyKBPrkIB5jfESBu-L5ySuphnDdvu4w',
       permanent: true,
     },
   ],
