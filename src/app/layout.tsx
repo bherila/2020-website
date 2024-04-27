@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.css'
 import * as React from 'react'
 import Header from '@/components/header'
-import { getSession } from '@/lib/session'
+import 'animate.css'
 
 export const metadata = {
   title: 'Ben Herila',
@@ -13,11 +13,18 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await getSession()
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preload"
+          href="/api/session/"
+          as="fetch"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body data-bs-theme="dark">
-        <Header session={session} />
+        <Header />
         <main>{children}</main>
       </body>
     </html>

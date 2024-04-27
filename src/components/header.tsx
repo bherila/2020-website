@@ -5,8 +5,15 @@ import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 import { sessionType } from '@/lib/sessionSchema'
+import useSWR from 'swr'
 
-export default function Header(props: { session: sessionType | null }) {
+export default function Header(props: {}) {
+  const fetcher = (url: string) => fetch(url).then((r) => r.json())
+  const {
+    data: session,
+    error,
+    isLoading,
+  } = useSWR<sessionType>('/api/session/', fetcher)
   return (
     <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
       <Container>
@@ -25,7 +32,7 @@ export default function Header(props: { session: sessionType | null }) {
               <NavDropdown.Item href="/payslip/">
                 Finance - Payslips 🔑
               </NavDropdown.Item>
-              {props.session?.ax_spgp && (
+              {session?.ax_spgp && (
                 <NavDropdown.Item href="/spgp">
                   Ski Pass Group Purchase 🔑
                 </NavDropdown.Item>
@@ -37,16 +44,18 @@ export default function Header(props: { session: sessionType | null }) {
               </NavDropdown.Item>
             </NavDropdown>
           </Nav>
-          <Nav>
-            {!props.session?.uid ? (
-              <>
-                <Nav.Link href="/auth/sign-in">Sign in</Nav.Link>
-                <Nav.Link href="/auth/sign-up">Sign up</Nav.Link>
-              </>
-            ) : (
-              <Nav.Link href="/api/sign-out">Sign out</Nav.Link>
-            )}
-          </Nav>
+          {!isLoading && (
+            <Nav>
+              {!session?.uid ? (
+                <>
+                  <Nav.Link href="/auth/sign-in">Sign in</Nav.Link>
+                  <Nav.Link href="/auth/sign-up">Sign up</Nav.Link>
+                </>
+              ) : (
+                <Nav.Link href="/api/sign-out">Sign out</Nav.Link>
+              )}
+            </Nav>
+          )}
         </Navbar.Collapse>
       </Container>
     </Navbar>

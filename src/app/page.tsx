@@ -7,13 +7,14 @@ import Col from 'react-bootstrap/Col'
 import Container from 'react-bootstrap/Container'
 import { getSession } from '@/lib/session'
 import SPGP_CTA from '@/app/spgp/SPGP_CTA'
+import useSWR from 'swr'
+import { sessionType } from '@/lib/sessionSchema'
 
 export const metadata: Metadata = {
   title: 'Ben Herila',
 }
 
 export default async function HomePage() {
-  const session = await getSession()
   const Im = <>I&rsquo;m</>
   const Line = ({ children }: { children: React.ReactNode }) => (
     <Typography variant="body1" py={0.5}>
@@ -22,8 +23,8 @@ export default async function HomePage() {
   )
   return (
     <Container>
-      <SPGP_CTA session={session} />
-      <Row>
+      <SPGP_CTA />
+      <Row className="animate__animated">
         <Col xs={12}>
           <MainTitle>Hi, {Im} Ben</MainTitle>
 
