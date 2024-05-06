@@ -18,7 +18,8 @@ export default function Footer() {
         <Navbar.Text>&copy; 2024 Ben Herila</Navbar.Text>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="me-auto">
+          <Nav className="me-auto"></Nav>
+          <Nav>
             <Nav.Link href="/legal/accessibility">Accessibility</Nav.Link>
             <Nav.Link href="/legal/privacy">Privacy</Nav.Link>
             <Nav.Link href="/legal/terms">Terms</Nav.Link>
