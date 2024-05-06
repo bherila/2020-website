@@ -15,10 +15,21 @@ export default function Header(props: {}) {
     isLoading,
   } = useSWR<sessionType>('/api/session/', fetcher)
   return (
-    <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
+    <Navbar
+      collapseOnSelect
+      expand="lg"
+      className="bg-body-tertiary"
+      as={Nav}
+      aria-label="primary navigation"
+    >
       <Container>
-        <Navbar.Brand href="/">Ben Herila</Navbar.Brand>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Brand href="/" aria-label="Ben Herila">
+          Ben Herila
+        </Navbar.Brand>
+        <Navbar.Toggle
+          aria-controls="responsive-navbar-nav"
+          aria-label="toggle navigation"
+        />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link href="/recipes">Recipes</Nav.Link>
@@ -48,11 +59,17 @@ export default function Header(props: {}) {
             <Nav>
               {!session?.uid ? (
                 <>
-                  <Nav.Link href="/auth/sign-in">Sign in</Nav.Link>
-                  <Nav.Link href="/auth/sign-up">Sign up</Nav.Link>
+                  <Nav.Link href="/auth/sign-in" aria-label="Sign in">
+                    Sign in
+                  </Nav.Link>
+                  <Nav.Link href="/auth/sign-up" aria-label="Sign up">
+                    Sign up
+                  </Nav.Link>
                 </>
               ) : (
-                <Nav.Link href="/api/sign-out">Sign out</Nav.Link>
+                <Nav.Link href="/api/sign-out" aria-label="Sign out">
+                  Sign out
+                </Nav.Link>
               )}
             </Nav>
           )}

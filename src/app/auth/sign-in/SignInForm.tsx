@@ -25,6 +25,8 @@ export default function SignInForm(props: any) {
           <Form.Control
             type="email"
             required
+            aria-required="true"
+            aria-label="Enter your email"
             name="email"
             placeholder="Enter your email"
             value={formData.email}
@@ -43,6 +45,8 @@ export default function SignInForm(props: any) {
           <Form.Control
             type="password"
             required
+            aria-required="true"
+            aria-label="Enter your password"
             name="password"
             placeholder="Enter your password"
             value={formData.password}
@@ -56,7 +60,12 @@ export default function SignInForm(props: any) {
       <Row>
         <Col xs={xs}></Col>
         <Col xs={12 - xs}>
-          <Button variant="primary" type="submit">
+          <Button
+            variant="primary"
+            type="submit"
+            aria-label="Sign in"
+            aria-live="polite"
+          >
             Sign in
           </Button>
         </Col>
