@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import * as React from 'react'
 import Header from '@/components/header'
 import 'animate.css'
+import Footer from '@/components/footer'
 
 export const metadata = {
   title: 'Ben Herila',
@@ -26,6 +27,7 @@ export default async function RootLayout({
       <body data-bs-theme="dark">
         <Header />
         <main>{children}</main>
+        <Footer />
       </body>
     </html>
   )
