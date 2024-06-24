@@ -45,7 +45,7 @@ export const TransactionTypes = [
 export interface AccountingDbRow {
   t_id?: number
   t_account?: string
-  t_date?: string
+  t_date?: string | null
   t_type?: (typeof TransactionTypes)[number]
   t_symbol?: string
   t_qty?: number
@@ -58,7 +58,7 @@ export interface AccountingDbRow {
   t_origin?: string | null
   t_description?: string
   t_comment?: string
-  opt_expiration?: string
+  opt_expiration?: string | null
   opt_type?: OptionType
   opt_strike?: number
   t_from?: string | null

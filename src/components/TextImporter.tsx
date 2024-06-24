@@ -8,16 +8,15 @@ import Col from 'react-bootstrap/Col'
 import DroppableTextArea from '@/components/DroppableTextArea'
 import Form from 'react-bootstrap/Form'
 import parseDelimitedText from '@/components/parseDelimitedText'
+import { SetDocumentProps } from '@/lib/data2d'
 
-interface SetDocumentProps {
-  setDocFn: (data: string[][]) => void
-}
-
-export function SetDocumentButton(props: SetDocumentProps) {
+export function SetDocumentButton(props: SetDocumentProps & { children: any }) {
   const [showModal, setShowModal] = useState(false)
   return (
     <>
-      <Button onClick={() => setShowModal(true)}>Set document</Button>
+      <Button onClick={() => setShowModal(true)}>
+        {props.children ?? 'Load data'}
+      </Button>
       <SetDocumentModal {...props} {...{ showModal, setShowModal }} />
     </>
   )
