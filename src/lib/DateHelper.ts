@@ -6,7 +6,10 @@ export class DateContainer {
   }
   value: Date
 
-  formatYMD(): string {
+  formatYMD(): string | null {
+    if (this.value.toString() == 'Invalid Date') {
+      return null
+    }
     return this.value.toISOString().slice(0, 10)
   }
 }
@@ -19,6 +22,10 @@ export function parseDate(
 
   if (str instanceof Date) {
     return new DateContainer(str)
+  }
+
+  if (str.length > 16) {
+    return null
   }
 
   if (str.match(/^\d{4}-\d{2}-\d{2}$/)) {
@@ -51,6 +58,12 @@ export function parseDate(
 
   if (str.match(/^\d{2}[-/]\d{2}$/)) {
     return new DateContainer(parse(str, 'MM/dd', new Date()))
+  }
+
+  if (str.match(/\d{2}\/\d{2}\/\d{4}/)) {
+    const dateParts = str.split('/')
+    const date = new Date(+dateParts[2], +dateParts[0] - 1, +dateParts[1])
+    return new DateContainer(date)
   }
 
   return null
