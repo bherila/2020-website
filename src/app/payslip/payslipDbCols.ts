@@ -29,7 +29,10 @@ export interface fin_payslip {
   ps_payslip_file_hash?: string | null
   ps_is_estimated?: boolean | null
   ps_comment?: string | null
+  ps_vacation_payout?: pay_data
   ps_pretax_medical?: pay_data
+  ps_pretax_vision?: pay_data
+  ps_pretax_dental?: pay_data
   ps_pretax_fsa?: pay_data
   ps_salary?: pay_data
   other?: any
@@ -66,7 +69,10 @@ export const fin_payslip_schema = z.object({
   ps_comment: maybeStr,
   ps_pretax_medical: maybeNum,
   ps_pretax_fsa: maybeNum,
+  ps_pretax_vision: maybeNum,
+  ps_pretax_dental: maybeNum,
   ps_salary: maybeNum,
+  ps_vacation_payout: maybeNum,
   other: z.any(),
 })
 

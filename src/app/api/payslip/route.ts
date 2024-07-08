@@ -40,8 +40,11 @@ export async function GET(req: NextRequest) {
              ps_is_estimated,
              ps_comment,
              ps_pretax_medical,
+             ps_pretax_dental,
+             ps_pretax_vision,
              ps_pretax_fsa,
              ps_salary,
+             ps_vacation_payout,
              other
       from fin_payslip
       where uid = ?
@@ -98,7 +101,10 @@ export async function POST(req: NextRequest) {
           obj.ps_payslip_file_hash ?? null,
           obj.ps_is_estimated ? 1 : 0,
           obj.ps_comment ?? null,
+          obj.ps_vacation_payout ?? null,
           obj.ps_pretax_medical ?? null,
+          obj.ps_pretax_dental ?? null,
+          obj.ps_pretax_vision ?? null,
           obj.ps_pretax_fsa ?? null,
           obj.ps_salary ?? null,
           JSON.stringify(obj.other),
@@ -132,7 +138,10 @@ export async function POST(req: NextRequest) {
                                      , ps_payslip_file_hash
                                      , ps_is_estimated
                                      , ps_comment
+                                     , ps_vacation_payout
                                      , ps_pretax_medical
+                                     , ps_pretax_dental
+                                     , ps_pretax_vision
                                      , ps_pretax_fsa
                                      , ps_salary
                                      , other)

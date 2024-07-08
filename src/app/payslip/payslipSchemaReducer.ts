@@ -3,10 +3,10 @@ import currency from 'currency.js'
 import { fin_payslip, fin_payslip_col } from '@/app/payslip/payslipDbCols'
 
 const mentionText = (o: any, prop: string): string | null =>
-  o.properties.find((p: any) => p.type === prop)?.mentionText ?? null
+  (o.properties ?? o.propertiesList).find((p: any) => p.type === prop)?.mentionText ?? null
 
 const normVal = (o: any, prop: string): string | null =>
-  o.properties.find((p: any) => p.type === prop)?.normalizedValue?.text ?? null
+  (o.properties ?? o.propertiesList).find((p: any) => p.type === prop)?.normalizedValue?.text ?? null
 
 export function parseEntities(json: string): fin_payslip {
   let obj: any = {}
@@ -26,7 +26,8 @@ export function parseEntities(json: string): fin_payslip {
   const parsed: any[] = []
   const leftOverEntities: any[] = []
 
-  for (let o of obj?.document?.entities ?? []) {
+  const entities = obj?.document?.entitiesList ?? obj?.document?.entities;
+  for (let o of entities ?? []) {
     if (o.type === 'deduction_item') {
       parsed.push({
         item: mentionText(o, 'deduction_type'),
@@ -96,8 +97,11 @@ export function parseEntities(json: string): fin_payslip {
   // Create the mapping
   const mapping: { [key: string]: fin_payslip_col } = {
     Salary: 'ps_salary',
+    'Choice Day Payout': 'ps_vacation_payout',
     '401k Salary': 'ps_401k_pretax',
     'Pretax Medical': 'ps_pretax_medical',
+    'Pretax Dental': 'ps_pretax_dental',
+    'Pretax Vision': 'ps_pretax_vision',
     'Medical FSA': 'ps_pretax_fsa',
     'After Tax 401k Salary': 'ps_401k_aftertax',
     'Life@ Choice': 'imp_fitness',
@@ -114,6 +118,7 @@ export function parseEntities(json: string): fin_payslip {
     'RSU Tax Offset': 'ps_fed_tax',
     'RSU Excess Refund': 'ps_fed_tax_refunded',
     'Voluntary Legal ben': 'other',
+    'State Tax - CA': 'ps_state_tax',
     'State Tax CA': 'ps_state_tax',
     'CA VDI CAVDI': 'ps_state_disability',
     'CA VDI-CAVDI': 'ps_state_disability',
