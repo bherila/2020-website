@@ -155,13 +155,14 @@ export async function POST(req: NextRequest) {
     return await GET(req)
   }
 
-  const pdfFile: any = formData.get('pdf')
-  let fileName = ''
-  let hash = ''
+  const pdfFile: any = formData.get('pdf');
+  let fileName = '';
+  let hash = '';
+
   if (typeof pdfFile === 'object') {
-    fileName = pdfFile.name
-    const fileBuffer = Buffer.from(await pdfFile.arrayBuffer())
-    hash = createHash('sha1').update(fileBuffer).digest('hex')
+    fileName = pdfFile.name;
+    const fileBuffer = Buffer.from(await pdfFile.arrayBuffer());
+    hash = createHash('sha1').update(fileBuffer.toString('binary')).digest('hex');
   }
 
   let parseResult: any = {}
