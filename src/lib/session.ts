@@ -3,6 +3,7 @@ import type { IronSessionOptions } from 'iron-session'
 import { cookies } from 'next/headers'
 import { sealData, unsealData } from 'iron-session'
 import { sessionSchema, sessionType } from '@/lib/sessionSchema'
+import { cache } from 'react'
 
 const sessionOptions: IronSessionOptions = {
   password:
@@ -15,7 +16,7 @@ const sessionOptions: IronSessionOptions = {
   },
 }
 
-export async function getSession(): Promise<sessionType | null> {
+async function getSession_internal(): Promise<sessionType | null> {
   const cookieStore = cookies()
   const encryptedSession = cookieStore.get(sessionOptions.cookieName)?.value
   const session = encryptedSession
@@ -25,6 +26,7 @@ export async function getSession(): Promise<sessionType | null> {
     : null
   return session == null ? null : sessionSchema.parse(session)
 }
+export const getSession = cache(getSession_internal)
 
 export async function encryptSession(session: sessionType): Promise<string> {
   return await sealData(session, { password: sessionOptions.password })

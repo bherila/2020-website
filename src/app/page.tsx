@@ -5,10 +5,7 @@ import MainTitle from '@/components/main-title'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Container from 'react-bootstrap/Container'
-import { getSession } from '@/lib/session'
 import SPGP_CTA from '@/app/spgp/SPGP_CTA'
-import useSWR from 'swr'
-import { sessionType } from '@/lib/sessionSchema'
 
 export const metadata: Metadata = {
   title: 'Ben Herila',
