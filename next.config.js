@@ -30,6 +30,11 @@ const nextConfig = {
         'https://bherilanet.sharepoint.com/%3Af%3A/s/BethanyBrian/Eh9ELBJHHNhHvN4vyKBPrkIB5jfESBu-L5ySuphnDdvu4w',
       permanent: true,
     },
+    {
+      source: '/cpanel',
+      destination: 'https://web1.dal.cloudplatform.net:2083/',
+      permanent: false,
+    },
   ],
 }
 
