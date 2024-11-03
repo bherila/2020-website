@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Container from 'react-bootstrap/Container'
 import SPGP_CTA from '@/app/spgp/SPGP_CTA'
+import Alert from 'react-bootstrap/Alert'
 
 export const metadata: Metadata = {
   title: 'Ben Herila',
@@ -79,6 +80,27 @@ export default async function HomePage() {
             </Link>
             , and <Link href="/projects/">more</Link>.
           </Line>
+
+          <Alert variant="info">
+            <h3>
+              Are you here because your WordPress site is slow and you want me
+              to make it fast?
+            </h3>
+            <p>I might be able to help with that.</p>
+            <ul>
+              <li>Most WordPress sites are eligible.</li>
+              <li>
+                Setup fee is $450, and includes migration of your existing site
+                and the first 3 months of hosting.
+              </li>
+              <li>Hosting is $25 per month thereafter.</li>
+            </ul>
+            <p>
+              In that case, feel free to{' '}
+              <a href="mailto:ben@herila.net?subject=WordPress">Get in touch</a>
+              .
+            </p>
+          </Alert>
         </Col>
       </Row>
     </Container>
