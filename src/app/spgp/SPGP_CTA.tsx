@@ -5,7 +5,7 @@ import { getSession } from '@/lib/session'
 import React from 'react'
 
 export default async function SPGP_CTA() {
-  const session = await getSession();
+  const session = await getSession()
   return !!session?.ax_spgp ? (
     <Row className="pt-2 animate__animated animate__fadeInUp">
       <Col xs={12}>

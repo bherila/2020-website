@@ -3,10 +3,12 @@ import currency from 'currency.js'
 import { fin_payslip, fin_payslip_col } from '@/app/payslip/payslipDbCols'
 
 const mentionText = (o: any, prop: string): string | null =>
-  (o.properties ?? o.propertiesList).find((p: any) => p.type === prop)?.mentionText ?? null
+  (o.properties ?? o.propertiesList).find((p: any) => p.type === prop)
+    ?.mentionText ?? null
 
 const normVal = (o: any, prop: string): string | null =>
-  (o.properties ?? o.propertiesList).find((p: any) => p.type === prop)?.normalizedValue?.text ?? null
+  (o.properties ?? o.propertiesList).find((p: any) => p.type === prop)
+    ?.normalizedValue?.text ?? null
 
 export function parseEntities(json: string): fin_payslip {
   let obj: any = {}
@@ -26,7 +28,7 @@ export function parseEntities(json: string): fin_payslip {
   const parsed: any[] = []
   const leftOverEntities: any[] = []
 
-  const entities = obj?.document?.entitiesList ?? obj?.document?.entities;
+  const entities = obj?.document?.entitiesList ?? obj?.document?.entities
   for (let o of entities ?? []) {
     if (o.type === 'deduction_item') {
       parsed.push({

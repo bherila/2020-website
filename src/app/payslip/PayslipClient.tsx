@@ -36,7 +36,7 @@ export default function PayslipClient(): React.ReactElement {
         { field: 'imp_ltd', title: 'LTD' },
         { field: 'imp_legal', title: 'Legal' },
         { field: 'imp_fitness', title: 'Gym' },
-        { field: 'ps_vacation_payout', title: 'Vacation Payout'},
+        { field: 'ps_vacation_payout', title: 'Vacation Payout' },
         { field: 'imp_other', title: 'Misc' },
       ],
       title: 'Supplemental Wages',
@@ -68,12 +68,14 @@ export default function PayslipClient(): React.ReactElement {
       title: '401k Pre-Tax',
     },
     { field: 'ps_401k_aftertax', title: '401k After-Tax', hide: false },
-    { field: [
-        {field: 'ps_pretax_medical', title: 'M'},
-        {field: 'ps_pretax_dental', title: 'D'},
-        {field: 'ps_pretax_vision', title: 'V'}
+    {
+      field: [
+        { field: 'ps_pretax_medical', title: 'M' },
+        { field: 'ps_pretax_dental', title: 'D' },
+        { field: 'ps_pretax_vision', title: 'V' },
       ],
-    title:'Benefits'},
+      title: 'Benefits',
+    },
     { field: 'ps_payslip_file_hash', title: 'Payslip File Hash', hide: true },
     { field: 'ps_is_estimated', title: 'Is Estimated', hide: false },
     { field: 'earnings_net_pay', title: 'Net Pay' },

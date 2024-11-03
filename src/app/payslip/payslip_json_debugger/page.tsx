@@ -9,39 +9,34 @@ export default function PayslipJsonDebugPage() {
   const [json, setJson] = useState('{}')
   let entitles = ''
   try {
-    entitles = JSON.stringify(
-      JSON.parse(json)?.document?.entitiesList,
-      null,
-      2,
-    )
+    entitles = JSON.stringify(JSON.parse(json)?.document?.entitiesList, null, 2)
   } catch (err) {
     entitles = err?.toString() ?? 'error: null'
   }
   const parsed = parseEntities(json)
 
   const handleDrop = (e: DragEvent) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    const reader = new FileReader();
+    e.preventDefault()
+    const file = e.dataTransfer.files[0]
+    const reader = new FileReader()
     reader.onload = () => {
-      const x = reader.result;
+      const x = reader.result
       if (typeof x === 'string') {
-        setJson(x);
+        setJson(x)
       } else {
-        alert('Cannot handle dropped file type: ' + typeof x);
+        alert('Cannot handle dropped file type: ' + typeof x)
       }
-    };
-    reader.readAsText(file);
-  };
+    }
+    reader.readAsText(file)
+  }
 
   const handleDragOver = (e: FormEvent) => {
-    e.preventDefault();
-  };
+    e.preventDefault()
+  }
 
   return (
     <Container>
       <Row>
-
         <div
           onDrop={handleDrop}
           style={{
@@ -49,15 +44,17 @@ export default function PayslipJsonDebugPage() {
             padding: '10px',
             borderRadius: '5px',
             width: '100%',
-          }}>
+          }}
+        >
           <p>You can drop a JSON file in here</p>
-        <textarea
-          onDragOver={handleDragOver}
-          onChange={(e) => setJson(e.currentTarget.value)}
-          value={json}
-          rows={20}
-          style={{ width: '100%' }}
-        /></div>
+          <textarea
+            onDragOver={handleDragOver}
+            onChange={(e) => setJson(e.currentTarget.value)}
+            value={json}
+            rows={20}
+            style={{ width: '100%' }}
+          />
+        </div>
       </Row>
       <Row>
         <Col xs={6}>
