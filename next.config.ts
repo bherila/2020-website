@@ -4,7 +4,7 @@ import {PHASE_DEVELOPMENT_SERVER} from 'next/constants'
 export default (phase: any) => {
   const isDev = phase === PHASE_DEVELOPMENT_SERVER
   return {
-    assetPrefix: isDev ? undefined : 'https://cf.bherila.net',
+    // assetPrefix: isDev ? undefined : 'https://cf.bherila.net',
     modularizeImports: {
       '@mui/icons-material': {
         transform: '@mui/icons-material/{{member}}',
@@ -37,18 +37,18 @@ export default (phase: any) => {
         permanent: false,
       },
     ],
-    async headers() {
-      return [
-        {
-          source: "/(.*)",
-          headers: [
-            {
-              key: "Content-Security-Policy",
-              value: "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://cf.bherila.net; font-src 'self' https://cf.bherila.net;",
-            },
-          ],
-        },
-      ];
-    },
+    // async headers() {
+    //   return [
+    //     {
+    //       source: "/(.*)",
+    //       headers: [
+    //         {
+    //           key: "Content-Security-Policy",
+    //           value: "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://cf.bherila.net; font-src 'self' https://cf.bherila.net;",
+    //         },
+    //       ],
+    //     },
+    //   ];
+    // },
   }
 }
