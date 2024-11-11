@@ -13,7 +13,7 @@ export default function ImageAndText({
   extraClass,
 }: ImageAndTextProps) {
   return (
-    <Row container className={cn('pb-4', extraClass)}>
+    <Row className={cn('pb-4', extraClass)}>
       <Col xs={12} sm={4} md={4} lg={3}>
         <img width="100%" src={imageUrl} alt={alt} />
       </Col>

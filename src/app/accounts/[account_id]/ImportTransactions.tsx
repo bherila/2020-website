@@ -40,7 +40,7 @@ export default function ImportTransactions(props: {
     } catch (e) {
       return {
         data: null,
-        error: e instanceof ZodError ? e.message : e?.toString() ?? null,
+        error: e instanceof ZodError ? e.message : (e?.toString() ?? null),
       }
     }
   }, [text])

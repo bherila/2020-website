@@ -183,9 +183,9 @@ export function matchAcrossAccounts(accounts: TradingAccount[]) {
       overallResult[accountName].totalQty =
         accountName === 'cash'
           ? currency(0)
-          : overallResult[accountName].totalQty?.add(
+          : (overallResult[accountName].totalQty?.add(
               sum(records.map((trans) => trans.Quantity)),
-            ) ?? currency(0)
+            ) ?? currency(0))
 
       if (accountName !== 'cash') {
         // cap gain
