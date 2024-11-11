@@ -8,7 +8,7 @@ export default function Page() {
       <MainTitle>
         Add payslip
       </MainTitle>
-      <PayslipDetailClient onSave={() => {}} />
+      <PayslipDetailClient />
     </Container>
   )
 }

@@ -9,7 +9,7 @@ import { redirect } from 'next/navigation'
 
 export async function SignupAction(
   formData: FormData,
-): Promise<{ error: string }> {
+): Promise<void> {
   try {
     const signup = SignupZod.parse(Object.fromEntries(formData))
     const exist: { c: number }[] = await db.query(
@@ -24,7 +24,7 @@ export async function SignupAction(
         //ignore
       }
       // fail
-      return { error: 'A user may exist with this email (or the check failed)' }
+      throw new Error('A user may exist with this email (or the check failed)')
     }
 
     const { err, result, fields } = (await db.query(
@@ -40,15 +40,8 @@ export async function SignupAction(
     const userId: number = result.insertId
     await saveSession({ uid: userId })
     redirect('/')
-    return { error: '' }
   } catch (err) {
-    if (err instanceof ZodError) {
-      return { error: err.message }
-    }
-    if (err instanceof Error) {
-      return { error: err.message }
-    }
-    return { error: JSON.stringify(err) }
+    console.error(err)
   } finally {
     await db.end()
   }

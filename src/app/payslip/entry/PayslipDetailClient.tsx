@@ -5,7 +5,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { fin_payslip } from '@/app/payslip/payslipDbCols'
 
-const PayrollForm: React.FC<{ onSave: (data: fin_payslip) => void }> = ({
+const PayrollForm: React.FC<{ onSave?: (data: fin_payslip) => void }> = ({
   onSave,
 }) => {
   const [formData, setFormData] = useState<any>({})
@@ -28,7 +28,9 @@ const PayrollForm: React.FC<{ onSave: (data: fin_payslip) => void }> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSave(formData)
+    if (onSave) {
+      onSave(formData)
+    }
   }
 
   return (

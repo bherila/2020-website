@@ -82,13 +82,13 @@ export default function PayslipClient(): React.ReactElement {
     { field: 'other', title: 'Other', hide: false },
   ]
 
-  const [data, setData] = useState<any[]>([])
+  const [rawData, setRawData] = useState<any[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   useEffect(() => {
     fetchWrapper
       .get('/api/payslip/')
       .then((res) => {
-        setData(res)
+        setRawData(res)
         setLoading(false)
       })
       .catch(() => {
@@ -105,7 +105,7 @@ export default function PayslipClient(): React.ReactElement {
       body: fd,
       credentials: 'include', // Include cookies
     })
-    setData(await response.json())
+    setRawData(await response.json())
     setLoading(false)
   }
 
@@ -118,14 +118,26 @@ export default function PayslipClient(): React.ReactElement {
       body: fd,
       credentials: 'include', // Include cookies
     })
-    setData(await response.json())
+    setRawData(await response.json())
     setLoading(false)
   }
 
   const [previewData, setPreviewData] = useState<any[]>([])
   const updateJsonPreview = useCallback((e: any[]) => setPreviewData(e), [])
+
+  // Filter by date
+  const data = rawData.filter((r: fin_payslip) => r.pay_date > '2024-01-01' && r.pay_date < '2025-01-01')
+
   return (
     <Container fluid>
+      <div className="container my-2">
+        <Row>
+          <td>
+            Tax period:{' '}
+            <b>2024-01-01 through 2024-12-31</b>
+          </td>
+        </Row>
+      </div>
       <Row>
         <PayslipTable data={data} cols={cols} onRowEdited={editRow} />
         {loading && (
