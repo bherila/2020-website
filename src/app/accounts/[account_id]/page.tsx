@@ -7,14 +7,11 @@ import AccountClient from '@/app/accounts/[account_id]/Client'
 
 export default async function Page({
   params,
-  searchParams,
 }: {
-  params: { account_id: string }
-  searchParams: { [key: string]: string | string[] | undefined }
+  params: Promise<{ account_id: string }>
 }) {
   if (!(await getSession())?.uid) {
     redirect(AuthRoutes.signIn)
-    return null
   }
-  return <AccountClient id={params.account_id} />
+  return <AccountClient id={(await params).account_id} />
 }

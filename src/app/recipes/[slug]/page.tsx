@@ -12,8 +12,12 @@ export async function generateStaticParams() {
   }))
 }
 
-export default function RecipePage({ params }: { params: { slug: string } }) {
-  const { content, data } = getRecipeContent(params.slug)
+export default async function RecipePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { content, data } = getRecipeContent((await params).slug)
   return (
     <Container>
       <Row className="pt-5 pb-3">

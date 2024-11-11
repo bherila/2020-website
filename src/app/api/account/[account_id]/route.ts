@@ -9,7 +9,9 @@ import {
 import { z } from 'zod'
 import { getSession } from '@/lib/session'
 
-async function getTheAccount(context: { params: { account_id: string } }) {
+async function getTheAccount(context: {
+  params: Promise<{ account_id: string }>
+}) {
   const uid = (await getSession())?.uid
   if (!uid) {
     throw new Error('not logged in')
@@ -22,7 +24,7 @@ async function getTheAccount(context: { params: { account_id: string } }) {
         [uid],
       ),
     )
-  const accountId = z.coerce.number().parse(context.params.account_id)
+  const accountId = z.coerce.number().parse((await context.params).account_id)
   const theAccount = accounts.find((a) => a.acct_id === accountId)
   if (!theAccount) {
     throw new Error('account not found')
@@ -32,7 +34,7 @@ async function getTheAccount(context: { params: { account_id: string } }) {
 
 export async function GET(
   request: NextRequest,
-  context: { params: { account_id: string } },
+  context: { params: Promise<{ account_id: string }> },
 ) {
   try {
     const theAccount = await getTheAccount(context)
@@ -52,7 +54,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  context: { params: { account_id: string } },
+  context: { params: Promise<{ account_id: string }> },
 ) {
   try {
     const parsed: AccountSpend[] = z

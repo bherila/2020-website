@@ -10,7 +10,7 @@ import { getSession } from '@/lib/session'
 import AuthRoutes from '@/app/auth/AuthRoutes'
 
 interface Props {
-  params: { symbol: string }
+  params: Promise<{ symbol: string }>
 }
 
 export async function generateMetadata(
@@ -18,7 +18,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
   // read route params
-  const id = params.symbol.toUpperCase()
+  const id = (await params).symbol.toUpperCase()
   return {
     title: `MaxMin Tool - ${id}`,
   }
@@ -29,18 +29,18 @@ export default async function Page({ params }: Props) {
     redirect(AuthRoutes.signIn)
     return null
   }
-  if (!params.symbol) {
+  if (!(await params).symbol) {
     return (
       <div>
         No symbol. Use like: <pre>/maxmin/[symbol]</pre>
       </div>
     )
   }
-  if (params.symbol !== params.symbol.toUpperCase()) {
-    redirect(`/maxmin/${params.symbol.toUpperCase()}/`)
+  if ((await params).symbol !== (await params).symbol.toUpperCase()) {
+    redirect(`/maxmin/${(await params).symbol.toUpperCase()}/`)
     return null
   }
-  const symbol = params.symbol.toUpperCase()
+  const symbol = (await params).symbol.toUpperCase()
   return (
     <Container fluid>
       <MinMaxClientDataLoader symbol={symbol} />

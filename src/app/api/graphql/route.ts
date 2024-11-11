@@ -1,7 +1,7 @@
 ﻿import 'reflect-metadata'
 import { ApolloServer } from '@apollo/server'
 import { startServerAndCreateNextHandler } from '@as-integrations/next'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import path from 'path'
 import { ProductKeyResolver } from '@/app/api/cdkeys/graphql'
 import { buildSchemaSync } from 'type-graphql'
