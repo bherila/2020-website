@@ -36,6 +36,11 @@ export default (phase: any) => {
         destination: 'https://web1.dal.cloudplatform.net:2083/',
         permanent: false,
       },
+      {
+        source: '/subscribe/smb',
+        destination: 'https://checkout.square.site/merchant/5170N93FK2SE4/checkout/3GQ3ACLAURLKM7FAUGNP7NEC',
+        permanent: false,
+      },
     ],
     // async headers() {
     //   return [
