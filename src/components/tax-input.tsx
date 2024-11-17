@@ -18,9 +18,7 @@ export default function TaxInput(props: TaxInputProps) {
         <input
           value={data.value || ''}
           readOnly={readOnly}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            data.setValue(event.target.value)
-          }
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => data.setValue(event.target.value)}
         />
       </td>
       <td>{line}</td>

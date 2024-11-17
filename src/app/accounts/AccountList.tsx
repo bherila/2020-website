@@ -42,9 +42,7 @@ function AccountList() {
             <tr key={account.acct_id}>
               <td>{account.acct_id}</td>
               <td>
-                <Link href={`/accounts/${account.acct_id}`}>
-                  {account.acct_name}
-                </Link>
+                <Link href={`/accounts/${account.acct_id}`}>{account.acct_name}</Link>
               </td>
             </tr>
           ))}

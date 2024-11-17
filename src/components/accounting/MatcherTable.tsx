@@ -25,8 +25,7 @@ export default function MatcherTable(props: {
   const reload = React.useCallback(() => {
     const query =
       Array.isArray(requestRequireColumns) && requestRequireColumns.length > 0
-        ? 'requestRequireColumns=' +
-          encodeURIComponent(requestRequireColumns.join(',').toLowerCase())
+        ? 'requestRequireColumns=' + encodeURIComponent(requestRequireColumns.join(',').toLowerCase())
         : ''
     fetchWrapper.get('/api/accounting?' + query).then((res: any) => {
       setDataRows(res.t_data.filter((r: any) => r && r.t_qty))
@@ -52,11 +51,7 @@ export default function MatcherTable(props: {
 
   return (
     <>
-      <SimpleMuiAlert
-        open={!!error}
-        onClose={() => setError('')}
-        text={error}
-      />
+      <SimpleMuiAlert open={!!error} onClose={() => setError('')} text={error} />
       {!dataRows ? (
         <Container>
           <Spinner />
@@ -116,13 +111,7 @@ function SumDisplay({ rows }: { rows: AccountingDbRow[] }) {
   return <p>&Sigma; = {total.format({ precision: 4 })}</p>
 }
 
-function Summary({
-  symbol,
-  rows,
-}: {
-  symbol: string
-  rows: AccountingDbRow[]
-}) {
+function Summary({ symbol, rows }: { symbol: string; rows: AccountingDbRow[] }) {
   return (
     <td style={{ verticalAlign: 'top' }}>
       <p>{symbol}</p>

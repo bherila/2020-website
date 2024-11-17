@@ -27,25 +27,14 @@ function asc(a: any, b: any) {
 }
 const desc = (a: any, b: any) => -1 * asc(a, b)
 
-export function DetailChart(props: {
-  symbol: string
-  data: StockQuote[]
-  centerDate?: string
-}) {
+export function DetailChart(props: { symbol: string; data: StockQuote[]; centerDate?: string }) {
   'use client'
   const { symbol, data, centerDate } = props
   const [n] = useState(21)
-  const filterData = centerDate
-    ? centerDataAround(data, centerDate, n)
-    : data.sort(asc).slice(data.length - 30)
+  const filterData = centerDate ? centerDataAround(data, centerDate, n) : data.sort(asc).slice(data.length - 30)
   const circa = centerDate ? `circa ${centerDate}` : 'past 30 days'
   return (
-    <Chart
-      id="chart"
-      title={`${symbol} Stock Price ${circa}`}
-      dataSource={filterData}
-      width="100%"
-    >
+    <Chart id="chart" title={`${symbol} Stock Price ${circa}`} dataSource={filterData} width="100%">
       <CommonSeriesSettings argumentField="date" type="candlestick" />
       <Series
         name={symbol}

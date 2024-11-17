@@ -31,26 +31,17 @@ export default function AccountingTable(props: {
   clientSort?: (keyof AccountingDbRow)[]
   groupByField?: keyof AccountingDbRow
 }) {
-  const {
-    rows,
-    columns,
-    clientRowFilter,
-    groupByField,
-    requestRequireColumns,
-  } = props
+  const { rows, columns, clientRowFilter, groupByField, requestRequireColumns } = props
   const [dataRows, setDataRows] = React.useState<AccountingDbRow[]>(rows ?? [])
   const [newRows, setNewRows] = React.useState<AccountingDbRow[]>([])
   const [error, setError] = React.useState('')
   const [isSaving, setIsSaving] = React.useState(false)
-  const [filterValue, setFilterValue] = React.useState<string | number | null>(
-    null,
-  )
+  const [filterValue, setFilterValue] = React.useState<string | number | null>(null)
 
   const reload = React.useCallback(() => {
     const query =
       Array.isArray(requestRequireColumns) && requestRequireColumns.length > 0
-        ? 'requestRequireColumns=' +
-          encodeURIComponent(requestRequireColumns.join(',').toLowerCase())
+        ? 'requestRequireColumns=' + encodeURIComponent(requestRequireColumns.join(',').toLowerCase())
         : ''
     fetchWrapper.get('/api/accounting?' + query).then((res) => {
       setDataRows(res.t_data.filter(clientRowFilter))
@@ -75,13 +66,10 @@ export default function AccountingTable(props: {
   }
 
   const combinedClientRowFilter = React.useMemo(() => {
-    const safeClientRowFilter =
-      typeof clientRowFilter === 'function' ? clientRowFilter : Boolean
-    if (!filterValue || !groupByField || !clientRowFilter)
-      return safeClientRowFilter
+    const safeClientRowFilter = typeof clientRowFilter === 'function' ? clientRowFilter : Boolean
+    if (!filterValue || !groupByField || !clientRowFilter) return safeClientRowFilter
 
-    return (row: AccountingDbRow) =>
-      row && row[groupByField] === filterValue && safeClientRowFilter(row)
+    return (row: AccountingDbRow) => row && row[groupByField] === filterValue && safeClientRowFilter(row)
   }, [clientRowFilter, groupByField, filterValue])
 
   return (
@@ -96,31 +84,17 @@ export default function AccountingTable(props: {
         />
         {newRows.length > 0 && (
           <>
-            <Button
-              disabled={isSaving}
-              variant="outlined"
-              onClick={() => saveNewRows(newRows)}
-            >
+            <Button disabled={isSaving} variant="outlined" onClick={() => saveNewRows(newRows)}>
               Save Added Rows
             </Button>
-            <Button
-              disabled={isSaving}
-              variant="outlined"
-              onClick={() => setNewRows([])}
-            >
+            <Button disabled={isSaving} variant="outlined" onClick={() => setNewRows([])}>
               Clear Added Rows
             </Button>
           </>
         )}
         {dataRows && (
           <div style={{ display: 'inline' }}>
-            &Sigma; t_amt ={' '}
-            {
-              dataRows.reduce(
-                (a, r) => currency(r?.t_amt ?? 0).add(a),
-                currency(0),
-              ).value
-            }
+            &Sigma; t_amt = {dataRows.reduce((a, r) => currency(r?.t_amt ?? 0).add(a), currency(0)).value}
           </div>
         )}
       </div>
@@ -171,9 +145,7 @@ function FilterList(props: FilterListProps) {
   if (!groupByField || !dataRows) {
     return null
   }
-  const filterItems = Array.from(
-    new Set(dataRows.map((r) => r[groupByField]).filter(Boolean)),
-  ).sort()
+  const filterItems = Array.from(new Set(dataRows.map((r) => r[groupByField]).filter(Boolean))).sort()
   return (
     <Table aria-label="sticky table">
       <th>
@@ -223,11 +195,7 @@ function InternalTable({
           {columns
             .filter((r) => !r.hide)
             .map((column) => (
-              <td
-                key={column.id}
-                align={column.align}
-                style={{ minWidth: column.minWidth }}
-              >
+              <td key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
                 {column.label ?? column.id}
               </td>
             ))}
@@ -240,9 +208,7 @@ function InternalTable({
           if (!isValid && hideInvalid) {
             return null
           }
-          const sty: CSSProperties = isValid
-            ? {}
-            : { textDecoration: 'line-through', color: 'red' }
+          const sty: CSSProperties = isValid ? {} : { textDecoration: 'line-through', color: 'red' }
           return (
             <tr
               role="checkbox"
@@ -256,9 +222,7 @@ function InternalTable({
                   const value = row[column.id]
                   return (
                     <td key={column.id} align={column.align} style={sty}>
-                      {column.format && typeof value === 'number'
-                        ? column.format(value)
-                        : value}
+                      {column.format && typeof value === 'number' ? column.format(value) : value}
                     </td>
                   )
                 })}

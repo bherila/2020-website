@@ -13,9 +13,7 @@ export class DateContainer {
     return this.value.toISOString().slice(0, 10)
   }
 }
-export function parseDate(
-  str: string | undefined | null | Date,
-): DateContainer | null {
+export function parseDate(str: string | undefined | null | Date): DateContainer | null {
   if (!str) {
     return null
   }

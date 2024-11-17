@@ -1,12 +1,4 @@
-import {
-  Arg,
-  Ctx,
-  ID,
-  InputType,
-  Mutation,
-  Query,
-  Resolver,
-} from 'type-graphql'
+import { Arg, Ctx, ID, InputType, Mutation, Query, Resolver } from 'type-graphql'
 import { Field, ObjectType } from 'type-graphql'
 import { z } from 'zod'
 

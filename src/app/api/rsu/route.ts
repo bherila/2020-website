@@ -21,18 +21,10 @@ export async function POST(req: NextRequest) {
     )
     const data = schema
       .parse(await req.json())
-      .map((r) => [
-        uid,
-        r.award_id,
-        r.grant_date,
-        r.vest_date,
-        r.share_count,
-        r.symbol,
-      ])
-    await db.query(
-      'insert into fin_equity_awards (uid, award_id, grant_date, vest_date, share_count, symbol) values ?',
-      [data],
-    )
+      .map((r) => [uid, r.award_id, r.grant_date, r.vest_date, r.share_count, r.symbol])
+    await db.query('insert into fin_equity_awards (uid, award_id, grant_date, vest_date, share_count, symbol) values ?', [
+      data,
+    ])
     return NextResponse.json(await getRows(uid))
   } catch (e) {
     if (e instanceof ZodError) {

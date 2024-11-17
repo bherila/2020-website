@@ -8,9 +8,7 @@ interface Props {
 }
 
 const Table2D: React.FC<Props> = ({ data, onColumnClick }) => {
-  const [highlightedColumn, setHighlightedColumn] = useState<number | null>(
-    null,
-  )
+  const [highlightedColumn, setHighlightedColumn] = useState<number | null>(null)
 
   const handleHeaderHover = (columnIndex: number) => {
     setHighlightedColumn(columnIndex)
@@ -35,9 +33,7 @@ const Table2D: React.FC<Props> = ({ data, onColumnClick }) => {
               key={columnIndex}
               onMouseOver={() => handleHeaderHover(columnIndex)}
               onClick={() => handleHeaderClick(columnIndex)}
-              className={
-                highlightedColumn === columnIndex ? 'table-active' : ''
-              }
+              className={highlightedColumn === columnIndex ? 'table-active' : ''}
             >
               {header}
             </th>
@@ -52,9 +48,7 @@ const Table2D: React.FC<Props> = ({ data, onColumnClick }) => {
                 key={columnIndex}
                 onMouseOver={() => handleHeaderHover(columnIndex)}
                 onClick={() => handleHeaderClick(columnIndex)}
-                className={
-                  highlightedColumn === columnIndex ? 'table-active' : ''
-                }
+                className={highlightedColumn === columnIndex ? 'table-active' : ''}
               >
                 {cell}
               </td>

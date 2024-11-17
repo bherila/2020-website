@@ -1,7 +1,6 @@
 export default function usePersist<T>(key: string, defaultValue: T) {
   let data: T = defaultValue
-  const storageItem =
-    typeof localStorage !== 'undefined' ? localStorage.getItem(key) : null
+  const storageItem = typeof localStorage !== 'undefined' ? localStorage.getItem(key) : null
   if (storageItem) {
     data = JSON.parse(storageItem)
   }

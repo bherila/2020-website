@@ -49,38 +49,18 @@ const NewSPGPRequestForm = ({
   return (
     <Form onSubmit={handleSubmit}>
       <Form.Group className="mb-3" as={Col} controlId="firstName">
-        <Form.Label>
-          First name of pass holder (must match photo ID):
-        </Form.Label>
-        <Form.Control
-          type="text"
-          required
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
+        <Form.Label>First name of pass holder (must match photo ID):</Form.Label>
+        <Form.Control type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
       </Form.Group>
 
       <Form.Group className="mb-3" as={Col} controlId="lastName">
         <Form.Label>Last name of pass holder (must match photo ID):</Form.Label>
-        <Form.Control
-          type="text"
-          required
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-        />
+        <Form.Control type="text" required value={lastName} onChange={(e) => setLastName(e.target.value)} />
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="email">
-        <Form.Label>
-          Email of pass holder online account. Can use the same email for
-          multiple passes.
-        </Form.Label>
-        <Form.Control
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <Form.Label>Email of pass holder online account. Can use the same email for multiple passes.</Form.Label>
+        <Form.Control type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="birthDate">
@@ -93,22 +73,13 @@ const NewSPGPRequestForm = ({
           value={birthDate}
           onChange={(e) => setBirthDate(e.target.value)}
           placeholder="yyyy-mm-dd"
-          onBlur={() =>
-            setBirthDate(parseDate(birthDate)?.formatYMD() ?? birthDate)
-          }
+          onBlur={() => setBirthDate(parseDate(birthDate)?.formatYMD() ?? birthDate)}
         />
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="passType">
-        <Form.Label>
-          Pass type you are requesting for the upcoming season
-        </Form.Label>
-        <Form.Control
-          as="select"
-          required
-          value={passType}
-          onChange={(e) => setPassType(parseInt(e.target.value))}
-        >
+        <Form.Label>Pass type you are requesting for the upcoming season</Form.Label>
+        <Form.Control as="select" required value={passType} onChange={(e) => setPassType(parseInt(e.target.value))}>
           <option value="">Select Pass Type</option>
           {passTypes.map((pt) => {
             return (
@@ -131,8 +102,8 @@ const NewSPGPRequestForm = ({
 
       <Form.Group className="mb-3" controlId="previousPassId">
         <Form.Label>
-          Previous pass ID (starts with letter I). Does not have to be the same
-          type as the pass you are requesting for upcoming season.
+          Previous pass ID (starts with letter I). Does not have to be the same type as the pass you are requesting for
+          upcoming season.
         </Form.Label>
         <Form.Control
           type="text"

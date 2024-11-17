@@ -173,32 +173,18 @@ export function parseFromCompass(): MLSData {
     lastPrice: listing.price.lastKnown,
     perSquareFoot: listing.price.perSquareFoot,
     buildingIdSHA: listing.buildingInfo.buildingIdSHA,
-    homeFactsJson:
-      listing.detailedInfo.assessorDetails.assessorInfo.propertyTax.tax,
+    homeFactsJson: listing.detailedInfo.assessorDetails.assessorInfo.propertyTax.tax,
     // landValue: listing.detailedInfo.assessorDetails.assessorInfo.assessment.landValue,
-    totalFinishedSqft:
-      listing.detailedInfo.assessorDetails.assessorInfo.assessment
-        .additionsValue,
+    totalFinishedSqft: listing.detailedInfo.assessorDetails.assessorInfo.assessment.additionsValue,
     stories: Number(findFact(listing.detailedInfo.assessorDetails, 'Stories')),
-    totalAboveGradeFinishedSqft: Number(
-      findFact(
-        listing.detailedInfo.assessorDetails,
-        'Above Grade Finished SqFt',
-      ),
-    ),
+    totalAboveGradeFinishedSqft: Number(findFact(listing.detailedInfo.assessorDetails, 'Above Grade Finished SqFt')),
     lotSize: findFact(listing.detailedInfo.assessorDetails, 'Lot Size'),
     style: findFact(listing.detailedInfo.assessorDetails, 'Style'),
-    yearBuilt: Number(
-      findFact(listing.detailedInfo.assessorDetails, 'Year Built'),
-    ),
+    yearBuilt: Number(findFact(listing.detailedInfo.assessorDetails, 'Year Built')),
     zoning: findFact(listing.detailedInfo.assessorDetails, 'Zoning'),
     county: findFact(listing.detailedInfo.assessorDetails, 'County'),
     apn: findFact(listing.detailedInfo.assessorDetails, 'APN'),
-    hasFireplace:
-      findFact(listing.detailedInfo.assessorDetails, 'Fireplace Type') ===
-      'Has Fireplace'
-        ? 1
-        : 0,
+    hasFireplace: findFact(listing.detailedInfo.assessorDetails, 'Fireplace Type') === 'Has Fireplace' ? 1 : 0,
     hasPool: null,
     hasAirConditioning: null,
     hasView: null,

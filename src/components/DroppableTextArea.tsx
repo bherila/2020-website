@@ -7,10 +7,7 @@ interface DroppableTextAreaProps {
   setData: (data: string) => void
 }
 
-const DroppableTextArea: React.FC<DroppableTextAreaProps> = ({
-  data,
-  setData,
-}) => {
+const DroppableTextArea: React.FC<DroppableTextAreaProps> = ({ data, setData }) => {
   const [file, setFile] = useState<File | null>(null)
   const [dragging, setDragging] = useState(false)
 
@@ -76,13 +73,7 @@ const DroppableTextArea: React.FC<DroppableTextAreaProps> = ({
         onPaste={handlePaste}
         placeholder="Drop a file here..."
       />
-      <input
-        type="file"
-        onChange={handleFileChange}
-        accept=".txt"
-        style={{ display: 'none' }}
-        id="fileInput"
-      />
+      <input type="file" onChange={handleFileChange} accept=".txt" style={{ display: 'none' }} id="fileInput" />
       <label htmlFor="fileInput" className="btn btn-primary">
         {file == null ? 'Select a file' : file.name}
       </label>

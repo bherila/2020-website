@@ -4,14 +4,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import cn from 'classnames'
 
-export default function ImageAndText({
-  children,
-  imageUrl,
-  alt,
-  ctaText,
-  ctaLink,
-  extraClass,
-}: ImageAndTextProps) {
+export default function ImageAndText({ children, imageUrl, alt, ctaText, ctaLink, extraClass }: ImageAndTextProps) {
   return (
     <Row className={cn('pb-4', extraClass)}>
       <Col xs={12} sm={4} md={4} lg={3}>

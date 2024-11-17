@@ -17,20 +17,11 @@ export default function Footer() {
     >
       <Container>
         <Navbar.Text>&copy; 2024 Ben Herila</Navbar.Text>
-        <Navbar.Toggle
-          aria-controls="responsive-navbar-nav"
-          aria-label="Toggle navigation"
-        />
-        <Navbar.Collapse
-          id="responsive-navbar-nav"
-          aria-labelledby="responsive-navbar-nav-label"
-        >
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" aria-label="Toggle navigation" />
+        <Navbar.Collapse id="responsive-navbar-nav" aria-labelledby="responsive-navbar-nav-label">
           <Nav className="me-auto" aria-label="Left navigation"></Nav>
           <Nav>
-            <Nav.Link
-              href="/legal/accessibility"
-              aria-label="Accessibility page"
-            >
+            <Nav.Link href="/legal/accessibility" aria-label="Accessibility page">
               Accessibility
             </Nav.Link>
             <Nav.Link href="/legal/privacy" aria-label="Privacy page">

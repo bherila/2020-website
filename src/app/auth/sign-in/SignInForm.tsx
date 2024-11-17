@@ -30,9 +30,7 @@ export default function SignInForm(props: any) {
             name="email"
             placeholder="Enter your email"
             value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
         </Col>
       </Form.Group>
@@ -50,9 +48,7 @@ export default function SignInForm(props: any) {
             name="password"
             placeholder="Enter your password"
             value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           />
         </Col>
       </Form.Group>
@@ -60,12 +56,7 @@ export default function SignInForm(props: any) {
       <Row>
         <Col xs={xs}></Col>
         <Col xs={12 - xs}>
-          <Button
-            variant="primary"
-            type="submit"
-            aria-label="Sign in"
-            aria-live="polite"
-          >
+          <Button variant="primary" type="submit" aria-label="Sign in" aria-live="polite">
             Sign in
           </Button>
         </Col>

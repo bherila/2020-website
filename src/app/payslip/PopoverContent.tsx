@@ -18,9 +18,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ show, onHide, value }) => {
           readOnly
           style={{ width: '100%', fontFamily: 'Atkinson Hyperlegible' }}
           rows={20}
-          value={
-            typeof value === 'string' ? value : JSON.stringify(value, null, 2)
-          }
+          value={typeof value === 'string' ? value : JSON.stringify(value, null, 2)}
         />
       </Modal.Body>
     </Modal>
@@ -36,13 +34,7 @@ function PopoverContent(props: { content: any }) {
   return (
     <div>
       <button onClick={handleShowModal}>Show Modal</button>
-      {showModal && (
-        <CustomModal
-          show={showModal}
-          onHide={handleHideModal}
-          value={props.content}
-        />
-      )}
+      {showModal && <CustomModal show={showModal} onHide={handleHideModal} value={props.content} />}
     </div>
   )
 }

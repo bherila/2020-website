@@ -13,12 +13,8 @@ export default function FileUploadClient(props: Props) {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     const droppedFiles = Array.from(e.dataTransfer.files)
-    const newJsonFiles = droppedFiles.filter(
-      (file) => file.type === 'application/json',
-    )
-    const newPdfFiles = droppedFiles.filter(
-      (file) => file.type === 'application/pdf',
-    )
+    const newJsonFiles = droppedFiles.filter((file) => file.type === 'application/json')
+    const newPdfFiles = droppedFiles.filter((file) => file.type === 'application/pdf')
     setJsonFiles(newJsonFiles)
     setPdfFiles(newPdfFiles)
   }
@@ -78,9 +74,7 @@ export default function FileUploadClient(props: Props) {
         onMouseOut={(e) => {
           setIsDragging(false)
         }}
-        className={`py-2 ${styles.uploadZone} ${
-          isDragging ? styles.dragging : ''
-        }`}
+        className={`py-2 ${styles.uploadZone} ${isDragging ? styles.dragging : ''}`}
       >
         Drop payslip JSON and PDF files here to add them. Get JSON file from{' '}
         <a

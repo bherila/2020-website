@@ -1,17 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import db from '@/lib/db'
-import {
-  AccountSpend,
-  AccountSpendSchema,
-  AccountTableRow,
-  AccountTableSchema,
-} from '@/app/api/account/model'
+import { AccountSpend, AccountSpendSchema, AccountTableRow, AccountTableSchema } from '@/app/api/account/model'
 import { z } from 'zod'
 import { getSession } from '@/lib/session'
 
-async function getTheAccount(context: {
-  params: Promise<{ account_id: string }>
-}) {
+async function getTheAccount(context: { params: Promise<{ account_id: string }> }) {
   const uid = (await getSession())?.uid
   if (!uid) {
     throw new Error('not logged in')
@@ -19,10 +12,7 @@ async function getTheAccount(context: {
   const accounts: AccountTableRow[] = z
     .array(AccountTableSchema)
     .parse(
-      await db.query(
-        'select acct_id, acct_owner, acct_name from accounts where acct_owner = ? order by acct_name',
-        [uid],
-      ),
+      await db.query('select acct_id, acct_owner, acct_name from accounts where acct_owner = ? order by acct_name', [uid]),
     )
   const accountId = z.coerce.number().parse((await context.params).account_id)
   const theAccount = accounts.find((a) => a.acct_id === accountId)
@@ -32,10 +22,7 @@ async function getTheAccount(context: {
   return theAccount
 }
 
-export async function GET(
-  request: NextRequest,
-  context: { params: Promise<{ account_id: string }> },
-) {
+export async function GET(request: NextRequest, context: { params: Promise<{ account_id: string }> }) {
   try {
     const theAccount = await getTheAccount(context)
     const rows: AccountSpend[] = await db.query(
@@ -52,14 +39,9 @@ export async function GET(
   }
 }
 
-export async function POST(
-  request: NextRequest,
-  context: { params: Promise<{ account_id: string }> },
-) {
+export async function POST(request: NextRequest, context: { params: Promise<{ account_id: string }> }) {
   try {
-    const parsed: AccountSpend[] = z
-      .array(AccountSpendSchema)
-      .parse(await request.json())
+    const parsed: AccountSpend[] = z.array(AccountSpendSchema).parse(await request.json())
     const theAccount = await getTheAccount(context)
     const rows: any[][] = parsed.map((row: AccountSpend) => [
       theAccount.acct_id,

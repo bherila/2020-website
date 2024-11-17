@@ -20,10 +20,7 @@ export function RsuByVestDate(props: { rsu: IAward[] }) {
         {Object.keys(grouped).map((k, i) => {
           const lRSU = grouped[k]
           const vested = k < now
-          const total = lRSU.reduce(
-            (p, c) => p.add(c.share_count!),
-            currency(0),
-          )
+          const total = lRSU.reduce((p, c) => p.add(c.share_count!), currency(0))
           return (
             <tr key={i} style={vested ? vestStyle : {}}>
               <td>

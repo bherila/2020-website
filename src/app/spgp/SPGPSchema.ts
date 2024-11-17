@@ -36,6 +36,4 @@ export interface ParsedSPGP {
 }
 
 export const colKeys =
-  'promoCode,renewOrNew,first,last,birthday,email,passType,price,redeemedMonth,total,notes,sentCode'.split(
-    ',',
-  )
+  'promoCode,renewOrNew,first,last,birthday,email,passType,price,redeemedMonth,total,notes,sentCode'.split(',')

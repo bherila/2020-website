@@ -1,13 +1,5 @@
 'use client'
-import {
-  Chart,
-  Series,
-  ArgumentAxis,
-  CommonSeriesSettings,
-  Export,
-  Legend,
-  Margin,
-} from 'devextreme-react/chart'
+import { Chart, Series, ArgumentAxis, CommonSeriesSettings, Export, Legend, Margin } from 'devextreme-react/chart'
 import React from 'react'
 import { IAward } from '@/app/rsu/IAward'
 import _ from 'lodash'
@@ -27,11 +19,7 @@ export default function RsuChart({ rsu }: { rsu: IAward[] }) {
   }
   console.log(dataSource)
   return (
-    <Chart
-      palette="dark"
-      title="Shares vesting over time"
-      dataSource={dataSource}
-    >
+    <Chart palette="dark" title="Shares vesting over time" dataSource={dataSource}>
       <CommonSeriesSettings argumentField="vest_date" type="stackedBar" />
       {Array.from(award_ids).map((award_id) => (
         <Series key={award_id} valueField={award_id} name={award_id} />

@@ -87,9 +87,7 @@ export default function FormDialog(props: FormDialogProps) {
             record.opt_expiration = parseDate(inputCols[colIndex])?.formatYMD()
             break
           case 'opt_type':
-            record.opt_type = StockOptionSchema.TypeMap.get(
-              inputCols[colIndex].toLowerCase(),
-            )
+            record.opt_type = StockOptionSchema.TypeMap.get(inputCols[colIndex].toLowerCase())
             break
           case 'opt_strike':
             record.opt_strike = parseFloat(inputCols[colIndex])
@@ -104,9 +102,7 @@ export default function FormDialog(props: FormDialogProps) {
             record.t_interest_rate = inputCols[colIndex]
             break
           default:
-            console.error(
-              `Column ${columns[colIndex]} not defined in ImportTransactionsDialog`,
-            )
+            console.error(`Column ${columns[colIndex]} not defined in ImportTransactionsDialog`)
             break
         }
       }
@@ -115,9 +111,7 @@ export default function FormDialog(props: FormDialogProps) {
       const option = StockOptionSchema.tryParse(record.t_description ?? '')
       if (option != null && option !== StockOptionSchema.Invalid) {
         if (record.t_symbol && record.t_symbol !== option.symbol) {
-          console.warn(
-            `overwriting t_symbol ${record.t_symbol} with ${option.symbol}`,
-          )
+          console.warn(`overwriting t_symbol ${record.t_symbol} with ${option.symbol}`)
         }
         record.t_symbol = option.symbol
         record.opt_strike = option.strike.value
@@ -153,19 +147,15 @@ export default function FormDialog(props: FormDialogProps) {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Paste the data you want to import. Expected columns:{' '}
-            {columns.map((x) => x.label || x.id).join(', ')}. Each column
-            separated with TAB (copy &amp; paste grid from Excel). Rows:{' '}
-            {value.split('\n').filter(Boolean).length}
+            Paste the data you want to import. Expected columns: {columns.map((x) => x.label || x.id).join(', ')}. Each
+            column separated with TAB (copy &amp; paste grid from Excel). Rows: {value.split('\n').filter(Boolean).length}
           </p>
           <textarea
             autoFocus
             id="name"
             rows={10}
             value={value}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-              setValue(e.currentTarget.value)
-            }
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setValue(e.currentTarget.value)}
           />
         </Modal.Body>
         <Modal.Footer>

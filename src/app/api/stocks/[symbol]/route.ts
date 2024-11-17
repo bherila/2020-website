@@ -8,10 +8,7 @@ import _ from 'lodash'
 
 const apikey: string = '07HZXPDVA6CKI94B'
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ symbol: string }> },
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ symbol: string }> }) {
   const { symbol } = await params
   if (symbol == null) {
     return notFound()
@@ -43,17 +40,12 @@ async function genEarningsFromAlphaVantage(symbol: string) {
 
   const earningsData: AlphaVantageEarnings = await earningsResponse.json()
 
-  const annualMysqlData = earningsData.annualEarnings?.map((e) => [
-    symbol,
-    e.fiscalDateEnding,
-    e.reportedEPS,
-  ])
+  const annualMysqlData = earningsData.annualEarnings?.map((e) => [symbol, e.fiscalDateEnding, e.reportedEPS])
 
   if (annualMysqlData) {
-    await mysql.query(
-      'insert ignore into earnings_annual (symbol, fiscalDateEnding, reportedEPS) values ?',
-      [annualMysqlData],
-    )
+    await mysql.query('insert ignore into earnings_annual (symbol, fiscalDateEnding, reportedEPS) values ?', [
+      annualMysqlData,
+    ])
   }
 
   const monthlyMysqlData = earningsData.quarterlyEarnings?.map((e) => [
@@ -111,10 +103,7 @@ async function genStockQuotesFromAlphaVantage(symbol: string) {
       !validNumber.test(stockQuote.min) ||
       !validNumber.test(stockQuote.volume)
     ) {
-      throw new Error(
-        'stockQuote response contained an invalid quote: ' +
-          JSON.stringify(stockQuote),
-      )
+      throw new Error('stockQuote response contained an invalid quote: ' + JSON.stringify(stockQuote))
     }
 
     tableData.push(stockQuote)

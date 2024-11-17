@@ -39,10 +39,7 @@ export function RsuByAward(props: { rsu: IAward[] }) {
                 </small>
               </td>
               <td>
-                <span style={{ textDecoration: 'line-through' }}>
-                  {totalVested.value}
-                </span>
-                /{total.value}
+                <span style={{ textDecoration: 'line-through' }}>{totalVested.value}</span>/{total.value}
               </td>
             </tr>
           )

@@ -1,14 +1,4 @@
-import {
-  Arg,
-  Ctx,
-  FieldResolver,
-  ID,
-  InputType,
-  Mutation,
-  Query,
-  Resolver,
-  Root,
-} from 'type-graphql'
+import { Arg, Ctx, FieldResolver, ID, InputType, Mutation, Query, Resolver, Root } from 'type-graphql'
 import { Field, ObjectType } from 'type-graphql'
 import type { ViewerContext } from '@/app/api/graphql/ViewerContext'
 import { UserGraphType } from '@/app/api/graphql/Viewer'
@@ -59,10 +49,7 @@ export class TimeseriesUserResolver {
     name: 'timeseries_documents',
     nullable: true,
   })
-  getTimeseriesDocumentsForUser(
-    @Root() viewer: UserGraphType,
-    @Ctx() vc: ViewerContext,
-  ) {
+  getTimeseriesDocumentsForUser(@Root() viewer: UserGraphType, @Ctx() vc: ViewerContext) {
     return [{ doc_id: '223' }]
   }
 }
@@ -73,10 +60,7 @@ export class TimeseriesDocumentResolver {
   @Mutation((returns) => TimeseriesDocumentType, {
     name: 'timeseries_document_upsert',
   })
-  upsertDocument(
-    newDocument: TimeseriesDocumentType,
-    @Ctx() vc: ViewerContext,
-  ): TimeseriesDocumentType {
+  upsertDocument(newDocument: TimeseriesDocumentType, @Ctx() vc: ViewerContext): TimeseriesDocumentType {
     return newDocument
   }
 }

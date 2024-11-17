@@ -9,12 +9,7 @@ export class StockOptionSchema {
   readonly type: OptionType | null
   readonly strike: currency
 
-  constructor(
-    symbol: string,
-    maturity: DateContainer | null,
-    type: OptionType | null,
-    strike: currency,
-  ) {
+  constructor(symbol: string, maturity: DateContainer | null, type: OptionType | null, strike: currency) {
     this.symbol = symbol
     this.maturity = maturity
     this.type = type

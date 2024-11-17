@@ -32,26 +32,18 @@ export default function ProjectsPage() {
       >
         <ProjectTitle>Cooking</ProjectTitle>
         <ProjectDescription>
-          I like to cook, a lot. Lately, I&apos;ve focused mostly on Asian
-          cuisine. However, I also love european cuisine, especially my own
-          heritage, Italian, cooking, and French. Since friends have asked,
-          I&apos;m posting some recipes and cooking tips online.
+          I like to cook, a lot. Lately, I&apos;ve focused mostly on Asian cuisine. However, I also love european cuisine,
+          especially my own heritage, Italian, cooking, and French. Since friends have asked, I&apos;m posting some recipes
+          and cooking tips online.
         </ProjectDescription>
       </ImageAndText>
-      <ImageAndText
-        extraClass=""
-        imageUrl="/images/underground-cellar-2-min.png"
-        alt="Underground Cellar Screenshot"
-      >
+      <ImageAndText extraClass="" imageUrl="/images/underground-cellar-2-min.png" alt="Underground Cellar Screenshot">
         <ProjectTitle>Underground Cellar</ProjectTitle>
         <ProjectDescription>
-          As co-founder and CTO at Underground Cellar, I grew the engineering
-          team and own the internal products used by the company, spanning
-          frontend, backend, administrative interface, and mobile apps for iOS
-          and Android platforms. I also work with the CEO and major investors to
-          design and implement financial models and reports. As a board
-          director, I worked with investors and shape the governance of the
-          company.
+          As co-founder and CTO at Underground Cellar, I grew the engineering team and own the internal products used by the
+          company, spanning frontend, backend, administrative interface, and mobile apps for iOS and Android platforms. I
+          also work with the CEO and major investors to design and implement financial models and reports. As a board
+          director, I worked with investors and shape the governance of the company.
         </ProjectDescription>
         <ul>
           <li>Custom e-commerce backend</li>
@@ -69,8 +61,8 @@ export default function ProjectsPage() {
         <ProjectTitle>Not Ordinary Media (NOM)</ProjectTitle>
         <ProjectDate>Winter 2019</ProjectDate>
         <ProjectDescription>
-          Design-first website for a modern media company. Featuring landing
-          pages with custom Salesforce integration. Runs on Webflow.
+          Design-first website for a modern media company. Featuring landing pages with custom Salesforce integration. Runs
+          on Webflow.
         </ProjectDescription>
       </ImageAndText>
       <ImageAndText
@@ -83,9 +75,8 @@ export default function ProjectsPage() {
         <ProjectTitle>Christ Our Hope Catholic Church</ProjectTitle>
         <ProjectDate>Winter 2015</ProjectDate>
         <ProjectDescription>
-          Website build-out and IT installation. Featuring Office 365 hosted
-          email to replace an aging Exchange server on-premises. Custom CMS
-          using N2 CMS framework and .NET 3.5. Runs on Microsoft Azure.
+          Website build-out and IT installation. Featuring Office 365 hosted email to replace an aging Exchange server
+          on-premises. Custom CMS using N2 CMS framework and .NET 3.5. Runs on Microsoft Azure.
         </ProjectDescription>
       </ImageAndText>
     </Container>

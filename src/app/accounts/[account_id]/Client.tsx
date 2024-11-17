@@ -62,12 +62,10 @@ export default function AccountClient(props: { id: string }) {
           <ImportTransactions
             onImportClick={(data) => {
               setLoading(true)
-              fetchWrapper
-                .post(`/api/account/${props.id}/`, data)
-                .then((res) => {
-                  setData(res)
-                  setLoading(false)
-                })
+              fetchWrapper.post(`/api/account/${props.id}/`, data).then((res) => {
+                setData(res)
+                setLoading(false)
+              })
             }}
           />
         </Col>

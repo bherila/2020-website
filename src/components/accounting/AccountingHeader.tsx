@@ -12,12 +12,7 @@ const pages = [
 ]
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
-const ResponsiveAppBar = ({
-  isFixed,
-}: {
-  isFixed: boolean
-  drawerWidth: number
-}) => {
+const ResponsiveAppBar = ({ isFixed }: { isFixed: boolean; drawerWidth: number }) => {
   return <div>appbar</div>
 }
 export default ResponsiveAppBar

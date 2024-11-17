@@ -36,15 +36,11 @@ export default function Client() {
         {rows.map((r) => (
           <tr key={r.product_key}>
             <td>{r.product_id}</td>
-            <td style={{ whiteSpace: 'nowrap', fontFamily: 'monospace' }}>
-              {r.product_key}
-            </td>
+            <td style={{ whiteSpace: 'nowrap', fontFamily: 'monospace' }}>{r.product_key}</td>
             <td>{r.product_name}</td>
             <td>{r.computer_name}</td>
             <td>{r.comment}</td>
-            <td style={{ whiteSpace: 'nowrap' }}>
-              {r.used_on?.toISOString()?.slice(0, 10)}
-            </td>
+            <td style={{ whiteSpace: 'nowrap' }}>{r.used_on?.toISOString()?.slice(0, 10)}</td>
           </tr>
         ))}
       </tbody>

@@ -10,11 +10,7 @@ import { ParsedSPGPPassType } from '@/app/spgp/SPGPPassTypes'
 import Form from 'react-bootstrap/Form'
 import moment from 'moment'
 
-export default function SPGPImportClient({
-  passTypes,
-}: {
-  passTypes: ParsedSPGPPassType[]
-}) {
+export default function SPGPImportClient({ passTypes }: { passTypes: ParsedSPGPPassType[] }) {
   const [tsv, setTsv] = useState<string | null>(null)
   useEffect(() => {
     if (tsv === null) {
@@ -61,9 +57,7 @@ export default function SPGPImportClient({
       onSubmit={(e) => {
         e.preventDefault()
         setLoading(true)
-        fetchWrapper
-          .post('/api/spgp/', { action: 'spgp-import', data })
-          .finally(() => setLoading(false))
+        fetchWrapper.post('/api/spgp/', { action: 'spgp-import', data }).finally(() => setLoading(false))
       }}
     >
       <textarea

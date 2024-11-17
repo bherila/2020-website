@@ -5,10 +5,7 @@ import { DateContainer, parseDate } from '@/lib/DateHelper'
 import { AccountingDbRow, TransactionTypes } from '../../lib/accounting-row'
 import pool from '../../lib/db'
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req?.method == null) {
     res.status(400)
     return
@@ -19,12 +16,8 @@ export default async function handler(
     const tData: any[] | undefined = req.body?.t_data
     try {
       if (Array.isArray(tData)) {
-        const db_rows: AccountingDbRow[] = tData.map(
-          (row) => Object.assign({}, row) as AccountingDbRow,
-        )
-        await pool.query(AccountingSQL.insert, [
-          db_rows.map((r) => valuesForInsert(r)),
-        ])
+        const db_rows: AccountingDbRow[] = tData.map((row) => Object.assign({}, row) as AccountingDbRow)
+        await pool.query(AccountingSQL.insert, [db_rows.map((r) => valuesForInsert(r))])
         res.statusCode = 200
         return res.json({ message: 'ok' })
       }
@@ -39,11 +32,7 @@ export default async function handler(
 
   if (method === 'get') {
     const rows = (await pool.query(
-      AccountingSQL.select(
-        typeof req.query.requestRequireColumns === 'string'
-          ? req.query.requestRequireColumns
-          : null,
-      ),
+      AccountingSQL.select(typeof req.query.requestRequireColumns === 'string' ? req.query.requestRequireColumns : null),
     )) as any
     for (const row of rows[0] as AccountingDbRow[]) {
       if (row.t_date) {
@@ -110,9 +99,7 @@ function resolveType(type?: string): string | null {
   return TransactionTypes.find((r) => r.toLowerCase() == tlc) ?? null
 }
 
-function valuesForInsert(
-  row: AccountingDbRow,
-): (string | number | undefined | null)[] {
+function valuesForInsert(row: AccountingDbRow): (string | number | undefined | null)[] {
   return [
     row.t_account || 'default',
     row.t_date || new DateContainer(new Date()).formatYMD(),

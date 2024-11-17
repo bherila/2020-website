@@ -4,11 +4,7 @@ import _ from 'lodash'
 import React from 'react'
 import currency from 'currency.js'
 import PopoverContent from '@/app/payslip/PopoverContent'
-import {
-  fin_payslip,
-  fin_payslip_col,
-  pay_data,
-} from '@/app/payslip/payslipDbCols'
+import { fin_payslip, fin_payslip_col, pay_data } from '@/app/payslip/payslipDbCols'
 import Stack from 'react-bootstrap/Stack'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
@@ -56,8 +52,7 @@ export function PayslipTable(props: Props) {
       .filter(
         (d) =>
           // same year and prior or equal month:
-          d.period_end <= row.period_end &&
-          d.period_end.slice(0, 4) === row.period_end.slice(0, 4),
+          d.period_end <= row.period_end && d.period_end.slice(0, 4) === row.period_end.slice(0, 4),
       )
       .reduce((prev, cur) => currency(cur[col]).add(prev), currency(0))
   }
@@ -71,11 +66,7 @@ export function PayslipTable(props: Props) {
       )
 
       return (
-        <OverlayTrigger
-          placement="right"
-          delay={{ show: 100, hide: 400 }}
-          overlay={renderTooltip}
-        >
+        <OverlayTrigger placement="right" delay={{ show: 100, hide: 400 }} overlay={renderTooltip}>
           <span>{fmtNum(row[col])}</span>
         </OverlayTrigger>
       )
@@ -84,12 +75,7 @@ export function PayslipTable(props: Props) {
   }
 
   return (
-    <Table
-      size="sm"
-      striped
-      bordered
-      style={{ fontSize: '10pt', fontFamily: 'Atkinson Hyperlegible' }}
-    >
+    <Table size="sm" striped bordered style={{ fontSize: '10pt', fontFamily: 'Atkinson Hyperlegible' }}>
       <thead>
         <tr>
           {cols
@@ -118,11 +104,7 @@ export function PayslipTable(props: Props) {
                             row[subItem.field] > 0 && (
                               <div key={subItem.field} color={subItem.color}>
                                 {subItem.title && (
-                                  <span
-                                    style={{ fontWeight: 'bold', opacity: 0.5 }}
-                                  >
-                                    {subItem.title + ' '}
-                                  </span>
+                                  <span style={{ fontWeight: 'bold', opacity: 0.5 }}>{subItem.title + ' '}</span>
                                 )}
                                 {renderValueCellContents(row, subItem.field)}
                               </div>
@@ -141,9 +123,7 @@ export function PayslipTable(props: Props) {
                 }
               })}
             <td>
-              {typeof props.onRowEdited === 'function' && (
-                <PayslipEditButton content={row} onSave={props.onRowEdited} />
-              )}
+              {typeof props.onRowEdited === 'function' && <PayslipEditButton content={row} onSave={props.onRowEdited} />}
             </td>
           </tr>
         ))}

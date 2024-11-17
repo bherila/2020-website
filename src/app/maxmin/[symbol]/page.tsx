@@ -13,10 +13,7 @@ interface Props {
   params: Promise<{ symbol: string }>
 }
 
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata,
-): Promise<Metadata> {
+export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   // read route params
   const id = (await params).symbol.toUpperCase()
   return {

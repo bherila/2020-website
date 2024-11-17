@@ -58,20 +58,10 @@ export default function PayslipJsonDebugPage() {
       </Row>
       <Row>
         <Col xs={6}>
-          <textarea
-            readOnly
-            value={entitles}
-            rows={15}
-            style={{ width: '100%' }}
-          />
+          <textarea readOnly value={entitles} rows={15} style={{ width: '100%' }} />
         </Col>
         <Col xs={6}>
-          <textarea
-            readOnly
-            value={JSON.stringify(parsed, null, 2)}
-            rows={20}
-            style={{ width: '100%' }}
-          />
+          <textarea readOnly value={JSON.stringify(parsed, null, 2)} rows={20} style={{ width: '100%' }} />
         </Col>
       </Row>
     </Container>

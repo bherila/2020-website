@@ -19,11 +19,7 @@ interface Props {
   earnings: AlphaVantageEarnings
 }
 
-export default function MinMaxClientRenderer({
-  symbol,
-  quotes,
-  earnings,
-}: Props) {
+export default function MinMaxClientRenderer({ symbol, quotes, earnings }: Props) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [onlyNearEarnings, setOnlyNearEarnings] = useState(false)
   const [inputs, setInputs] = useState({
@@ -35,10 +31,7 @@ export default function MinMaxClientRenderer({
   useEffect(() => {
     setTableData(preprocessData(quotes, earnings, onlyNearEarnings))
   }, [quotes, earnings, onlyNearEarnings])
-  const sd1 =
-    inputs.stockPrice *
-    inputs.annualizedImpliedVolatilityPercent *
-    Math.sqrt(inputs.daysToExpiration / 365)
+  const sd1 = inputs.stockPrice * inputs.annualizedImpliedVolatilityPercent * Math.sqrt(inputs.daysToExpiration / 365)
   const outputs = [
     {
       N_SD: 1,
@@ -89,12 +82,7 @@ export default function MinMaxClientRenderer({
               }
             }}
           >
-            <Column
-              dataField="date"
-              dataType="date"
-              sortIndex={0}
-              sortOrder={'asc'}
-            />
+            <Column dataField="date" dataType="date" sortIndex={0} sortOrder={'asc'} />
             <Column
               dataField="prevClose"
               dataType="number"
@@ -129,9 +117,7 @@ export default function MinMaxClientRenderer({
               dataField="nearEarnings"
               dataType="number"
               calculateSortValue={(row: any) => parseFloat(row.nearEarnings)}
-              calculateDisplayValue={(row: any) =>
-                row.nearEarnings === 0 ? '⭐️' : row.nearEarnings
-              }
+              calculateDisplayValue={(row: any) => (row.nearEarnings === 0 ? '⭐️' : row.nearEarnings)}
             />
           </DataGrid>
           <CheckBox
@@ -168,47 +154,23 @@ export default function MinMaxClientRenderer({
               />
               <Item dataField="daysToExpiration" editorType="dxNumberBox" />
             </Form>
-            <Button
-              text="Recalculate"
-              type="normal"
-              stylingMode="outlined"
-              useSubmitBehavior={true}
-            />
+            <Button text="Recalculate" type="normal" stylingMode="outlined" useSubmitBehavior={true} />
           </form>
           <DataGrid dataSource={outputs} style={{ paddingTop: '1em' }}>
             <Column dataField="N_SD" dataType="number" format="0.0#" />
-            <Column
-              dataField="SD_Value"
-              dataType="number"
-              format="$ #,##0.##"
-            />
-            <Column
-              dataField="SD_Percent_Change"
-              dataType="number"
-              format="#0.00%"
-            />
+            <Column dataField="SD_Value" dataType="number" format="$ #,##0.##" />
+            <Column dataField="SD_Percent_Change" dataType="number" format="#0.00%" />
             <Column dataField="Min" dataType="number" format="$ #,##0.##" />
             <Column dataField="Max" dataType="number" format="$ #,##0.##" />
             <Column dataField="Probability" dataType="number" format="#0.00%" />
           </DataGrid>
           {selectedDate && tableData ? (
             <>
-              <DetailChart
-                data={tableData}
-                centerDate={selectedDate}
-                symbol={symbol}
-              />
-              <Button
-                onClick={() => setSelectedDate('')}
-                text="Clear selected date"
-              />
+              <DetailChart data={tableData} centerDate={selectedDate} symbol={symbol} />
+              <Button onClick={() => setSelectedDate('')} text="Clear selected date" />
             </>
           ) : (
-            <DetailChart
-              data={tableData}
-              centerDate={selectedDate ?? undefined}
-              symbol={symbol}
-            />
+            <DetailChart data={tableData} centerDate={selectedDate ?? undefined} symbol={symbol} />
           )}
         </Col>
       </Row>
@@ -226,9 +188,7 @@ function preprocessData(
   }
 
   // upcast & copy
-  let quotes = quotesInput.map(
-    (r: StockQuote): StockQuoteExtended => ({ ...r }),
-  )
+  let quotes = quotesInput.map((r: StockQuote): StockQuoteExtended => ({ ...r }))
 
   for (let i = 0; i < quotes.length; ++i) {
     const today = quotes[i]
@@ -243,9 +203,7 @@ function preprocessData(
   // flag rows near earnings dates
   if (earnings && Array.isArray(earnings.quarterlyEarnings)) {
     const c = 5
-    const earningsDates = earnings.quarterlyEarnings.map(
-      (ed) => ed.reportedDate,
-    )
+    const earningsDates = earnings.quarterlyEarnings.map((ed) => ed.reportedDate)
     const allDates = quotes.map((td) => td.date) // index maps into tableData
     for (const earningDate of earningsDates) {
       const tableIndex = allDates.indexOf(earningDate)

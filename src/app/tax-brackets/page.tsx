@@ -6,11 +6,7 @@ import MainTitle from '@/components/main-title'
 import Col from 'react-bootstrap/Col'
 import Table from 'react-bootstrap/Table'
 import { Fragment, useEffect, useState } from 'react'
-import {
-  tax_hierarchy,
-  tax_row,
-  taxFilingTypes,
-} from '@/app/api/tax-brackets/schema'
+import { tax_hierarchy, tax_row, taxFilingTypes } from '@/app/api/tax-brackets/schema'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import ImportTaxBrackets from '@/app/tax-brackets/ImportTaxBrackets'
 

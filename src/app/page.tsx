@@ -35,9 +35,8 @@ export default async function HomePage() {
           </Line>
 
           <Line>
-            Before Meta, I worked at Airbnb on the i18n team. We expanded
-            Airbnb.com to 32 new countries, added support for right-to-left,
-            4-byte unicode, and more. You can read about it on the{' '}
+            Before Meta, I worked at Airbnb on the i18n team. We expanded Airbnb.com to 32 new countries, added support for
+            right-to-left, 4-byte unicode, and more. You can read about it on the{' '}
             <Link
               rel="noopener"
               href="https://medium.com/airbnb-engineering/building-airbnbs-internationalization-platform-45cf0104b63c"
@@ -48,25 +47,22 @@ export default async function HomePage() {
           </Line>
 
           <Line>
-            Before Airbnb, I was the co-founder and CTO of an e-commerce wine
-            company. We participated in the Y Combinator Winter 2015 batch.
+            Before Airbnb, I was the co-founder and CTO of an e-commerce wine company. We participated in the Y Combinator
+            Winter 2015 batch.
           </Line>
 
           <Line>
-            I began my professional career at Microsoft, briefly on the Office
-            Graphics platform, and then for nearly four years on{' '}
-            <Link
-              rel="noopener"
-              href="https://servercore.net/2013/07/meet-the-new-server-core-program-manager/"
-            >
+            I began my professional career at Microsoft, briefly on the Office Graphics platform, and then for nearly four
+            years on{' '}
+            <Link rel="noopener" href="https://servercore.net/2013/07/meet-the-new-server-core-program-manager/">
               making Windows Server smaller
             </Link>
             .
           </Line>
 
           <Line>
-            Before then, I worked on numerous personal projects and business
-            ventures, and built the online presence for companies including{' '}
+            Before then, I worked on numerous personal projects and business ventures, and built the online presence for
+            companies including{' '}
             <Link href="/projects/roessner/" rel="noopener">
               Roessner &amp; Co.
             </Link>
@@ -82,23 +78,15 @@ export default async function HomePage() {
           </Line>
 
           <Alert variant="info">
-            <h3>
-              Are you here because your WordPress site is slow and you want me
-              to make it fast?
-            </h3>
+            <h3>Are you here because your WordPress site is slow and you want me to make it fast?</h3>
             <p>I might be able to help with that.</p>
             <ul>
               <li>Most WordPress sites are eligible.</li>
-              <li>
-                Setup fee is $450, and includes migration of your existing site
-                and the first 3 months of hosting.
-              </li>
+              <li>Setup fee is $450, and includes migration of your existing site and the first 3 months of hosting.</li>
               <li>Hosting is $25 per month thereafter.</li>
             </ul>
             <p>
-              In that case, feel free to{' '}
-              <a href="mailto:ben@herila.net?subject=WordPress">Get in touch</a>
-              .
+              In that case, feel free to <a href="mailto:ben@herila.net?subject=WordPress">Get in touch</a>.
             </p>
           </Alert>
         </Col>

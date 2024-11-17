@@ -12,11 +12,7 @@ export async function generateStaticParams() {
   }))
 }
 
-export default async function RecipePage({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
+export default async function RecipePage({ params }: { params: Promise<{ slug: string }> }) {
   const { content, data } = getRecipeContent((await params).slug)
   return (
     <Container>

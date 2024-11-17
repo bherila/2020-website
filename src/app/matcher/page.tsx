@@ -19,9 +19,7 @@ export default function MatcherPage() {
         <MainTitle>Matcher</MainTitle>
         <Row>
           <Col xs={12}>
-            <SetDocumentButton setDocFn={(newData) => setCsvData(newData)}>
-              Import
-            </SetDocumentButton>
+            <SetDocumentButton setDocFn={(newData) => setCsvData(newData)}>Import</SetDocumentButton>
             <CleanupDataButton {...{ csvData, setCsvData }} />
             <DeleteDuplicateRowsButton {...{ csvData, setCsvData }} />
             <FormatDatesButton {...{ csvData, setCsvData }} />

@@ -7,10 +7,7 @@ export default function DeleteDuplicateRowsButton(props: {
   setCsvData: (newData: string[][]) => void
 }) {
   const { csvData, setCsvData } = props
-  const canDedupe = useMemo(
-    () => csvData[0] && deleteDuplicateRows(csvData).length !== csvData.length,
-    [csvData],
-  )
+  const canDedupe = useMemo(() => csvData[0] && deleteDuplicateRows(csvData).length !== csvData.length, [csvData])
   return (
     <>
       <Button

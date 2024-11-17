@@ -62,20 +62,14 @@ export default function BingoPage() {
           <ul>
             <li>Enter the list of items. Min 25 items.</li>
             <li>
-              Pick # of cards you want. If you pick too big of a #, you might
-              crash your browser. Up to a few hundred is probably fine. A few
-              thousand if you have a fast computer.
+              Pick # of cards you want. If you pick too big of a #, you might crash your browser. Up to a few hundred is
+              probably fine. A few thousand if you have a fast computer.
             </li>
-            <li>
-              Press generate button. Then Ctrl+P to print. Skip this first page
-              :)
-            </li>
+            <li>Press generate button. Then Ctrl+P to print. Skip this first page :)</li>
             <li>No duplicate cards will be generated!</li>
             <li>
               Source code available on{' '}
-              <a href="https://github.com/bherila/2020-website/tree/prod/src/app/bingo">
-                Github repo
-              </a>
+              <a href="https://github.com/bherila/2020-website/tree/prod/src/app/bingo">Github repo</a>
             </li>
           </ul>
         </Col>
@@ -88,10 +82,7 @@ export default function BingoPage() {
       <Row>
         <Col xs={12}>
           {generatedCards.map((bingoCard, i) => (
-            <div
-              key={i}
-              style={{ textAlign: 'center', pageBreakBefore: 'always' }}
-            >
+            <div key={i} style={{ textAlign: 'center', pageBreakBefore: 'always' }}>
               <MainTitle>Card #{i}</MainTitle>
               <BingoCard data={bingoCard} />
             </div>

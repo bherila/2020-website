@@ -1,4 +1,4 @@
-import Container from "@/components/container";
+import Container from '@/components/container'
 
 export default function Page() {
   return (
@@ -46,5 +46,5 @@ function BuyNowButton() {
         </a>
       </div>
     </div>
-  );
+  )
 }

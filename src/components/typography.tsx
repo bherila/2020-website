@@ -11,11 +11,7 @@ export interface TypographyProps {
 }
 
 export default function Typography(props: TypographyProps) {
-  if (
-    props.variant == 'body1' ||
-    props.variant === null ||
-    props.variant === undefined
-  ) {
+  if (props.variant == 'body1' || props.variant === null || props.variant === undefined) {
     return <p>{props.children}</p>
   } else {
     return <div>{props.children}</div>

@@ -53,12 +53,7 @@ const BingoForm = (props: { onSubmit: (data: BingoData) => void }) => {
             List of items
           </Form.Label>
           <Col sm={10}>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              value={itemsList}
-              onChange={(e) => setItemsList(e.target.value)}
-            />
+            <Form.Control as="textarea" rows={3} value={itemsList} onChange={(e) => setItemsList(e.target.value)} />
           </Col>
         </Form.Group>
 
@@ -67,11 +62,7 @@ const BingoForm = (props: { onSubmit: (data: BingoData) => void }) => {
             Number of cards to generate
           </Form.Label>
           <Col sm={10}>
-            <Form.Control
-              type="number"
-              value={numCards}
-              onChange={(e) => setNumCards(e.target.value)}
-            />
+            <Form.Control type="number" value={numCards} onChange={(e) => setNumCards(e.target.value)} />
           </Col>
         </Form.Group>
 

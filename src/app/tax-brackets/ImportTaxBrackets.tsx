@@ -4,14 +4,10 @@ import currency from 'currency.js'
 import { z, ZodError } from 'zod'
 import { graduatedTaxSchema, tax_row } from '@/app/api/tax-brackets/schema'
 
-export default function ImportTaxBrackets(props: {
-  onImportClick: (data: tax_row[]) => void
-}) {
+export default function ImportTaxBrackets(props: { onImportClick: (data: tax_row[]) => void }) {
   const [text, setText] = useState<string>('')
 
-  const handleTextareaChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>,
-  ) => {
+  const handleTextareaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(event.target.value)
   }
 

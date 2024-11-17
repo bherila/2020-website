@@ -7,14 +7,10 @@ import Table from 'react-bootstrap/Table'
 import { AccountSpend, AccountSpendSchema } from '@/app/api/account/model'
 import { parseDate } from '@/lib/DateHelper'
 
-export default function ImportTransactions(props: {
-  onImportClick: (data: AccountSpend[]) => void
-}) {
+export default function ImportTransactions(props: { onImportClick: (data: AccountSpend[]) => void }) {
   const [text, setText] = useState<string>('')
 
-  const handleTextareaChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>,
-  ) => {
+  const handleTextareaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(event.target.value)
   }
 

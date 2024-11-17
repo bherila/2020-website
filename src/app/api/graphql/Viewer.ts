@@ -1,13 +1,4 @@
-import {
-  Ctx,
-  Field,
-  FieldResolver,
-  ID,
-  ObjectType,
-  Query,
-  Resolver,
-  Root,
-} from 'type-graphql'
+import { Ctx, Field, FieldResolver, ID, ObjectType, Query, Resolver, Root } from 'type-graphql'
 import type { ViewerContext } from '@/app/api/graphql/ViewerContext'
 import db from '@/lib/db'
 import { Memoize } from 'typescript-memoize'
@@ -35,9 +26,7 @@ export class ViewerRootResolver {
   @Memoize((h) => h.uid)
   async email(@Root() ofUser: UserGraphType) {
     try {
-      const res: any = await db.query('select email from users where uid = ?', [
-        ofUser.uid,
-      ])
+      const res: any = await db.query('select email from users where uid = ?', [ofUser.uid])
       if (res?.length == 1) {
         return res[0].email
       } else {

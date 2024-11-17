@@ -2,17 +2,11 @@ import React, { useMemo } from 'react'
 import { Button } from 'react-bootstrap'
 import { deleteRowsWithOnlyOneColumn, deleteUniformColumns } from '@/lib/data2d'
 
-export default function CleanupDataButton(props: {
-  csvData: string[][]
-  setCsvData: (newData: string[][]) => void
-}) {
+export default function CleanupDataButton(props: { csvData: string[][]; setCsvData: (newData: string[][]) => void }) {
   const { csvData, setCsvData } = props
   const canCleanup = useMemo(
     () =>
-      csvData[0] &&
-      JSON.stringify(
-        deleteRowsWithOnlyOneColumn(deleteUniformColumns(csvData)),
-      ) !== JSON.stringify(csvData),
+      csvData[0] && JSON.stringify(deleteRowsWithOnlyOneColumn(deleteUniformColumns(csvData))) !== JSON.stringify(csvData),
     [csvData],
   )
   return (

@@ -19,9 +19,7 @@ function SignupForm() {
     inviteCode: '',
   })
 
-  const [validationErrors, setValidationErrors] = useState<ZodIssue[] | null>(
-    null,
-  )
+  const [validationErrors, setValidationErrors] = useState<ZodIssue[] | null>(null)
 
   const handleSubmit = (event: React.FormEvent) => {
     try {
@@ -58,9 +56,7 @@ function SignupForm() {
             placeholder="Enter your username"
             required
             value={formData.username}
-            onChange={(e) =>
-              setFormData({ ...formData, username: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
           />
         </Col>
       </Form.Group>
@@ -75,9 +71,7 @@ function SignupForm() {
             required
             placeholder="Enter your email"
             value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
         </Col>
       </Form.Group>
@@ -92,9 +86,7 @@ function SignupForm() {
             required
             placeholder="Enter your password"
             value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           />
         </Col>
       </Form.Group>
@@ -109,9 +101,7 @@ function SignupForm() {
             placeholder="Confirm your password"
             required
             value={formData.confirmPassword}
-            onChange={(e) =>
-              setFormData({ ...formData, confirmPassword: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
           />
         </Col>
       </Form.Group>
@@ -125,9 +115,7 @@ function SignupForm() {
             type="text"
             placeholder="Enter your invite code"
             value={formData.inviteCode}
-            onChange={(e) =>
-              setFormData({ ...formData, inviteCode: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, inviteCode: e.target.value })}
           />
         </Col>
       </Form.Group>

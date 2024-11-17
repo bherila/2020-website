@@ -10,23 +10,14 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { ParsedSPGPPassType } from '@/app/spgp/SPGPPassTypes'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import Spinner from 'react-bootstrap/Spinner'
-import {
-  SPGPRequestType,
-  SPGPRequestTypeWithPromo,
-} from '@/app/spgp/SPGPRequestSchema'
+import { SPGPRequestType, SPGPRequestTypeWithPromo } from '@/app/spgp/SPGPRequestSchema'
 import Card from 'react-bootstrap/Card'
 import { Button, FormControl, Tab, Tabs } from 'react-bootstrap'
 import Modal from 'react-bootstrap/Modal'
 import InputGroup from 'react-bootstrap/InputGroup'
 import SpgpRowActions from './SpgpRowActions'
 
-export default function SPGPClient({
-  admin,
-  userEmail,
-}: {
-  admin: boolean
-  userEmail: string
-}) {
+export default function SPGPClient({ admin, userEmail }: { admin: boolean; userEmail: string }) {
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<any>()
 
@@ -55,9 +46,7 @@ export default function SPGPClient({
   const [selectedTab, handleTabSelect] = useState(DEFAULT_TAB)
 
   const [search, setSearch] = useState('')
-  const filtered = !search
-    ? requests
-    : requests.filter((r) => JSON.stringify(r).indexOf(search) !== -1)
+  const filtered = !search ? requests : requests.filter((r) => JSON.stringify(r).indexOf(search) !== -1)
 
   return (
     <>
@@ -79,15 +68,11 @@ export default function SPGPClient({
         </Col>
       </Row>
       <div className="alert alert-warning">
-        Please keep in mind this offer is to be kept in private communication,
-        no public websites, and social media spaces. This offer is only valid
-        for individuals associated with your group. Please communicate this
-        privacy clause to all individuals you provide the offer to.
+        Please keep in mind this offer is to be kept in private communication, no public websites, and social media spaces.
+        This offer is only valid for individuals associated with your group. Please communicate this privacy clause to all
+        individuals you provide the offer to.
       </div>
-      <Modal
-        show={!loading && (isAdding || !requests?.length)}
-        onHide={() => setAdding(false)}
-      >
+      <Modal show={!loading && (isAdding || !requests?.length)} onHide={() => setAdding(false)}>
         <Modal.Header>
           <h2>Request a coupon code</h2>
         </Modal.Header>
@@ -96,24 +81,13 @@ export default function SPGPClient({
             <b>All fields are required.</b> Instructions:
           </p>
           <ul>
-            <li>
-              Data you submit will be shared with the company you are requesting
-              the offer from.
-            </li>
+            <li>Data you submit will be shared with the company you are requesting the offer from.</li>
             <li>Redeem the code directly on the company&apos;s website.</li>
           </ul>
-          <NewSPGPRequestForm
-            passTypes={passTypes}
-            refetch={refetch}
-            defaultEmail={userEmail}
-          />
+          <NewSPGPRequestForm passTypes={passTypes} refetch={refetch} defaultEmail={userEmail} />
         </Modal.Body>
       </Modal>
-      <Tabs
-        id="tab-component"
-        activeKey={selectedTab}
-        onSelect={(s) => handleTabSelect(s || DEFAULT_TAB)}
-      >
+      <Tabs id="tab-component" activeKey={selectedTab} onSelect={(s) => handleTabSelect(s || DEFAULT_TAB)}>
         <Tab eventKey="view-requests" title="View Requests" className="mt-3">
           {/* Your "View Requests" content */}
 
@@ -121,11 +95,9 @@ export default function SPGPClient({
             <Col sm={12}>
               {requests?.length && (
                 <div className="mb-3">
-                  You can withdraw a request if the promo code is not assigned
-                  yet. Duplicate requests would be merged automatically. One
-                  promo code per person. Make sure the pass holder name and
-                  birthday is correct! You must use the promo code BEFORE you
-                  purchase the pass! Discount cannot be applied afterward.
+                  You can withdraw a request if the promo code is not assigned yet. Duplicate requests would be merged
+                  automatically. One promo code per person. Make sure the pass holder name and birthday is correct! You must
+                  use the promo code BEFORE you purchase the pass! Discount cannot be applied afterward.
                 </div>
               )}
               {admin && (
@@ -143,13 +115,7 @@ export default function SPGPClient({
                   )}
                 </InputGroup>
               )}
-              <Table
-                striped
-                bordered
-                hover
-                size="sm"
-                style={{ fontSize: '8pt' }}
-              >
+              <Table striped bordered hover size="sm" style={{ fontSize: '8pt' }}>
                 <thead>
                   <tr>
                     {admin && <th>#</th>}
@@ -173,24 +139,11 @@ export default function SPGPClient({
                       return (
                         <tr
                           key={request.r_id}
-                          style={
-                            !!request.r_used_on
-                              ? { textDecoration: 'line-through', opacity: 0.5 }
-                              : {}
-                          }
+                          style={!!request.r_used_on ? { textDecoration: 'line-through', opacity: 0.5 } : {}}
                         >
                           {admin && <td>{request.r_id}</td>}
-                          <td>
-                            {request.r_promo ?? (admin ? '' : 'requested!')}
-                          </td>
-                          {admin && (
-                            <td>
-                              {request.r_comment &&
-                              request.r_comment.startsWith('I900')
-                                ? 'Renew'
-                                : 'New'}
-                            </td>
-                          )}
+                          <td>{request.r_promo ?? (admin ? '' : 'requested!')}</td>
+                          {admin && <td>{request.r_comment && request.r_comment.startsWith('I900') ? 'Renew' : 'New'}</td>}
                           <td>{request.r_first}</td>
                           <td>{request.r_last}</td>
                           <td>{request.r_birthdate.toString().slice(0, 10)}</td>
@@ -200,12 +153,7 @@ export default function SPGPClient({
                             {request.r_previous_passid} {request.r_comment}
                           </td>
                           <td>
-                            <SpgpRowActions
-                              data={data}
-                              request={request}
-                              setData={setData}
-                              requests={requests}
-                            />
+                            <SpgpRowActions data={data} request={request} setData={setData} requests={requests} />
                           </td>
                         </tr>
                       )

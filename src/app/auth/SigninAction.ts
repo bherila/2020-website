@@ -50,10 +50,12 @@ export default async function SignInAction(formData: FormData) {
       // pw was not encrypted at rest! fix that :)
       if (dbObj.pw === user.password) {
         const salt = Math.round(Math.random() * Number.MAX_SAFE_INTEGER)
-        await db.query(
-          'update users set salt = ?, pw = SHA2(CONCAT(?, CAST(? as char)), 0) where uid = ?',
-          [salt, user.password, salt, dbObj.uid],
-        )
+        await db.query('update users set salt = ?, pw = SHA2(CONCAT(?, CAST(? as char)), 0) where uid = ?', [
+          salt,
+          user.password,
+          salt,
+          dbObj.uid,
+        ])
       }
 
       // set the cookie

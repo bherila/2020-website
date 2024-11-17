@@ -162,9 +162,7 @@ export async function POST(req: NextRequest) {
   if (typeof pdfFile === 'object') {
     fileName = pdfFile.name
     const fileBuffer = Buffer.from(await pdfFile.arrayBuffer())
-    hash = createHash('sha1')
-      .update(fileBuffer.toString('binary'))
-      .digest('hex')
+    hash = createHash('sha1').update(fileBuffer.toString('binary')).digest('hex')
   }
 
   let parseResult: any = {}

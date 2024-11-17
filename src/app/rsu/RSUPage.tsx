@@ -70,10 +70,7 @@ export default function RSUPage() {
       .catch(
         (e) =>
           (location.href =
-            '/auth/sign-in/?e=' +
-            encodeURIComponent(e.toString()) +
-            '&back=' +
-            encodeURIComponent(location.pathname)),
+            '/auth/sign-in/?e=' + encodeURIComponent(e.toString()) + '&back=' + encodeURIComponent(location.pathname)),
       )
       .finally(() => setLoading(false))
   }, [])
@@ -134,10 +131,7 @@ export default function RSUPage() {
       </Row>
       <Row>
         <h3>Add an award</h3>
-        <p>
-          Duplicate items (based on grant date + award id + vest date + symbol)
-          will not be added
-        </p>
+        <p>Duplicate items (based on grant date + award id + vest date + symbol) will not be added</p>
         <form
           onSubmit={(e) => {
             e.preventDefault()
@@ -152,21 +146,13 @@ export default function RSUPage() {
           <Row>
             <label>
               Award id
-              <input
-                type="tel"
-                value={awardId}
-                onChange={(e) => setAwardId(e.currentTarget.value)}
-              />
+              <input type="tel" value={awardId} onChange={(e) => setAwardId(e.currentTarget.value)} />
             </label>
           </Row>
           <Row>
             <label>
               Symbol
-              <input
-                type="text"
-                value={symbol}
-                onChange={(e) => setSymbol(e.currentTarget.value)}
-              />
+              <input type="text" value={symbol} onChange={(e) => setSymbol(e.currentTarget.value)} />
             </label>
           </Row>
           <Row>
@@ -176,11 +162,7 @@ export default function RSUPage() {
                 type="text"
                 value={grantDate}
                 onChange={(e) =>
-                  setGrantDate(
-                    e.currentTarget.value
-                      .trim()
-                      .replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g, '$3-$1-$2'),
-                  )
+                  setGrantDate(e.currentTarget.value.trim().replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g, '$3-$1-$2'))
                 }
               />
             </label>
@@ -188,23 +170,17 @@ export default function RSUPage() {
           <Row>
             <label>
               Sanity check # of shares
-              <input
-                type="text"
-                value={numShares}
-                onChange={(e) => setNumShares(e.currentTarget.value)}
-              />
+              <input type="text" value={numShares} onChange={(e) => setNumShares(e.currentTarget.value)} />
             </label>
           </Row>
           <Row>
             <label>
-              Shares: Paste in format Vest date THEN # of shares. Note that
-              m/d/y dates will be converted to yyyy-mm-dd format.
+              Shares: Paste in format Vest date THEN # of shares. Note that m/d/y dates will be converted to yyyy-mm-dd
+              format.
               <textarea
                 onChange={(e) =>
                   setShares(
-                    e.currentTarget.value
-                      .replace(/\t\r?\n/g, '\t')
-                      .replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g, '$3-$1-$2'),
+                    e.currentTarget.value.replace(/\t\r?\n/g, '\t').replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g, '$3-$1-$2'),
                   )
                 }
                 value={shares}

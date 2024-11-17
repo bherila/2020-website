@@ -9,12 +9,7 @@ interface PayslipEditProps {
   onSave: (newValue: fin_payslip) => void
 }
 
-const CustomModal: React.FC<PayslipEditProps> = ({
-  show,
-  onHide,
-  value,
-  onSave,
-}) => {
+const CustomModal: React.FC<PayslipEditProps> = ({ show, onHide, value, onSave }) => {
   const { other, ...x } = value
   const [editedValue, setEditedValue] = useState(JSON.stringify(x, null, 2))
   const [editedOther, setEditedOther] = useState(JSON.stringify(other, null, 2))
@@ -51,10 +46,7 @@ const CustomModal: React.FC<PayslipEditProps> = ({
   )
 }
 
-function PayslipEditButton(props: {
-  content: fin_payslip
-  onSave: (newValue: fin_payslip) => void
-}) {
+function PayslipEditButton(props: { content: fin_payslip; onSave: (newValue: fin_payslip) => void }) {
   const [showModal, setShowModal] = useState(false)
 
   const handleShowModal = () => setShowModal(true)
@@ -63,14 +55,7 @@ function PayslipEditButton(props: {
   return (
     <div>
       <button onClick={handleShowModal}>Edit</button>
-      {showModal && (
-        <CustomModal
-          show={showModal}
-          onHide={handleHideModal}
-          value={props.content}
-          onSave={props.onSave}
-        />
-      )}
+      {showModal && <CustomModal show={showModal} onHide={handleHideModal} value={props.content} onSave={props.onSave} />}
     </div>
   )
 }

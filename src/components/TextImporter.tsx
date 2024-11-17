@@ -14,9 +14,7 @@ export function SetDocumentButton(props: SetDocumentProps & { children: any }) {
   const [showModal, setShowModal] = useState(false)
   return (
     <>
-      <Button onClick={() => setShowModal(true)}>
-        {props.children ?? 'Load data'}
-      </Button>
+      <Button onClick={() => setShowModal(true)}>{props.children ?? 'Load data'}</Button>
       <SetDocumentModal {...props} {...{ showModal, setShowModal }} />
     </>
   )
@@ -66,13 +64,7 @@ function SetDocumentInline(props: SetDocumentProps) {
   )
 }
 
-function DelimiterSelectionRow({
-  delimiter,
-  setDelimiter,
-}: {
-  delimiter: string
-  setDelimiter: (setter: string) => void
-}) {
+function DelimiterSelectionRow({ delimiter, setDelimiter }: { delimiter: string; setDelimiter: (setter: string) => void }) {
   return (
     <Row>
       <Col lg={2}>

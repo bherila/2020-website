@@ -16,10 +16,7 @@ export default async function SPGPInfo() {
   }
   return (
     <Container>
-      <SPGPClient
-        admin={session?.uid == 1 /*  // TODO make this better */}
-        userEmail={session?.email ?? ''}
-      />
+      <SPGPClient admin={session?.uid == 1 /*  // TODO make this better */} userEmail={session?.email ?? ''} />
     </Container>
   )
 }

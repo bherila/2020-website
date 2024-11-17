@@ -133,8 +133,7 @@ export default function PayslipClient(): React.ReactElement {
       <div className="container my-2">
         <Row>
           <td>
-            Tax period:{' '}
-            <b>2024-01-01 through 2024-12-31</b>
+            Tax period: <b>2024-01-01 through 2024-12-31</b>
           </td>
         </Row>
       </div>
@@ -267,8 +266,7 @@ function TotalsTable(props: { data: fin_payslip[] }) {
           <tr>
             <td>Federal Taxes Paid</td>
             <td>
-              {fedWH.value.toFixed(2)} (
-              {fedWH.divide(income).multiply(100).value.toFixed(1)}%)
+              {fedWH.value.toFixed(2)} ({fedWH.divide(income).multiply(100).value.toFixed(1)}%)
             </td>
           </tr>
           <tr>

@@ -6,11 +6,7 @@ import Form from 'react-bootstrap/Form'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import Card from 'react-bootstrap/Card'
 
-export default function ImportCodeListClient({
-  passTypes,
-}: {
-  passTypes: ParsedSPGPPassType[]
-}) {
+export default function ImportCodeListClient({ passTypes }: { passTypes: ParsedSPGPPassType[] }) {
   const [tsv, setTsv] = useState<string>('')
   const [sel, setSel] = useState<string>('')
 
@@ -44,11 +40,7 @@ export default function ImportCodeListClient({
             submitForm()
           }}
         >
-          <select
-            disabled={submitting}
-            value={sel}
-            onChange={(x) => setSel(x.currentTarget.value)}
-          >
+          <select disabled={submitting} value={sel} onChange={(x) => setSel(x.currentTarget.value)}>
             {passTypes?.map((pt) => (
               <option key={pt.passtype_id} value={pt.passtype_id}>
                 {pt.display_name} exp {pt.expiry}

@@ -42,10 +42,7 @@ function matchAccount(account: TradingAccount): MatchedAccount {
     }
     const mult = source[i].SecurityType === 'OPTN' ? -100 : -1
     const pq = source[i].Quantity.multiply(source[i].Price)
-    source[i].Fee = pq
-      .multiply(mult)
-      .subtract(source[i].Commission)
-      .subtract(source[i].Amount)
+    source[i].Fee = pq.multiply(mult).subtract(source[i].Commission).subtract(source[i].Amount)
     // if (source[i].Fee.value != 0) {
     //   console.log(`${source[i].Description} - ${source[i].Fee}`)
     // }
@@ -75,8 +72,7 @@ function matchAccount(account: TradingAccount): MatchedAccount {
           if (sum(group.map((x) => x.Quantity)).intValue == 0) break
           if (matchedIndexes.has(j)) continue
           if (j == i) continue
-          const isClosingTransaction =
-            xClose.indexOf(source[j].TransactionType) !== -1
+          const isClosingTransaction = xClose.indexOf(source[j].TransactionType) !== -1
           if (
             (isClosingTransaction || xOpen === source[j].TransactionType) &&
             source[j].Description === source[i].Description
@@ -106,10 +102,7 @@ function matchAccount(account: TradingAccount): MatchedAccount {
         if (group.length > 1) {
           matchedIndexes.add(i)
           const existing = groups[source[i].Description] ?? []
-          groups[source[i].Description] = _.sortBy(
-            [...group, ...existing],
-            (x) => x.TransactionDate?.value ?? 0,
-          )
+          groups[source[i].Description] = _.sortBy([...group, ...existing], (x) => x.TransactionDate?.value ?? 0)
           return true
         } else if (group.length == 1) {
           group[0].CapGain = undefined
@@ -117,16 +110,8 @@ function matchAccount(account: TradingAccount): MatchedAccount {
       }
       return false
     }
-    doMatch('Bought To Open', [
-      'Sold To Close',
-      'Option Expiration',
-      'Option Exercise',
-    ]) ||
-      doMatch('Sold Short', [
-        'Bought To Cover',
-        'Option Expiration',
-        'Option Assignment',
-      ])
+    doMatch('Bought To Open', ['Sold To Close', 'Option Expiration', 'Option Exercise']) ||
+      doMatch('Sold Short', ['Bought To Cover', 'Option Expiration', 'Option Assignment'])
     doMatch('Bought', ['Sold'])
   }
 
@@ -164,28 +149,18 @@ export function matchAcrossAccounts(accounts: TradingAccount[]) {
   > = {}
   // const yearlyGains: Map<any, number> = new Map()
   for (const acc of matchedAccounts) {
-    const handleUnmatch = (
-      accountName: string,
-      records: MatchedTransaction[],
-    ) => {
+    const handleUnmatch = (accountName: string, records: MatchedTransaction[]) => {
       overallResult[accountName] ||= {
         total: currency(0),
         accountMatches: new Map(),
         totalQty: currency(0),
       } // supply default
-      overallResult[accountName].accountMatches.set(
-        acc.originalAccount.accountID,
-        records,
-      )
-      overallResult[accountName].total = overallResult[accountName].total.add(
-        sum(records.map((trans) => trans.Amount)),
-      )
+      overallResult[accountName].accountMatches.set(acc.originalAccount.accountID, records)
+      overallResult[accountName].total = overallResult[accountName].total.add(sum(records.map((trans) => trans.Amount)))
       overallResult[accountName].totalQty =
         accountName === 'cash'
           ? currency(0)
-          : (overallResult[accountName].totalQty?.add(
-              sum(records.map((trans) => trans.Quantity)),
-            ) ?? currency(0))
+          : (overallResult[accountName].totalQty?.add(sum(records.map((trans) => trans.Quantity))) ?? currency(0))
 
       if (accountName !== 'cash') {
         // cap gain
@@ -213,10 +188,7 @@ export function matchAcrossAccounts(accounts: TradingAccount[]) {
       if (a.stockOption.symbol < b.stockOption.symbol) return -1
       if (a.stockOption.symbol > b.stockOption.symbol) return 1
       else if (a.stockOption.maturity && b.stockOption.maturity)
-        return (
-          a.stockOption.maturity.value?.getTime() -
-          b.stockOption.maturity.value?.getTime()
-        )
+        return a.stockOption.maturity.value?.getTime() - b.stockOption.maturity.value?.getTime()
     }
     if (a.stockOption && !b.stockOption) {
       return -1

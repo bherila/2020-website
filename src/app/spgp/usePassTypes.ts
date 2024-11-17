@@ -5,9 +5,7 @@ import { fetchWrapper } from '@/lib/fetchWrapper'
 export default function usePassTypes(): ParsedSPGPPassType[] {
   const [passTypes, setPassTypes] = useState<ParsedSPGPPassType[]>([])
   useEffect(() => {
-    fetchWrapper
-      .get('/api/spgp/?only=passTypes')
-      .then((r) => setPassTypes(r.passTypes))
+    fetchWrapper.get('/api/spgp/?only=passTypes').then((r) => setPassTypes(r.passTypes))
   }, [])
   return passTypes
 }
