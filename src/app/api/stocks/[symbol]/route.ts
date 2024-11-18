@@ -4,9 +4,7 @@ import { notFound } from 'next/navigation'
 import StockQuote from '@/lib/StockQuote'
 import mysql from '@/lib/db'
 import AlphaVantageEarnings from '@/lib/AlphaVantageEarnings'
-import _ from 'lodash'
 
-const apikey: string = '07HZXPDVA6CKI94B'
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ symbol: string }> }) {
   const { symbol } = await params
@@ -35,7 +33,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ symb
 
 async function genEarningsFromAlphaVantage(symbol: string) {
   const earningsResponse = await fetch(
-    `https://www.alphavantage.co/query?function=EARNINGS&symbol=${symbol}&apikey=${apikey}`,
+    `https://www.alphavantage.co/query?function=EARNINGS&symbol=${symbol}&apikey=${process.env.ALPHAVANTAGE_API_KEY}`,
   )
 
   const earningsData: AlphaVantageEarnings = await earningsResponse.json()
@@ -71,7 +69,7 @@ async function genEarningsFromAlphaVantage(symbol: string) {
 async function genStockQuotesFromAlphaVantage(symbol: string) {
   const tableData: StockQuote[] = []
   const quoteResponse = await fetch(
-    `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${apikey}&outputsize=full`,
+    `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${process.env.ALPHAVANTAGE_API_KEY}&outputsize=full`,
   )
   const quoteData = await quoteResponse.json()
   const ts = quoteData['Time Series (Daily)']

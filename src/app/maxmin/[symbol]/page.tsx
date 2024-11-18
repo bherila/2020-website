@@ -26,18 +26,19 @@ export default async function Page({ params }: Props) {
     redirect(AuthRoutes.signIn)
     return null
   }
-  if (!(await params).symbol) {
+
+  const { symbol } = await params
+  if (!symbol) {
     return (
       <div>
         No symbol. Use like: <pre>/maxmin/[symbol]</pre>
       </div>
     )
   }
-  if ((await params).symbol !== (await params).symbol.toUpperCase()) {
-    redirect(`/maxmin/${(await params).symbol.toUpperCase()}/`)
+  if (symbol !== symbol.toUpperCase()) {
+    redirect(`/maxmin/${symbol.toUpperCase()}/`)
     return null
   }
-  const symbol = (await params).symbol.toUpperCase()
   return (
     <Container fluid>
       <MinMaxClientDataLoader symbol={symbol} />
