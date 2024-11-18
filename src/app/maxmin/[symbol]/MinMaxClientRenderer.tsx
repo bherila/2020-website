@@ -126,7 +126,7 @@ export default function MinMaxClientRenderer({ symbol, quotes, earnings }: Props
             onValueChanged={(e: any) => setOnlyNearEarnings(e?.value)}
           />
         </Col>
-        <Col item xs={12} sm={6}>
+        <Col xs={12} sm={6}>
           <h3>Inputs</h3>
           <form
             onSubmit={(e) => {
