@@ -1,13 +1,13 @@
 import 'server-only'
-import React from 'react'
-import MinMaxClientDataLoader from './MinMaxClientDataLoader'
+
+import AuthRoutes from '@/app/auth/AuthRoutes'
+import { getSession } from '@/lib/session'
 import 'devextreme/dist/css/dx.common.css'
 import 'devextreme/dist/css/dx.material.purple.dark.compact.css'
 import { Metadata, ResolvingMetadata } from 'next'
 import { redirect } from 'next/navigation'
 import Container from 'react-bootstrap/Container'
-import { getSession } from '@/lib/session'
-import AuthRoutes from '@/app/auth/AuthRoutes'
+import MinMaxClientDataLoader from './MinMaxClientDataLoader'
 
 interface Props {
   params: Promise<{ symbol: string }>
@@ -40,7 +40,7 @@ export default async function Page({ params }: Props) {
     return null
   }
   return (
-    <Container fluid>
+    <Container fluid={true}>
       <MinMaxClientDataLoader symbol={symbol} />
     </Container>
   )
