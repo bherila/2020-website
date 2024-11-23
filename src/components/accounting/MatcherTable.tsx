@@ -1,6 +1,6 @@
 import currency from 'currency.js'
 import _ from 'lodash'
-import React from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 
 import { AccountingDbRow } from '@/lib/accounting-row'
@@ -19,10 +19,10 @@ export default function MatcherTable(props: {
   columns: TableColDefinition[]
 }) {
   const { rows, requestRequireColumns } = props
-  const [dataRows, setDataRows] = React.useState<AccountingDbRow[]>(rows ?? [])
-  const [error, setError] = React.useState('')
+  const [dataRows, setDataRows] = useState<AccountingDbRow[]>(rows ?? [])
+  const [error, setError] = useState('')
 
-  const reload = React.useCallback(() => {
+  const reload = useCallback(() => {
     const query =
       Array.isArray(requestRequireColumns) && requestRequireColumns.length > 0
         ? 'requestRequireColumns=' + encodeURIComponent(requestRequireColumns.join(',').toLowerCase())
@@ -32,9 +32,9 @@ export default function MatcherTable(props: {
     })
   }, [requestRequireColumns])
 
-  React.useEffect(() => reload(), [])
+  useEffect(() => reload(), [])
 
-  const groups: { [key: string]: AccountingDbRow[] } = React.useMemo(() => {
+  const groups: { [key: string]: AccountingDbRow[] } = useMemo(() => {
     const groups: { [key: string]: AccountingDbRow[] } = {}
     if (!dataRows) return groups
     for (const row of _.sortBy(dataRows.filter(Boolean), (r) => r.t_date)) {

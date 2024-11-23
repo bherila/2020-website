@@ -1,6 +1,5 @@
 import SignupForm from '@/app/auth/sign-up/SignupForm'
 import Container from '@/components/container'
-import React from 'react'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import MainTitle from '@/components/main-title'

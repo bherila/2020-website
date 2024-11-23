@@ -1,6 +1,5 @@
 'use client'
 import useSWR from 'swr'
-import React from 'react'
 import AlphaVantageEarnings from '@/lib/AlphaVantageEarnings'
 import StockQuote from '@/lib/StockQuote'
 import MinMaxClientRenderer from '@/app/maxmin/[symbol]/MinMaxClientRenderer'

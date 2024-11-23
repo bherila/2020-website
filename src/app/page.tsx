@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { ReactNode } from 'react'
 import Typography from '@/components/typography'
 import Link from '@/components/link'
 import MainTitle from '@/components/main-title'
@@ -14,11 +15,12 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const Im = <>I&rsquo;m</>
-  const Line = ({ children }: { children: React.ReactNode }) => (
+  const Line = ({ children }: { children: ReactNode }) => (
     <Typography variant="body1" py={0.5}>
       {children}
     </Typography>
   )
+
   return (
     <Container>
       <SPGP_CTA />

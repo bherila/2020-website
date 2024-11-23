@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useState } from 'react'
 import { parseEntities } from '@/app/payslip/payslipSchemaReducer'
 import styles from './dropzone.module.css'

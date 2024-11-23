@@ -1,7 +1,7 @@
-import React from 'react'
+import { ReactNode } from 'react'
 
 export default function Grid(props: {
-  children: React.ReactNode
+  children: ReactNode
   container?: boolean
   item?: boolean
   xs?: any

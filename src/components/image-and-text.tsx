@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import React from 'react'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import cn from 'classnames'
@@ -19,14 +18,11 @@ export default function ImageAndText({ children, imageUrl, alt, ctaText, ctaLink
 }
 
 function renderCta(ctaText: string, ctaLink: string) {
-  if (ctaLink.indexOf('http') === 0) {
-    return (
-      <a className="cta w-button" href={ctaLink}>
-        {ctaText}
-      </a>
-    )
-  }
-  return <Link href={ctaLink}>{ctaText}</Link>
+  return (
+    <Link href={ctaLink} className="btn btn-primary mt-3">
+      {ctaText}
+    </Link>
+  )
 }
 
 interface ImageAndTextProps {

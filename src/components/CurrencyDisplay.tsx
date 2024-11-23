@@ -1,5 +1,4 @@
 ﻿import currency from 'currency.js'
-import React from 'react'
 
 export default function CurrencyDisplay({ value, digits = 2 }: { value: number | currency; digits: number }) {
   if (typeof value === 'number') {

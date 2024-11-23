@@ -1,4 +1,4 @@
-import React from 'react'
+import { ReactNode } from 'react'
 
 import ImageAndText from '../../components/image-and-text'
 import { Metadata } from 'next'
@@ -11,13 +11,13 @@ export const metadata: Metadata = {
 }
 
 export default function ProjectsPage() {
-  const ProjectTitle = ({ children }: { children: React.ReactNode }) => {
+  const ProjectTitle = ({ children }: { children: ReactNode }) => {
     return <h2>{children}</h2>
   }
-  const ProjectDate = ({ children }: { children: React.ReactNode }) => {
+  const ProjectDate = ({ children }: { children: ReactNode }) => {
     return <p>{children}</p>
   }
-  const ProjectDescription = ({ children }: { children: React.ReactNode }) => {
+  const ProjectDescription = ({ children }: { children: ReactNode }) => {
     return <Typography variant="body1">{children}</Typography>
   }
   return (

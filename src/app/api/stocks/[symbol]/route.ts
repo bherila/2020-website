@@ -5,7 +5,6 @@ import StockQuote from '@/lib/StockQuote'
 import mysql from '@/lib/db'
 import AlphaVantageEarnings from '@/lib/AlphaVantageEarnings'
 
-
 export async function GET(req: NextRequest, { params }: { params: Promise<{ symbol: string }> }) {
   const { symbol } = await params
   if (symbol == null) {

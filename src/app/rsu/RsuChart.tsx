@@ -1,6 +1,5 @@
 'use client'
 import { Chart, Series, ArgumentAxis, CommonSeriesSettings, Export, Legend, Margin } from 'devextreme-react/chart'
-import React from 'react'
 import { IAward } from '@/app/rsu/IAward'
 import _ from 'lodash'
 import currency from 'currency.js'

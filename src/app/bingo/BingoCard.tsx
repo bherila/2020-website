@@ -1,5 +1,4 @@
-import React from 'react'
-import { Table } from 'react-bootstrap'
+import Table from 'react-bootstrap/Table'
 import styles from './Bingo.module.css'
 
 const BingoCard = ({
@@ -12,7 +11,7 @@ const BingoCard = ({
   showRowNumbers?: boolean
 }) => {
   return (
-    <table style={{ margin: '0 auto' }}>
+    <Table style={{ margin: '0 auto' }}>
       {headers && (
         <thead>
           <tr>
@@ -35,7 +34,7 @@ const BingoCard = ({
           </tr>
         ))}
       </tbody>
-    </table>
+    </Table>
   )
 }
 

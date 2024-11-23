@@ -1,4 +1,3 @@
-import React from 'react'
 import MainTitle from '@/components/main-title'
 import Container from '@/components/container'
 import { getListOfRecipes } from '@/helpers/postHelpers'

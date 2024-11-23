@@ -1,5 +1,3 @@
-import React from 'react'
-
 import AccountingHeader from './AccountingHeader'
 
 const drawerWidth = 240

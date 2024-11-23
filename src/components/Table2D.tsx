@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { Table } from 'react-bootstrap'
+import Table from 'react-bootstrap/Table'
 
 interface Props {
   data: string[][]

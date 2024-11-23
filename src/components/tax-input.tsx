@@ -1,4 +1,4 @@
-import React from 'react'
+import { ChangeEvent } from 'react'
 import useTaxData from '../hooks/useTaxData'
 
 interface TaxInputProps {
@@ -18,7 +18,9 @@ export default function TaxInput(props: TaxInputProps) {
         <input
           value={data.value || ''}
           readOnly={readOnly}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) => data.setValue(event.target.value)}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => data.setValue(event.target.value)}
+          type="text"
+          className="form-control"
         />
       </td>
       <td>{line}</td>

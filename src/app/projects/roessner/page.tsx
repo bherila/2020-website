@@ -1,7 +1,5 @@
-import React from 'react'
 import Container from '@/components/container'
 import Typography from '@/components/typography'
-import Link from '@/components/link'
 
 export default function Page() {
   return (

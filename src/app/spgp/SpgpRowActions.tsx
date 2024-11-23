@@ -1,6 +1,5 @@
 import { SPGPRequestType, SPGPRequestTypeWithPromo } from '@/app/spgp/SPGPRequestSchema'
 import { fetchWrapper } from '@/lib/fetchWrapper'
-import React from 'react'
 
 export default function SpgpRowActions(props: {
   data: any

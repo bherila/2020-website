@@ -1,7 +1,7 @@
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { getSession } from '@/lib/session'
-import React from 'react'
+import { Fragment } from 'react'
 import SPGP_CTA_Content from '@/app/spgp/SPGP_CTA_Content'
 
 export default async function SPGP_CTA() {
@@ -13,6 +13,6 @@ export default async function SPGP_CTA() {
       </Col>
     </Row>
   ) : (
-    <React.Fragment />
+    <Fragment />
   )
 }

@@ -1,6 +1,5 @@
 import Container from '@/components/container'
 import MainTitle from '@/components/main-title'
-import React from 'react'
 
 export default async function WebHosting() {
   return (
@@ -20,10 +19,9 @@ export default async function WebHosting() {
         needs to send email.
       </p>
       <p>
-        Be reasonable: I'm just a guy. I might require a consulting fee if you need me to do more than basic
-        troubleshooting/setup of your website.
+        If you're interested in this service, please{' '}
+        <a href="mailto:ben@benherila.com?subject=Web Hosting Inquiry">contact me</a>.
       </p>
-      <p>Please feel free to reach out to me if this is of interest to you.</p>
     </Container>
   )
 }

@@ -1,14 +1,14 @@
 'use client'
 import Table from 'react-bootstrap/Table'
 import _ from 'lodash'
-import React from 'react'
 import currency from 'currency.js'
-import PopoverContent from '@/app/payslip/PopoverContent'
 import { fin_payslip, fin_payslip_col, pay_data } from '@/app/payslip/payslipDbCols'
 import Stack from 'react-bootstrap/Stack'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
 import PayslipEditButton from '@/app/payslip/PayslipEdit'
+import PopoverContent from './PopoverContent'
+
 export interface payslip_table_col {
   field:
     | fin_payslip_col

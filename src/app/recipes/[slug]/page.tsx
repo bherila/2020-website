@@ -1,4 +1,3 @@
-import React from 'react'
 import Container from '@/components/container'
 import { getListOfRecipes, getRecipeContent } from '@/helpers/postHelpers'
 import ReactMarkdown from 'react-markdown'

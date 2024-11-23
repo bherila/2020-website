@@ -1,6 +1,5 @@
 import Container from '@/components/container'
 import { getSession } from '@/lib/session'
-import React from 'react'
 import MainTitle from '@/components/main-title'
 import SPGPClient from '@/app/spgp/SPGPClient'
 

@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import { FC, ChangeEvent, DragEvent, ClipboardEvent, useEffect, useState } from 'react'
 import Form from 'react-bootstrap/Form'
 
 interface DroppableTextAreaProps {
@@ -7,28 +7,28 @@ interface DroppableTextAreaProps {
   setData: (data: string) => void
 }
 
-const DroppableTextArea: React.FC<DroppableTextAreaProps> = ({ data, setData }) => {
+const DroppableTextArea: FC<DroppableTextAreaProps> = ({ data, setData }) => {
   const [file, setFile] = useState<File | null>(null)
   const [dragging, setDragging] = useState(false)
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setData(e.target.value)
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files != null) {
       setFile(e.target.files[0])
     }
   }
 
-  const handleDrop = (e: React.DragEvent<HTMLTextAreaElement>) => {
+  const handleDrop = (e: DragEvent<HTMLTextAreaElement>) => {
     e.preventDefault()
     const file = e.dataTransfer.files[0]
     setFile(file)
     setDragging(false)
   }
 
-  const handleDragOver = (e: React.DragEvent<HTMLTextAreaElement>) => {
+  const handleDragOver = (e: DragEvent<HTMLTextAreaElement>) => {
     e.preventDefault()
     setDragging(true)
   }
@@ -37,7 +37,7 @@ const DroppableTextArea: React.FC<DroppableTextAreaProps> = ({ data, setData }) 
     setDragging(false)
   }
 
-  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+  const handlePaste = (e: ClipboardEvent<HTMLTextAreaElement>) => {
     const text = e.clipboardData.getData('text')
     setData(text)
     setFile(null)

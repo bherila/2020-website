@@ -1,4 +1,3 @@
-import React from 'react'
 import SignInForm from '@/app/auth/sign-in/SignInForm'
 import { getSession } from '@/lib/session'
 import SignInAction from '@/app/auth/SigninAction'
