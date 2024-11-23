@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ParsedSPGPPassType } from '@/app/spgp/SPGPPassTypes'
 import Form from 'react-bootstrap/Form'
 import { fetchWrapper } from '@/lib/fetchWrapper'

@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
 import Modal from 'react-bootstrap/Modal'
 import Container from '@/components/container'

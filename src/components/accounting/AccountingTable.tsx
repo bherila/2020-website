@@ -1,5 +1,5 @@
 import currency from 'currency.js'
-import React, { CSSProperties } from 'react'
+import { CSSProperties, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { AccountingDbRow } from '@/lib/accounting-row'
 import { fetchWrapper } from '@/lib/fetchWrapper'
@@ -32,13 +32,13 @@ export default function AccountingTable(props: {
   groupByField?: keyof AccountingDbRow
 }) {
   const { rows, columns, clientRowFilter, groupByField, requestRequireColumns } = props
-  const [dataRows, setDataRows] = React.useState<AccountingDbRow[]>(rows ?? [])
-  const [newRows, setNewRows] = React.useState<AccountingDbRow[]>([])
-  const [error, setError] = React.useState('')
-  const [isSaving, setIsSaving] = React.useState(false)
-  const [filterValue, setFilterValue] = React.useState<string | number | null>(null)
+  const [dataRows, setDataRows] = useState<AccountingDbRow[]>(rows ?? [])
+  const [newRows, setNewRows] = useState<AccountingDbRow[]>([])
+  const [error, setError] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+  const [filterValue, setFilterValue] = useState<string | number | null>(null)
 
-  const reload = React.useCallback(() => {
+  const reload = useCallback(() => {
     const query =
       Array.isArray(requestRequireColumns) && requestRequireColumns.length > 0
         ? 'requestRequireColumns=' + encodeURIComponent(requestRequireColumns.join(',').toLowerCase())
@@ -49,7 +49,7 @@ export default function AccountingTable(props: {
     })
   }, [clientRowFilter, requestRequireColumns])
 
-  React.useEffect(() => reload(), [])
+  useEffect(() => reload(), [])
 
   const saveNewRows = (rowsToSave: AccountingDbRow[]) => {
     setIsSaving(true)
@@ -65,7 +65,7 @@ export default function AccountingTable(props: {
       .finally(() => setIsSaving(false))
   }
 
-  const combinedClientRowFilter = React.useMemo(() => {
+  const combinedClientRowFilter = useMemo(() => {
     const safeClientRowFilter = typeof clientRowFilter === 'function' ? clientRowFilter : Boolean
     if (!filterValue || !groupByField || !clientRowFilter) return safeClientRowFilter
 

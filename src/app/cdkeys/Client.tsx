@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { z } from 'zod'
 import productKeySchema from '@/lib/productKeySchema'
 import { fetchWrapper } from '@/lib/fetchWrapper'

@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import MainTitle from '@/components/main-title'
 import Container from '@/components/container'
 import Row from 'react-bootstrap/Row'

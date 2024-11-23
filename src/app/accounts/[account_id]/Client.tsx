@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -10,7 +10,6 @@ import { fetchWrapper } from '@/lib/fetchWrapper'
 import { AccountSpend, AccountSpendSchema } from '@/app/api/account/model'
 
 export default function AccountClient(props: { id: string }) {
-  const [isImporting, setImport] = useState(false)
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState<AccountSpend[]>([])
   useEffect(() => {

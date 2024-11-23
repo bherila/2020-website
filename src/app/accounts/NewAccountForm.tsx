@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import { AccountTableRow } from '@/app/api/account/model'
 import Alert from 'react-bootstrap/Alert'

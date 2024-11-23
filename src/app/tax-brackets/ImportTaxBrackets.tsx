@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import currency from 'currency.js'
 import { z, ZodError } from 'zod'

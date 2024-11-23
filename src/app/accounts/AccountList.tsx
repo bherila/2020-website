@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { AccountTableRow } from '@/app/api/account/model'
 import Link from 'next/link'
 import Table from 'react-bootstrap/Table'

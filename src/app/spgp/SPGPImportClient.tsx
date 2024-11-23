@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Table from 'react-bootstrap/Table'
 import { colKeys, SPGPSchema } from '@/app/spgp/SPGPSchema'
 import { ZodError } from 'zod'

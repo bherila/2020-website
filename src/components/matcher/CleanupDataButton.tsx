@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { Button } from 'react-bootstrap'
 import { deleteRowsWithOnlyOneColumn, deleteUniformColumns } from '@/lib/data2d'
 
