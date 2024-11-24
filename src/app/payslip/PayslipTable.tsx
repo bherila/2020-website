@@ -89,11 +89,11 @@ export function PayslipTable(props: Props) {
         </tr>
       </thead>
       <tbody>
-        {_.orderBy(data, 'period_end').map((row, rid) => (
+        {_.orderBy(data, 'period_end').map((row: fin_payslip, rid: number) => (
           <tr key={rid}>
             {cols
               .filter((c) => !c.hide)
-              .map((c: payslip_table_col, ci) => {
+              .map((c: payslip_table_col, ci: number) => {
                 if (Array.isArray(c.field)) {
                   // handle as blocks
                   return (
