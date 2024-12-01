@@ -1,39 +1,44 @@
 import 'server-only'
 import { cookies } from 'next/headers'
-import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'crypto'
 import { sessionSchema } from '@/lib/sessionSchema'
 import { cache } from 'react'
+import * as jose from 'jose'
 
-const algorithm = 'aes-256-cbc'
-const salt: string = 'FIcWDXjEtL03RmxSfRFvEHnj5cTwxZAbJluK9lrErXTttT9kDJkS8VM1hQjiJKB'
-const key = scryptSync(process.env.VERCEL_ANALYTICS_ID + salt, salt, 32)
 const cookieName = 'bwh-session'
+
+// Pad the key to 32 bytes (256 bits)
+function padKey(key: string): Uint8Array {
+  const encoder = new TextEncoder()
+  const originalKey = encoder.encode(key)
+  const paddedKey = new Uint8Array(32) // 256 bits = 32 bytes
+  paddedKey.fill(0) // Fill with zeros
+  paddedKey.set(originalKey.slice(0, 32)) // Use first 32 bytes of original key, or all if shorter
+  return paddedKey
+}
+
+const secret = padKey(process.env.VERCEL_ANALYTICS_ID || '')
 
 async function getSession_internal() {
   const cookieStore = await cookies()
   const encryptedSession = cookieStore.get(cookieName)?.value
-  const session = encryptedSession ? decryptSession(encryptedSession) : null
+  const session = encryptedSession ? await decryptSession(encryptedSession) : null
   return session == null ? null : sessionSchema.parse(session)
 }
 export const getSession = cache(getSession_internal)
 
-function encryptSession(session: string) {
-  const iv = randomBytes(16)
-  const cipher = createCipheriv(algorithm, key, iv)
-  let encrypted = cipher.update(JSON.stringify(session), 'utf8', 'hex')
-  encrypted += cipher.final('hex')
-  return `${iv.toString('hex')}:${encrypted}`
+async function encryptSession(session: string) {
+  const jwe = await new jose.EncryptJWT(JSON.parse(JSON.stringify(session)))
+    .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
+    .encrypt(secret)
+  return jwe
 }
 
-function decryptSession(encrypted: string) {
+async function decryptSession(encrypted: string) {
   try {
-    const [ivHex, encryptedData] = encrypted.split(':')
-    const decipher = createDecipheriv(algorithm, key, Buffer.from(ivHex, 'hex'))
-    let decrypted = decipher.update(encryptedData, 'hex', 'utf8')
-    decrypted += decipher.final('utf8')
-    return JSON.parse(decrypted)
+    const { payload } = await jose.jwtDecrypt(encrypted, secret)
+    return payload
   } catch (err) {
-    console.error(err)
+    console.warn(err)
     return null
   }
 }
@@ -43,6 +48,12 @@ export async function saveSession(session: any) {
   if (session == null) {
     cookieStore.delete(cookieName)
   } else {
-    cookieStore.set(cookieName, encryptSession(session))
+    cookieStore.set(cookieName, await encryptSession(session), {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    })
   }
 }

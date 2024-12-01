@@ -4,11 +4,8 @@ import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 import { sessionType } from '@/lib/sessionSchema'
-import useSWR from 'swr'
 
-export default function Header(props: {}) {
-  const fetcher = (url: string) => fetch(url).then((r) => r.json())
-  const { data: session, error, isLoading } = useSWR<sessionType>('/api/session/', fetcher)
+export default function Header({ session }: { session: sessionType }) {
   return (
     <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary" as={Nav} aria-label="primary navigation">
       <Container>
@@ -31,24 +28,22 @@ export default function Header(props: {}) {
               <NavDropdown.Item href="/bingo/">Bingo card generator</NavDropdown.Item>
             </NavDropdown>
           </Nav>
-          {!isLoading && (
-            <Nav>
-              {!session?.uid ? (
-                <>
-                  <Nav.Link href="/auth/sign-in" aria-label="Sign in">
-                    Sign in
-                  </Nav.Link>
-                  <Nav.Link href="/auth/sign-up" aria-label="Sign up">
-                    Sign up
-                  </Nav.Link>
-                </>
-              ) : (
-                <Nav.Link href="/api/sign-out" aria-label="Sign out">
-                  Sign out
+          <Nav>
+            {!session?.uid ? (
+              <>
+                <Nav.Link href="/auth/sign-in" aria-label="Sign in">
+                  Sign in
                 </Nav.Link>
-              )}
-            </Nav>
-          )}
+                <Nav.Link href="/auth/sign-up" aria-label="Sign up">
+                  Sign up
+                </Nav.Link>
+              </>
+            ) : (
+              <Nav.Link href="/api/sign-out" aria-label="Sign out">
+                Sign out
+              </Nav.Link>
+            )}
+          </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>
