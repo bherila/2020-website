@@ -1,5 +1,5 @@
 import SignInForm from '@/app/auth/sign-in/SignInForm'
-import { getSession } from '@/lib/session'
+import { getSession } from '@/server_lib/session'
 import SignInAction from '@/app/auth/SigninAction'
 import Container from '@/components/container'
 import Row from 'react-bootstrap/Row'

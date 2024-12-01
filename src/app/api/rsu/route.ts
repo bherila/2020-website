@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db from '@/lib/db'
-import { getSession } from '@/lib/session'
+import db from '@/server_lib/db'
+import { getSession } from '@/server_lib/session'
 import { z, ZodError } from 'zod'
 import { compareAsc, format } from 'date-fns'
 

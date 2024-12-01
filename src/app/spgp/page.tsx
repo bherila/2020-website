@@ -1,5 +1,5 @@
 import Container from '@/components/container'
-import { getSession } from '@/lib/session'
+import { getSession } from '@/server_lib/session'
 import MainTitle from '@/components/main-title'
 import SPGPClient from '@/app/spgp/SPGPClient'
 

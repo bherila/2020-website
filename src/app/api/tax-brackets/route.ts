@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { convertToTaxHierarchy, graduatedTaxSchema, tax_row } from '@/app/api/tax-brackets/schema'
-import db from '@/lib/db'
+import db from '@/server_lib/db'
 import { z } from 'zod'
-import { getSession } from '@/lib/session'
+import { getSession } from '@/server_lib/session'
 import _ from 'lodash'
 
 export async function GET(request: NextRequest) {

@@ -2,7 +2,7 @@ import 'server-only'
 import { NextRequest, NextResponse } from 'next/server'
 import { notFound } from 'next/navigation'
 import StockQuote from '@/lib/StockQuote'
-import mysql from '@/lib/db'
+import mysql from '@/server_lib/db'
 import AlphaVantageEarnings from '@/lib/AlphaVantageEarnings'
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ symbol: string }> }) {

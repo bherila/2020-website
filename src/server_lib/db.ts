@@ -1,3 +1,4 @@
+import 'server-only'
 import mysql from 'serverless-mysql'
 export default mysql({
   library: require('mysql2'),

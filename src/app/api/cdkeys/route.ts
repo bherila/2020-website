@@ -1,9 +1,9 @@
 import 'server-only'
 import { z } from 'zod'
 import { NextResponse } from 'next/server'
-import mysql from '@/lib/db'
+import mysql from '@/server_lib/db'
 import ProductKeySchema from '@/lib/productKeySchema'
-import { getSession } from '@/lib/session'
+import { getSession } from '@/server_lib/session'
 
 export async function POST(req: Request) {
   try {

@@ -1,6 +1,6 @@
 import { Ctx, Field, FieldResolver, ID, ObjectType, Query, Resolver, Root } from 'type-graphql'
 import type { ViewerContext } from '@/app/api/graphql/ViewerContext'
-import db from '@/lib/db'
+import db from '@/server_lib/db'
 import { Memoize } from 'typescript-memoize'
 
 @ObjectType()

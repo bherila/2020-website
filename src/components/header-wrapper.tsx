@@ -1,9 +1,8 @@
-import { headers } from 'next/headers'
-import { sessionType } from '@/lib/sessionSchema'
+import 'server-only'
+import getServerSession from '@/server_lib/getServerSession'
 import Header from './header'
 
-export default async function HeaderWrapper() {
-  const headersList = await headers()
-  const session: sessionType = JSON.parse(headersList.get('x-session-data') || '{}')
+export default async function HeaderWrapper(props: {}) {
+  const session = await getServerSession()
   return <Header session={session} />
 }

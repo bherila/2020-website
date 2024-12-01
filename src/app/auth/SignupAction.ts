@@ -2,9 +2,9 @@
 
 import { SignupZod } from '@/app/auth/SignupSchema'
 import SignInAction from '@/app/auth/SigninAction'
-import db from '@/lib/db'
+import db from '@/server_lib/db'
 import { ZodError } from 'zod'
-import { saveSession } from '@/lib/session'
+import { saveSession } from '@/server_lib/session'
 import { redirect } from 'next/navigation'
 
 export async function SignupAction(formData: FormData): Promise<void> {

@@ -3,7 +3,7 @@ import 'devextreme/dist/css/dx.common.css'
 import 'devextreme/dist/css/dx.material.purple.dark.compact.css'
 
 import AuthRoutes from '@/app/auth/AuthRoutes'
-import { getSession } from '@/lib/session'
+import { getSession } from '@/server_lib/session'
 import { Metadata, ResolvingMetadata } from 'next'
 import { redirect } from 'next/navigation'
 import Container from 'react-bootstrap/Container'

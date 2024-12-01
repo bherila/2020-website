@@ -1,6 +1,6 @@
 import 'server-only'
 import PayslipClient from '@/app/payslip/PayslipClient'
-import { getSession } from '@/lib/session'
+import { getSession } from '@/server_lib/session'
 import { redirect } from 'next/navigation'
 import AuthRoutes from '@/app/auth/AuthRoutes'
 

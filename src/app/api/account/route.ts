@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db from '@/lib/db'
+import db from '@/server_lib/db'
 import { AccountTableRow, AccountTableSchema } from '@/app/api/account/model'
 import { z } from 'zod'
-import { getSession } from '@/lib/session'
+import { getSession } from '@/server_lib/session'
 export async function GET(request: NextRequest) {
   try {
     const uid = (await getSession())?.uid

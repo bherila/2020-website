@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { DateContainer, parseDate } from '@/lib/DateHelper'
 
 import { AccountingDbRow, TransactionTypes } from '../../lib/accounting-row'
-import pool from '../../lib/db'
+import pool from '../../server_lib/db'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req?.method == null) {

@@ -1,6 +1,6 @@
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import { getSession } from '@/lib/session'
+import { getSession } from '@/server_lib/session'
 import { Fragment } from 'react'
 import SPGP_CTA_Content from '@/app/spgp/SPGP_CTA_Content'
 

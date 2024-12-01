@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createHash } from 'crypto'
 import deepRemoveKey from '@/lib/DeepRemoveKey'
-import db from '@/lib/db'
+import db from '@/server_lib/db'
 import { fin_payslip, fin_payslip_schema } from '@/app/payslip/payslipDbCols'
-import { getSession } from '@/lib/session'
+import { getSession } from '@/server_lib/session'
 import { z } from 'zod'
 
 export async function GET(req: NextRequest) {

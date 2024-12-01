@@ -1,8 +1,8 @@
 'use server'
 import 'server-only'
-import db from '@/lib/db'
+import db from '@/server_lib/db'
 import { SPGPPassTypesSchema, ParsedSPGPPassType } from '@/app/spgp/SPGPPassTypes'
-import { getSession } from '@/lib/session'
+import { getSession } from '@/server_lib/session'
 
 export default async function GetSPGPPassTypes(): Promise<ParsedSPGPPassType[]> {
   const session = await getSession()

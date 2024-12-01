@@ -1,4 +1,4 @@
-import { getSession } from '@/lib/session'
+import { getSession } from '@/server_lib/session'
 import { redirect } from 'next/navigation'
 import { RedirectType } from 'next/dist/client/components/redirect'
 import Container from '@/components/container'

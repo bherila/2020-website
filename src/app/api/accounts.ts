@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 
 import { AccountRecord } from '@/lib/AccountRecord'
-import pool from '@/lib/db'
+import pool from '@/server_lib/db'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req?.method == null) {

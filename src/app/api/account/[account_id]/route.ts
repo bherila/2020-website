@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db from '@/lib/db'
+import db from '@/server_lib/db'
 import { AccountSpend, AccountSpendSchema, AccountTableRow, AccountTableSchema } from '@/app/api/account/model'
 import { z } from 'zod'
-import { getSession } from '@/lib/session'
+import { getSession } from '@/server_lib/session'
 
 async function getTheAccount(context: { params: Promise<{ account_id: string }> }) {
   const uid = (await getSession())?.uid

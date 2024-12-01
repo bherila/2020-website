@@ -1,7 +1,7 @@
 import 'server-only'
 import { z } from 'zod'
-import { getSession } from '@/lib/session'
-import db from '@/lib/db'
+import { getSession } from '@/server_lib/session'
+import db from '@/server_lib/db'
 
 export default async function ChangePasswordAction(formData: FormData) {
   'use server'
