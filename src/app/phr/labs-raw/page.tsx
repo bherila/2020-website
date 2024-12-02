@@ -5,27 +5,44 @@ import Sidebar from '../components/Sidebar'
 import db from '@/server_lib/db'
 import LabsTable from './client'
 import { LabResult } from '../labs-types'
-import { checkLabRange } from '@/lib/lab-range-check'
+import printRange, { checkLabRange } from '@/lib/lab-range-check'
+import { z } from 'zod'
 
 async function getLabResults(userId: number, sortColumn?: string): Promise<LabResult[]> {
+  // validate sortColumn is one of the expected columns using zod (or coerce to null)
+  const column = z
+    .string()
+    .refine(
+      (v) =>
+        [
+          'test_name',
+          'collection_datetime',
+          'result_datetime',
+          'result_status',
+          'ordering_provider',
+          'resulting_lab',
+          'analyte',
+          'value',
+          'range_min',
+          'range_max',
+          'range_unit',
+          'normal_value',
+        ].includes(v),
+      { message: 'Invalid sort column' },
+    )
+    .safeParse(sortColumn).success
+    ? sortColumn
+    : 'collection_datetime'
+  console.info('[phr] sorted by', column)
   try {
     const results = await db.query(
-      `SELECT test_name,
-            collection_datetime,
-            result_datetime,
-            result_status,
-            ordering_provider,
-            resulting_lab,
-            analyte,
-            value,
-            unit,
-            range_min,
-            range_max,
-            range_unit,
-            normal_value
-     FROM phr_lab_results 
-     WHERE user_id = ?
-     ORDER BY ${sortColumn || 'collection_datetime'} DESC`,
+      `
+SELECT test_name, collection_datetime, result_datetime, result_status, 
+  ordering_provider, resulting_lab, analyte, value, unit, range_min, 
+  range_max, range_unit, normal_value
+FROM phr_lab_results 
+WHERE user_id = ?
+ORDER BY ${column} DESC`,
       [userId],
     )
     return results as LabResult[]
@@ -57,9 +74,7 @@ export default async function LabsTablePage({ searchParams }: { searchParams: Pr
     'Lab',
     'Analyte',
     'Value',
-    'Range Min',
-    'Range Max',
-    'Range Unit',
+    'Range',
     'Normal Value',
   ]
   const data = [
@@ -73,10 +88,7 @@ export default async function LabsTablePage({ searchParams }: { searchParams: Pr
       row.resulting_lab ?? '',
       row.analyte ?? '',
       `${row.value ?? ''} ${row.unit ?? ''}`.trim(),
-      row.range_min?.toString() ?? '',
-      row.range_max?.toString() ?? '',
-      row.range_unit ?? '',
-      row.normal_value ?? '',
+      printRange(row),
       rangeData(row),
     ]),
   ]

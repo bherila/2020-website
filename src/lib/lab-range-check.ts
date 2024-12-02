@@ -5,12 +5,27 @@ export interface RangeCheck {
   message?: string
 }
 
+const neutral = ['NEG', 'ND', 'Not Detected']
+
+export default function printRange(
+  input: Pick<LabResult, 'value' | 'range_min' | 'range_max' | 'range_unit' | 'normal_value'>,
+) {
+  let { range_min, range_max, range_unit, normal_value } = input
+  if (range_min != null && range_min < -999999) range_min = null
+  if (range_max != null && range_max > 999999) range_max = null
+  const neutralValue = neutral.find((n) => n === input.value)
+  if ((range_min ?? range_max ?? normal_value) == null && neutralValue) {
+    return neutralValue
+  }
+  return normal_value ? `=${normal_value}` : `${range_min ?? '-∞'} to ${range_max ?? '∞'} ${range_unit || ''}`
+}
+
 export function checkLabRange(result: Pick<LabResult, 'value' | 'normal_value' | 'range_min' | 'range_max'>): RangeCheck {
   if (!result.value) {
     return { isInRange: true }
   }
 
-  if (['NEG', 'ND', 'Not Detected'].includes(result.value)) {
+  if (neutral.includes(result.value)) {
     return { isInRange: true }
   }
 
@@ -37,7 +52,7 @@ export function checkLabRange(result: Pick<LabResult, 'value' | 'normal_value' |
 
 export function getLatestRangeInfo(
   results: LabResult[],
-): Pick<LabResult, 'range_min' | 'range_max' | 'range_unit' | 'normal_value'> | null {
+): Pick<LabResult, 'value' | 'range_min' | 'range_max' | 'range_unit' | 'normal_value'> | null {
   if (!results.length) return null
 
   const sorted = [...results].sort((a, b) => {
@@ -50,5 +65,6 @@ export function getLatestRangeInfo(
     range_max: sorted[0].range_max,
     range_unit: sorted[0].range_unit,
     normal_value: sorted[0].normal_value,
+    value: sorted[0].value,
   }
 }

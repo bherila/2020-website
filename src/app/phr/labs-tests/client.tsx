@@ -1,7 +1,7 @@
 'use client'
 import { Card, Row, Col, Table, Form, InputGroup } from 'react-bootstrap'
 import { LabResult } from '../labs-types'
-import { checkLabRange, getLatestRangeInfo } from '@/lib/lab-range-check'
+import printRange, { checkLabRange, getLatestRangeInfo } from '@/lib/lab-range-check'
 import { Search } from 'react-bootstrap-icons'
 import { useState } from 'react'
 
@@ -59,14 +59,7 @@ export default function LabsCards({ results }: { results: LabResult[] }) {
                   return (
                     <div key={analyte} className="mb-4">
                       <h3 style={{ fontSize: '1.25rem' }}>{analyte}</h3>
-                      {rangeInfo && (
-                        <div className="mb-2">
-                          Expected range:{' '}
-                          {rangeInfo.normal_value
-                            ? `Equal to ${rangeInfo.normal_value}`
-                            : `${rangeInfo.range_min ?? '-∞'} to ${rangeInfo.range_max ?? '∞'} ${rangeInfo.range_unit || ''}`}
-                        </div>
-                      )}
+                      {rangeInfo ? <div className="mb-2">Expected range: {printRange(rangeInfo)}</div> : null}
                       <Table size="sm" bordered={true}>
                         {i !== 0 ? null : (
                           <thead>
