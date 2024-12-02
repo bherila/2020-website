@@ -6,7 +6,7 @@ export class ProductKeyType {
   @Field(() => ID, { name: 'id', nullable: false })
   id?: string
 
-  @Field(() => ID, { name: 'uid', nullable: false })
+  @Field(() => ID, { name: 'uid', nullable: true })
   uid?: string
 
   @Field({ name: 'product_id', nullable: true })
@@ -26,6 +26,15 @@ export class ProductKeyType {
 
   @Field({ name: 'used_on', nullable: true })
   used_on?: string
+
+  @Field({ name: 'claimed_date', nullable: true })
+  claimed_date?: string
+
+  @Field({ name: 'key_type', nullable: true })
+  key_type?: string
+
+  @Field({ name: 'key_retrieval_note', nullable: true })
+  key_retrieval_note?: string
 }
 
 @Resolver(ProductKeyType)
