@@ -5,7 +5,7 @@ import Sidebar from '../components/Sidebar'
 import db from '@/server_lib/db'
 import LabsTable from './client'
 import { LabResult } from '../labs-types'
-import { PageProps } from '.next/types/app/page'
+import { checkLabRange } from '@/lib/lab-range-check'
 
 async function getLabResults(userId: number, sortColumn?: string): Promise<LabResult[]> {
   try {
@@ -34,7 +34,7 @@ async function getLabResults(userId: number, sortColumn?: string): Promise<LabRe
   }
 }
 
-export default async function LabsTablePage({ searchParams }: PageProps) {
+export default async function LabsTablePage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const session = await getSession()
   if (!session?.ax_phr) {
     return (
@@ -57,16 +57,14 @@ export default async function LabsTablePage({ searchParams }: PageProps) {
     'Lab',
     'Analyte',
     'Value',
-    'Unit',
-    'Min',
-    'Max',
+    'Range Min',
+    'Range Max',
     'Range Unit',
-    'Normal',
-    'In Range',
+    'Normal Value',
   ]
   const data = [
     headers,
-    ...labResults.map((row) => [
+    ...labResults.map((row: LabResult) => [
       row.test_name ?? '',
       row.collection_datetime?.toLocaleString() ?? '',
       row.result_datetime?.toLocaleString() ?? '',
@@ -74,12 +72,12 @@ export default async function LabsTablePage({ searchParams }: PageProps) {
       row.ordering_provider ?? '',
       row.resulting_lab ?? '',
       row.analyte ?? '',
-      row.value?.toString() ?? '',
-      row.unit ?? '',
+      `${row.value ?? ''} ${row.unit ?? ''}`.trim(),
       row.range_min?.toString() ?? '',
       row.range_max?.toString() ?? '',
       row.range_unit ?? '',
       row.normal_value ?? '',
+      rangeData(row),
     ]),
   ]
 
@@ -92,4 +90,16 @@ export default async function LabsTablePage({ searchParams }: PageProps) {
       </Container>
     </div>
   )
+}
+
+function rangeData(row: LabResult): string {
+  const { value, normal_value, range_min, range_max } = row
+  const { isInRange, message } = checkLabRange({
+    value,
+    normal_value,
+    range_min,
+    range_max,
+  })
+  // Add the range status
+  return !isInRange ? '⚠️:' + message : '✅'
 }

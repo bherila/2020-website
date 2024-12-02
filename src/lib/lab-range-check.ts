@@ -10,7 +10,7 @@ export function checkLabRange(result: Pick<LabResult, 'value' | 'normal_value' |
     return { isInRange: true }
   }
 
-  if (result.value === 'NEG' || result.value === 'ND') {
+  if (['NEG', 'ND', 'Not Detected'].includes(result.value)) {
     return { isInRange: true }
   }
 
