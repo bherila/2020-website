@@ -15,3 +15,9 @@
 - Show reference ranges with each analyte's results
 - For normal value matches, display as "Equal to [value]"
 - For range checks, display as "[min] to [max] [unit]"
+
+### Database Schema
+- Numeric values stored with 4 decimal precision 
+- Range bounds stored with 2 decimal precision
+- All text fields are nullable to handle incomplete/pending results
+- User relationship enforced through user_id foreign key

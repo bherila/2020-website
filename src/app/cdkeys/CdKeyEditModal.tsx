@@ -58,19 +58,33 @@ export default function CdKeyEditModal({ show, onHide, cdKey, onSave }: EditModa
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Computer Name</Form.Label>
-            <Form.Control
-              type="text"
-              value={formData.computer_name}
-              onChange={(e) => setFormData({ ...formData, computer_name: e.target.value })}
-            />
+            <div className="d-flex align-items-center">
+              <Form.Control
+                type="text"
+                value={formData.computer_name || ''}
+                onChange={(e) => setFormData({ ...formData, computer_name: e.target.value })}
+                className="me-2"
+              />
+              <Button variant="outline-secondary" size="sm" onClick={() => setFormData({ ...formData, computer_name: '' })}>
+                Clear
+              </Button>
+            </div>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Comment</Form.Label>
             <Form.Control
-              type="text"
-              value={formData.comment}
+              as="textarea"
+              rows={5}
+              style={{ resize: 'vertical', wordWrap: 'break-word' }}
+              value={formData.comment || ''}
               onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
+              className="mb-2"
             />
+            <div className="text-end">
+              <Button variant="outline-secondary" size="sm" onClick={() => setFormData({ ...formData, comment: '' })}>
+                Clear
+              </Button>
+            </div>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Used On</Form.Label>

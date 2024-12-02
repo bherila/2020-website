@@ -10,6 +10,7 @@ import AuthRoutes from '@/app/auth/AuthRoutes'
 import db from '@/server_lib/db'
 import { z } from 'zod'
 import productKeySchema from '@/lib/productKeySchema'
+import CdKeysTabBar from '@/app/cdkeys/CdKeysTabBar'
 
 export default async function CdKeyPage() {
   if (!(await getSession())?.uid) {
@@ -24,6 +25,7 @@ export default async function CdKeyPage() {
       <Row>
         <Col xs={12}>
           <MainTitle>CDKeys</MainTitle>
+          <CdKeysTabBar />
           <CdKeyClient initialRows={parsedRows} />
         </Col>
       </Row>
