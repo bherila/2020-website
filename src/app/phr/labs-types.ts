@@ -6,7 +6,7 @@ export interface LabResult {
   ordering_provider: string | null
   resulting_lab: string | null
   analyte: string | null
-  value: number | null
+  value: string | null
   unit: string | null
   range_min: number | null
   range_max: number | null

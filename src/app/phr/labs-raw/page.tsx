@@ -86,8 +86,8 @@ export default async function LabsTablePage({ searchParams }: PageProps) {
   return (
     <div className="d-flex">
       <Sidebar />
-      <Container>
-        <MainTitle>Labs (Table)</MainTitle>
+      <Container fluid={true}>
+        <MainTitle>Labs (Raw)</MainTitle>
         <LabsTable data={data} />
       </Container>
     </div>

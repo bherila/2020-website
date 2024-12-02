@@ -9,8 +9,8 @@ export default function Sidebar() {
     { href: '/phr', label: 'Overview', exact: true },
     { href: '/phr/vaccines', label: 'Vaccines' },
     { href: '/phr/visits', label: 'Visits' },
-    { href: '/phr/labs-table', label: 'Labs (Table)' },
-    { href: '/phr/labs-friendly', label: 'Labs (Tiles)' },
+    { href: '/phr/labs-raw', label: 'Labs (Raw)' },
+    { href: '/phr/labs-tests', label: 'Labs (Tests)' },
   ]
 
   return (

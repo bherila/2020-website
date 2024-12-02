@@ -9,13 +9,13 @@ export default function LabsTable({ data }: { data: string[][] }) {
     if (rowIndex === 0) return row // Header row
 
     // Extract values needed for range check
-    const value = parseFloat(row[7]) // Value column
+    const value = row[7] // Value column
     const normal_value = row[12] // Normal column
     const range_min = row[9] ? parseFloat(row[9]) : null // Min column
     const range_max = row[10] ? parseFloat(row[10]) : null // Max column
 
     const { isInRange, message } = checkLabRange({
-      value: isNaN(value) ? null : value,
+      value,
       normal_value,
       range_min: range_min === null ? null : Number(range_min),
       range_max: range_max === null ? null : Number(range_max),

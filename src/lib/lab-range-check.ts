@@ -10,6 +10,10 @@ export function checkLabRange(result: Pick<LabResult, 'value' | 'normal_value' |
     return { isInRange: true }
   }
 
+  if (result.value === 'NEG' || result.value === 'ND') {
+    return { isInRange: true }
+  }
+
   if (result.normal_value !== null) {
     return {
       isInRange: result.value.toString() === result.normal_value,
@@ -23,7 +27,7 @@ export function checkLabRange(result: Pick<LabResult, 'value' | 'normal_value' |
   const effectiveMin = min < -999999 ? -Infinity : min
   const effectiveMax = max > 999999 ? Infinity : max
 
-  const isInRange = result.value >= effectiveMin && result.value <= effectiveMax
+  const isInRange = Number(result.value) >= effectiveMin && Number(result.value) <= effectiveMax
 
   return {
     isInRange,
