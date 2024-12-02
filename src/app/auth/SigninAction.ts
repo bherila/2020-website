@@ -24,7 +24,8 @@ export default async function SignInAction(formData: FormData) {
               ax_homes,
               ax_tax,
               ax_evdb,
-              ax_spgp
+              ax_spgp,
+              ax_phr
        from users
        where email = ?
          and pw = SHA2(CONCAT(?, CAST(salt AS char)), 0)
@@ -44,6 +45,7 @@ export default async function SignInAction(formData: FormData) {
           ax_tax: z.coerce.boolean(),
           ax_evdb: z.coerce.boolean(),
           ax_spgp: z.coerce.boolean(),
+          ax_phr: z.coerce.boolean(),
         })
         .parse(res[0])
 

@@ -8,6 +8,7 @@ export const sessionSchema = z.object({
   ax_tax: z.boolean().optional().default(false),
   ax_evdb: z.boolean().optional().default(false),
   ax_spgp: z.boolean().optional().default(false),
+  ax_phr: z.boolean().optional().default(false),
 })
 
 export interface sessionType {
@@ -18,4 +19,5 @@ export interface sessionType {
   ax_tax?: boolean
   ax_evdb?: boolean
   ax_spgp?: boolean
+  ax_phr?: boolean
 }
