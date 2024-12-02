@@ -2,7 +2,7 @@
 import { useState, useMemo } from 'react'
 import { z } from 'zod'
 import productKeySchema from '@/lib/productKeySchema'
-import { Button, Table } from 'react-bootstrap'
+import { Button, Table, Badge } from 'react-bootstrap'
 import { CDKey, EditCDKeyFormData } from './types'
 import { updateCDKey } from './actions'
 import CdKeyEditModal from './CdKeyEditModal'
@@ -73,15 +73,14 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
 
   return (
     <div>
-      <Table size="sm" bordered>
+      <Table size="sm" striped>
         <thead>
           <tr>
             <th>Product Name</th>
             <th>Product Key</th>
-            <th>Computer Name</th>
             <th>Comment</th>
-            <th>Product ID</th>
             <th>Used On</th>
+            <th>Computer Name</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -91,10 +90,16 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
               <tr key={key.product_key}>
                 {index === 0 && <td rowSpan={groupRows.length}>{productName}</td>}
                 <td style={{ whiteSpace: 'nowrap', fontFamily: 'monospace' }}>{key.product_key}</td>
-                <td>{key.computer_name}</td>
-                <td>{key.comment}</td>
-                <td>{key.product_id}</td>
+                <td>
+                  {key.comment}
+                  {key.product_id && (
+                    <Badge bg="secondary" className="ms-2">
+                      ID: {key.product_id}
+                    </Badge>
+                  )}
+                </td>
                 <td style={{ whiteSpace: 'nowrap' }}>{key.used_on?.toISOString()?.slice(0, 10)}</td>
+                <td>{key.computer_name}</td>
                 <td>
                   <Button size="sm" variant="outline-primary" onClick={() => handleEdit(key)}>
                     Edit
