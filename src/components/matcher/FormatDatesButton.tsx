@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Button } from 'react-bootstrap'
-import { deleteDuplicateRows, reformatDates } from '@/lib/data2d'
+import { reformatDates } from '@/lib/data2d'
 
 export default function FormatDatesButton(props: { csvData: string[][]; setCsvData: (newData: string[][]) => void }) {
   const { csvData, setCsvData } = props
