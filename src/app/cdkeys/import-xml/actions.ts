@@ -1,4 +1,3 @@
-
 import db from '@/server_lib/db'
 import { getSession } from '@/server_lib/session'
 import { redirect } from 'next/navigation'

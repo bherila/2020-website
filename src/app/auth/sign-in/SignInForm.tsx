@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
+import Link from 'next/link'
 
 export default function SignInForm(props: any) {
   const [formData, setFormData] = useState({
@@ -56,9 +57,10 @@ export default function SignInForm(props: any) {
       <Row>
         <Col xs={xs}></Col>
         <Col xs={12 - xs}>
-          <Button variant="primary" type="submit" aria-label="Sign in" aria-live="polite">
+          <Button style={{ marginRight: '1rem' }} variant="primary" type="submit" aria-label="Sign in" aria-live="polite">
             Sign in
           </Button>
+          <Link href="reset-password">Forgot password?</Link>
         </Col>
       </Row>
     </Container>

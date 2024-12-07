@@ -18,7 +18,7 @@ export default function Header({ session }: { session: sessionType }) {
             <Nav.Link href="/recipes">Recipes</Nav.Link>
             <Nav.Link href="/projects">Projects</Nav.Link>
             <NavDropdown title="Tools" id="collasible-nav-dropdown">
-              <NavDropdown.Item href="/maxmin/MSFT">MaxMin</NavDropdown.Item>
+              <NavDropdown.Item href="/maxmin/MSFT">MaxMin 🔑</NavDropdown.Item>
               <NavDropdown.Item href="/cdkeys/">CD Keys Manager 🔑</NavDropdown.Item>
               <NavDropdown.Item href="/rsu/">Finance - RSU 🔑</NavDropdown.Item>
               <NavDropdown.Item href="/payslip/">Finance - Payslips 🔑</NavDropdown.Item>
@@ -40,9 +40,14 @@ export default function Header({ session }: { session: sessionType }) {
                 </Nav.Link>
               </>
             ) : (
-              <Nav.Link href="/api/sign-out" aria-label="Sign out">
-                Sign out
-              </Nav.Link>
+              <>
+                <Nav.Link href="/my-account" aria-label="My Account">
+                  My Account
+                </Nav.Link>
+                <Nav.Link href="/api/sign-out" aria-label="Sign out">
+                  Sign out
+                </Nav.Link>
+              </>
             )}
           </Nav>
         </Navbar.Collapse>
