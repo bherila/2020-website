@@ -4,6 +4,7 @@ import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 import { sessionType } from '@/lib/sessionSchema'
+import { ThemeToggle } from './ThemeToggle'
 
 export default function Header({ session }: { session: sessionType }) {
   return (
@@ -30,6 +31,7 @@ export default function Header({ session }: { session: sessionType }) {
             </NavDropdown>
           </Nav>
           <Nav>
+            <ThemeToggle />
             {!session?.uid ? (
               <>
                 <Nav.Link href="/auth/sign-in" aria-label="Sign in">
