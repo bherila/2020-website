@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import Spinner from 'react-bootstrap/Spinner'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import { AccountSpend } from '@/app/api/account/model'
 import AccountNavigation from './AccountNavigation'
@@ -10,7 +11,7 @@ import TransactionsTable from './TransactionsTable'
 
 export default function AccountClient({ id }: { id: string }) {
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState<AccountSpend[]>([])
+  const [data, setData] = useState<AccountSpend[] | null>(null)
 
   useEffect(() => {
     setLoading(true)
@@ -29,15 +30,17 @@ export default function AccountClient({ id }: { id: string }) {
       </Row>
       <Row>
         <Col xs={8}>
-          <TransactionsTable data={data} />
+          {loading || data === null ? (
+            <div className="d-flex justify-content-center">
+              <Spinner animation="border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+            </div>
+          ) : (
+            <TransactionsTable data={data} />
+          )}
         </Col>
-        <Col xs={4}>
-          <div>Add filters:</div>
-          <div>
-            <p>With everything in view:</p>
-            <p>Set category:</p>
-          </div>
-        </Col>
+        <Col xs={4}>xx</Col>
       </Row>
     </Container>
   )

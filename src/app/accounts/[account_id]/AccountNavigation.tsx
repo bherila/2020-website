@@ -7,7 +7,7 @@ export default function AccountNavigation({
   activeTab = 'transactions',
 }: {
   accountId: string
-  activeTab?: string
+  activeTab?: 'transactions' | 'import'
 }) {
   return (
     <div className="mb-4">
