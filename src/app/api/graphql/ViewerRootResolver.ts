@@ -8,7 +8,6 @@ export default class ViewerRootResolver {
   @Query((returns) => ViewerType, {
     name: 'viewer',
   })
-  
   resolveViewerRoot(@Ctx() vc: ViewerContext): ViewerType {
     return new ViewerType(vc.uid.toString())
   }

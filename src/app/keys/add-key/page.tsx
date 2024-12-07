@@ -7,6 +7,8 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import CdKeysTabBar from '@/app/keys/CdKeysTabBar'
+import AddKeyClientComponent from './AddKeyClientComponent'
+import addProductKey from './addProductKey'
 
 export default async function AddKeyPage() {
   if (!(await getSession())?.uid) {
@@ -17,9 +19,9 @@ export default async function AddKeyPage() {
     <Container>
       <Row>
         <Col xs={12}>
-          <MainTitle>Add Key</MainTitle>
+          <MainTitle>Add License Key</MainTitle>
           <CdKeysTabBar />
-          {/* Add key form component here */}
+          <AddKeyClientComponent addProductKey={addProductKey} />
         </Col>
       </Row>
     </Container>

@@ -39,7 +39,7 @@ export class ViewerLabResultResolver {
     nullable: true,
   })
   getLabResultsForUser(@Root() viewer: ViewerType, @Ctx() vc: ViewerContext) {
-    return getLabResults(viewer.uid!);
+    return getLabResults(viewer.uid!)
   }
 }
 

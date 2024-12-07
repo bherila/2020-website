@@ -42,11 +42,12 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
 
   const processedRows = useMemo(() => {
     // Apply filters
-    let filteredRows = rows.filter(row => 
-      (!productNameFilter || (row.product_name || '').toLowerCase().includes(productNameFilter.toLowerCase())) &&
-      (!productKeyFilter || (row.product_key || '').toLowerCase().includes(productKeyFilter.toLowerCase())) &&
-      (!commentFilter || (row.comment || '').toLowerCase().includes(commentFilter.toLowerCase())) &&
-      (!computerNameFilter || (row.computer_name || '').toLowerCase().includes(computerNameFilter.toLowerCase()))
+    let filteredRows = rows.filter(
+      (row) =>
+        (!productNameFilter || (row.product_name || '').toLowerCase().includes(productNameFilter.toLowerCase())) &&
+        (!productKeyFilter || (row.product_key || '').toLowerCase().includes(productKeyFilter.toLowerCase())) &&
+        (!commentFilter || (row.comment || '').toLowerCase().includes(commentFilter.toLowerCase())) &&
+        (!computerNameFilter || (row.computer_name || '').toLowerCase().includes(computerNameFilter.toLowerCase())),
     )
 
     // Apply sorting
@@ -54,10 +55,10 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
       const aVal = a[sortField]
       const bVal = b[sortField]
       const direction = sortDirection === 'asc' ? 1 : -1
-      
+
       if (aVal == null) return 1
       if (bVal == null) return -1
-      
+
       if (typeof aVal === 'string' && typeof bVal === 'string') {
         return aVal.localeCompare(bVal) * direction
       }
@@ -174,9 +175,7 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
                 value={commentFilter}
                 onChange={(e) => setCommentFilter(e.target.value)}
               />
-              {commentFilter && (
-                <ClearFilterButton onClick={() => setCommentFilter('')} ariaLabel="Clear comment filter" />
-              )}
+              {commentFilter && <ClearFilterButton onClick={() => setCommentFilter('')} ariaLabel="Clear comment filter" />}
             </th>
             <th></th>
             <th className="position-relative">
@@ -199,7 +198,7 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
             <tr key={key.product_key}>
               <td>{highlightMatch(key.product_name || 'Unknown Product', productNameFilter)}</td>
               <td style={{ whiteSpace: 'nowrap', fontFamily: 'monospace' }}>
-                {key.product_key && key.product_key.length > 50 
+                {key.product_key && key.product_key.length > 50
                   ? renderProductKey(key.product_key)
                   : highlightMatch(key.product_key || '', productKeyFilter)}
               </td>

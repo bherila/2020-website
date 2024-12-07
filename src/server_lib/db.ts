@@ -14,10 +14,12 @@ const db = mysql({
 
 export async function sql(strings: TemplateStringsArray, ...values: any[]) {
   try {
-    const query = strings.reduce((prev, curr, i) => 
-      `${prev}${curr}${values[i] !== undefined ? '?' : ''}`, '')
-    
-    const results = await db.query(query, values.filter(v => v !== undefined))
+    const query = strings.reduce((prev, curr, i) => `${prev}${curr}${values[i] !== undefined ? '?' : ''}`, '')
+
+    const results = await db.query(
+      query,
+      values.filter((v) => v !== undefined),
+    )
     return results
   } catch (error) {
     console.error('Database query error:', error)
