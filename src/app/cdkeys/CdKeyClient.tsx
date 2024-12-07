@@ -3,7 +3,8 @@
 import { useState, useMemo } from 'react'
 import { z } from 'zod'
 import productKeySchema from '@/lib/productKeySchema'
-import { Button, Table, Badge } from 'react-bootstrap'
+import { Button, Table, Badge, Form } from 'react-bootstrap'
+import { ClearFilterButton } from '@/lib/ClearFilterButton'
 import { CDKey, EditCDKeyFormData } from './types'
 import { updateCDKey } from './actions'
 import CdKeyEditModal from './CdKeyEditModal'
@@ -15,6 +16,8 @@ type CdKeyClientProps = {
   initialRows: KeyArray
 }
 
+
+
 export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
   const [rows, setRows] = useState<KeyArray>(
     initialRows.sort((a, b) => (a.product_name || 'Unknown Product').localeCompare(b.product_name || 'Unknown Product')),
@@ -23,30 +26,49 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
   const [showEditModal, setShowEditModal] = useState(false)
   const [showKeyModal, setShowKeyModal] = useState(false)
   const [selectedProductKey, setSelectedProductKey] = useState<string | null>(null)
+  const [sortField, setSortField] = useState<keyof CDKey>('product_name')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  const [productNameFilter, setProductNameFilter] = useState('')
+  const [productKeyFilter, setProductKeyFilter] = useState('')
+  const [commentFilter, setCommentFilter] = useState('')
+  const [computerNameFilter, setComputerNameFilter] = useState('')
+
+  const handleSort = (field: keyof CDKey) => {
+    if (field === sortField) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortDirection('asc')
+    }
+  }
 
   const processedRows = useMemo(() => {
-    const sortedRows = [...rows].sort((a, b) =>
-      (a.product_name || 'Unknown Product').localeCompare(b.product_name || 'Unknown Product'),
+    // Apply filters
+    let filteredRows = rows.filter(row => 
+      (!productNameFilter || (row.product_name || '').toLowerCase().includes(productNameFilter.toLowerCase())) &&
+      (!productKeyFilter || (row.product_key || '').toLowerCase().includes(productKeyFilter.toLowerCase())) &&
+      (!commentFilter || (row.comment || '').toLowerCase().includes(commentFilter.toLowerCase())) &&
+      (!computerNameFilter || (row.computer_name || '').toLowerCase().includes(computerNameFilter.toLowerCase()))
     )
 
-    const groupedRows: Array<{
-      productName: string
-      rows: KeyArray
-    }> = []
-
-    sortedRows.forEach((row) => {
-      const productName = row.product_name || 'Unknown Product'
-      const lastGroup = groupedRows[groupedRows.length - 1]
-
-      if (!lastGroup || lastGroup.productName !== productName) {
-        groupedRows.push({ productName, rows: [row] })
-      } else {
-        lastGroup.rows.push(row)
+    // Apply sorting
+    return filteredRows.sort((a, b) => {
+      const aVal = a[sortField]
+      const bVal = b[sortField]
+      const direction = sortDirection === 'asc' ? 1 : -1
+      
+      if (aVal == null) return 1
+      if (bVal == null) return -1
+      
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        return aVal.localeCompare(bVal) * direction
       }
+      if (aVal instanceof Date && bVal instanceof Date) {
+        return (aVal.getTime() - bVal.getTime()) * direction
+      }
+      return 0
     })
-
-    return groupedRows
-  }, [rows])
+  }, [rows, sortField, sortDirection, productNameFilter, productKeyFilter, commentFilter, computerNameFilter])
 
   const handleSave = async (formData: EditCDKeyFormData) => {
     if (!selectedKey) return
@@ -60,11 +82,7 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
     if (result.success && result.updatedRow) {
       const parsedRow = productKeySchema.parse(result.updatedRow)
       const updatedRows = rows.map((oldRow) => (oldRow.id === parsedRow.id ? parsedRow : oldRow))
-      setRows(
-        updatedRows.sort((a, b) =>
-          (a.product_name || 'Unknown Product').localeCompare(b.product_name || 'Unknown Product'),
-        ),
-      )
+      setRows(updatedRows)
     } else {
       alert('Failed to update CD key')
     }
@@ -73,6 +91,19 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
   const handleViewFullKey = (key: string) => {
     setSelectedProductKey(key)
     setShowKeyModal(true)
+  }
+
+  const highlightMatch = (text: string, filter: string) => {
+    if (!filter) return text
+    const index = text.toLowerCase().indexOf(filter.toLowerCase())
+    if (index === -1) return text
+    return (
+      <>
+        {text.slice(0, index)}
+        <span className="bg-warning">{text.slice(index, index + filter.length)}</span>
+        {text.slice(index + filter.length)}
+      </>
+    )
   }
 
   const renderProductKey = (key: string | null | undefined) => {
@@ -95,45 +126,109 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
       <Table size="sm" striped>
         <thead>
           <tr>
-            <th>Product Name</th>
-            <th>Product Key</th>
-            <th>Comment</th>
-            <th>Used On</th>
-            <th>Computer Name</th>
+            <th onClick={() => handleSort('product_name')} style={{ cursor: 'pointer' }}>
+              Product Name {sortField === 'product_name' && (sortDirection === 'asc' ? '↑' : '↓')}
+            </th>
+            <th onClick={() => handleSort('product_key')} style={{ cursor: 'pointer' }}>
+              Product Key {sortField === 'product_key' && (sortDirection === 'asc' ? '↑' : '↓')}
+            </th>
+            <th onClick={() => handleSort('comment')} style={{ cursor: 'pointer' }}>
+              Comment {sortField === 'comment' && (sortDirection === 'asc' ? '↑' : '↓')}
+            </th>
+            <th onClick={() => handleSort('used_on')} style={{ cursor: 'pointer' }}>
+              Used On {sortField === 'used_on' && (sortDirection === 'asc' ? '↑' : '↓')}
+            </th>
+            <th onClick={() => handleSort('computer_name')} style={{ cursor: 'pointer' }}>
+              Computer Name {sortField === 'computer_name' && (sortDirection === 'asc' ? '↑' : '↓')}
+            </th>
             <th>Actions</th>
+          </tr>
+          <tr>
+            <th className="position-relative">
+              <Form.Control
+                size="sm"
+                type="text"
+                placeholder="Filter product name..."
+                value={productNameFilter}
+                onChange={(e) => setProductNameFilter(e.target.value)}
+              />
+              {productNameFilter && (
+                <ClearFilterButton onClick={() => setProductNameFilter('')} ariaLabel="Clear product name filter" />
+              )}
+            </th>
+            <th className="position-relative">
+              <Form.Control
+                size="sm"
+                type="text"
+                placeholder="Filter product key..."
+                value={productKeyFilter}
+                onChange={(e) => setProductKeyFilter(e.target.value)}
+              />
+              {productKeyFilter && (
+                <ClearFilterButton onClick={() => setProductKeyFilter('')} ariaLabel="Clear product key filter" />
+              )}
+            </th>
+            <th className="position-relative">
+              <Form.Control
+                size="sm"
+                type="text"
+                placeholder="Filter comment..."
+                value={commentFilter}
+                onChange={(e) => setCommentFilter(e.target.value)}
+              />
+              {commentFilter && (
+                <ClearFilterButton onClick={() => setCommentFilter('')} ariaLabel="Clear comment filter" />
+              )}
+            </th>
+            <th></th>
+            <th className="position-relative">
+              <Form.Control
+                size="sm"
+                type="text"
+                placeholder="Filter computer name..."
+                value={computerNameFilter}
+                onChange={(e) => setComputerNameFilter(e.target.value)}
+              />
+              {computerNameFilter && (
+                <ClearFilterButton onClick={() => setComputerNameFilter('')} ariaLabel="Clear computer name filter" />
+              )}
+            </th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
-          {processedRows.map(({ productName, rows: groupRows }) =>
-            groupRows.map((key, index) => (
-              <tr key={key.product_key}>
-                {index === 0 && <td rowSpan={groupRows.length}>{productName}</td>}
-                <td style={{ whiteSpace: 'nowrap', fontFamily: 'monospace' }}>{renderProductKey(key.product_key)}</td>
-                <td>
-                  {key.comment}
-                  {key.product_id && (
-                    <Badge bg="secondary" className="ms-2">
-                      ID: {key.product_id}
-                    </Badge>
-                  )}
-                </td>
-                <td style={{ whiteSpace: 'nowrap' }}>{key.used_on?.toISOString()?.slice(0, 10)}</td>
-                <td>{key.computer_name}</td>
-                <td>
-                  <Button
-                    size="sm"
-                    variant="outline-primary"
-                    onClick={() => {
-                      setSelectedKey(key)
-                      setShowEditModal(true)
-                    }}
-                  >
-                    Edit
-                  </Button>
-                </td>
-              </tr>
-            )),
-          )}
+          {processedRows.map((key) => (
+            <tr key={key.product_key}>
+              <td>{highlightMatch(key.product_name || 'Unknown Product', productNameFilter)}</td>
+              <td style={{ whiteSpace: 'nowrap', fontFamily: 'monospace' }}>
+                {key.product_key && key.product_key.length > 50 
+                  ? renderProductKey(key.product_key)
+                  : highlightMatch(key.product_key || '', productKeyFilter)}
+              </td>
+              <td>
+                {key.comment}
+                {key.product_id && (
+                  <Badge bg="secondary" className="ms-2">
+                    ID: {key.product_id}
+                  </Badge>
+                )}
+              </td>
+              <td style={{ whiteSpace: 'nowrap' }}>{key.used_on?.toISOString()?.slice(0, 10)}</td>
+              <td>{key.computer_name}</td>
+              <td>
+                <Button
+                  size="sm"
+                  variant="outline-primary"
+                  onClick={() => {
+                    setSelectedKey(key)
+                    setShowEditModal(true)
+                  }}
+                >
+                  Edit
+                </Button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </Table>
 

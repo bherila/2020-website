@@ -21,6 +21,14 @@
   - Support column sorting with visual indicators
   - Include real-time filtering when needed
   - Keep filter UI in table header
+  - Extract reusable filter/sort components to lib/
+  - Follow TransactionsTable.tsx as reference implementation
+
+## Component Organization
+
+- Keep reusable UI components in lib/ directory
+- Prefer small, focused components with single responsibility
+- Extract commonly used patterns into shared components
 - Navigation should:
   - Include breadcrumbs for hierarchy
   - Use tabs for related views
