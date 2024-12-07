@@ -22,6 +22,7 @@ export default async function ImportXmlPage() {
           <MainTitle>Import XML</MainTitle>
           <CdKeysTabBar />
           <div className="pt-3">
+            <p>This page takes a exported XML file of product keys from MSDN, and imports them into the database.</p>
             <ProductKeyUploader uploadAction={uploadProductKeys} />
           </div>
         </Col>
