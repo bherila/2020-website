@@ -57,10 +57,12 @@ export default function SignInForm(props: any) {
       <Row>
         <Col xs={xs}></Col>
         <Col xs={12 - xs}>
-          <Button style={{ marginRight: '1rem' }} variant="primary" type="submit" aria-label="Sign in" aria-live="polite">
+          <Button variant="primary" type="submit" aria-label="Sign in" aria-live="polite">
             Sign in
           </Button>
-          <Link href="reset-password">Forgot password?</Link>
+          <div className="mt-3">
+            <Link href="/auth/reset-password">Forgot password?</Link>
+          </div>
         </Col>
       </Row>
     </Container>
