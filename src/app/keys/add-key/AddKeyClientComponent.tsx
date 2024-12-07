@@ -2,33 +2,26 @@
 
 import React, { useState } from 'react'
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap'
-import Creatable from 'react-select/creatable'
-import { ActionMeta, SingleValue } from 'react-select'
+import { Typeahead } from 'react-bootstrap-typeahead'
+import 'react-bootstrap-typeahead/css/Typeahead.css'
 
 type AddProductKeyProps = {
   addProductKey: (formData: FormData) => Promise<void>
   productNames: string[]
 }
 
-type ProductNameOption = {
-  label: string
-  value: string
-}
-
 export default function AddKeyClientComponent({ addProductKey, productNames }: AddProductKeyProps) {
   const [validated, setValidated] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [selectedProductName, setSelectedProductName] = useState<string | null>(null)
+  const [selectedProductName, setSelectedProductName] = useState<string[]>([])
 
-  // Convert product names to options for react-select
-  const productNameOptions: ProductNameOption[] = productNames.map((name) => ({
-    label: name,
-    value: name,
-  }))
-
-  const handleProductNameChange = (newValue: SingleValue<ProductNameOption>, actionMeta: ActionMeta<ProductNameOption>) => {
-    setSelectedProductName(newValue ? newValue.value : null)
+  const handleProductNameChange = (selected: any[]) => {
+    // If it's a new option, take the first item, otherwise use the selected value
+    const newProductName = selected.length > 0 
+      ? (selected[0] as { label: string }).label || selected[0] 
+      : []
+    setSelectedProductName(newProductName ? [newProductName] : [])
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -39,24 +32,26 @@ export default function AddKeyClientComponent({ addProductKey, productNames }: A
     setError(null)
     setValidated(false)
 
-    if (form.checkValidity() === false || !selectedProductName) {
+    if (form.checkValidity() === false || selectedProductName.length === 0) {
       event.stopPropagation()
       setValidated(true)
       return
     }
 
     const formData = new FormData(form)
-    formData.set('productName', selectedProductName)
-
+    formData.set('productName', selectedProductName[0])
+    
     try {
       // Set submitting state to prevent multiple submissions
       setIsSubmitting(true)
-
+      
       await addProductKey(formData)
     } catch (error) {
       // Handle and display error
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
-
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'An unexpected error occurred'
+      
       setError(errorMessage)
       console.error('Error adding product key:', error)
     } finally {
@@ -74,21 +69,24 @@ export default function AddKeyClientComponent({ addProductKey, productNames }: A
               {error}
             </Alert>
           )}
-
+          
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="productName">
               <Form.Label>Product Name</Form.Label>
-              <Creatable
-                name="productName"
-                options={productNameOptions}
+              <Typeahead
+                id="product-name-typeahead"
+                labelKey="name"
                 onChange={handleProductNameChange}
-                isDisabled={isSubmitting}
+                options={productNames}
                 placeholder="Select or enter product name"
-                noOptionsMessage={() => 'No existing product names'}
-                formatCreateLabel={(inputValue) => `Create "${inputValue}"`}
-                required
+                selected={selectedProductName}
+                allowNew
+                newSelectionPrefix="Create new product: "
+                disabled={isSubmitting}
               />
-              {!selectedProductName && validated && <div className="text-danger small">Please provide a product name.</div>}
+              {selectedProductName.length === 0 && validated && (
+                <div className="text-danger small">Please provide a product name.</div>
+              )}
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="productKey">
