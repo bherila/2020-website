@@ -1,8 +1,17 @@
 import 'server-only'
 import { headers } from 'next/headers'
-import { sessionType } from '@/lib/sessionSchema'
+import { sessionSchema, sessionType } from '@/lib/sessionSchema'
 
-export default async function getServerSession() {
+export default async function getServerSession(): Promise<sessionType> {
   const headersList = await headers()
-  return JSON.parse(headersList.get('x-session-data') || '{uid: 0}') as sessionType
+  const sessionData = headersList.get('x-session-data') || '{}'
+
+  try {
+    const parsedSession = JSON.parse(sessionData)
+    const validatedSession = sessionSchema.parse(parsedSession)
+    return validatedSession
+  } catch {
+    // Return default session if parsing or validation fails
+    return { uid: 0 }
+  }
 }
