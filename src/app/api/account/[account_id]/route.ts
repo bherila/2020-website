@@ -25,12 +25,14 @@ async function getTheAccount(context: { params: Promise<{ account_id: string }> 
 export async function GET(request: NextRequest, context: { params: Promise<{ account_id: string }> }) {
   try {
     const theAccount = await getTheAccount(context)
-    const rows: AccountSpend[] = await db.query(
-      `select *
-       from account_spend
-       where account_id = ?`,
-      [theAccount.acct_id],
-    )
+    const url = new URL(request.url)
+    const includeDeleted = url.searchParams.get('includeDeleted') === 'true'
+
+    const query = includeDeleted
+      ? `select * from account_spend where account_id = ? and when_deleted is not null`
+      : `select * from account_spend where account_id = ? and when_deleted is null`
+
+    const rows: AccountSpend[] = await db.query(query, [theAccount.acct_id])
     return NextResponse.json(rows)
   } catch (e) {
     return NextResponse.json({ error: e?.toString() }, { status: 400 })
@@ -61,6 +63,30 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ac
       [rows],
     )
     return await GET(request, context)
+  } catch (e) {
+    return NextResponse.json({ error: e?.toString() }, { status: 400 })
+  } finally {
+    await db.end()
+  }
+}
+
+export async function DELETE(request: NextRequest, context: { params: Promise<{ account_id: string }> }) {
+  try {
+    const theAccount = await getTheAccount(context)
+    const { spend_id } = await request.json()
+
+    if (!spend_id) {
+      return NextResponse.json({ error: 'Transaction ID is required' }, { status: 400 })
+    }
+
+    await db.query(
+      `update account_spend 
+       set when_deleted = NOW() 
+       where spend_id = ? and account_id = ? and when_deleted is null`,
+      [spend_id, theAccount.acct_id],
+    )
+
+    return NextResponse.json({ success: true, message: 'Transaction marked as deleted' })
   } catch (e) {
     return NextResponse.json({ error: e?.toString() }, { status: 400 })
   } finally {

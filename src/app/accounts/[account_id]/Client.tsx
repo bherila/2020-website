@@ -21,6 +21,23 @@ export default function AccountClient({ id }: { id: string }) {
     })
   }, [id])
 
+  const handleDeleteTransaction = async (spendId: string) => {
+    try {
+      // Optimistic update
+      const updatedData = data?.filter((transaction) => transaction.spend_id?.toString() !== spendId) || []
+      setData(updatedData)
+
+      // Perform server-side deletion
+      await fetchWrapper.delete(`/api/account/${id}/`, { spend_id: spendId })
+    } catch (error) {
+      // Revert optimistic update on error
+      const refreshedData = await fetchWrapper.get(`/api/account/${id}/`)
+      setData(refreshedData)
+
+      console.error('Delete transaction error:', error)
+    }
+  }
+
   return (
     <Container fluid>
       <Row>
@@ -37,7 +54,7 @@ export default function AccountClient({ id }: { id: string }) {
               </Spinner>
             </div>
           ) : (
-            <TransactionsTable data={data} />
+            <TransactionsTable data={data} onDeleteTransaction={handleDeleteTransaction} />
           )}
         </Col>
         <Col xs={4}>xx</Col>

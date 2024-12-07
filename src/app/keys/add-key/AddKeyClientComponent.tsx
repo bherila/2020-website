@@ -18,9 +18,7 @@ export default function AddKeyClientComponent({ addProductKey, productNames }: A
 
   const handleProductNameChange = (selected: any[]) => {
     // If it's a new option, take the first item, otherwise use the selected value
-    const newProductName = selected.length > 0 
-      ? (selected[0] as { label: string }).label || selected[0] 
-      : []
+    const newProductName = selected.length > 0 ? (selected[0] as { label: string }).label || selected[0] : []
     setSelectedProductName(newProductName ? [newProductName] : [])
   }
 
@@ -40,18 +38,16 @@ export default function AddKeyClientComponent({ addProductKey, productNames }: A
 
     const formData = new FormData(form)
     formData.set('productName', selectedProductName[0])
-    
+
     try {
       // Set submitting state to prevent multiple submissions
       setIsSubmitting(true)
-      
+
       await addProductKey(formData)
     } catch (error) {
       // Handle and display error
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'An unexpected error occurred'
-      
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
+
       setError(errorMessage)
       console.error('Error adding product key:', error)
     } finally {
@@ -69,7 +65,7 @@ export default function AddKeyClientComponent({ addProductKey, productNames }: A
               {error}
             </Alert>
           )}
-          
+
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="productName">
               <Form.Label>Product Name</Form.Label>

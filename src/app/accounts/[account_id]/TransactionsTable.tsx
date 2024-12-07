@@ -3,11 +3,12 @@ import Table from 'react-bootstrap/Table'
 import { AccountSpend } from '@/app/api/account/model'
 import { useState } from 'react'
 import Form from 'react-bootstrap/Form'
-import { X } from 'react-bootstrap-icons'
+import { X, Trash } from 'react-bootstrap-icons'
 import currency from 'currency.js'
 
 interface Props {
   data: AccountSpend[]
+  onDeleteTransaction?: (transactionId: string) => Promise<void>
 }
 
 // Extracted reusable clear button component
@@ -22,7 +23,7 @@ const ClearFilterButton = ({ onClick, ariaLabel }: { onClick: () => void; ariaLa
   </button>
 )
 
-export default function TransactionsTable({ data }: Props) {
+export default function TransactionsTable({ data, onDeleteTransaction }: Props) {
   const [sortField, setSortField] = useState<keyof AccountSpend>('spend_date')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [descriptionFilter, setDescriptionFilter] = useState('')
@@ -71,6 +72,11 @@ export default function TransactionsTable({ data }: Props) {
           <th onClick={() => handleSort('spend_category')} style={{ cursor: 'pointer' }}>
             Category {sortField === 'spend_category' && (sortDirection === 'asc' ? '↑' : '↓')}
           </th>
+          {onDeleteTransaction && (
+            <th style={{ textAlign: 'center' }}>
+              <Trash size={16} />
+            </th>
+          )}
         </tr>
         <tr>
           <th></th>
@@ -99,6 +105,7 @@ export default function TransactionsTable({ data }: Props) {
               <ClearFilterButton onClick={() => setCategoryFilter('')} ariaLabel="Clear category filter" />
             )}
           </th>
+          {onDeleteTransaction && <th></th>}
         </tr>
       </thead>
       <tbody>
@@ -121,6 +128,17 @@ export default function TransactionsTable({ data }: Props) {
             </td>
             <td style={{ textAlign: 'right' }}>{currency(row.spend_amount).format()}</td>
             <td>{row.spend_category ?? 'uncategorized'}</td>
+            {onDeleteTransaction && (
+              <td style={{ textAlign: 'center' }}>
+                <button
+                  onClick={() => onDeleteTransaction(row.spend_id?.toString() || '')}
+                  className="btn btn-link p-0"
+                  aria-label="Delete transaction"
+                >
+                  <Trash size={16} />
+                </button>
+              </td>
+            )}
           </tr>
         ))}
       </tbody>
@@ -133,6 +151,7 @@ export default function TransactionsTable({ data }: Props) {
           <td style={{ textAlign: 'right' }}>
             <strong>{totalAmount.format()}</strong>
           </td>
+          <td></td>
           <td></td>
         </tr>
       </tfoot>

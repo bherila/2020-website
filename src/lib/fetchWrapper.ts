@@ -32,9 +32,13 @@ function put(url: string, body: any) {
 }
 
 // prefixed with underscored because delete is a reserved word in javascript
-function _delete(url: string) {
+function _delete(url: string, body: any) {
   const requestOptions: RequestInit = {
     method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
   }
   return fetch(url, requestOptions).then(handleResponse)
 }
