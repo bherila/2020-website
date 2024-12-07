@@ -4,6 +4,7 @@ import { AccountSpend } from '@/app/api/account/model'
 import { useState } from 'react'
 import Form from 'react-bootstrap/Form'
 import { X } from 'react-bootstrap-icons'
+import currency from 'currency.js'
 
 interface Props {
   data: AccountSpend[]
@@ -51,6 +52,9 @@ export default function TransactionsTable({ data }: Props) {
     return aVal < bVal ? -direction : direction
   })
 
+  // Calculate total amount for filtered rows using currency.js
+  const totalAmount = sortedData.reduce((sum, row) => sum.add(currency(row.spend_amount || 0)), currency(0))
+
   return (
     <Table size="sm" bordered striped>
       <thead>
@@ -61,7 +65,7 @@ export default function TransactionsTable({ data }: Props) {
           <th onClick={() => handleSort('spend_description')} style={{ cursor: 'pointer' }}>
             Description {sortField === 'spend_description' && (sortDirection === 'asc' ? '↑' : '↓')}
           </th>
-          <th onClick={() => handleSort('spend_amount')} style={{ cursor: 'pointer' }}>
+          <th onClick={() => handleSort('spend_amount')} style={{ cursor: 'pointer', textAlign: 'right' }}>
             Amount {sortField === 'spend_amount' && (sortDirection === 'asc' ? '↑' : '↓')}
           </th>
           <th onClick={() => handleSort('spend_category')} style={{ cursor: 'pointer' }}>
@@ -100,21 +104,38 @@ export default function TransactionsTable({ data }: Props) {
       <tbody>
         {sortedData.map((row) => (
           <tr key={row.spend_id}>
-            <td style={{ fontFamily: 'Atkinson Hyperlegible, monospace', width: '120px' }}>{row.spend_date?.slice(0, 10)}</td>
-            <td onClick={() => {
-              if (descriptionFilter === row.spend_description) {
-                setDescriptionFilter('')
-              } else {
-                setDescriptionFilter(row.spend_description || '')
-              }
-            }} style={{ cursor: 'pointer' }}>
+            <td style={{ fontFamily: 'Atkinson Hyperlegible, monospace', width: '120px' }}>
+              {row.spend_date?.slice(0, 10)}
+            </td>
+            <td
+              onClick={() => {
+                if (descriptionFilter === row.spend_description) {
+                  setDescriptionFilter('')
+                } else {
+                  setDescriptionFilter(row.spend_description || '')
+                }
+              }}
+              style={{ cursor: 'pointer' }}
+            >
               {row.spend_description}
             </td>
-            <td>{row.spend_amount}</td>
+            <td style={{ textAlign: 'right' }}>{currency(row.spend_amount).format()}</td>
             <td>{row.spend_category ?? 'uncategorized'}</td>
           </tr>
         ))}
       </tbody>
+      <tfoot>
+        <tr>
+          <td></td>
+          <td>
+            <strong>Total</strong>
+          </td>
+          <td style={{ textAlign: 'right' }}>
+            <strong>{totalAmount.format()}</strong>
+          </td>
+          <td></td>
+        </tr>
+      </tfoot>
     </Table>
   )
 }
