@@ -16,8 +16,6 @@ type CdKeyClientProps = {
   initialRows: KeyArray
 }
 
-
-
 export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
   const [rows, setRows] = useState<KeyArray>(
     initialRows.sort((a, b) => (a.product_name || 'Unknown Product').localeCompare(b.product_name || 'Unknown Product')),
@@ -130,7 +128,7 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
               Product Name {sortField === 'product_name' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
             <th onClick={() => handleSort('product_key')} style={{ cursor: 'pointer' }}>
-              Product Key {sortField === 'product_key' && (sortDirection === 'asc' ? '↑' : '↓')}
+              License Key {sortField === 'product_key' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
             <th onClick={() => handleSort('comment')} style={{ cursor: 'pointer' }}>
               Comment {sortField === 'comment' && (sortDirection === 'asc' ? '↑' : '↓')}
