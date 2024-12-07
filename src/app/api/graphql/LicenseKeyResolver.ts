@@ -1,9 +1,9 @@
 import { Ctx, Mutation, Query, Resolver } from 'type-graphql'
-import { ProductKeyType } from './ProductKeyType'
+import { LicenseKeyType } from './LicenseKeyType'
 
-@Resolver(ProductKeyType)
-export class ProductKeyResolver {
-  @Query((returns) => [ProductKeyType], { name: 'cd_key_list' })
+@Resolver(LicenseKeyType)
+export class LicenseKeyResolver {
+  @Query((returns) => [LicenseKeyType], { name: 'license_key_list' })
   async getProductKeys(@Ctx() vc: any) {
     const db = (await import('@/server_lib/db')).default
     const rows = (await db.query('SELECT * FROM product_keys')) as any[]
@@ -22,8 +22,8 @@ export class ProductKeyResolver {
     }))
   }
 
-  @Mutation((returns) => ProductKeyType, { name: 'cd_key_create' })
-  addProductKey(newProductKey: ProductKeyType, @Ctx() vc: any): ProductKeyType {
+  @Mutation((returns) => LicenseKeyType, { name: 'license_key_create' })
+  addProductKey(newProductKey: LicenseKeyType, @Ctx() vc: any): LicenseKeyType {
     return newProductKey
   }
 }

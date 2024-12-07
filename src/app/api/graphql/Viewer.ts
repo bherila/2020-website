@@ -1,7 +1,7 @@
 import { Field, ID, ObjectType } from 'type-graphql'
 
 @ObjectType()
-export class UserGraphType {
+export default class ViewerType {
   constructor(uid: string) {
     this.uid = uid
   }

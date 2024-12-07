@@ -3,17 +3,25 @@ import { ApolloServer } from '@apollo/server'
 import { startServerAndCreateNextHandler } from '@as-integrations/next'
 import { NextRequest } from 'next/server'
 import path from 'path'
-import { ProductKeyResolver } from '@/app/api/graphql/cdkeys'
+import { LicenseKeyResolver } from '@/app/api/graphql/LicenseKeyResolver'
 import { buildSchemaSync } from 'type-graphql'
 import { TimeseriesDocumentResolver, TimeseriesUserResolver } from '@/app/api/graphql/TimeseriesGraphql'
 import { getSession } from '@/server_lib/session'
 import ViewerContext from './ViewerContext'
 import ViewerRootResolver from './ViewerRootResolver'
+import { RootLabResultResolver, ViewerLabResultResolver } from './LabResultResolver'
 
 const rootPath = process.cwd()
 
 const schema = buildSchemaSync({
-  resolvers: [ProductKeyResolver, TimeseriesDocumentResolver, TimeseriesUserResolver, ViewerRootResolver],
+  resolvers: [
+    LicenseKeyResolver,
+    RootLabResultResolver,
+    TimeseriesDocumentResolver,
+    TimeseriesUserResolver,
+    ViewerLabResultResolver,
+    ViewerRootResolver,
+  ],
   emitSchemaFile: {
     path: path.resolve(rootPath, 'schema.gql'),
     sortedSchema: false,
