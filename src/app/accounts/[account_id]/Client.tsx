@@ -3,51 +3,33 @@ import { useEffect, useState } from 'react'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Table from 'react-bootstrap/Table'
-import MainTitle from '@/components/main-title'
-import ImportTransactions from '@/app/accounts/[account_id]/ImportTransactions'
 import { fetchWrapper } from '@/lib/fetchWrapper'
-import { AccountSpend, AccountSpendSchema } from '@/app/api/account/model'
+import { AccountSpend } from '@/app/api/account/model'
+import AccountNavigation from './AccountNavigation'
+import TransactionsTable from './TransactionsTable'
 
-export default function AccountClient(props: { id: string }) {
+export default function AccountClient({ id }: { id: string }) {
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState<AccountSpend[]>([])
+
   useEffect(() => {
     setLoading(true)
-    fetchWrapper.get(`/api/account/${props.id}/`).then((res) => {
+    fetchWrapper.get(`/api/account/${id}/`).then((res) => {
       setData(res)
       setLoading(false)
     })
-  }, [props.id])
+  }, [id])
+
   return (
     <Container fluid>
       <Row>
         <Col xs={12}>
-          <MainTitle>Account</MainTitle>
+          <AccountNavigation accountId={id} activeTab="transactions" />
         </Col>
       </Row>
       <Row>
         <Col xs={8}>
-          <Table size="sm" bordered striped>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Description</th>
-                <th>Amount</th>
-                <th>Category</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((row) => (
-                <tr key={row.spend_id}>
-                  <td>{row.spend_date?.slice(0, 10)}</td>
-                  <td>{row.spend_description}</td>
-                  <td>{row.spend_amount}</td>
-                  <td>{row.spend_category ?? 'uncategorized'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+          <TransactionsTable data={data} />
         </Col>
         <Col xs={4}>
           <div>Add filters:</div>
@@ -55,17 +37,6 @@ export default function AccountClient(props: { id: string }) {
             <p>With everything in view:</p>
             <p>Set category:</p>
           </div>
-          <h3>Import</h3>
-          <p>Paste as tab separated (like from Excel or Google Sheet)</p>
-          <ImportTransactions
-            onImportClick={(data) => {
-              setLoading(true)
-              fetchWrapper.post(`/api/account/${props.id}/`, data).then((res) => {
-                setData(res)
-                setLoading(false)
-              })
-            }}
-          />
         </Col>
       </Row>
     </Container>

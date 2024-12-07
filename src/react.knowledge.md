@@ -14,3 +14,15 @@
 - Keep forms on dedicated pages instead of inline/modal forms for better UX and accessibility
 - Use simple, focused forms - one primary action per form
 
+## UI Patterns
+
+- Tables with interactive features should:
+  - Use shared components for consistency
+  - Support column sorting with visual indicators
+  - Include real-time filtering when needed
+  - Keep filter UI in table header
+- Navigation should:
+  - Include breadcrumbs for hierarchy
+  - Use tabs for related views
+  - Keep consistent placement across similar pages
+

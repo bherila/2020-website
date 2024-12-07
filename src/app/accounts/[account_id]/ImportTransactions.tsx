@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
 import Button from 'react-bootstrap/Button'
-import Table from 'react-bootstrap/Table'
 import currency from 'currency.js'
 import { z, ZodError } from 'zod'
 import { AccountSpend, AccountSpendSchema } from '@/app/api/account/model'
 import { parseDate } from '@/lib/DateHelper'
+import TransactionsTable from './TransactionsTable'
 
 export default function ImportTransactions(props: { onImportClick: (data: AccountSpend[]) => void }) {
   const [text, setText] = useState<string>('')
@@ -60,29 +60,7 @@ export default function ImportTransactions(props: { onImportClick: (data: Accoun
         Import {data?.length ?? 'nothing'}
       </Button>
 
-      {data && (
-        <Table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Description</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((r, i) => (
-              <tr key={i}>
-                <td>{r.spend_date}</td>
-                <td>
-                  <div>{r.spend_description}</div>
-                  {r.notes && <caption>{r.notes}</caption>}
-                </td>
-                <td>{r.spend_amount}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
+      {data && <TransactionsTable data={data} />}
     </div>
   )
 }

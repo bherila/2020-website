@@ -1,6 +1,6 @@
 import { Arg, Ctx, FieldResolver, ID, InputType, Mutation, Query, Resolver, Root } from 'type-graphql'
 import { Field, ObjectType } from 'type-graphql'
-import type { ViewerContext } from '@/app/api/graphql/ViewerContext'
+import type ViewerContext from '@/app/api/graphql/ViewerContext'
 import { UserGraphType } from '@/app/api/graphql/Viewer'
 
 @ObjectType()
