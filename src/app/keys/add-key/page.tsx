@@ -9,11 +9,16 @@ import Col from 'react-bootstrap/Col'
 import CdKeysTabBar from '@/app/keys/CdKeysTabBar'
 import AddKeyClientComponent from './AddKeyClientComponent'
 import addProductKey from './addProductKey'
+import { sql } from '@/server_lib/db'
 
 export default async function AddKeyPage() {
   if (!(await getSession())?.uid) {
     redirect(AuthRoutes.signIn)
   }
+
+  const productNames = ((await sql`select distinct product_name from product_keys`) as any[])
+    .map((row) => row.product_name)
+    .filter((r) => typeof r === 'string')
 
   return (
     <Container>
@@ -21,7 +26,7 @@ export default async function AddKeyPage() {
         <Col xs={12}>
           <MainTitle>Add License Key</MainTitle>
           <CdKeysTabBar />
-          <AddKeyClientComponent addProductKey={addProductKey} />
+          <AddKeyClientComponent addProductKey={addProductKey} productNames={productNames} />
         </Col>
       </Row>
     </Container>

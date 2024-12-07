@@ -2,15 +2,34 @@
 
 import React, { useState } from 'react'
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap'
+import Creatable from 'react-select/creatable'
+import { ActionMeta, SingleValue } from 'react-select'
 
 type AddProductKeyProps = {
   addProductKey: (formData: FormData) => Promise<void>
+  productNames: string[]
 }
 
-export default function AddKeyClientComponent({ addProductKey }: AddProductKeyProps) {
+type ProductNameOption = {
+  label: string
+  value: string
+}
+
+export default function AddKeyClientComponent({ addProductKey, productNames }: AddProductKeyProps) {
   const [validated, setValidated] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [selectedProductName, setSelectedProductName] = useState<string | null>(null)
+
+  // Convert product names to options for react-select
+  const productNameOptions: ProductNameOption[] = productNames.map((name) => ({
+    label: name,
+    value: name,
+  }))
+
+  const handleProductNameChange = (newValue: SingleValue<ProductNameOption>, actionMeta: ActionMeta<ProductNameOption>) => {
+    setSelectedProductName(newValue ? newValue.value : null)
+  }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -20,13 +39,14 @@ export default function AddKeyClientComponent({ addProductKey }: AddProductKeyPr
     setError(null)
     setValidated(false)
 
-    if (form.checkValidity() === false) {
+    if (form.checkValidity() === false || !selectedProductName) {
       event.stopPropagation()
       setValidated(true)
       return
     }
 
     const formData = new FormData(form)
+    formData.set('productName', selectedProductName)
 
     try {
       // Set submitting state to prevent multiple submissions
@@ -58,14 +78,17 @@ export default function AddKeyClientComponent({ addProductKey }: AddProductKeyPr
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="productName">
               <Form.Label>Product Name</Form.Label>
-              <Form.Control
-                type="text"
+              <Creatable
                 name="productName"
-                placeholder="Enter product name"
+                options={productNameOptions}
+                onChange={handleProductNameChange}
+                isDisabled={isSubmitting}
+                placeholder="Select or enter product name"
+                noOptionsMessage={() => 'No existing product names'}
+                formatCreateLabel={(inputValue) => `Create "${inputValue}"`}
                 required
-                disabled={isSubmitting}
               />
-              <Form.Control.Feedback type="invalid">Please provide a product name.</Form.Control.Feedback>
+              {!selectedProductName && validated && <div className="text-danger small">Please provide a product name.</div>}
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="productKey">
