@@ -25,10 +25,10 @@ export class ProductKeyType {
   comment?: string
 
   @Field({ name: 'used_on', nullable: true })
-  used_on?: string
+  used_on?: Date
 
   @Field({ name: 'claimed_date', nullable: true })
-  claimed_date?: string
+  claimed_date?: Date
 
   @Field({ name: 'key_type', nullable: true })
   key_type?: string
@@ -40,8 +40,22 @@ export class ProductKeyType {
 @Resolver(ProductKeyType)
 export class ProductKeyResolver {
   @Query((returns) => [ProductKeyType], { name: 'cd_key_list' })
-  getProductKeys(@Ctx() vc: any) {
-    return []
+  async getProductKeys(@Ctx() vc: any) {
+    const db = (await import('@/server_lib/db')).default
+    const rows = await db.query('SELECT * FROM product_keys') as any[]
+    return rows.map((row: any) => ({
+      id: row.id?.toString(),
+      uid: row.uid?.toString(),
+      product_id: row.product_id,
+      product_key: row.product_key,
+      product_name: row.product_name,
+      computer_name: row.computer_name,
+      comment: row.comment,
+      used_on: row.used_on ? new Date(row.used_on) : null,
+      claimed_date: row.claimed_date ? new Date(row.claimed_date) : null,
+      key_type: row.key_type,
+      key_retrieval_note: row.key_retrieval_note
+    }))
   }
 
   @Mutation((returns) => ProductKeyType, { name: 'cd_key_create' })

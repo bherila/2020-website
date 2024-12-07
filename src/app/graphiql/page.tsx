@@ -13,7 +13,7 @@ export default function GraphiQLPage() {
       },
       body: JSON.stringify(graphQLParams),
       cache: 'no-store',
-      credentials: 'same-origin',
+      credentials: 'include',
     })
     return data.json()
   }
