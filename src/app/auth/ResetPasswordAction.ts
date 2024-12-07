@@ -4,6 +4,7 @@ import { z } from 'zod'
 import db from '@/server_lib/db'
 import { saveSession } from '@/server_lib/session'
 import { redirect } from 'next/navigation'
+import { validateUserPassword } from './SigninAction'
 
 const ResetRequest = z.object({
   key: z.string(),
@@ -34,13 +35,16 @@ export async function ResetPasswordAction(formData: FormData) {
       [salt, password, salt, user.uid],
     )
 
-    // Log user in
-    await saveSession({
-      uid: user.uid,
-      email: user.email,
-    })
-
-    redirect('/my-account')
+    // Log user in using shared validation
+    const res = await validateUserPassword(user.email, password, salt)
+    
+    if (Array.isArray(res) && res.length > 0) {
+      await saveSession({
+        uid: user.uid,
+        email: user.email,
+      })
+      redirect('/my-account')
+    }
   } finally {
     await db.end()
   }

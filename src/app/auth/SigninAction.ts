@@ -10,28 +10,27 @@ const User = z.object({
   password: z.string(),
 })
 
+export async function validateUserPassword(email: string, password: string, salt?: number) {
+  const query = salt !== undefined
+    ? 'select uid, email, pw from users where email = ? and pw = SHA2(CONCAT(?, CAST(? as char)), 0)'
+    : 'select uid, email, pw, salt from users where email = ? and pw = SHA2(CONCAT(?, CAST(salt AS char)), 0) or pw = ?'
+  
+  const params = salt !== undefined
+    ? [email, password, salt]
+    : [email, password, password]
+
+  return await db.query(query, params)
+}
+
 export default async function SignInAction(formData: FormData) {
   try {
     const user = User.parse({
       email: formData.get('email'),
       password: formData.get('password'),
     })
-    const res = await db.query(
-      `select uid,
-              email,
-              pw,
-              ax_maxmin,
-              ax_homes,
-              ax_tax,
-              ax_evdb,
-              ax_spgp,
-              ax_phr
-       from users
-       where email = ?
-         and pw = SHA2(CONCAT(?, CAST(salt AS char)), 0)
-          or pw = ?`,
-      [user.email, user.password, user.password],
-    )
+
+    const res = await validateUserPassword(user.email, user.password)
+
     if (!Array.isArray(res) || res.length == 0) {
       // login failed
     } else {
@@ -60,10 +59,7 @@ export default async function SignInAction(formData: FormData) {
         ])
       }
 
-      // set the cookie
       await saveSession(dbObj)
-
-      // https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations#redirecting
       redirect('/')
     }
   } finally {

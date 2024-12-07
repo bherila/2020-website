@@ -3,6 +3,7 @@ import Container from '@/components/container'
 import Card from '@/components/card'
 import CardContent from '@/components/cardcontent'
 import ChangePasswordForm from './ChangePasswordForm'
+import PasskeyForm from './PasskeyForm'
 import getServerSession from '@/server_lib/getServerSession'
 import ChangePasswordAction from '@/app/auth/ChangePasswordAction'
 
@@ -28,6 +29,13 @@ export default async function MyAccountPage() {
         <CardContent>
           <h2>Change Password</h2>
           <ChangePasswordForm changePasswordAction={ChangePasswordAction} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent>
+          <h2>Passkey Authentication</h2>
+          <PasskeyForm />
         </CardContent>
       </Card>
     </Container>

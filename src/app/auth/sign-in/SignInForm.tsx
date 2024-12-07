@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { redirect } from 'next/navigation'
+import { startAuthentication } from '@simplewebauthn/browser'
 import Container from '@/components/container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -59,6 +60,30 @@ export default function SignInForm(props: any) {
         <Col xs={12 - xs}>
           <Button variant="primary" type="submit" aria-label="Sign in" aria-live="polite">
             Sign in
+          </Button>
+          <Button 
+            variant="secondary" 
+            className="ms-2"
+            onClick={async (e) => {
+              e.preventDefault()
+              try {
+                const optionsRes = await fetch('/api/auth/passkey/auth-options')
+                const options = await optionsRes.json()
+                const auth = await startAuthentication(options)
+                const verifyRes = await fetch('/api/auth/passkey/auth-verify', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(auth)
+                })
+                if (verifyRes.ok) {
+                  window.location.href = '/'
+                }
+              } catch (err) {
+                console.error(err)
+              }
+            }}
+          >
+            Sign in with passkey
           </Button>
           <div className="mt-3">
             <Link href="/auth/reset-password">Forgot password?</Link>
