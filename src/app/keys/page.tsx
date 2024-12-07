@@ -1,5 +1,5 @@
 import 'server-only'
-import CdKeyClient from '@/app/cdkeys/CdKeyClient'
+import CdKeyClient from '@/app/keys/CdKeyClient'
 import MainTitle from '@/components/main-title'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
@@ -10,7 +10,7 @@ import AuthRoutes from '@/app/auth/AuthRoutes'
 import db from '@/server_lib/db'
 import { z } from 'zod'
 import productKeySchema from '@/lib/productKeySchema'
-import CdKeysTabBar from '@/app/cdkeys/CdKeysTabBar'
+import CdKeysTabBar from '@/app/keys/CdKeysTabBar'
 
 export default async function CdKeyPage() {
   if (!(await getSession())?.uid) {

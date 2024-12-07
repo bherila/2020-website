@@ -10,19 +10,19 @@ export default function CdKeysTabBar() {
 
   const tabs = [
     {
-      href: '/cdkeys',
+      href: '/keys/',
       label: 'My Keys',
-      active: pathname.replace(/\/+$/, '') === '/cdkeys',
+      active: pathname.replace(/\/+$/, '') === '/keys',
     },
     {
-      href: '/cdkeys/import-xml',
+      href: '/keys/import-xml/',
       label: 'Import XML',
-      active: pathname.replace(/\/+$/, '') === '/cdkeys/import-xml',
+      active: pathname.replace(/\/+$/, '') === '/keys/import-xml',
     },
     {
-      href: '/cdkeys/add-key',
+      href: '/keys/add-key/',
       label: 'Add Key',
-      active: pathname.replace(/\/+$/, '') === '/cdkeys/add-key',
+      active: pathname.replace(/\/+$/, '') === '/keys/add-key',
     },
   ]
 

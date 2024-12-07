@@ -6,7 +6,7 @@ import MainTitle from '@/components/main-title'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import CdKeysTabBar from '@/app/cdkeys/CdKeysTabBar'
+import CdKeysTabBar from '@/app/keys/CdKeysTabBar'
 
 export default async function AddKeyPage() {
   if (!(await getSession())?.uid) {
