@@ -25,10 +25,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const root = document.documentElement
+    const updateTheme = () => {
+      if (theme === 'auto') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        root.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light')
+      } else {
+        root.setAttribute('data-bs-theme', theme)
+      }
+    }
+
+    updateTheme()
+
     if (theme === 'auto') {
-      root.removeAttribute('data-bs-theme')
-    } else {
-      root.setAttribute('data-bs-theme', theme)
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+      mediaQuery.addEventListener('change', updateTheme)
+      return () => mediaQuery.removeEventListener('change', updateTheme)
     }
   }, [theme])
 

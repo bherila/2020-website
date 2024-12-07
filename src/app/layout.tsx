@@ -23,8 +23,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 const theme = localStorage.getItem('theme');
                 if (theme === '"light"' || theme === '"dark"') {
                   document.documentElement.setAttribute('data-bs-theme', JSON.parse(theme));
-                } else if (!theme && window.matchMedia('(prefers-color-scheme: light)').matches) {
-                  document.documentElement.setAttribute('data-bs-theme', 'light');
+                } else {
+                  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
                 }
               } catch (e) {}
             `,
