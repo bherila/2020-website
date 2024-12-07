@@ -1,7 +1,12 @@
 'use client'
 
-import { GraphiQL } from 'graphiql'
+import dynamic from 'next/dynamic'
 import 'graphiql/graphiql.css'
+
+const GraphiQLComponent = dynamic(() => import('graphiql'), {
+  ssr: false,
+  loading: () => <div>Loading GraphiQL...</div>,
+})
 
 export default function GraphiQLPage() {
   const fetcher = async (graphQLParams: any) => {
@@ -20,7 +25,7 @@ export default function GraphiQLPage() {
 
   return (
     <div style={{ height: '100vh' }}>
-      <GraphiQL fetcher={fetcher} />
+      <GraphiQLComponent fetcher={fetcher} />
     </div>
   )
 }

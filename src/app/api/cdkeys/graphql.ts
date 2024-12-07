@@ -42,7 +42,7 @@ export class ProductKeyResolver {
   @Query((returns) => [ProductKeyType], { name: 'cd_key_list' })
   async getProductKeys(@Ctx() vc: any) {
     const db = (await import('@/server_lib/db')).default
-    const rows = await db.query('SELECT * FROM product_keys') as any[]
+    const rows = (await db.query('SELECT * FROM product_keys')) as any[]
     return rows.map((row: any) => ({
       id: row.id?.toString(),
       uid: row.uid?.toString(),
@@ -54,7 +54,7 @@ export class ProductKeyResolver {
       used_on: row.used_on ? new Date(row.used_on) : null,
       claimed_date: row.claimed_date ? new Date(row.claimed_date) : null,
       key_type: row.key_type,
-      key_retrieval_note: row.key_retrieval_note
+      key_retrieval_note: row.key_retrieval_note,
     }))
   }
 
