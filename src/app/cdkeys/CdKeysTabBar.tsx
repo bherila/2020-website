@@ -12,17 +12,17 @@ export default function CdKeysTabBar() {
     {
       href: '/cdkeys',
       label: 'My Keys',
-      active: pathname === '/cdkeys',
+      active: pathname.replace(/\/+$/, '') === '/cdkeys',
     },
     {
       href: '/cdkeys/import-xml',
       label: 'Import XML',
-      active: pathname === '/cdkeys/import-xml',
+      active: pathname.replace(/\/+$/, '') === '/cdkeys/import-xml',
     },
     {
       href: '/cdkeys/add-key',
       label: 'Add Key',
-      active: pathname === '/cdkeys/add-key',
+      active: pathname.replace(/\/+$/, '') === '/cdkeys/add-key',
     },
   ]
 
