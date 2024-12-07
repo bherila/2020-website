@@ -24,7 +24,7 @@ export default async function CdKeyPage() {
     <Container>
       <Row>
         <Col xs={12}>
-          <MainTitle>CDKeys</MainTitle>
+          <MainTitle>License Manager</MainTitle>
           <CdKeysTabBar />
           <CdKeyClient initialRows={parsedRows} />
         </Col>
