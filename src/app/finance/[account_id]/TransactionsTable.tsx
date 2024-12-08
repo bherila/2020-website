@@ -63,7 +63,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
   const totalAmount = sortedData.reduce((sum, row) => sum.add(currency(row.t_amt || 0)), currency(0))
 
   return (
-    <Table size="sm" bordered striped>
+    <Table size="sm" bordered striped style={{ fontSize: '90%' }}>
       <thead>
         <tr>
           <th onClick={() => handleSort('t_date')} style={{ cursor: 'pointer' }}>
