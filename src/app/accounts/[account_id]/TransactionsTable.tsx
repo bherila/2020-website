@@ -127,7 +127,18 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
               {row.spend_description}
             </td>
             <td style={{ textAlign: 'right' }}>{currency(row.spend_amount).format()}</td>
-            <td>{row.spend_category ?? 'uncategorized'}</td>
+            <td
+              onClick={() => {
+                if (categoryFilter === (row.spend_category || 'uncategorized')) {
+                  setCategoryFilter('')
+                } else {
+                  setCategoryFilter(row.spend_category || 'uncategorized')
+                }
+              }}
+              style={{ cursor: 'pointer' }}
+            >
+              {row.spend_category ?? 'uncategorized'}
+            </td>
             {onDeleteTransaction && (
               <td style={{ textAlign: 'center' }}>
                 <button
