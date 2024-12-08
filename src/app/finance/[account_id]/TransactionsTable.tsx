@@ -1,13 +1,13 @@
 'use client'
 import Table from 'react-bootstrap/Table'
-import { AccountSpend } from '@/app/api/finance/model'
 import { useState } from 'react'
 import Form from 'react-bootstrap/Form'
 import { X, Trash } from 'react-bootstrap-icons'
 import currency from 'currency.js'
+import { AccountLineItem } from '@/lib/AccountLineItem'
 
 interface Props {
-  data: AccountSpend[]
+  data: AccountLineItem[]
   onDeleteTransaction?: (transactionId: string) => Promise<void>
 }
 
@@ -24,12 +24,12 @@ const ClearFilterButton = ({ onClick, ariaLabel }: { onClick: () => void; ariaLa
 )
 
 export default function TransactionsTable({ data, onDeleteTransaction }: Props) {
-  const [sortField, setSortField] = useState<keyof AccountSpend>('spend_date')
+  const [sortField, setSortField] = useState<keyof AccountLineItem>('t_date')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [descriptionFilter, setDescriptionFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
 
-  const handleSort = (field: keyof AccountSpend) => {
+  const handleSort = (field: keyof AccountLineItem) => {
     if (field === sortField) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
     } else {
@@ -40,8 +40,8 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
 
   const filteredData = data.filter(
     (row) =>
-      (!descriptionFilter || row.spend_description?.toLowerCase().includes(descriptionFilter.toLowerCase())) &&
-      (!categoryFilter || (row.spend_category || 'uncategorized').toLowerCase().includes(categoryFilter.toLowerCase())),
+      (!descriptionFilter || row.t_description?.toLowerCase().includes(descriptionFilter.toLowerCase())) &&
+      (!categoryFilter || (row.t_schc_category || 'uncategorized').toLowerCase().includes(categoryFilter.toLowerCase())),
   )
 
   const sortedData = [...filteredData].sort((a, b) => {
@@ -54,23 +54,23 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
   })
 
   // Calculate total amount for filtered rows using currency.js
-  const totalAmount = sortedData.reduce((sum, row) => sum.add(currency(row.spend_amount || 0)), currency(0))
+  const totalAmount = sortedData.reduce((sum, row) => sum.add(currency(row.t_amt || 0)), currency(0))
 
   return (
     <Table size="sm" bordered striped>
       <thead>
         <tr>
-          <th onClick={() => handleSort('spend_date')} style={{ cursor: 'pointer' }}>
-            Date {sortField === 'spend_date' && (sortDirection === 'asc' ? '↑' : '↓')}
+          <th onClick={() => handleSort('t_date')} style={{ cursor: 'pointer' }}>
+            Date {sortField === 't_date' && (sortDirection === 'asc' ? '↑' : '↓')}
           </th>
-          <th onClick={() => handleSort('spend_description')} style={{ cursor: 'pointer' }}>
-            Description {sortField === 'spend_description' && (sortDirection === 'asc' ? '↑' : '↓')}
+          <th onClick={() => handleSort('t_description')} style={{ cursor: 'pointer' }}>
+            Description {sortField === 't_description' && (sortDirection === 'asc' ? '↑' : '↓')}
           </th>
-          <th onClick={() => handleSort('spend_amount')} style={{ cursor: 'pointer', textAlign: 'right' }}>
-            Amount {sortField === 'spend_amount' && (sortDirection === 'asc' ? '↑' : '↓')}
+          <th onClick={() => handleSort('t_amt')} style={{ cursor: 'pointer', textAlign: 'right' }}>
+            Amount {sortField === 't_amt' && (sortDirection === 'asc' ? '↑' : '↓')}
           </th>
-          <th onClick={() => handleSort('spend_category')} style={{ cursor: 'pointer' }}>
-            Category {sortField === 'spend_category' && (sortDirection === 'asc' ? '↑' : '↓')}
+          <th onClick={() => handleSort('t_schc_category')} style={{ cursor: 'pointer' }}>
+            Category {sortField === 't_schc_category' && (sortDirection === 'asc' ? '↑' : '↓')}
           </th>
           {onDeleteTransaction && (
             <th style={{ textAlign: 'center' }}>
@@ -109,40 +109,48 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
         </tr>
       </thead>
       <tbody>
-        {sortedData.map((row) => (
-          <tr key={row.spend_id}>
+        {sortedData.map((row, i) => (
+          <tr key={row.t_id + ':' + i}>
             <td style={{ fontFamily: 'Atkinson Hyperlegible, monospace', width: '120px' }}>
-              {row.spend_date?.slice(0, 10)}
+              {row.t_date?.toString()?.slice(0, 10)}
             </td>
             <td
               onClick={() => {
-                if (descriptionFilter === row.spend_description) {
+                if (descriptionFilter === row.t_description) {
                   setDescriptionFilter('')
                 } else {
-                  setDescriptionFilter(row.spend_description || '')
+                  setDescriptionFilter(row.t_description || '')
                 }
               }}
               style={{ cursor: 'pointer' }}
             >
-              {row.spend_description}
+              {row.t_description}
             </td>
-            <td style={{ textAlign: 'right' }}>{currency(row.spend_amount).format()}</td>
+            <td
+              style={{
+                textAlign: 'right',
+                whiteSpace: 'nowrap',
+              }}
+              className={row.t_amt >= 0 ? 'text-success' : 'text-danger'}
+            >
+              {currency(row.t_amt).format()}
+            </td>
             <td
               onClick={() => {
-                if (categoryFilter === (row.spend_category || 'uncategorized')) {
+                if (categoryFilter === (row.t_schc_category || 'uncategorized')) {
                   setCategoryFilter('')
                 } else {
-                  setCategoryFilter(row.spend_category || 'uncategorized')
+                  setCategoryFilter(row.t_schc_category || 'uncategorized')
                 }
               }}
               style={{ cursor: 'pointer' }}
             >
-              {row.spend_category ?? 'uncategorized'}
+              {row.t_schc_category ?? 'uncategorized'}
             </td>
             {onDeleteTransaction && (
               <td style={{ textAlign: 'center' }}>
                 <button
-                  onClick={() => onDeleteTransaction(row.spend_id?.toString() || '')}
+                  onClick={() => onDeleteTransaction(row.t_id?.toString() || '')}
                   className="btn btn-link p-0"
                   aria-label="Delete transaction"
                 >

@@ -2,18 +2,18 @@ import { useMemo, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import currency from 'currency.js'
 import { z, ZodError } from 'zod'
-import { AccountSpend, AccountSpendSchema } from '@/app/api/finance/model'
+import { AccountLineItem, AccountLineItemSchema } from '@/lib/AccountLineItem'
 import { parseDate } from '@/lib/DateHelper'
 import TransactionsTable from './TransactionsTable'
 
-export default function ImportTransactions(props: { onImportClick: (data: AccountSpend[]) => void }) {
+export default function ImportTransactions(props: { onImportClick: (data: AccountLineItem[]) => void }) {
   const [text, setText] = useState<string>('')
 
   const handleTextareaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(event.target.value)
   }
 
-  const { data, error } = useMemo(() => {
+  const { data, error } = useMemo((): { data: AccountLineItem[] | null; error: string | null } => {
     try {
       const pd = text
         .split('\n')
@@ -21,15 +21,17 @@ export default function ImportTransactions(props: { onImportClick: (data: Accoun
         .map((line) => {
           const row = line.split('\t')
           return {
-            spend_date: parseDate(row[0])?.formatYMD() ?? row[0],
-            spend_description: row[1] ?? '[no description]',
-            spend_amount: currency(row[2] ?? 0).value,
-            notes: row[3] ?? null,
-          }
+            t_date: parseDate(row[0]) ?? new Date(row[0]),
+            t_description: row[1] ?? '[no description]',
+            t_amt: currency(row[2] ?? 0).value,
+            t_comment: row[3] ?? null,
+            t_type: 'spend' as const, // Default type
+            t_schc_category: null,
+          } as AccountLineItem
         })
-        .filter((r) => r.spend_date)
+        .filter((r) => r.t_date)
       return {
-        data: z.array(AccountSpendSchema).parse(pd) as AccountSpend[],
+        data: pd,
         error: null,
       }
     } catch (e) {
@@ -46,7 +48,7 @@ export default function ImportTransactions(props: { onImportClick: (data: Accoun
       <textarea
         value={text}
         onChange={handleTextareaChange}
-        placeholder="date, description, amount"
+        placeholder="date, description, amount, [comment, type, category]"
         rows={5}
         style={{ width: '100%' }}
       />

@@ -59,10 +59,6 @@ export function parseEntities(json: string): fin_payslip {
       const moneyTypes = ['gross_earnings', 'net_pay', 'federal_additional_tax', 'state_additional_tax']
       const mti = moneyTypes.indexOf(o.type)
       if (mti >= 0) {
-        console.log({
-          item: moneyTypes[mti] ?? null,
-          amount: o.normalizedValue.text,
-        })
         parsed.push({
           item: moneyTypes[mti] ?? null,
           amount: currency(o.normalizedValue.text || 0),

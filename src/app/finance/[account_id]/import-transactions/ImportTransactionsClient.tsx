@@ -7,14 +7,14 @@ import ImportTransactions from '../ImportTransactions'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import AccountNavigation from '../AccountNavigation'
 
-export default function ImportTransactionsClient({ id }: { id: string }) {
+export default function ImportTransactionsClient({ id, accountName }: { id: number; accountName: string }) {
   const [loading, setLoading] = useState(false)
 
   return (
     <Container fluid>
       <Row>
         <Col xs={12}>
-          <AccountNavigation accountId={id} activeTab="import" />
+          <AccountNavigation accountId={id} accountName={accountName} activeTab="import" />
         </Col>
       </Row>
       <Row>
@@ -23,7 +23,7 @@ export default function ImportTransactionsClient({ id }: { id: string }) {
           <ImportTransactions
             onImportClick={(data) => {
               setLoading(true)
-              fetchWrapper.post(`/api/finance/${id}/`, data).then(() => {
+              fetchWrapper.post(`/api/finance/${id}/line_items`, data).then(() => {
                 setLoading(false)
                 window.location.href = `/finance/${id}`
               })

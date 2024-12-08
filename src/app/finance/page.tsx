@@ -8,12 +8,21 @@ import { redirect } from 'next/navigation'
 import AuthRoutes from '@/app/auth/AuthRoutes'
 import NewAccountForm from '@/app/finance/NewAccountForm'
 import AccountList from '@/app/finance/AccountList'
+import db, { sql } from '@/server_lib/db'
+import { AccountTableRow } from '../api/finance/model'
 
 export default async function Page() {
-  if (!(await getSession())?.uid) {
+  const uid = (await getSession())?.uid
+  if (!uid) {
     redirect(AuthRoutes.signIn)
-    return null
   }
+
+  const accounts = (await sql`
+    select acct_id, acct_owner, acct_name 
+    from accounts 
+    where acct_owner = ${uid} 
+    order by acct_name
+  `) as AccountTableRow[]
 
   return (
     <Container>
@@ -25,7 +34,7 @@ export default async function Page() {
       <Row>
         <Col xs={8}>
           <p>Which account:</p>
-          <AccountList />
+          <AccountList accounts={accounts} />
         </Col>
         <Col xs={4}>
           New account

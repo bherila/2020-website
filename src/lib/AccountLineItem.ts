@@ -3,7 +3,7 @@ import { z } from 'zod'
 // Schema validation for the account_line_items table
 export const AccountLineItemSchema = z.object({
   t_id: z.number().optional(),
-  t_account: z.number().nullable(),
+  t_account: z.number().nullable().optional(),
   t_date: z.date(),
   t_type: z.enum([
     'bought to open',

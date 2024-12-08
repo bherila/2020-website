@@ -1,34 +1,30 @@
 'use client'
 import { useEffect, useState } from 'react'
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
 import Spinner from 'react-bootstrap/Spinner'
 import { fetchWrapper } from '@/lib/fetchWrapper'
-import { AccountSpend } from '@/app/api/finance/model'
-import AccountNavigation from './AccountNavigation'
 import TransactionsTable from './TransactionsTable'
+import { AccountLineItem } from '@/lib/AccountLineItem'
 
-export default function AccountClient({ id }: { id: string }) {
+export default function AccountClient({ id }: { id: number }) {
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState<AccountSpend[] | null>(null)
+  const [data, setData] = useState<AccountLineItem[] | null>(null)
 
   useEffect(() => {
     setLoading(true)
-    fetchWrapper.get(`/api/finance/${id}/`).then((res) => {
+    fetchWrapper.get(`/api/finance/${id}/line_items`).then((res) => {
       setData(res)
       setLoading(false)
     })
   }, [id])
 
-  const handleDeleteTransaction = async (spendId: string) => {
+  const handleDeleteTransaction = async (t_id: string) => {
     try {
       // Optimistic update
-      const updatedData = data?.filter((transaction) => transaction.spend_id?.toString() !== spendId) || []
+      const updatedData = data?.filter((transaction) => transaction.t_id?.toString() !== t_id) || []
       setData(updatedData)
 
       // Perform server-side deletion
-      await fetchWrapper.delete(`/api/finance/${id}/`, { spend_id: spendId })
+      await fetchWrapper.delete(`/api/finance/${id}/line_items`, { t_id })
     } catch (error) {
       // Revert optimistic update on error
       const refreshedData = await fetchWrapper.get(`/api/finance/${id}/`)
@@ -38,27 +34,13 @@ export default function AccountClient({ id }: { id: string }) {
     }
   }
 
-  return (
-    <Container fluid>
-      <Row>
-        <Col xs={12}>
-          <AccountNavigation accountId={id} activeTab="transactions" />
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={8}>
-          {loading || data === null ? (
-            <div className="d-flex justify-content-center">
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-            </div>
-          ) : (
-            <TransactionsTable data={data} onDeleteTransaction={handleDeleteTransaction} />
-          )}
-        </Col>
-        <Col xs={4}>xx</Col>
-      </Row>
-    </Container>
+  return loading || data === null ? (
+    <div className="d-flex justify-content-center">
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
+    </div>
+  ) : (
+    <TransactionsTable data={data} onDeleteTransaction={handleDeleteTransaction} />
   )
 }

@@ -4,27 +4,26 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb'
 
 export default function AccountNavigation({
   accountId,
+  accountName,
   activeTab = 'transactions',
 }: {
-  accountId: string
+  accountId: number
+  accountName: string
   activeTab?: 'transactions' | 'import' | 'equities' | 'transfers'
 }) {
   return (
-    <div className="mb-4">
+    <div className="mt-4">
       <Breadcrumb>
-        <Breadcrumb.Item href="/accounts">Accounts</Breadcrumb.Item>
-        <Breadcrumb.Item active>Account {accountId}</Breadcrumb.Item>
+        <Breadcrumb.Item href="/finance">Accounts</Breadcrumb.Item>
+        <Breadcrumb.Item active>
+          Account {accountId} - {accountName ?? 'no name'}
+        </Breadcrumb.Item>
       </Breadcrumb>
 
       <Nav variant="tabs" className="mb-3">
         <Nav.Item>
           <Nav.Link href={`/finance/${accountId}`} active={activeTab === 'transactions'}>
             Cash
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link href={`/finance/${accountId}/equities`} active={activeTab === 'equities'}>
-            Equities
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
