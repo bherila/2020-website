@@ -28,6 +28,9 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [descriptionFilter, setDescriptionFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
+  const [symbolFilter, setSymbolFilter] = useState('')
+  const [optExpirationFilter, setOptExpirationFilter] = useState('')
+  const [optTypeFilter, setOptTypeFilter] = useState('')
 
   const handleSort = (field: keyof AccountLineItem) => {
     if (field === sortField) {
@@ -41,7 +44,10 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
   const filteredData = data.filter(
     (row) =>
       (!descriptionFilter || row.t_description?.toLowerCase().includes(descriptionFilter.toLowerCase())) &&
-      (!categoryFilter || (row.t_schc_category || 'uncategorized').toLowerCase().includes(categoryFilter.toLowerCase())),
+      (!categoryFilter || (row.t_schc_category || '-').toLowerCase().includes(categoryFilter.toLowerCase())) &&
+      (!symbolFilter || row.t_symbol?.toLowerCase().includes(symbolFilter.toLowerCase())) &&
+      (!optExpirationFilter || row.opt_expiration?.toString().slice(0, 10).includes(optExpirationFilter.toLowerCase())) &&
+      (!optTypeFilter || row.opt_type?.toLowerCase().includes(optTypeFilter.toLowerCase())),
   )
 
   const sortedData = [...filteredData].sort((a, b) => {
@@ -71,6 +77,18 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
           </th>
           <th onClick={() => handleSort('t_schc_category')} style={{ cursor: 'pointer' }}>
             Category {sortField === 't_schc_category' && (sortDirection === 'asc' ? '↑' : '↓')}
+          </th>
+          <th onClick={() => handleSort('t_symbol')} style={{ cursor: 'pointer', width: '100px' }}>
+            Symbol {sortField === 't_symbol' && (sortDirection === 'asc' ? '↑' : '↓')}
+          </th>
+          <th onClick={() => handleSort('opt_expiration')} style={{ cursor: 'pointer', width: '100px' }}>
+            Option Expiry {sortField === 'opt_expiration' && (sortDirection === 'asc' ? '↑' : '↓')}
+          </th>
+          <th onClick={() => handleSort('opt_type')} style={{ cursor: 'pointer', width: '100px' }}>
+            Option Type {sortField === 'opt_type' && (sortDirection === 'asc' ? '↑' : '↓')}
+          </th>
+          <th onClick={() => handleSort('opt_strike')} style={{ cursor: 'pointer', textAlign: 'right', width: '100px' }}>
+            Strike {sortField === 'opt_strike' && (sortDirection === 'asc' ? '↑' : '↓')}
           </th>
           {onDeleteTransaction && (
             <th style={{ textAlign: 'center' }}>
@@ -105,6 +123,41 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
               <ClearFilterButton onClick={() => setCategoryFilter('')} ariaLabel="Clear category filter" />
             )}
           </th>
+          <th className="position-relative" style={{ width: '100px' }}>
+            <Form.Control
+              size="sm"
+              type="text"
+              placeholder="Filter symbol..."
+              value={symbolFilter}
+              onChange={(e) => setSymbolFilter(e.target.value)}
+            />
+            {symbolFilter && <ClearFilterButton onClick={() => setSymbolFilter('')} ariaLabel="Clear symbol filter" />}
+          </th>
+          <th className="position-relative" style={{ width: '100px' }}>
+            <Form.Control
+              size="sm"
+              type="text"
+              placeholder="Filter option expiry..."
+              value={optExpirationFilter}
+              onChange={(e) => setOptExpirationFilter(e.target.value)}
+            />
+            {optExpirationFilter && (
+              <ClearFilterButton onClick={() => setOptExpirationFilter('')} ariaLabel="Clear option expiry filter" />
+            )}
+          </th>
+          <th className="position-relative" style={{ width: '100px' }}>
+            <Form.Control
+              size="sm"
+              type="text"
+              placeholder="Filter option type..."
+              value={optTypeFilter}
+              onChange={(e) => setOptTypeFilter(e.target.value)}
+            />
+            {optTypeFilter && (
+              <ClearFilterButton onClick={() => setOptTypeFilter('')} ariaLabel="Clear option type filter" />
+            )}
+          </th>
+          <th style={{ width: '100px' }}></th>
           {onDeleteTransaction && <th></th>}
         </tr>
       </thead>
@@ -137,15 +190,21 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
             </td>
             <td
               onClick={() => {
-                if (categoryFilter === (row.t_schc_category || 'uncategorized')) {
+                if (categoryFilter === (row.t_schc_category || '-')) {
                   setCategoryFilter('')
                 } else {
-                  setCategoryFilter(row.t_schc_category || 'uncategorized')
+                  setCategoryFilter(row.t_schc_category || '-')
                 }
               }}
               style={{ cursor: 'pointer' }}
             >
-              {row.t_schc_category ?? 'uncategorized'}
+              {row.t_schc_category ?? '-'}
+            </td>
+            <td style={{ width: '100px' }}>{row.t_symbol}</td>
+            <td style={{ width: '100px' }}>{row.opt_expiration?.toString()?.slice(0, 10)}</td>
+            <td style={{ width: '100px' }}>{row.opt_type}</td>
+            <td style={{ textAlign: 'right', width: '100px' }}>
+              {row.opt_strike ? currency(row.opt_strike).format() : ''}
             </td>
             {onDeleteTransaction && (
               <td style={{ textAlign: 'center' }}>
@@ -170,8 +229,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
           <td style={{ textAlign: 'right' }}>
             <strong>{totalAmount.format()}</strong>
           </td>
-          <td></td>
-          <td></td>
+          <td colSpan={5}></td>
         </tr>
       </tfoot>
     </Table>

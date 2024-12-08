@@ -48,7 +48,7 @@ describe('parseOptionDescription', () => {
     ]
 
     invalidDescriptions.forEach((description) => {
-      expect(() => parseOptionDescription(description)).toThrow(`Invalid option description: ${description}`)
+      expect(parseOptionDescription(description)).toBeNull()
     })
   })
 })

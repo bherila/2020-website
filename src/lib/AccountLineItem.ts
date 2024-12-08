@@ -1,11 +1,7 @@
 import { z } from 'zod'
 
-// Schema validation for the account_line_items table
-export const AccountLineItemSchema = z.object({
-  t_id: z.number().optional(),
-  t_account: z.number().nullable().optional(),
-  t_date: z.date(),
-  t_type: z.enum([
+export const transactionTypeSchema = z
+  .enum([
     'bought to open',
     'sold short',
     'sold to close',
@@ -20,7 +16,15 @@ export const AccountLineItemSchema = z.object({
     'equity',
     'spend',
     'refund',
-  ]),
+  ])
+  .nullable()
+
+// Schema validation for the account_line_items table
+export const AccountLineItemSchema = z.object({
+  t_id: z.number().optional(),
+  t_account: z.number().nullable().optional(),
+  t_date: z.date(),
+  t_type: transactionTypeSchema,
   t_schc_category: z
     .enum([
       'Advertising',
@@ -61,9 +65,9 @@ export const AccountLineItemSchema = z.object({
   t_method: z.string().max(20).nullable(),
   t_source: z.string().max(20).nullable(),
   t_origin: z.string().max(20).nullable(),
-  opt_expiration: z.date().nullable(),
-  opt_type: z.enum(['call', 'put']).nullable(),
-  opt_strike: z.number().default(0),
+  opt_expiration: z.date().nullable().optional(),
+  opt_type: z.enum(['call', 'put']).nullable().optional(),
+  opt_strike: z.number().default(0).nullable().optional(),
   t_description: z.string().max(255).nullable(),
   t_comment: z.string().max(255).nullable(),
   t_from: z.date().nullable(),
@@ -71,5 +75,7 @@ export const AccountLineItemSchema = z.object({
   t_interest_rate: z.string().max(20).nullable(),
   parent_t_id: z.number().nullable(),
 })
+
+export type TransactionType = z.infer<typeof transactionTypeSchema>
 
 export type AccountLineItem = z.infer<typeof AccountLineItemSchema>
