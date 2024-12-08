@@ -1,25 +1,46 @@
 interface Option {
   symbol: string
   optionType: 'call' | 'put'
-  maturityDate: Date
+  maturityDate: string
   strikePrice: number
 }
 
 export function parseOptionDescription(description: string): Option | null {
-  const regex = /([A-Z]+) ([A-Za-z]+) (\d{1,2}) '(\d{2}) \$(\d+(?:\.\d+)?) (Call|Put)/
-  const match = description.match(regex)
+  // Etrade CSV option format
+  const regex1 =
+    /([A-Z]+) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{1,2}) '(\d{2}) \$(\d+(?:\.\d+)?) (Call|Put)/i
 
-  if (!match) {
-    return null
+  const match1 = description.match(regex1)
+  if (match1) {
+    const [, symbol, month, day, year, strikePrice, optionType] = match1
+    const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+    // TODO: Handle dates before 1999
+    const maturityDate = `20${year}-${(months.indexOf(month.toLowerCase()) + 1).toString().padStart(2, '0')}-${day}`
+
+    return {
+      symbol,
+      optionType: optionType.toLowerCase() as 'call' | 'put',
+      maturityDate,
+      strikePrice: parseFloat(strikePrice),
+    }
   }
 
-  const [, symbol, month, day, year, strikePrice, optionType] = match
-  const maturityDate = new Date(`${month} ${day}, 20${year}`)
+  // Quicken QFX option format
+  const regex2 = /(CALL|PUT)\s+([A-Z]+)\s+(\d{2}\/\d{2}\/\d{2})\s+(\d+(?:\.\d+)?)/
+  const match2 = description.match(regex2)
+  if (match2) {
+    const [, optionType, symbol, expiration, strikePrice] = match2
+    const [month, day, year] = expiration.split('/')
+    // TODO: Handle dates before 1999
+    const maturityDate = `20${year}-${month}-${day}`
 
-  return {
-    symbol,
-    optionType: optionType.toLowerCase() as 'call' | 'put',
-    maturityDate,
-    strikePrice: parseFloat(strikePrice),
+    return {
+      symbol,
+      optionType: optionType.toLowerCase() as 'call' | 'put',
+      maturityDate,
+      strikePrice: parseFloat(strikePrice),
+    }
   }
+
+  return null
 }

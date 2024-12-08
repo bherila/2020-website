@@ -1,6 +1,6 @@
 'use client'
 import Table from 'react-bootstrap/Table'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Form from 'react-bootstrap/Form'
 import { X, Trash } from 'react-bootstrap-icons'
 import currency from 'currency.js'
@@ -29,6 +29,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
   const [descriptionFilter, setDescriptionFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [symbolFilter, setSymbolFilter] = useState('')
+  const [cusipFilter, setCusipFilter] = useState('')
   const [optExpirationFilter, setOptExpirationFilter] = useState('')
   const [optTypeFilter, setOptTypeFilter] = useState('')
 
@@ -41,12 +42,18 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
     }
   }
 
+  // Determine if Category column should be hidden
+  const isCategoryColumnEmpty = useMemo(() => {
+    return data.every((row) => !row.t_schc_category)
+  }, [data])
+
   const filteredData = data.filter(
     (row) =>
       (!descriptionFilter || row.t_description?.toLowerCase().includes(descriptionFilter.toLowerCase())) &&
       (!categoryFilter || (row.t_schc_category || '-').toLowerCase().includes(categoryFilter.toLowerCase())) &&
       (!symbolFilter || row.t_symbol?.toLowerCase().includes(symbolFilter.toLowerCase())) &&
-      (!optExpirationFilter || row.opt_expiration?.toString().slice(0, 10).includes(optExpirationFilter.toLowerCase())) &&
+      (!cusipFilter || row.t_cusip?.toLowerCase().includes(cusipFilter.toLowerCase())) &&
+      (!optExpirationFilter || row.opt_expiration?.includes(optExpirationFilter.toLowerCase())) &&
       (!optTypeFilter || row.opt_type?.toLowerCase().includes(optTypeFilter.toLowerCase())),
   )
 
@@ -75,8 +82,13 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
           <th onClick={() => handleSort('t_amt')} style={{ cursor: 'pointer', textAlign: 'right' }}>
             Amount {sortField === 't_amt' && (sortDirection === 'asc' ? '↑' : '↓')}
           </th>
-          <th onClick={() => handleSort('t_schc_category')} style={{ cursor: 'pointer' }}>
-            Category {sortField === 't_schc_category' && (sortDirection === 'asc' ? '↑' : '↓')}
+          {!isCategoryColumnEmpty && (
+            <th onClick={() => handleSort('t_schc_category')} style={{ cursor: 'pointer' }}>
+              Category {sortField === 't_schc_category' && (sortDirection === 'asc' ? '↑' : '↓')}
+            </th>
+          )}
+          <th onClick={() => handleSort('t_cusip')} style={{ cursor: 'pointer', width: '100px' }}>
+            CUSIP {sortField === 't_cusip' && (sortDirection === 'asc' ? '↑' : '↓')}
           </th>
           <th onClick={() => handleSort('t_symbol')} style={{ cursor: 'pointer', width: '100px' }}>
             Symbol {sortField === 't_symbol' && (sortDirection === 'asc' ? '↑' : '↓')}
@@ -111,17 +123,29 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
             )}
           </th>
           <th style={{ width: '100px' }}></th>
-          <th className="position-relative" style={{ width: '140px' }}>
+          {!isCategoryColumnEmpty && (
+            <th className="position-relative" style={{ width: '140px' }}>
+              <Form.Control
+                size="sm"
+                type="text"
+                placeholder="Filter category..."
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+              />
+              {categoryFilter && (
+                <ClearFilterButton onClick={() => setCategoryFilter('')} ariaLabel="Clear category filter" />
+              )}
+            </th>
+          )}
+          <th className="position-relative" style={{ width: '100px' }}>
             <Form.Control
               size="sm"
               type="text"
-              placeholder="Filter category..."
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
+              placeholder="Filter CUSIP..."
+              value={cusipFilter}
+              onChange={(e) => setCusipFilter(e.target.value)}
             />
-            {categoryFilter && (
-              <ClearFilterButton onClick={() => setCategoryFilter('')} ariaLabel="Clear category filter" />
-            )}
+            {cusipFilter && <ClearFilterButton onClick={() => setCusipFilter('')} ariaLabel="Clear CUSIP filter" />}
           </th>
           <th className="position-relative" style={{ width: '100px' }}>
             <Form.Control
@@ -165,7 +189,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
         {sortedData.map((row, i) => (
           <tr key={row.t_id + ':' + i}>
             <td style={{ fontFamily: 'Atkinson Hyperlegible, monospace', width: '120px' }}>
-              {row.t_date?.toString()?.slice(0, 10)}
+              {row.t_date?.toISOString().slice(0, 10)}
             </td>
             <td
               onClick={() => {
@@ -188,20 +212,57 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
             >
               {currency(row.t_amt).format()}
             </td>
+            {!isCategoryColumnEmpty && (
+              <td
+                onClick={() => {
+                  if (categoryFilter === (row.t_schc_category || '-')) {
+                    setCategoryFilter('')
+                  } else {
+                    setCategoryFilter(row.t_schc_category || '-')
+                  }
+                }}
+                style={{ cursor: 'pointer' }}
+              >
+                {row.t_schc_category ?? '-'}
+              </td>
+            )}
             <td
+              style={{ width: '100px', cursor: 'pointer' }}
               onClick={() => {
-                if (categoryFilter === (row.t_schc_category || '-')) {
-                  setCategoryFilter('')
+                if (cusipFilter === row.t_cusip) {
+                  setCusipFilter('')
                 } else {
-                  setCategoryFilter(row.t_schc_category || '-')
+                  setCusipFilter(row.t_cusip || '')
                 }
               }}
-              style={{ cursor: 'pointer' }}
             >
-              {row.t_schc_category ?? '-'}
+              {row.t_cusip}
             </td>
-            <td style={{ width: '100px' }}>{row.t_symbol}</td>
-            <td style={{ width: '100px' }}>{row.opt_expiration?.toString()?.slice(0, 10)}</td>
+            <td
+              style={{ width: '100px', cursor: 'pointer' }}
+              onClick={() => {
+                if (symbolFilter === row.t_symbol) {
+                  setSymbolFilter('')
+                } else {
+                  setSymbolFilter(row.t_symbol || '')
+                }
+              }}
+            >
+              {row.t_symbol}
+            </td>
+            <td
+              style={{ width: '100px', cursor: 'pointer' }}
+              onClick={() => {
+                const formattedExpiry = row.opt_expiration?.slice(0, 10)
+                if (optExpirationFilter === formattedExpiry) {
+                  setOptExpirationFilter('')
+                } else {
+                  setOptExpirationFilter(formattedExpiry || '')
+                }
+              }}
+            >
+              {row.opt_expiration?.slice(0, 10) ?? ''}
+            </td>
             <td style={{ width: '100px' }}>{row.opt_type}</td>
             <td style={{ textAlign: 'right', width: '100px' }}>
               {row.opt_strike ? currency(row.opt_strike).format() : ''}
@@ -229,6 +290,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
           <td style={{ textAlign: 'right' }}>
             <strong>{totalAmount.format()}</strong>
           </td>
+          {!isCategoryColumnEmpty && <td></td>}
           <td colSpan={5}></td>
         </tr>
       </tfoot>

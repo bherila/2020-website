@@ -7,7 +7,7 @@ describe('parseOptionDescription', () => {
     expect(nioOption).toEqual({
       symbol: 'NIO',
       optionType: 'put',
-      maturityDate: new Date('Jan 20, 2023'),
+      maturityDate: '2023-01-20',
       strikePrice: 85,
     })
 
@@ -16,7 +16,7 @@ describe('parseOptionDescription', () => {
     expect(biduOption).toEqual({
       symbol: 'BIDU',
       optionType: 'call',
-      maturityDate: new Date('Jan 15, 2021'),
+      maturityDate: '2021-01-15',
       strikePrice: 280,
     })
 
@@ -25,7 +25,7 @@ describe('parseOptionDescription', () => {
     expect(zmOption).toEqual({
       symbol: 'ZM',
       optionType: 'call',
-      maturityDate: new Date('Jan 15, 2021'),
+      maturityDate: '2021-01-15',
       strikePrice: 430,
     })
 
@@ -34,8 +34,26 @@ describe('parseOptionDescription', () => {
     expect(tslaOption).toEqual({
       symbol: 'TSLA',
       optionType: 'call',
-      maturityDate: new Date('Mar 19, 2021'),
+      maturityDate: '2021-03-19',
       strikePrice: 1000,
+    })
+
+    // Test case 5: NVDA Call option
+    const nvdaOption = parseOptionDescription('CALL NVDA   01/05/24   500.000')
+    expect(nvdaOption).toEqual({
+      symbol: 'NVDA',
+      optionType: 'call',
+      maturityDate: '2024-01-05',
+      strikePrice: 500,
+    })
+
+    // Test case 6: CALL ZM     01/12/2475.000 with tab
+    const callZmOption = parseOptionDescription('CALL ZM\t01/12/24\t75.000')
+    expect(callZmOption).toEqual({
+      symbol: 'ZM',
+      optionType: 'call',
+      maturityDate: '2024-01-12',
+      strikePrice: 75,
     })
   })
 

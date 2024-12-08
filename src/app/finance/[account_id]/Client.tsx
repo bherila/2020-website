@@ -3,19 +3,11 @@ import { useEffect, useState } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import TransactionsTable from './TransactionsTable'
-import { AccountLineItem } from '@/lib/AccountLineItem'
+import { AccountLineItem, AccountLineItemSchema } from '@/lib/AccountLineItem'
+import z from 'zod'
 
-export default function AccountClient({ id }: { id: number }) {
-  const [loading, setLoading] = useState(false)
-  const [data, setData] = useState<AccountLineItem[] | null>(null)
-
-  useEffect(() => {
-    setLoading(true)
-    fetchWrapper.get(`/api/finance/${id}/line_items`).then((res) => {
-      setData(res)
-      setLoading(false)
-    })
-  }, [id])
+export default function AccountClient({ id, rawData }: { id: number; rawData: any }) {
+  const [data, setData] = useState<AccountLineItem[]>(z.array(AccountLineItemSchema).parse(rawData))
 
   const handleDeleteTransaction = async (t_id: string) => {
     try {
@@ -34,7 +26,7 @@ export default function AccountClient({ id }: { id: number }) {
     }
   }
 
-  return loading || data === null ? (
+  return data === null ? (
     <div className="d-flex justify-content-center">
       <Spinner animation="border" role="status">
         <span className="visually-hidden">Loading...</span>

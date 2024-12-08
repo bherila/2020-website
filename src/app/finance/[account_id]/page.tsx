@@ -7,6 +7,7 @@ import { Container, Row, Col } from 'react-bootstrap'
 import AccountNavigation from './AccountNavigation'
 import { z } from 'zod'
 import { sql } from '@/server_lib/db'
+import { getLineItemsByAccount } from '@/server_lib/AccountLineItem.server'
 
 export default async function AccountIdPage({ params }: { params: Promise<{ account_id: string }> }) {
   const uid = (await getSession())?.uid
@@ -25,6 +26,7 @@ export default async function AccountIdPage({ params }: { params: Promise<{ acco
   }
 
   const account_id = z.coerce.number().parse((await params).account_id)
+  const items = await getLineItemsByAccount(account_id, false)
   return (
     <Container fluid>
       <Row>
@@ -34,7 +36,7 @@ export default async function AccountIdPage({ params }: { params: Promise<{ acco
       </Row>
       <Row>
         <Col xs={12}>
-          <AccountClient id={account_id} />
+          <AccountClient id={account_id} rawData={items} />
         </Col>
       </Row>
     </Container>

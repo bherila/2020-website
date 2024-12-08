@@ -8,6 +8,7 @@ import TransactionsTable from '../TransactionsTable'
 import { parseEtradeCsv } from './parseEtradeCsv'
 import Row from 'react-bootstrap/Row'
 import { Col } from 'react-bootstrap'
+import { parseQuickenQFX } from './parseQuickenQFX'
 
 export default function ImportTransactions(props: { onImportClick: (data: AccountLineItem[]) => void }) {
   const [text, setText] = useState<string>('')
@@ -36,11 +37,7 @@ export default function ImportTransactions(props: { onImportClick: (data: Accoun
       const files = event.dataTransfer?.files
       if (files && files.length > 0) {
         const file = files[0]
-        if (file.type === 'text/csv' || file.name.toLowerCase().endsWith('.csv')) {
-          handleFileRead(file)
-        } else {
-          setError('Please drop a CSV file')
-        }
+        handleFileRead(file)
       }
     },
     [handleFileRead],
@@ -112,6 +109,15 @@ function parseData(text: string): { data: AccountLineItem[] | null; parseError: 
   if (eTradeData.length > 0) {
     return {
       data: eTradeData,
+      parseError: null,
+    }
+  }
+
+  // Try parsing as QFX
+  const qfxData = parseQuickenQFX(text)
+  if (qfxData.length > 0) {
+    return {
+      data: qfxData,
       parseError: null,
     }
   }

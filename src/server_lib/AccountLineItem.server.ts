@@ -17,6 +17,7 @@ export async function bulkCreateLineItems(items: AccountLineItem[]) {
     item.t_schc_category,
     item.t_amt,
     item.t_symbol,
+    item.t_cusip,
     item.t_qty,
     item.t_price,
     item.t_commission,
@@ -39,7 +40,7 @@ export async function bulkCreateLineItems(items: AccountLineItem[]) {
   const result = await db.query(
     `
     INSERT INTO account_line_items (
-      t_account, t_date, t_type, t_schc_category, t_amt, t_symbol, t_qty, t_price,
+      t_account, t_date, t_type, t_schc_category, t_amt, t_symbol, t_cusip, t_qty, t_price,
       t_commission, t_fee, t_method, t_source, t_origin, opt_expiration, opt_type,
       opt_strike, t_description, t_comment, t_from, t_to, t_interest_rate, parent_t_id,
       when_added
@@ -73,6 +74,7 @@ export async function updateLineItem(id: number, updates: Partial<AccountLineIte
         t_schc_category = ${validated.t_schc_category},
         t_amt = ${validated.t_amt},
         t_symbol = ${validated.t_symbol},
+        cusip = ${validated.t_cusip},
         t_qty = ${validated.t_qty},
         t_price = ${validated.t_price},
         t_commission = ${validated.t_commission},

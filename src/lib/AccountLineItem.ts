@@ -23,7 +23,7 @@ export const transactionTypeSchema = z
 export const AccountLineItemSchema = z.object({
   t_id: z.number().optional(),
   t_account: z.number().nullable().optional(),
-  t_date: z.date(),
+  t_date: z.coerce.date(),
   t_type: transactionTypeSchema,
   t_schc_category: z
     .enum([
@@ -56,22 +56,27 @@ export const AccountLineItemSchema = z.object({
       'Energy Efficient Commercial Buildings',
     ])
     .nullable(),
-  t_amt: z.number(),
+  t_amt: z.coerce.number(),
   t_symbol: z.string().max(20).nullable(),
-  t_qty: z.number().default(0),
-  t_price: z.number().default(0),
-  t_commission: z.number().default(0),
-  t_fee: z.number().default(0),
+  t_cusip: z.string().max(20).nullable().optional(),
+  t_qty: z.coerce.number().default(0),
+  t_price: z.coerce.number().default(0),
+  t_commission: z.coerce.number().default(0),
+  t_fee: z.coerce.number().default(0),
   t_method: z.string().max(20).nullable(),
   t_source: z.string().max(20).nullable(),
   t_origin: z.string().max(20).nullable(),
-  opt_expiration: z.date().nullable().optional(),
+  opt_expiration: z.coerce
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable()
+    .optional(),
   opt_type: z.enum(['call', 'put']).nullable().optional(),
-  opt_strike: z.number().default(0).nullable().optional(),
+  opt_strike: z.coerce.number().default(0).nullable().optional(),
   t_description: z.string().max(255).nullable(),
   t_comment: z.string().max(255).nullable(),
-  t_from: z.date().nullable(),
-  t_to: z.date().nullable(),
+  t_from: z.coerce.date().nullable(),
+  t_to: z.coerce.date().nullable(),
   t_interest_rate: z.string().max(20).nullable(),
   parent_t_id: z.number().nullable(),
 })
