@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import currency from 'currency.js'
 import { z, ZodError } from 'zod'
-import { AccountSpend, AccountSpendSchema } from '@/app/api/account/model'
+import { AccountSpend, AccountSpendSchema } from '@/app/api/finance/model'
 import { parseDate } from '@/lib/DateHelper'
 import TransactionsTable from './TransactionsTable'
 

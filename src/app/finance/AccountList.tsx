@@ -1,13 +1,13 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { AccountTableRow } from '@/app/api/account/model'
+import { AccountTableRow } from '@/app/api/finance/model'
 import Link from 'next/link'
 import Table from 'react-bootstrap/Table'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import Spinner from 'react-bootstrap/Spinner'
 
 // Do this as soon as the module is loaded so we can reuse it, will this cause problems?
-const fp = fetchWrapper.get('/api/account/')
+const fp = fetchWrapper.get('/api/finance/')
 
 function AccountList() {
   const [accounts, setAccounts] = useState<AccountTableRow[]>([])
@@ -42,7 +42,7 @@ function AccountList() {
             <tr key={account.acct_id}>
               <td>{account.acct_id}</td>
               <td>
-                <Link href={`/accounts/${account.acct_id}`}>{account.acct_name}</Link>
+                <Link href={`/finance/${account.acct_id}`}>{account.acct_name}</Link>
               </td>
             </tr>
           ))}

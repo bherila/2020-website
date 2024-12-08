@@ -26,7 +26,7 @@ export default function Header({ session }: { session: sessionType }) {
               {session?.ax_spgp && <NavDropdown.Item href="/spgp">Ski Pass Group Purchase 🔑</NavDropdown.Item>}
               {session?.ax_phr && <NavDropdown.Item href="/phr">PHR 🔑</NavDropdown.Item>}
               {/*<NavDropdown.Divider />*/}
-              <NavDropdown.Item href="/accounts/">Accounts</NavDropdown.Item>
+              <NavDropdown.Item href="/finance/">Accounts</NavDropdown.Item>
               <NavDropdown.Item href="/bingo/">Bingo card generator</NavDropdown.Item>
             </NavDropdown>
           </Nav>

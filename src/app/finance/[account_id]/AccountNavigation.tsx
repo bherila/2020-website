@@ -7,7 +7,7 @@ export default function AccountNavigation({
   activeTab = 'transactions',
 }: {
   accountId: string
-  activeTab?: 'transactions' | 'import'
+  activeTab?: 'transactions' | 'import' | 'equities' | 'transfers'
 }) {
   return (
     <div className="mb-4">
@@ -18,12 +18,17 @@ export default function AccountNavigation({
 
       <Nav variant="tabs" className="mb-3">
         <Nav.Item>
-          <Nav.Link href={`/accounts/${accountId}`} active={activeTab === 'transactions'}>
-            Transactions
+          <Nav.Link href={`/finance/${accountId}`} active={activeTab === 'transactions'}>
+            Cash
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link href={`/accounts/${accountId}/import-transactions`} active={activeTab === 'import'}>
+          <Nav.Link href={`/finance/${accountId}/equities`} active={activeTab === 'equities'}>
+            Equities
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link href={`/finance/${accountId}/import-transactions`} active={activeTab === 'import'}>
             Import
           </Nav.Link>
         </Nav.Item>

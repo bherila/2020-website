@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import db from '@/server_lib/db'
-import { AccountSpend, AccountSpendSchema, AccountTableRow, AccountTableSchema } from '@/app/api/account/model'
+import { AccountSpend, AccountSpendSchema, AccountTableRow, AccountTableSchema } from '@/app/api/finance/model'
 import { z } from 'zod'
 import { getSession } from '@/server_lib/session'
 

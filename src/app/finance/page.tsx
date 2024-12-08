@@ -6,8 +6,8 @@ import Container from 'react-bootstrap/Container'
 import { getSession } from '@/server_lib/session'
 import { redirect } from 'next/navigation'
 import AuthRoutes from '@/app/auth/AuthRoutes'
-import NewAccountForm from '@/app/accounts/NewAccountForm'
-import AccountList from '@/app/accounts/AccountList'
+import NewAccountForm from '@/app/finance/NewAccountForm'
+import AccountList from '@/app/finance/AccountList'
 
 export default async function Page() {
   if (!(await getSession())?.uid) {

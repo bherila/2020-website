@@ -23,9 +23,9 @@ export default function ImportTransactionsClient({ id }: { id: string }) {
           <ImportTransactions
             onImportClick={(data) => {
               setLoading(true)
-              fetchWrapper.post(`/api/account/${id}/`, data).then(() => {
+              fetchWrapper.post(`/api/finance/${id}/`, data).then(() => {
                 setLoading(false)
-                window.location.href = `/accounts/${id}`
+                window.location.href = `/finance/${id}`
               })
             }}
           />

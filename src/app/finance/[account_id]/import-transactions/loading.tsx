@@ -9,7 +9,7 @@ export default function Loading() {
         <Col xs={12}>
           <AccountNavigation
             accountId={
-              // get account id from url from /accounts/[account_id]/import-transactions using regex
+              // get account id from url from /finance/[account_id]/import-transactions using regex
               (window.location.href.match(/\/accounts\/(\d+)\//) || [])[1]
             }
             activeTab="import"

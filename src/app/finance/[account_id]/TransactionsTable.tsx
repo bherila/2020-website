@@ -1,6 +1,6 @@
 'use client'
 import Table from 'react-bootstrap/Table'
-import { AccountSpend } from '@/app/api/account/model'
+import { AccountSpend } from '@/app/api/finance/model'
 import { useState } from 'react'
 import Form from 'react-bootstrap/Form'
 import { X, Trash } from 'react-bootstrap-icons'

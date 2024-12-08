@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { fetchWrapper } from '@/lib/fetchWrapper'
-import { AccountTableRow } from '@/app/api/account/model'
+import { AccountTableRow } from '@/app/api/finance/model'
 import Alert from 'react-bootstrap/Alert'
 import { useRouter } from 'next/navigation'
 
@@ -18,13 +18,13 @@ const NewAccountForm = () => {
     }
 
     fetchWrapper
-      .post('/api/account/', formData)
+      .post('/api/finance/', formData)
       .then((response: AccountTableRow[]) => {
         if (Array.isArray(response)) {
           // Handle a successful response, e.g., redirect to another page or show a success message.
           const id = response.find((n) => n.acct_name === acctName)?.acct_id
           if (id) {
-            location.href = `/accounts/${id}/`
+            location.href = `/finance/${id}/`
           }
         } else {
           // Handle errors, e.g., display an error message to the user.

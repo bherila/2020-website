@@ -5,7 +5,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Spinner from 'react-bootstrap/Spinner'
 import { fetchWrapper } from '@/lib/fetchWrapper'
-import { AccountSpend } from '@/app/api/account/model'
+import { AccountSpend } from '@/app/api/finance/model'
 import AccountNavigation from './AccountNavigation'
 import TransactionsTable from './TransactionsTable'
 
@@ -15,7 +15,7 @@ export default function AccountClient({ id }: { id: string }) {
 
   useEffect(() => {
     setLoading(true)
-    fetchWrapper.get(`/api/account/${id}/`).then((res) => {
+    fetchWrapper.get(`/api/finance/${id}/`).then((res) => {
       setData(res)
       setLoading(false)
     })
@@ -28,10 +28,10 @@ export default function AccountClient({ id }: { id: string }) {
       setData(updatedData)
 
       // Perform server-side deletion
-      await fetchWrapper.delete(`/api/account/${id}/`, { spend_id: spendId })
+      await fetchWrapper.delete(`/api/finance/${id}/`, { spend_id: spendId })
     } catch (error) {
       // Revert optimistic update on error
-      const refreshedData = await fetchWrapper.get(`/api/account/${id}/`)
+      const refreshedData = await fetchWrapper.get(`/api/finance/${id}/`)
       setData(refreshedData)
 
       console.error('Delete transaction error:', error)
