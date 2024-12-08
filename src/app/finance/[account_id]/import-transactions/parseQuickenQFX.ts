@@ -20,17 +20,17 @@ export function parseQuickenQFX(data: string): AccountLineItem[] {
 
   function reset() {
     transactionDate = null
-      transactionType = null
-      symbol = null
-      quantity = null
-      amount = null
-      price = null
-      commission = null
-      description = null
-      cusip = null
-      optType = null
-      optExpiration = null
-      optStrike = null
+    transactionType = null
+    symbol = null
+    quantity = null
+    amount = null
+    price = null
+    commission = null
+    description = null
+    cusip = null
+    optType = null
+    optExpiration = null
+    optStrike = null
   }
 
   lines.forEach((line) => {
@@ -46,16 +46,16 @@ export function parseQuickenQFX(data: string): AccountLineItem[] {
       const month = date.substring(4, 6)
       const day = date.substring(6, 8)
       const hour = date.substring(8, 10)
-      const minute = date.substring(10,12)
-      const second = date.substring(12,14)
+      const minute = date.substring(10, 12)
+      const second = date.substring(12, 14)
       transactionDate = new Date(
-        Date.UTC( 
+        Date.UTC(
           parseInt(year, 10),
           parseInt(month, 10) - 1,
           parseInt(day, 10),
           parseInt(hour, 10),
           parseInt(minute, 10),
-          parseInt(second, 10)
+          parseInt(second, 10),
         ),
       )
     }
@@ -109,11 +109,8 @@ export function parseQuickenQFX(data: string): AccountLineItem[] {
     }
 
     if (line.startsWith('</SELLOPT')) {
-      console.log(
-        transactionDate, amount, quantity, price);
-      if (
-        transactionDate
-      ) {
+      console.log(transactionDate, amount, quantity, price)
+      if (transactionDate) {
         const accountLineItem: AccountLineItem = {
           t_date: transactionDate,
           t_type: transactionType,
@@ -121,7 +118,7 @@ export function parseQuickenQFX(data: string): AccountLineItem[] {
           t_amt: amount ?? 0,
           t_symbol: symbol,
           t_qty: quantity ?? 0,
-          t_price: price??0,
+          t_price: price ?? 0,
           t_commission: commission ?? 0,
           t_fee: 0,
           t_method: null,

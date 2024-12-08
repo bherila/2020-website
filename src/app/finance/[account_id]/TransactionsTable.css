@@ -1,0 +1,7 @@
+.numericCol {
+  text-align: right;
+  width: 80px;
+  font-family: 'Atkinson Hyperlegible', monospace;
+  font-size: 90%;
+  white-space: nowrap;
+}

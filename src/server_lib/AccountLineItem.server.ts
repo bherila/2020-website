@@ -59,8 +59,16 @@ export async function getLineItemsByAccount(accountId: number, includeDeleted?: 
     WHERE t_account = ${accountId}
     ${includeDeleted ? `AND when_deleted IS NOT NULL` : `AND when_deleted IS NULL`}
     ORDER BY t_date DESC
-  `)) as AccountLineItem[]
-  return result
+  `)) as any[]
+
+  // Ensure dates are formatted correctly
+  result.map((item) => {
+    if (item.opt_expiration instanceof Date) {
+      item.opt_expiration = item.opt_expiration.toISOString().split('T')[0] // remove time
+    }
+  })
+
+  return result as AccountLineItem[]
 }
 
 // Update a line item

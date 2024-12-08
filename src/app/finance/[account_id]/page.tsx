@@ -27,6 +27,7 @@ export default async function AccountIdPage({ params }: { params: Promise<{ acco
 
   const account_id = z.coerce.number().parse((await params).account_id)
   const items = await getLineItemsByAccount(account_id, false)
+
   return (
     <Container fluid>
       <Row>

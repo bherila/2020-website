@@ -68,7 +68,8 @@ export const AccountLineItemSchema = z.object({
   t_origin: z.string().max(20).nullable(),
   opt_expiration: z.coerce
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .regex(/^\d{4}-\d{2}-\d{2}/)
+    .transform((val) => (val ? val.slice(0, 10) : val))
     .nullable()
     .optional(),
   opt_type: z.enum(['call', 'put']).nullable().optional(),
