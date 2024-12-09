@@ -53,11 +53,11 @@ export async function bulkCreateLineItems(items: AccountLineItem[]) {
 }
 
 // Get line items for an account
-export async function getLineItemsByAccount(accountId: number, includeDeleted?: boolean) {
+export async function getLineItemsByAccount(accountId: number, getDeletedItems = false) {
   const result = (await db.query(`
     SELECT * FROM account_line_items 
     WHERE t_account = ${accountId}
-    ${includeDeleted ? `AND when_deleted IS NOT NULL` : `AND when_deleted IS NULL`}
+    ${getDeletedItems ? `AND when_deleted IS NOT NULL` : `AND when_deleted IS NULL`}
     ORDER BY t_date DESC
   `)) as any[]
 
