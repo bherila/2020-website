@@ -1,4 +1,4 @@
-import { AccountLineItem, TransactionType } from '@/lib/AccountLineItem'
+import { AccountLineItem, AccountLineItemSchema, TransactionType } from '@/lib/AccountLineItem'
 import { parseOptionDescription } from './StockOptionUtil'
 
 export function parseQuickenQFX(data: string): AccountLineItem[] {
@@ -111,7 +111,7 @@ export function parseQuickenQFX(data: string): AccountLineItem[] {
     if (line.startsWith('</SELLOPT')) {
       console.log(transactionDate, amount, quantity, price)
       if (transactionDate) {
-        const accountLineItem: AccountLineItem = {
+        const accountLineItem: AccountLineItem = AccountLineItemSchema.parse({
           t_date: transactionDate,
           t_type: transactionType,
           t_schc_category: null,
@@ -134,7 +134,7 @@ export function parseQuickenQFX(data: string): AccountLineItem[] {
           t_interest_rate: null,
           parent_t_id: null,
           t_cusip: cusip,
-        }
+        })
         accountLineItems.push(accountLineItem)
       }
     }

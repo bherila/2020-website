@@ -99,7 +99,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
 
   const filteredData = data.filter(
     (row) =>
-      (!dateFilter || row.t_date?.toISOString().slice(0, 10).includes(dateFilter)) &&
+      (!dateFilter || row.t_date?.includes(dateFilter)) &&
       (!descriptionFilter || row.t_description?.toLowerCase().includes(descriptionFilter.toLowerCase())) &&
       (!typeFilter || (row.t_type || '-').toLowerCase().includes(typeFilter.toLowerCase())) &&
       (!categoryFilter || (row.t_schc_category || '-').toLowerCase().includes(categoryFilter.toLowerCase())) &&
@@ -329,7 +329,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
             <td
               className="numericCol"
               onClick={() => {
-                const formattedDate = row.t_date?.toISOString().slice(0, 10)
+                const formattedDate = row.t_date
                 if (dateFilter === formattedDate) {
                   setDateFilter('')
                 } else {
@@ -337,7 +337,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
                 }
               }}
             >
-              {row.t_date?.toISOString().slice(0, 10)}
+              {row.t_date}
             </td>
             {!isTypeColumnEmpty && (
               <td

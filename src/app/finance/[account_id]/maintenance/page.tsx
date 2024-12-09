@@ -65,6 +65,7 @@ export default async function MaintenancePage({ params }: { params: Promise<{ ac
     `
 
     revalidatePath('/finance')
+    redirect('/finance')
   }
 
   const deletedTransactions = await getLineItemsByAccount(parseInt(account_id), true)

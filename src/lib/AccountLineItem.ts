@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import currency from 'currency.js'
 
 export const transactionTypeSchema = z
   .enum([
@@ -19,11 +20,28 @@ export const transactionTypeSchema = z
   ])
   .nullable()
 
+const currencyNumeric = z.union([
+  z.string().transform((val) => {
+    try {
+      return currency(val).value
+    } catch (e) {
+      throw new Error(`Invalid currency value: ${val}`)
+    }
+  }),
+  z.number(),
+])
+
+const ymdstring = z.coerce
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}/)
+  .transform((val) => (val ? val.slice(0, 10) : val))
+  .nullable()
+
 // Schema validation for the account_line_items table
 export const AccountLineItemSchema = z.object({
   t_id: z.number().optional(),
   t_account: z.number().nullable().optional(),
-  t_date: z.coerce.date(),
+  t_date: ymdstring,
   t_type: transactionTypeSchema,
   t_schc_category: z
     .enum([
@@ -55,31 +73,27 @@ export const AccountLineItemSchema = z.object({
       'Tuition',
       'Energy Efficient Commercial Buildings',
     ])
-    .nullable(),
-  t_amt: z.coerce.number(),
-  t_symbol: z.string().max(20).nullable(),
+    .nullable()
+    .optional(),
+  t_amt: currencyNumeric.default(0),
+  t_symbol: z.string().max(20).nullable().optional(),
   t_cusip: z.string().max(20).nullable().optional(),
   t_qty: z.coerce.number().default(0),
   t_price: z.coerce.number().default(0),
   t_commission: z.coerce.number().default(0),
   t_fee: z.coerce.number().default(0),
-  t_method: z.string().max(20).nullable(),
-  t_source: z.string().max(20).nullable(),
-  t_origin: z.string().max(20).nullable(),
-  opt_expiration: z.coerce
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}/)
-    .transform((val) => (val ? val.slice(0, 10) : val))
-    .nullable()
-    .optional(),
+  t_method: z.string().max(20).nullable().optional(),
+  t_source: z.string().max(20).nullable().optional(),
+  t_origin: z.string().max(20).nullable().optional(),
+  opt_expiration: ymdstring.optional(),
   opt_type: z.enum(['call', 'put']).nullable().optional(),
-  opt_strike: z.coerce.number().default(0).nullable().optional(),
-  t_description: z.string().max(255).nullable(),
-  t_comment: z.string().max(255).nullable(),
-  t_from: z.coerce.date().nullable(),
-  t_to: z.coerce.date().nullable(),
-  t_interest_rate: z.string().max(20).nullable(),
-  parent_t_id: z.number().nullable(),
+  opt_strike: currencyNumeric.default(0).nullable().optional(),
+  t_description: z.string().max(255).nullable().optional(),
+  t_comment: z.string().max(255).nullable().optional(),
+  t_from: z.coerce.date().nullable().optional(),
+  t_to: z.coerce.date().nullable().optional(),
+  t_interest_rate: z.string().max(20).nullable().optional(),
+  parent_t_id: z.number().nullable().optional(),
 })
 
 export type TransactionType = z.infer<typeof transactionTypeSchema>

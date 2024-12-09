@@ -1,8 +1,7 @@
 import { useMemo, useState, useCallback } from 'react'
 import Button from 'react-bootstrap/Button'
-import currency from 'currency.js'
 import { z, ZodError } from 'zod'
-import { AccountLineItem, AccountLineItemSchema } from '@/lib/AccountLineItem'
+import { AccountLineItem, AccountLineItemSchema, TransactionType } from '@/lib/AccountLineItem'
 import { parseDate } from '@/lib/DateHelper'
 import TransactionsTable from '../TransactionsTable'
 import { parseEtradeCsv } from './parseEtradeCsv'
@@ -122,30 +121,30 @@ function parseData(text: string): { data: AccountLineItem[] | null; parseError: 
     }
   }
 
+  const data: AccountLineItem[] = []
+  let parseError: string | null = null
   try {
-    const pd = text
-      .split('\n')
-      .filter(Boolean)
-      .map((line) => {
-        const row = line.split('\t')
-        return {
-          t_date: parseDate(row[0]) ?? new Date(row[0]),
-          t_description: row[1] ?? '[no description]',
-          t_amt: currency(row[2] ?? 0).value,
-          t_comment: row[3] ?? null,
-          t_type: 'spend' as const, // Default type
+    for (const line of text.split('\n')) {
+      const row = line.split(line.includes('\t') ? '\t' : ',')
+      if (row[0] === 'Date') {
+        continue
+      }
+      data.push(
+        AccountLineItemSchema.parse({
+          t_date: row[0],
+          t_description: row[1],
+          t_amt: row[2], // Pass raw string for t_amt, letting Zod handle the parsing
+          t_comment: row[3],
+          t_type: 'spend' as TransactionType,
           t_schc_category: null,
-        } as AccountLineItem
-      })
-      .filter((r) => r.t_date)
-    return {
-      data: pd,
-      parseError: null,
+        }),
+      )
     }
   } catch (e) {
-    return {
-      data: null,
-      parseError: e instanceof ZodError ? e.message : (e?.toString() ?? null),
-    }
+    parseError = e instanceof ZodError ? e.message : (e?.toString() ?? null)
+  }
+  return {
+    data,
+    parseError,
   }
 }

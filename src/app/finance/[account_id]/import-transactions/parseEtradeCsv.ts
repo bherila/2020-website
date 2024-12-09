@@ -1,4 +1,4 @@
-import { AccountLineItem, TransactionType } from '@/lib/AccountLineItem'
+import { AccountLineItem, AccountLineItemSchema, TransactionType } from '@/lib/AccountLineItem'
 import { parseOptionDescription } from './StockOptionUtil'
 import currency from 'currency.js'
 
@@ -25,15 +25,15 @@ export function parseEtradeCsv(csvString: string): AccountLineItem[] {
       t_type = 'transfer'
     }
 
-    const accountLineItem: AccountLineItem = {
-      t_date: new Date(transactionDate),
+    const accountLineItem: AccountLineItem = AccountLineItemSchema.parse({
+      t_date: transactionDate,
       t_type,
       t_schc_category: null,
-      t_amt: parseFloat(amount),
+      t_amt: amount,
       t_symbol: option?.symbol ?? symbol,
-      t_qty: parseInt(quantity, 10),
-      t_price: parseFloat(price),
-      t_commission: parseFloat(commission),
+      t_qty: quantity,
+      t_price: price,
+      t_commission: commission,
       t_fee: currency(price).multiply(quantity).subtract(commission).subtract(amount).value,
       t_method: null,
       t_source: null,
@@ -47,7 +47,7 @@ export function parseEtradeCsv(csvString: string): AccountLineItem[] {
       t_to: null,
       t_interest_rate: null,
       parent_t_id: null,
-    }
+    })
 
     accountLineItems.push(accountLineItem)
   })

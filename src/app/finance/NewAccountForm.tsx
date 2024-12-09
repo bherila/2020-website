@@ -1,45 +1,28 @@
 'use client'
 import { useState } from 'react'
-import { fetchWrapper } from '@/lib/fetchWrapper'
-import { AccountTableRow } from '@/app/api/finance/model'
-import Alert from 'react-bootstrap/Alert'
 import { useRouter } from 'next/navigation'
 
-const NewAccountForm = () => {
+type NewAccountFormProps = {
+  createAccount: (acctName: string) => Promise<void>
+}
+
+const NewAccountForm = (props: NewAccountFormProps) => {
   const [acctName, setAcctName] = useState('')
   const [err, setErr] = useState('')
   const router = useRouter()
 
-  const handleFormSubmit = (e: any) => {
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
-    const formData = {
-      acct_name: acctName,
+    setErr('')
+    try {
+      await props.createAccount(acctName)
+    } catch (error) {
+      setErr(error instanceof Error ? error.message : 'An unexpected error occurred')
     }
-
-    fetchWrapper
-      .post('/api/finance/', formData)
-      .then((response: AccountTableRow[]) => {
-        if (Array.isArray(response)) {
-          // Handle a successful response, e.g., redirect to another page or show a success message.
-          const id = response.find((n) => n.acct_name === acctName)?.acct_id
-          if (id) {
-            location.href = `/finance/${id}/`
-          }
-        } else {
-          // Handle errors, e.g., display an error message to the user.
-          setErr(JSON.stringify(response))
-        }
-      })
-      .catch((error) => {
-        // Handle network or other errors.
-        setErr(error.toString())
-      })
   }
 
   return (
     <form onSubmit={handleFormSubmit}>
-      {err && <Alert color="danger">{err}</Alert>}
       <div className="mb-3">
         <label htmlFor="acctName" className="form-label">
           Account Name
@@ -53,6 +36,7 @@ const NewAccountForm = () => {
         />
       </div>
 
+      {err && <p style={{ color: 'red' }}>{err}</p>}
       <button type="submit" className="btn btn-primary">
         Create Account
       </button>

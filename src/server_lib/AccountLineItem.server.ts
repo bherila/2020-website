@@ -55,7 +55,35 @@ export async function bulkCreateLineItems(items: AccountLineItem[]) {
 // Get line items for an account
 export async function getLineItemsByAccount(accountId: number, getDeletedItems = false) {
   const result = (await db.query(`
-    SELECT * FROM account_line_items 
+    SELECT 
+      t_id,
+      t_account,
+      DATE_FORMAT(t_date, '%Y-%m-%d') AS t_date,
+      t_type,
+      t_schc_category,
+      t_amt,
+      t_symbol,
+      t_qty,
+      t_price,
+      t_commission,
+      t_fee,
+      t_method,
+      t_source,
+      t_origin,
+      DATE_FORMAT(opt_expiration, '%Y-%m-%d') AS opt_expiration,
+      opt_type,
+      opt_strike,
+      t_description,
+      t_comment,
+      DATE_FORMAT(t_from, '%Y-%m-%d') AS t_from,
+      DATE_FORMAT(t_to, '%Y-%m-%d') AS t_to,
+      t_interest_rate,
+      parent_t_id,
+      t_cusip,
+      DATE_FORMAT(when_added, '%Y-%m-%d') AS when_added,
+      DATE_FORMAT(when_deleted, '%Y-%m-%d') AS when_deleted
+    FROM 
+      account_line_items
     WHERE t_account = ${accountId}
     ${getDeletedItems ? `AND when_deleted IS NOT NULL` : `AND when_deleted IS NULL`}
     ORDER BY t_date DESC
@@ -63,6 +91,9 @@ export async function getLineItemsByAccount(accountId: number, getDeletedItems =
 
   // Ensure dates are formatted correctly
   result.map((item) => {
+    if (item.t_date instanceof Date) {
+      item.t_date = item.t_date.toISOString().split('T')[0] // remove time
+    }
     if (item.opt_expiration instanceof Date) {
       item.opt_expiration = item.opt_expiration.toISOString().split('T')[0] // remove time
     }
