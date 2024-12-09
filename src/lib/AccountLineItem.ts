@@ -1,5 +1,8 @@
 import { z } from 'zod'
 import currency from 'currency.js'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+dayjs.extend(customParseFormat)
 
 export const transactionTypeSchema = z
   .enum([
@@ -31,11 +34,30 @@ const currencyNumeric = z.union([
   z.number(),
 ])
 
-const ymdstring = z.coerce
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}/)
-  .transform((val) => (val ? val.slice(0, 10) : val))
-  .nullable()
+const ymdstring = z.union([
+  z.date().transform((date) => dayjs(date).format('YYYY-MM-DD')),
+  z.coerce.string().transform((val) => {
+    // Define multiple parsing formats
+    const formats = ['YYYY-MM-DD', 'MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD', 'MM-DD-YYYY', 'DD-MM-YYYY']
+
+    // Try parsing with each format
+    for (const format of formats) {
+      const parsed = dayjs(val, format, true)
+      if (parsed.isValid()) {
+        return parsed.format('YYYY-MM-DD')
+      }
+    }
+
+    // If no format matches, try general parsing
+    const generalParsed = dayjs(val)
+    if (generalParsed.isValid()) {
+      return generalParsed.format('YYYY-MM-DD')
+    }
+
+    // Throw error if parsing fails
+    throw new Error(`Invalid date format: ${val}`)
+  }),
+])
 
 // Schema validation for the account_line_items table
 export const AccountLineItemSchema = z.object({
