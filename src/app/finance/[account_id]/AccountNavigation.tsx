@@ -9,7 +9,7 @@ export default function AccountNavigation({
 }: {
   accountId: number
   accountName: string
-  activeTab?: 'transactions' | 'import' | 'equities' | 'transfers'
+  activeTab?: 'transactions' | 'import' | 'duplicates' | 'summary' | 'maintenance'
 }) {
   return (
     <div className="mt-4">
@@ -23,12 +23,27 @@ export default function AccountNavigation({
       <Nav variant="tabs" className="mb-3">
         <Nav.Item>
           <Nav.Link href={`/finance/${accountId}`} active={activeTab === 'transactions'}>
-            Cash
+            Transactions
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
           <Nav.Link href={`/finance/${accountId}/import-transactions`} active={activeTab === 'import'}>
             Import
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link href={`/finance/${accountId}/duplicates`} active={activeTab === 'duplicates'}>
+            Duplicates
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link href={`/finance/${accountId}/summary`} active={activeTab === 'summary'}>
+            Summary
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link href={`/finance/${accountId}/maintenance`} active={activeTab === 'maintenance'}>
+            Maintenance
           </Nav.Link>
         </Nav.Item>
       </Nav>

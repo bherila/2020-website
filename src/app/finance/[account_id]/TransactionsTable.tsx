@@ -490,7 +490,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
           {!isPriceColumnEmpty && <td></td>}
           {!isCommissionColumnEmpty && <td></td>}
           {!isFeeColumnEmpty && <td></td>}
-          <td>
+          <td className="numericCol">
             <strong>{totalAmount.format()}</strong>
           </td>
           {!isCategoryColumnEmpty && <td></td>}
