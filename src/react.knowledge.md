@@ -1,11 +1,17 @@
 # React Component Guidelines
 
+## Package Management
+
+- Use yarn for package management, not npm
+- Run `yarn add` instead of `npm install`
+
 ## React Bootstrap Components
 
 - Keep using `className` props on React Bootstrap components even if React 19 shows ref warnings
 - React Bootstrap components handle refs internally - don't try to work around ref warnings by replacing className with style props or alternative components
 - Avoid React Bootstrap components in Server Components - they don't work with SSR
 - For SSR pages, use simpler HTML elements or Next.js built-in components
+- Note: Masonry is not included in react-bootstrap, use react-responsive-masonry instead
 
 ## Best Practices
 
