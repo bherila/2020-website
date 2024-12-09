@@ -388,7 +388,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.25.9"
 
-"@babel/runtime@^7.12.5", "@babel/runtime@^7.13.8", "@babel/runtime@^7.14.6", "@babel/runtime@^7.18.3", "@babel/runtime@^7.21.0", "@babel/runtime@^7.22.5", "@babel/runtime@^7.26.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.3", "@babel/runtime@^7.8.7":
+"@babel/runtime@^7.12.5", "@babel/runtime@^7.13.8", "@babel/runtime@^7.14.6", "@babel/runtime@^7.18.3", "@babel/runtime@^7.21.0", "@babel/runtime@^7.24.7", "@babel/runtime@^7.26.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.3", "@babel/runtime@^7.8.7":
   version "7.26.0"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.26.0.tgz#8600c2f595f277c60815256418b85356a65173c1"
   integrity sha512-FDSOghenHTiToteC/QRlv2q3DhPZ/oOXTBoirfWNx1Cx3TMVcGWQtMMmQcSvb/JjpNeGzx8Pq/b4fKEJuWm1sw==
@@ -624,7 +624,7 @@
   dependencies:
     "@floating-ui/dom" "^1.0.0"
 
-"@floating-ui/react@^0.26.16":
+"@floating-ui/react@^0.26.16", "@floating-ui/react@^0.26.23":
   version "0.26.28"
   resolved "https://registry.yarnpkg.com/@floating-ui/react/-/react-0.26.28.tgz#93f44ebaeb02409312e9df9507e83aab4a8c0dc7"
   integrity sha512-yORQuuAtVpiRjpMhdc0wJj06b9JFjrYF4qp96j++v2NBpbi6SEGF7donUJ3TMieerQ6qVkAv1tgr7L4r5roTqw==
@@ -1724,7 +1724,7 @@
   dependencies:
     dequal "^2.0.3"
 
-"@restart/ui@^1.6.8":
+"@restart/ui@^1.9.0":
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/@restart/ui/-/ui-1.9.1.tgz#f0f22d255470e02f6fee6dcc449e56f0f1b8ebc1"
   integrity sha512-qghR21ynHiUrpcIkKCoKYB+3rJtezY5Y7ikrwradCL+7hZHdQ2Ozc5ffxtpmpahoAGgc31gyXaSx2sXXaThmqA==
@@ -2974,7 +2974,7 @@ class-validator@^0.14.1:
     libphonenumber-js "^1.10.53"
     validator "^13.9.0"
 
-classnames@^2.2.0, classnames@^2.2.6, classnames@^2.3.2:
+classnames@^2.2.0, classnames@^2.3.2:
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.5.1.tgz#ba774c614be0f016da105c858e7159eae8e7687b"
   integrity sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==
@@ -3027,7 +3027,7 @@ clsx@^1.2.1:
   resolved "https://registry.yarnpkg.com/clsx/-/clsx-1.2.1.tgz#0ddc4a20a549b59c93a4116bb26f5294ca17dc12"
   integrity sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==
 
-clsx@^2.0.0:
+clsx@^2.0.0, clsx@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/clsx/-/clsx-2.1.1.tgz#eed397c9fd8bd882bfb18deab7102049a2f32999"
   integrity sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==
@@ -3291,6 +3291,11 @@ date-fns@^2.0.1, date-fns@^2.30.0:
   integrity sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==
   dependencies:
     "@babel/runtime" "^7.21.0"
+
+date-fns@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-3.6.0.tgz#f20ca4fe94f8b754951b24240676e8618c0206bf"
+  integrity sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==
 
 debounce-promise@^3.1.2:
   version "3.1.2"
@@ -6935,14 +6940,14 @@ react-bootstrap-typeahead@^6.3.4:
     scroll-into-view-if-needed "^3.1.0"
     warning "^4.0.1"
 
-react-bootstrap@2.10.2:
-  version "2.10.2"
-  resolved "https://registry.yarnpkg.com/react-bootstrap/-/react-bootstrap-2.10.2.tgz#3b609eb0170e31b3d9ace297d3a016c202a42642"
-  integrity sha512-UvB7mRqQjivdZNxJNEA2yOQRB7L9N43nBnKc33K47+cH90/ujmnMwatTCwQLu83gLhrzAl8fsa6Lqig/KLghaA==
+react-bootstrap@^2.10.6:
+  version "2.10.6"
+  resolved "https://registry.yarnpkg.com/react-bootstrap/-/react-bootstrap-2.10.6.tgz#cb8b6f3604480b99b1e3cfa09cf53446e760bba7"
+  integrity sha512-fNvKytSp0nHts1WRnRBJeBEt+I9/ZdrnhIjWOucEduRNvFRU1IXjZueDdWnBiqsTSJ7MckQJi9i/hxGolaRq+g==
   dependencies:
-    "@babel/runtime" "^7.22.5"
+    "@babel/runtime" "^7.24.7"
     "@restart/hooks" "^0.4.9"
-    "@restart/ui" "^1.6.8"
+    "@restart/ui" "^1.9.0"
     "@types/react-transition-group" "^4.4.6"
     classnames "^2.3.2"
     dom-helpers "^5.2.1"
@@ -6953,17 +6958,15 @@ react-bootstrap@2.10.2:
     uncontrollable "^7.2.1"
     warning "^4.0.3"
 
-react-datepicker@^4.18.0:
-  version "4.25.0"
-  resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-4.25.0.tgz#86b3ee8ac764bad1650046d0cf9280837bf6d845"
-  integrity sha512-zB7CSi44SJ0sqo8hUQ3BF1saE/knn7u25qEMTO1CQGofY1VAKahO8k9drZtp0cfW1DMfoYLR3uSY1/uMvbEzbg==
+react-datepicker@^7.5.0:
+  version "7.5.0"
+  resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-7.5.0.tgz#e7b1014a6dbd3b314839a5c57a6dacfbb16074e4"
+  integrity sha512-6MzeamV8cWSOcduwePHfGqY40acuGlS1cG//ePHT6bVbLxWyqngaStenfH03n1wbzOibFggF66kWaBTb1SbTtQ==
   dependencies:
-    "@popperjs/core" "^2.11.8"
-    classnames "^2.2.6"
-    date-fns "^2.30.0"
-    prop-types "^15.7.2"
-    react-onclickoutside "^6.13.0"
-    react-popper "^2.3.0"
+    "@floating-ui/react" "^0.26.23"
+    clsx "^2.1.1"
+    date-fns "^3.6.0"
+    prop-types "^15.8.1"
 
 react-dom@^18.3.1:
   version "18.3.1"
@@ -6977,11 +6980,6 @@ react-fast-compare@^3.0.1:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-3.2.2.tgz#929a97a532304ce9fee4bcae44234f1ce2c21d49"
   integrity sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==
-
-react-hook-form@^7.46.2:
-  version "7.54.0"
-  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.54.0.tgz#46bd9142d65fd16ac064a2bbf4dc0333e2d6840d"
-  integrity sha512-PS05+UQy/IdSbJNojBypxAo9wllhHgGmyr8/dyGQcPoiMf3e7Dfb9PWYVRco55bLbxH9S+1yDDJeTdlYCSxO3A==
 
 react-is@^16.13.1, react-is@^16.3.2, react-is@^16.7.0:
   version "16.13.1"
@@ -7019,11 +7017,6 @@ react-markdown@^9.0.1:
     unist-util-visit "^5.0.0"
     vfile "^6.0.0"
 
-react-onclickoutside@^6.13.0:
-  version "6.13.1"
-  resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-6.13.1.tgz#1f5e0241c08784b6e65745d91aca0d700c548a89"
-  integrity sha512-LdrrxK/Yh9zbBQdFbMTXPp3dTSN9B+9YJQucdDu3JNKRrbdU+H+/TVONJoWtOwy4II8Sqf1y/DTI6w/vGPYW0w==
-
 react-overlays@^5.2.0:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/react-overlays/-/react-overlays-5.2.1.tgz#49dc007321adb6784e1f212403f0fb37a74ab86b"
@@ -7046,7 +7039,7 @@ react-perfect-scrollbar@^1.5.8:
     perfect-scrollbar "^1.5.0"
     prop-types "^15.6.1"
 
-react-popper@^2.2.5, react-popper@^2.3.0:
+react-popper@^2.2.5:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/react-popper/-/react-popper-2.3.0.tgz#17891c620e1320dce318bad9fede46a5f71c70ba"
   integrity sha512-e1hj8lL3uM+sgSR4Lxzn5h1GxBlpa4CQz0XLF8kx4MDrDRWY0Ena4c97PUeSX9i5W3UAfDP0z0FXCTQkoXUl3Q==
