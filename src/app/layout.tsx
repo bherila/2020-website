@@ -16,19 +16,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Inline critical theme script */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                const theme = localStorage.getItem('theme');
-                if (theme === '"light"' || theme === '"dark"') {
-                  document.documentElement.setAttribute('data-bs-theme', JSON.parse(theme));
-                } else {
-                  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
-                }
-              } catch (e) {}
-            `,
+            __html: `try{let e=localStorage.getItem("theme");document.documentElement.setAttribute("data-bs-theme",e==='"light"'||e==='"dark"'?JSON.parse(e):window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch(e){}`,
           }}
         />
       </head>

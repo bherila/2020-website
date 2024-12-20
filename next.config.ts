@@ -1,7 +1,9 @@
 // @ts-check
 import {PHASE_DEVELOPMENT_SERVER} from 'next/constants'
+import type { Configuration as WebpackConfig } from 'webpack'
+import type { NextConfig } from 'next'
 
-export default (phase: any) => {
+export default (phase: string): NextConfig => {
   const isDev = phase === PHASE_DEVELOPMENT_SERVER
   return {
     // assetPrefix: isDev ? undefined : 'https://cf.bherila.net',
@@ -9,6 +11,14 @@ export default (phase: any) => {
       '@mui/icons-material': {
         transform: '@mui/icons-material/{{member}}',
       },
+    },
+    // Optimize bundle size
+    webpack: (config: WebpackConfig, { dev, isServer }) => {
+      // Enable module concatenation
+      config.optimization = config.optimization || {}
+      config.optimization.concatenateModules = true
+
+      return config
     },
     trailingSlash: true,
     images: {
@@ -47,18 +57,5 @@ export default (phase: any) => {
         permanent: false,
       },
     ],
-    // async headers() {
-    //   return [
-    //     {
-    //       source: "/(.*)",
-    //       headers: [
-    //         {
-    //           key: "Content-Security-Policy",
-    //           value: "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://cf.bherila.net; font-src 'self' https://cf.bherila.net;",
-    //         },
-    //       ],
-    //     },
-    //   ];
-    // },
   }
 }

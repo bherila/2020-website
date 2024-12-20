@@ -28,13 +28,15 @@ export async function middleware(request: NextRequest) {
 // Configure which routes to run middleware on
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
+    // Only run middleware on routes that need auth/session
+    '/finance/:path*',
+    '/my-account/:path*',
+    '/keys/:path*',
+    '/phr/:path*',
+    '/payslip/:path*',
+    '/rsu/:path*',
+    '/spgp/:path*',
+    // Exclude static files and API routes
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 }

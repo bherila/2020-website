@@ -19,11 +19,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useLocalStorage<Theme>('theme', 'auto')
   const [mounted, setMounted] = useState(false)
 
+  // Combine mount and theme effects
   useEffect(() => {
     setMounted(true)
-  }, [])
-
-  useEffect(() => {
     const root = document.documentElement
     const updateTheme = () => {
       if (theme === 'auto') {
