@@ -3,6 +3,13 @@ import type { NextRequest } from 'next/server'
 import { getSession } from './server_lib/session'
 
 export async function middleware(request: NextRequest) {
+  // Remove www. subdomain
+  if (request.headers.get('host')?.startsWith('www.')) {
+    const newUrl = new URL(request.url)
+    newUrl.host = newUrl.host.replace(/^www\./, '')
+    return NextResponse.redirect(newUrl)
+  }
+
   // Clone the request headers
   const requestHeaders = new Headers(request.headers)
 
