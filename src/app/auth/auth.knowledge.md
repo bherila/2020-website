@@ -15,6 +15,20 @@
 - Use environment variables for SMTP credentials
 - Store timestamps in UTC
 
+## Session Management
+- Invalid/corrupted session cookies return default { uid: 0 } session
+- Session encryption uses jose JWT with A256GCM
+- Session cookies are HTTP-only, secure, and SameSite=lax
+- 30 day expiry on session cookies
+- Fail silently on decryption errors to avoid exposing internals
+- Clear localStorage session cache on sign-in/out
+- Return HTML with script tag to clear cache before redirect
+- Sign-out flow:
+  1. Clear session cookie with immediate expiry
+  2. Clear localStorage cache
+  3. Redirect to sign-out page
+  4. Never check session status on sign-out page
+
 ## Database Management
 - Schema changes are handled manually by admin
 - Required fields for password reset:

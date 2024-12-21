@@ -3,21 +3,27 @@ import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
-import { sessionType } from '@/lib/sessionSchema'
 import { ThemeToggle } from './ThemeToggle'
+import { useSession } from '@/hooks/useSession'
+import Link from 'next/link'
 
-export default function Header({ session }: { session: sessionType }) {
+export default function Header() {
+  const { session } = useSession()
   return (
     <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary" as={Nav} aria-label="primary navigation">
       <Container>
-        <Navbar.Brand href="/" aria-label="Ben Herila">
+        <Link href="/" aria-label="Ben Herila" className="navbar-brand">
           Ben Herila
-        </Navbar.Brand>
+        </Link>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" aria-label="toggle navigation" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="/recipes">Recipes</Nav.Link>
-            <Nav.Link href="/projects">Projects</Nav.Link>
+            <Link href="/recipes" className="nav-link">
+              Recipes
+            </Link>
+            <Link href="/projects" className="nav-link">
+              Projects
+            </Link>
             <NavDropdown title="Tools" id="collasible-nav-dropdown">
               <NavDropdown.Item href="/maxmin/MSFT">MaxMin 🔑</NavDropdown.Item>
               <NavDropdown.Item href="/keys/">License Manager 🔑</NavDropdown.Item>
@@ -34,21 +40,21 @@ export default function Header({ session }: { session: sessionType }) {
             <ThemeToggle />
             {!session?.uid ? (
               <>
-                <Nav.Link href="/auth/sign-in" aria-label="Sign in">
+                <Link href="/auth/sign-in" aria-label="Sign in" className="nav-link">
                   Sign in
-                </Nav.Link>
-                <Nav.Link href="/auth/sign-up" aria-label="Sign up">
+                </Link>
+                <Link href="/auth/sign-up" aria-label="Sign up" className="nav-link">
                   Sign up
-                </Nav.Link>
+                </Link>
               </>
             ) : (
               <>
-                <Nav.Link href="/my-account" aria-label="My Account">
+                <Link href="/my-account" aria-label="My Account" className="nav-link">
                   My Account
-                </Nav.Link>
-                <Nav.Link href="/api/sign-out" aria-label="Sign out">
+                </Link>
+                <Link href="/api/sign-out" aria-label="Sign out" className="nav-link">
                   Sign out
-                </Nav.Link>
+                </Link>
               </>
             )}
           </Nav>

@@ -1,6 +1,6 @@
 import 'server-only'
 import { cookies } from 'next/headers'
-import { sessionSchema } from '@/lib/sessionSchema'
+import { sessionSchema, sessionType } from '@/lib/sessionSchema'
 import { cache } from 'react'
 import * as jose from 'jose'
 
@@ -18,11 +18,20 @@ function padKey(key: string): Uint8Array {
 
 const secret = padKey(process.env.VERCEL_ANALYTICS_ID || '')
 
-async function getSession_internal() {
+async function getSession_internal(): Promise<sessionType> {
   const cookieStore = await cookies()
   const encryptedSession = cookieStore.get(cookieName)?.value
-  const session = encryptedSession ? await decryptSession(encryptedSession) : null
-  return session == null ? null : sessionSchema.parse(session)
+
+  if (!encryptedSession) {
+    return { uid: 0 }
+  }
+
+  try {
+    const session = await decryptSession(encryptedSession)
+    return session ? sessionSchema.parse(session) : { uid: 0 }
+  } catch (err) {
+    return { uid: 0 }
+  }
 }
 export const getSession = cache(getSession_internal)
 
@@ -38,7 +47,6 @@ async function decryptSession(encrypted: string) {
     const { payload } = await jose.jwtDecrypt(encrypted, secret)
     return payload
   } catch (err) {
-    console.warn(err)
     return null
   }
 }

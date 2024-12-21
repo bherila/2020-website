@@ -3,7 +3,6 @@ import * as React from 'react'
 import 'animate.css'
 import Footer from '@/components/footer'
 import Header from '@/components/header'
-import getServerSession from '@/server_lib/getServerSession'
 import { ThemeProvider } from '@/components/ThemeProvider'
 
 export const metadata = {
@@ -11,21 +10,30 @@ export const metadata = {
   description: "Ben Herila's personal website",
 }
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const session = await getServerSession()
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Inline critical theme script */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{let e=localStorage.getItem("theme");document.documentElement.setAttribute("data-bs-theme",e==='"light"'||e==='"dark"'?JSON.parse(e):window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch(e){}`,
+            __html: `try {
+              let e = localStorage.getItem('theme')
+              document.documentElement.setAttribute(
+                'data-bs-theme',
+                e === '"light"' || e === '"dark"'
+                  ? JSON.parse(e)
+                  : window.matchMedia('(prefers-color-scheme: dark)').matches
+                    ? 'dark'
+                    : 'light',
+              )
+            } catch (e) {}`,
           }}
         />
       </head>
       <body>
         <ThemeProvider>
-          <Header session={session} />
+          <Header />
           <main>{children}</main>
           <Footer />
         </ThemeProvider>

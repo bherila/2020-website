@@ -19,6 +19,8 @@
 - Use Next.js Link for navigation except within React Bootstrap components that provide their own Link variants
 - Keep forms on dedicated pages instead of inline/modal forms for better UX and accessibility
 - Use simple, focused forms - one primary action per form
+- Cache and share expensive data fetching across components using global state
+- Prevent duplicate API calls by sharing fetch promises between hooks
 
 ## UI Patterns
 

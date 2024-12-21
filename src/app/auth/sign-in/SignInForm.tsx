@@ -57,7 +57,15 @@ export default function SignInForm(props: any) {
       <Row>
         <Col xs={xs}></Col>
         <Col xs={12 - xs}>
-          <Button variant="primary" type="submit" aria-label="Sign in" aria-live="polite">
+          <Button
+            variant="primary"
+            type="submit"
+            aria-label="Sign in"
+            aria-live="polite"
+            onClick={() => {
+              localStorage.clear()
+            }}
+          >
             Sign in
           </Button>
           <div className="mt-3">

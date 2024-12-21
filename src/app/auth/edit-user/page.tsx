@@ -1,6 +1,5 @@
 import { getSession } from '@/server_lib/session'
-import { redirect } from 'next/navigation'
-import { RedirectType } from 'next/dist/client/components/redirect'
+import { redirect, RedirectType } from 'next/navigation'
 import Container from '@/components/container'
 import ChangePasswordAction from '@/app/auth/ChangePasswordAction'
 import AuthRoutes from '@/app/auth/AuthRoutes'

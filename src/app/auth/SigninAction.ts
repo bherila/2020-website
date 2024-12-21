@@ -3,14 +3,15 @@ import 'server-only'
 import db from '@/server_lib/db'
 import { z } from 'zod'
 import { saveSession } from '@/server_lib/session'
-import { redirect } from 'next/navigation'
+import { redirect, RedirectType } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 
 const User = z.object({
   email: z.string(),
   password: z.string(),
 })
 
-export default async function SignInAction(formData: FormData) {
+export default async function SignInAction(formData: FormData): Promise<void> {
   try {
     const user = User.parse({
       email: formData.get('email'),
@@ -60,11 +61,22 @@ export default async function SignInAction(formData: FormData) {
         ])
       }
 
-      // set the cookie
-      await saveSession(dbObj)
+      // Create a plain object for session data
+      const sessionData = {
+        uid: dbObj.uid,
+        email: dbObj.email,
+        ax_maxmin: dbObj.ax_maxmin,
+        ax_homes: dbObj.ax_homes,
+        ax_tax: dbObj.ax_tax,
+        ax_evdb: dbObj.ax_evdb,
+        ax_spgp: dbObj.ax_spgp,
+        ax_phr: dbObj.ax_phr,
+      }
 
-      // https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations#redirecting
-      redirect('/')
+      // set the cookie
+      await saveSession(sessionData)
+      revalidatePath('/')
+      redirect('/', RedirectType.replace)
     }
   } finally {
     await db.end()

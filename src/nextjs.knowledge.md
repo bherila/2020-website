@@ -12,4 +12,9 @@
   - Enable tree shaking in all environments (usedExports: true)
 - Minify critical scripts and inline them in <head>
 - Use @next/bundle-analyzer to monitor bundle sizes
-```
+
+## Data Serialization
+- Only pass plain objects between server and client components
+- Explicitly serialize complex objects to plain JSON-compatible objects
+- Avoid passing class instances or objects with null prototypes
+- Use interface types rather than classes for shared data structures
