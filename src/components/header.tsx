@@ -4,11 +4,14 @@ import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 import { ThemeToggle } from './ThemeToggle'
-import { useSession } from '@/hooks/useSession'
 import Link from 'next/link'
+import { type sessionType } from '@/lib/sessionSchema'
 
-export default function Header() {
-  const { session } = useSession()
+interface HeaderProps {
+  session: sessionType
+}
+
+export default function Header({ session }: HeaderProps) {
   return (
     <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary" as={Nav} aria-label="primary navigation">
       <Container>

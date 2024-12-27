@@ -4,13 +4,16 @@ import 'animate.css'
 import Footer from '@/components/footer'
 import Header from '@/components/header'
 import { ThemeProvider } from '@/components/ThemeProvider'
+import getServerSession from '@/server_lib/getServerSession'
 
 export const metadata = {
   title: 'Ben Herila',
   description: "Ben Herila's personal website",
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const session = await getServerSession()
+  
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -33,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ThemeProvider>
-          <Header />
+          <Header session={session} />
           <main>{children}</main>
           <Footer />
         </ThemeProvider>
