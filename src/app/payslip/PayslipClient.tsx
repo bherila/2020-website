@@ -9,7 +9,7 @@ import Row from 'react-bootstrap/Row'
 import { payslip_table_col, PayslipTable } from '@/app/payslip/PayslipTable'
 import Spinner from 'react-bootstrap/Spinner'
 import FileUploadClient from '@/app/payslip/FileUploadClient'
-import { Button } from 'react-bootstrap'
+import { Button, Col } from 'react-bootstrap'
 import styles from './dropzone.module.css'
 import currency from 'currency.js'
 import Table from 'react-bootstrap/Table'
@@ -132,9 +132,9 @@ export default function PayslipClient(): React.ReactElement {
     <Container fluid>
       <div className="container my-2">
         <Row>
-          <td>
+          <Col xs={12}>
             Tax period: <b>2024-01-01 through 2024-12-31</b>
-          </td>
+          </Col>
         </Row>
       </div>
       <Row>
