@@ -6,7 +6,6 @@ import MainTitle from '@/components/main-title'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Container from 'react-bootstrap/Container'
-import SPGP_CTA from '@/app/spgp/SPGP_CTA'
 import Alert from 'react-bootstrap/Alert'
 
 export const metadata: Metadata = {
@@ -23,7 +22,6 @@ export default async function HomePage() {
 
   return (
     <Container>
-      <SPGP_CTA />
       <Row className="animate__animated">
         <Col xs={12}>
           <MainTitle>Hi, {Im} Ben</MainTitle>
