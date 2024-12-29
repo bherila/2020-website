@@ -1,15 +1,17 @@
 import 'server-only'
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
-import getServerSession from './getServerSession'
 import AuthRoutes from '@/app/auth/AuthRoutes'
+import { getSession } from './session'
 
 export default async function requireSession(returnUrl?: string) {
-  const session = await getServerSession()
+  const session = await getSession()
   if (!session?.uid) {
     const headersList = await headers()
     const path = headersList.get('x-pathname') || returnUrl || '/'
-    redirect(AuthRoutes.signIn + `?next=${encodeURIComponent(path)}`)
+    const url = new URL(AuthRoutes.signIn)
+    url.searchParams.set('next', path)
+    redirect(url.toString())
   }
   return session
 }

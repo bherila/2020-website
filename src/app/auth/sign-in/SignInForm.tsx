@@ -8,7 +8,7 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Link from 'next/link'
 
-export default function SignInForm(props: any) {
+export default function SignInForm({ nextUrl }: { nextUrl?: string }) {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -68,6 +68,7 @@ export default function SignInForm(props: any) {
           >
             Sign in
           </Button>
+          {nextUrl && <input type="hidden" name="next" value={nextUrl} />}
           <div className="mt-3">
             <Link href="/auth/reset-password">Forgot password?</Link>
           </div>

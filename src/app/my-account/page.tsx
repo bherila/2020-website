@@ -1,11 +1,11 @@
 import { redirect } from 'next/navigation'
 import Container from '@/components/container'
 import ChangePasswordForm from './ChangePasswordForm'
-import getServerSession from '@/server_lib/getServerSession'
 import ChangePasswordAction from '@/app/auth/ChangePasswordAction'
+import requireSession from '@/server_lib/requireSession'
 
 export default async function MyAccountPage() {
-  const session = await getServerSession()
+  const session = await requireSession('/my-account')
 
   if (!session) {
     redirect('/auth/sign-in')

@@ -2,7 +2,7 @@
 - Use 'server-only' import for server components
 - Handle loading and error states explicitly
 - Prefer static paths when possible
-- Prefer server components with getServerSession over client components with useSession hook
+- Prefer server components with getSession over client components with useSession hook
 
 ## Performance Optimization
 - Cache API responses aggressively with s-maxage and stale-while-revalidate

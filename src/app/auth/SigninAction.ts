@@ -9,6 +9,7 @@ import { revalidatePath } from 'next/cache'
 const User = z.object({
   email: z.string(),
   password: z.string(),
+  next: z.string().optional(),
 })
 
 export default async function SignInAction(formData: FormData): Promise<void> {
@@ -76,7 +77,7 @@ export default async function SignInAction(formData: FormData): Promise<void> {
       // set the cookie
       await saveSession(sessionData)
       revalidatePath('/')
-      redirect('/', RedirectType.replace)
+      redirect(user.next || '/', RedirectType.replace)
     }
   } finally {
     await db.end()
