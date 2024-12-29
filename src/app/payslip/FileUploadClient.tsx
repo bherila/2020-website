@@ -5,6 +5,7 @@ import styles from './dropzone.module.css'
 
 interface Props {
   onJsonPreview?: (rows: any[]) => void
+  acceptTypes?: string[]
 }
 
 export default function FileUploadClient(props: Props) {
@@ -14,8 +15,11 @@ export default function FileUploadClient(props: Props) {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     const droppedFiles = Array.from(e.dataTransfer.files)
-    const newJsonFiles = droppedFiles.filter((file) => file.type === 'application/json')
-    const newPdfFiles = droppedFiles.filter((file) => file.type === 'application/pdf')
+    const acceptedFiles = props.acceptTypes
+      ? droppedFiles.filter((file) => props.acceptTypes?.includes(file.type))
+      : droppedFiles
+    const newJsonFiles = acceptedFiles.filter((file) => file.type === 'application/json')
+    const newPdfFiles = acceptedFiles.filter((file) => file.type === 'application/pdf')
     setJsonFiles(newJsonFiles)
     setPdfFiles(newPdfFiles)
   }

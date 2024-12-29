@@ -11,6 +11,15 @@ export async function GET(req: NextRequest) {
   if (!uid) {
     return NextResponse.json('Unauthorized', { status: 403 })
   }
+
+  var year = req.nextUrl.searchParams.get('year') ?? new Date().getFullYear().toString()
+  var start = year + '-01-01'
+  var end = year + '-12-31'
+  // validate year is between 1900 and 2100
+  if (year < '1900' || year > '2100') {
+    return NextResponse.json('Invalid year', { status: 400 })
+  }
+
   let data: any[] = await db.query(
     `
       select payslip_id,
@@ -47,9 +56,9 @@ export async function GET(req: NextRequest) {
              ps_vacation_payout,
              other
       from fin_payslip
-      where uid = ?
+      where uid = ? and pay_date > ? and pay_date < ?
       order by pay_date`,
-    [uid],
+    [uid, start, end],
   )
 
   data = data.map((r) => ({

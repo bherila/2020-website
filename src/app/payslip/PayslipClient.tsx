@@ -16,7 +16,11 @@ import Table from 'react-bootstrap/Table'
 import { genBrackets } from '@/lib/taxBracket'
 import { sum } from '@/components/matcher'
 
-export default function PayslipClient(): React.ReactElement {
+interface PayslipClientProps {
+  year: string
+}
+
+export default function PayslipClient({ year }: PayslipClientProps): React.ReactElement {
   const cols: payslip_table_col[] = [
     { field: 'period_start', title: 'Period Start', hide: false },
     { field: 'period_end', title: 'Period End', hide: false },
@@ -86,7 +90,7 @@ export default function PayslipClient(): React.ReactElement {
   const [loading, setLoading] = useState<boolean>(true)
   useEffect(() => {
     fetchWrapper
-      .get('/api/payslip/')
+      .get(`/api/payslip/?year=${year}`)
       .then((res) => {
         setRawData(res)
         setLoading(false)
