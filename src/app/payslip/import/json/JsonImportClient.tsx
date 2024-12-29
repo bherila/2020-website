@@ -12,16 +12,17 @@ export default function JsonImportClient() {
   const [previewData, setPreviewData] = useState<any[]>([])
   const router = useRouter()
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {      setJsonContent(e.target.value)
-      try {
-        const parsed = parseEntities(e.target.value)
-        // Validate against schema
-        fin_payslip_schema.parse(parsed)
-        setPreviewData([parsed])
-      } catch (error) {
-        console.error('Failed to parse or validate JSON:', error)
-        setPreviewData([])
-      }
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setJsonContent(e.target.value)
+    try {
+      const parsed = parseEntities(e.target.value)
+      // Validate against schema
+      fin_payslip_schema.parse(parsed)
+      setPreviewData([parsed])
+    } catch (error) {
+      console.error('Failed to parse or validate JSON:', error)
+      setPreviewData([])
+    }
   }
 
   const handleDrop = (e: React.DragEvent<HTMLTextAreaElement>) => {
