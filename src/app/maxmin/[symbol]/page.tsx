@@ -2,12 +2,11 @@ import 'server-only'
 import 'devextreme/dist/css/dx.common.css'
 import 'devextreme/dist/css/dx.material.purple.dark.compact.css'
 
-import AuthRoutes from '@/app/auth/AuthRoutes'
-import { getSession } from '@/server_lib/session'
 import { Metadata, ResolvingMetadata } from 'next'
 import { redirect } from 'next/navigation'
 import Container from 'react-bootstrap/Container'
 import MinMaxClientDataLoader from './MinMaxClientDataLoader'
+import requireSession from '@/server_lib/requireSession'
 
 interface Props {
   params: Promise<{ symbol: string }>
@@ -22,12 +21,8 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 }
 
 export default async function Page({ params }: Props) {
-  if (!(await getSession())?.uid) {
-    redirect(AuthRoutes.signIn)
-    return null
-  }
-
   const { symbol } = await params
+  await requireSession(`/maxmin/${symbol}`)
   if (!symbol) {
     return (
       <div>

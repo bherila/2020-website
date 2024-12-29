@@ -1,9 +1,7 @@
 import 'server-only'
 import { Atkinson_Hyperlegible } from 'next/font/google'
-import { getSession } from '@/server_lib/session'
-import { redirect } from 'next/navigation'
-import AuthRoutes from '@/app/auth/AuthRoutes'
 import PayslipClient from './PayslipClient'
+import requireSession from '@/server_lib/requireSession'
 
 const atkinson = Atkinson_Hyperlegible({
   weight: ['400', '700'],
@@ -13,9 +11,7 @@ const atkinson = Atkinson_Hyperlegible({
 })
 
 export default async function PayslipPage() {
-  if (!(await getSession())?.uid) {
-    redirect(AuthRoutes.signIn)
-  }
+  await requireSession('/payslip')
   return (
     <main className={atkinson.variable}>
       <PayslipClient year={new Date().getFullYear().toString()} />

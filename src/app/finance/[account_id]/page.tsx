@@ -1,19 +1,15 @@
 import 'server-only'
-import { getSession } from '@/server_lib/session'
-import { redirect } from 'next/navigation'
-import AuthRoutes from '@/app/auth/AuthRoutes'
 import AccountClient from './Client'
 import { Container, Row, Col } from 'react-bootstrap'
 import AccountNavigation from './AccountNavigation'
 import { z } from 'zod'
 import { sql } from '@/server_lib/db'
 import { getLineItemsByAccount } from '@/server_lib/AccountLineItem.server'
+import requireSession from '@/server_lib/requireSession'
 
 export default async function AccountIdPage({ params }: { params: Promise<{ account_id: string }> }) {
-  const uid = (await getSession())?.uid
-  if (!uid) {
-    redirect(AuthRoutes.signIn)
-  }
+  const session = await requireSession(`/finance/${(await params).account_id}`)
+  const uid = session.uid
 
   const _param = await params
   const account_name = (

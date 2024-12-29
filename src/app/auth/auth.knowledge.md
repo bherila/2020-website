@@ -16,6 +16,12 @@
 - Store timestamps in UTC
 
 ## Session Management
+
+### Authentication Checks
+- Use `requireSession()` from server_lib for route protection
+- Pass return URL as parameter to enable post-login redirect
+- Returns session object if authenticated
+- Automatically redirects to sign-in page if not authenticated
 - Invalid/corrupted session cookies return default { uid: 0 } session
 - Session encryption uses jose JWT with A256GCM
 - Session cookies are HTTP-only, secure, and SameSite=lax
