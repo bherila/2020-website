@@ -59,17 +59,125 @@ export default function JsonImportClient() {
   }
 
   return (
-    <div>
-      <textarea
-        className={styles.uploadZone}
-        style={{ width: '100%', height: '200px', marginBottom: '20px' }}
-        value={jsonContent}
-        onChange={handleTextChange}
-        onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        placeholder="Paste JSON here or drop a JSON file"
-      />
-
+    <div className="d-flex gap-4">
+      <div style={{ flex: 3 }}>
+        <textarea
+          className={styles.uploadZone}
+          style={{ width: '100%', height: '200px', marginBottom: '20px' }}
+          value={jsonContent}
+          onChange={handleTextChange}
+          onDrop={handleDrop}
+          onDragOver={(e) => e.preventDefault()}
+          placeholder="Paste JSON here or drop a JSON file"
+        />
+      </div>
+      <div style={{ flex: 1 }}>
+        <h5>Example JSON</h5>
+        <pre style={{ fontSize: '0.8rem', whiteSpace: 'pre-wrap' }}>
+          {`{
+  "period_start": "2024-01-01",
+  "period_end": "2024-01-15",
+  "pay_date": "2024-01-15",
+  "ps_salary": 5000.00,
+  "earnings_bonus": 1000.00,
+  "earnings_rsu": 2000.00,
+  "ps_oasdi": 310.00,
+  "ps_medicare": 72.50,
+  "ps_fed_tax": 800.00,
+  "ps_state_tax": 300.00,
+  "ps_state_disability": 50.00,
+  "ps_401k_pretax": 500.00,
+  "ps_pretax_medical": 100.00,
+  "ps_pretax_dental": 50.00,
+  "ps_pretax_vision": 25.00,
+  "earnings_net_pay": 5892.50
+}`}
+        </pre>
+        <h5 className="mt-3">Field Descriptions</h5>
+        <ul style={{ fontSize: '0.8rem' }}>
+          <li>
+            <b>period_start</b>: Start date of pay period
+          </li>
+          <li>
+            <b>period_end</b>: End date of pay period
+          </li>
+          <li>
+            <b>pay_date</b>: Date paycheck was issued
+          </li>
+          <li>
+            <b>ps_salary</b>: Base salary amount
+          </li>
+          <li>
+            <b>earnings_bonus</b>: Bonus payment amount
+          </li>
+          <li>
+            <b>earnings_rsu</b>: Restricted stock units value
+          </li>
+          <li>
+            <b>ps_oasdi</b>: Social Security tax
+          </li>
+          <li>
+            <b>ps_medicare</b>: Medicare tax
+          </li>
+          <li>
+            <b>ps_fed_tax</b>: Federal income tax
+          </li>
+          <li>
+            <b>ps_state_tax</b>: State income tax
+          </li>
+          <li>
+            <b>ps_state_disability</b>: State disability insurance
+          </li>
+          <li>
+            <b>ps_401k_pretax</b>: 401k pre-tax contribution
+          </li>
+          <li>
+            <b>ps_pretax_medical</b>: Medical insurance premium
+          </li>
+          <li>
+            <b>ps_pretax_dental</b>: Dental insurance premium
+          </li>
+          <li>
+            <b>ps_pretax_vision</b>: Vision insurance premium
+          </li>
+          <li>
+            <b>earnings_net_pay</b>: Net pay after deductions
+          </li>
+          <li>
+            <b>ps_fed_tax_addl</b>: Additional federal tax withholding
+          </li>
+          <li>
+            <b>ps_state_tax_addl</b>: Additional state tax withholding
+          </li>
+          <li>
+            <b>ps_401k_aftertax</b>: 401k after-tax contribution
+          </li>
+          <li>
+            <b>ps_401k_employer</b>: 401k employer match
+          </li>
+          <li>
+            <b>ps_fed_tax_refunded</b>: Refunded federal tax
+          </li>
+          <li>
+            <b>ps_payslip_file_hash</b>: Hash of payslip file
+          </li>
+          <li>
+            <b>ps_is_estimated</b>: Whether payslip is estimated
+          </li>
+          <li>
+            <b>ps_comment</b>: Additional comments
+          </li>
+          <li>
+            <b>ps_vacation_payout</b>: Vacation payout amount
+          </li>
+          <li>
+            <b>ps_pretax_fsa</b>: Flexible spending account contribution
+          </li>
+          <li>
+            <b>other</b>: Miscellaneous other data
+          </li>
+        </ul>
+      </div>
       {previewData.length > 0 && (
         <div>
           <h4>Preview</h4>
