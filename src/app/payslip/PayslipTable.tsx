@@ -20,6 +20,7 @@ export interface payslip_table_col {
       }[]
   hide?: boolean
   title: string
+  render?: (value: any, row: fin_payslip) => React.ReactNode
 }
 
 interface Props {
@@ -117,7 +118,7 @@ export function PayslipTable(props: Props) {
                 } else {
                   return (
                     <td style={{ textAlign: 'right' }} key={c.field}>
-                      {renderValueCellContents(row, c.field)}
+                      {c.render ? c.render(row[c.field], row) : renderValueCellContents(row, c.field)}
                     </td>
                   )
                 }

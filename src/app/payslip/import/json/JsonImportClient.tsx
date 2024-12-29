@@ -94,6 +94,7 @@ export default function JsonImportClient() {
 }`}
         </pre>
         <h5 className="mt-3">Field Descriptions</h5>
+        <p>Dates are in the format YYYY-MM-DD</p>
         <ul style={{ fontSize: '0.8rem' }}>
           <li>
             <b>period_start</b>: Start date of pay period

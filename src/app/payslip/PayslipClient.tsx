@@ -81,7 +81,14 @@ export default function PayslipClient({ year }: PayslipClientProps): React.React
       title: 'Benefits',
     },
     { field: 'ps_payslip_file_hash', title: 'Payslip File Hash', hide: true },
-    { field: 'ps_is_estimated', title: 'Is Estimated', hide: false },
+    {
+      field: 'ps_is_estimated',
+      title: 'Is Estimated',
+      hide: false,
+      render: (value: any, row: fin_payslip) => (
+        <input type="checkbox" checked={value} onChange={() => editRow({ ...row, ps_is_estimated: !value })} />
+      ),
+    },
     { field: 'earnings_net_pay', title: 'Net Pay' },
     { field: 'other', title: 'Other', hide: false },
   ]
@@ -101,29 +108,35 @@ export default function PayslipClient({ year }: PayslipClientProps): React.React
   }, [])
 
   const editRow = async (row: fin_payslip) => {
-    setLoading(true)
-    const fd = new FormData()
-    fd.append('parsed_json', JSON.stringify([row]))
-    const response = await fetch('/api/payslip/', {
-      method: 'POST',
-      body: fd,
-      credentials: 'include', // Include cookies
-    })
-    setRawData(await response.json())
-    setLoading(false)
+    try {
+      setLoading(true)
+      const fd = new FormData()
+      fd.append('parsed_json', JSON.stringify([row]))
+      const response = await fetch('/api/payslip/', {
+        method: 'POST',
+        body: fd,
+        credentials: 'include', // Include cookies
+      })
+      setRawData(await response.json())
+    } finally {
+      setLoading(false)
+    }
   }
 
   const doImport = async () => {
-    setLoading(true)
-    const fd = new FormData()
-    fd.append('parsed_json', JSON.stringify(previewData))
-    const response = await fetch('/api/payslip/', {
-      method: 'POST',
-      body: fd,
-      credentials: 'include', // Include cookies
-    })
-    setRawData(await response.json())
-    setLoading(false)
+    try {
+      setLoading(true)
+      const fd = new FormData()
+      fd.append('parsed_json', JSON.stringify(previewData))
+      const response = await fetch('/api/payslip/', {
+        method: 'POST',
+        body: fd,
+        credentials: 'include', // Include cookies
+      })
+      setRawData(await response.json())
+    } finally {
+      setLoading(false)
+    }
   }
 
   const [previewData, setPreviewData] = useState<any[]>([])
@@ -134,13 +147,6 @@ export default function PayslipClient({ year }: PayslipClientProps): React.React
 
   return (
     <Container fluid>
-      <div className="container my-2">
-        <Row>
-          <Col xs={12}>
-            Tax period: <b>2024-01-01 through 2024-12-31</b>
-          </Col>
-        </Row>
-      </div>
       <Row>
         <PayslipTable data={data} cols={cols} onRowEdited={editRow} />
         {loading && (
