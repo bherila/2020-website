@@ -2413,6 +2413,17 @@
     rimraf "^6.0.1"
     ts-morph "^23.0.0"
 
+"@opennextjs/cloudflare@https://pkg.pr.new/@opennextjs/cloudflare@main":
+  version "0.3.3"
+  resolved "https://pkg.pr.new/@opennextjs/cloudflare@main#fed330f133e34faa2b88bb09306c33df68330f17"
+  dependencies:
+    "@dotenvx/dotenvx" "1.31.0"
+    "@opennextjs/aws" "https://pkg.pr.new/@opennextjs/aws@684"
+    enquirer "^2.4.1"
+    glob "^11.0.0"
+    rimraf "^6.0.1"
+    ts-morph "^23.0.0"
+
 "@popperjs/core@^2.10.2", "@popperjs/core@^2.11.6", "@popperjs/core@^2.11.8":
   version "2.11.8"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
