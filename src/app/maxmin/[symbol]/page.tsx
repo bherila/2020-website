@@ -1,6 +1,4 @@
 import 'server-only'
-import 'devextreme/dist/css/dx.common.css'
-import 'devextreme/dist/css/dx.material.purple.dark.compact.css'
 
 import { Metadata, ResolvingMetadata } from 'next'
 import { redirect } from 'next/navigation'
