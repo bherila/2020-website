@@ -5,7 +5,6 @@ import { NextRequest } from 'next/server'
 import path from 'path'
 import { LicenseKeyResolver } from '@/app/api/graphql/LicenseKeyResolver'
 import { buildSchemaSync } from 'type-graphql'
-import { TimeseriesDocumentResolver, TimeseriesUserResolver } from '@/app/api/graphql/TimeseriesGraphql'
 import { getSession } from '@/server_lib/session'
 import ViewerContext from './ViewerContext'
 import ViewerRootResolver from './ViewerRootResolver'
@@ -13,7 +12,7 @@ import ViewerRootResolver from './ViewerRootResolver'
 const rootPath = process.cwd()
 
 const schema = buildSchemaSync({
-  resolvers: [LicenseKeyResolver, TimeseriesDocumentResolver, TimeseriesUserResolver, ViewerRootResolver],
+  resolvers: [LicenseKeyResolver, ViewerRootResolver],
   emitSchemaFile: {
     path: path.resolve(rootPath, 'schema.gql'),
     sortedSchema: false,
