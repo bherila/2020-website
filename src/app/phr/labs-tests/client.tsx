@@ -1,18 +1,17 @@
 'use client'
+import { useState } from 'react'
 import { Card, Row, Col, Table, Form, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap'
-import { LabResult } from '../labs-types'
 import printRange, { checkLabRange, getLatestRangeInfo } from '@/lib/lab-range-check'
 import { Search } from 'react-bootstrap-icons'
-import { useState } from 'react'
+import SerializedLabResult from '../SerializedLabResult.type'
 
 interface GroupedResults {
-  [analyte: string]: LabResult[]
+  [analyte: string]: SerializedLabResult[]
 }
 
-function groupByAnalyte(results: LabResult[]): GroupedResults {
+function groupByAnalyte(results: SerializedLabResult[]): GroupedResults {
   return results.reduce((acc, result) => {
     const analyte = result.analyte || 'Unknown'
-
     if (!acc[analyte]) {
       acc[analyte] = []
     }
@@ -21,7 +20,8 @@ function groupByAnalyte(results: LabResult[]): GroupedResults {
   }, {} as GroupedResults)
 }
 
-export default function LabsCards({ results }: { results: LabResult[] }) {
+export default function LabsCards({ labResults }: { labResults: SerializedLabResult[] }) {
+  const results = labResults
   const [searchTerm, setSearchTerm] = useState('')
 
   const filteredResults = results.filter(
@@ -62,14 +62,23 @@ export default function LabsCards({ results }: { results: LabResult[] }) {
                       </thead>
                       <tbody>
                         {tests.map((test, index) => {
-                          const { isInRange, message } = checkLabRange(test)
+                          const { isInRange, message } = checkLabRange({
+                            value: test.value,
+                            rangeMin: rangeInfo?.rangeMin ?? null,
+                            rangeMax: rangeInfo?.rangeMax ?? null,
+                            normalValue: rangeInfo?.normalValue ?? null,
+                          })
                           return (
                             <tr key={index}>
-                              <td style={{ width: '100px' }}>{test.result_datetime?.toLocaleDateString()}</td>
+                              <td style={{ width: '100px' }}>
+                                {test.resultDatetime == null
+                                  ? 'Unknown'
+                                  : new Date(test.resultDatetime).toLocaleDateString()}
+                              </td>
                               <td>
                                 <OverlayTrigger
                                   placement="top"
-                                  overlay={<Tooltip>{test.test_name || 'Unknown Test'}</Tooltip>}
+                                  overlay={<Tooltip>{test.testName || 'Unknown Test'}</Tooltip>}
                                 >
                                   <span>
                                     {test.value} {test.unit}

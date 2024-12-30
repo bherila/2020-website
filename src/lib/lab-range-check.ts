@@ -1,4 +1,5 @@
-import { LabResult } from '@/app/phr/labs-types'
+import LabResultSerializable from '@/app/phr/SerializedLabResult.type'
+import type { PhrLabResult } from '@prisma/client'
 
 export interface RangeCheck {
   isInRange: boolean
@@ -7,20 +8,29 @@ export interface RangeCheck {
 
 const neutral = ['NEG', 'ND', 'Not Detected']
 
-export default function printRange(
-  input: Pick<LabResult, 'value' | 'range_min' | 'range_max' | 'range_unit' | 'normal_value'>,
-) {
-  let { range_min, range_max, range_unit, normal_value } = input
-  if (range_min != null && range_min < -999999) range_min = null
-  if (range_max != null && range_max > 999999) range_max = null
+export default function printRange(input: {
+  value: string | null
+  rangeMin: number | null
+  rangeMax: number | null
+  rangeUnit: string | null
+  normalValue: string | null
+}) {
+  let { rangeMin, rangeMax, rangeUnit, normalValue } = input
+  if (rangeMin != null && rangeMin < -999999) rangeMin = null
+  if (rangeMax != null && rangeMax > 999999) rangeMax = null
   const neutralValue = neutral.find((n) => n === input.value)
-  if ((range_min ?? range_max ?? normal_value) == null && neutralValue) {
+  if ((rangeMin ?? rangeMax ?? normalValue) == null && neutralValue) {
     return neutralValue
   }
-  return normal_value ? `=${normal_value}` : `${range_min ?? '-∞'} to ${range_max ?? '∞'} ${range_unit || ''}`
+  return normalValue ? `=${normalValue}` : `${rangeMin ?? '-∞'} to ${rangeMax ?? '∞'} ${rangeUnit || ''}`
 }
 
-export function checkLabRange(result: Pick<LabResult, 'value' | 'normal_value' | 'range_min' | 'range_max'>): RangeCheck {
+export function checkLabRange(result: {
+  value: string | null
+  rangeMin: number | null
+  rangeMax: number | null
+  normalValue: string | null
+}): RangeCheck {
   if (!result.value) {
     return { isInRange: true }
   }
@@ -29,20 +39,20 @@ export function checkLabRange(result: Pick<LabResult, 'value' | 'normal_value' |
     return { isInRange: true }
   }
 
-  if (result.normal_value !== null) {
+  if (result.normalValue !== null) {
     return {
-      isInRange: result.value.toString() === result.normal_value,
-      message: `Expected: ${result.normal_value}`,
+      isInRange: result.value.toString() === result.normalValue,
+      message: `Expected: ${result.normalValue}`,
     }
   }
 
-  const min = result.range_min ?? -Infinity
-  const max = result.range_max ?? Infinity
+  const min = result.rangeMin ?? -Infinity
+  const max = result.rangeMax ?? Infinity
 
   const effectiveMin = min < -999999 ? -Infinity : min
   const effectiveMax = max > 999999 ? Infinity : max
 
-  const isInRange = Number(result.value) >= effectiveMin && Number(result.value) <= effectiveMax
+  const isInRange = parseFloat(result.value) >= effectiveMin && parseFloat(result.value) <= effectiveMax
 
   return {
     isInRange,
@@ -50,21 +60,25 @@ export function checkLabRange(result: Pick<LabResult, 'value' | 'normal_value' |
   }
 }
 
-export function getLatestRangeInfo(
-  results: LabResult[],
-): Pick<LabResult, 'value' | 'range_min' | 'range_max' | 'range_unit' | 'normal_value'> | null {
+export function getLatestRangeInfo(results: LabResultSerializable[]): {
+  rangeMin: number | null
+  rangeMax: number | null
+  rangeUnit: string | null
+  normalValue: string | null
+  value: string | null
+} | null {
   if (!results.length) return null
 
   const sorted = [...results].sort((a, b) => {
-    if (!a.result_datetime || !b.result_datetime) return 0
-    return b.result_datetime.getTime() - a.result_datetime.getTime()
+    if (!a.resultDatetime || !b.resultDatetime) return 0
+    return b.resultDatetime - a.resultDatetime
   })
 
   return {
-    range_min: sorted[0].range_min,
-    range_max: sorted[0].range_max,
-    range_unit: sorted[0].range_unit,
-    normal_value: sorted[0].normal_value,
+    rangeMin: sorted[0].rangeMin,
+    rangeMax: sorted[0].rangeMax,
+    rangeUnit: sorted[0].rangeUnit,
+    normalValue: sorted[0].normalValue,
     value: sorted[0].value,
   }
 }

@@ -9,19 +9,11 @@ import { TimeseriesDocumentResolver, TimeseriesUserResolver } from '@/app/api/gr
 import { getSession } from '@/server_lib/session'
 import ViewerContext from './ViewerContext'
 import ViewerRootResolver from './ViewerRootResolver'
-import { RootLabResultResolver, ViewerLabResultResolver } from './LabResultResolver'
 
 const rootPath = process.cwd()
 
 const schema = buildSchemaSync({
-  resolvers: [
-    LicenseKeyResolver,
-    RootLabResultResolver,
-    TimeseriesDocumentResolver,
-    TimeseriesUserResolver,
-    ViewerLabResultResolver,
-    ViewerRootResolver,
-  ],
+  resolvers: [LicenseKeyResolver, TimeseriesDocumentResolver, TimeseriesUserResolver, ViewerRootResolver],
   emitSchemaFile: {
     path: path.resolve(rootPath, 'schema.gql'),
     sortedSchema: false,
