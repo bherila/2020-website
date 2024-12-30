@@ -7,6 +7,7 @@ import LabsTable from './client'
 import { getLabResults } from '../labs.service'
 import { PhrLabResult } from '@prisma/client'
 import printRange, { checkLabRange } from '@/lib/lab-range-check'
+import SerializeLabResult from '../SerializeLabResult.server'
 
 export default async function LabsTablePage() {
   const session = await getSession()
@@ -45,7 +46,7 @@ export default async function LabsTablePage() {
       row.resultingLab ?? '',
       row.analyte ?? '',
       `${row.value ?? ''} ${row.unit ?? ''}`.trim(),
-      printRange(row),
+      printRange(SerializeLabResult(row)),
       rangeData(row),
     ]),
   ]
