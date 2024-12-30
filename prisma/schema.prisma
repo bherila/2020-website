@@ -7,42 +7,669 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  username      String?         @unique
+  email         String?         @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+ 
+model Account {
+  id                       String  @id @default(cuid())
+  userId                   String  @unique
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? @db.Text
+  access_token             String? @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
+  refresh_token_expires_in Int?
+  user                     User?   @relation(fields: [userId], references: [id])
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+ 
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id])
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  @@index([userId])
+}
+ 
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@unique([identifier, token])
+}
+ 
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@id([userId, credentialID])
+}
+
 model PhrLabResult {
-  id                  Int      @id @default(autoincrement())
-  userId              Int?     @map("user_id")
-  testName            String?  @map("test_name") @db.VarChar(255)
-  collectionDatetime  DateTime? @map("collection_datetime")
-  resultDatetime      DateTime? @map("result_datetime")
-  resultStatus        String?  @map("result_status") @db.VarChar(50)
-  orderingProvider    String?  @map("ordering_provider") @db.VarChar(100)
-  resultingLab        String?  @map("resulting_lab") @db.VarChar(100)
-  analyte             String?  @db.VarChar(100)
-  value               String?  @db.VarChar(20)
-  unit                String?  @db.VarChar(20)
-  rangeMin            Decimal? @map("range_min") @db.Decimal(10, 2)
-  rangeMax            Decimal? @map("range_max") @db.Decimal(10, 2)
-  rangeUnit           String?  @map("range_unit") @db.VarChar(20)
-  normalValue         String?  @map("normal_value") @db.VarChar(50)
-  messageFromProvider String?  @map("message_from_provider") @db.MediumText
-  resultComment       String?  @map("result_comment") @db.MediumText
-  labDirector         String?  @map("lab_director") @db.VarChar(100)
+  id                  Int       @id @default(autoincrement())
+  userId              Int?      @map("user_id")
+  testName            String?   @map("test_name") @db.VarChar(255)
+  collectionDatetime  DateTime? @map("collection_datetime") @db.DateTime(0)
+  resultDatetime      DateTime? @map("result_datetime") @db.DateTime(0)
+  resultStatus        String?   @map("result_status") @db.VarChar(50)
+  orderingProvider    String?   @map("ordering_provider") @db.VarChar(100)
+  resultingLab        String?   @map("resulting_lab") @db.VarChar(100)
+  analyte             String?   @db.VarChar(100)
+  value               String?   @db.VarChar(20)
+  unit                String?   @db.VarChar(20)
+  rangeMin            Decimal?  @map("range_min") @db.Decimal(10, 2)
+  rangeMax            Decimal?  @map("range_max") @db.Decimal(10, 2)
+  rangeUnit           String?   @map("range_unit") @db.VarChar(20)
+  normalValue         String?   @map("normal_value") @db.VarChar(50)
+  messageFromProvider String?   @map("message_from_provider") @db.MediumText
+  resultComment       String?   @map("result_comment") @db.MediumText
+  labDirector         String?   @map("lab_director") @db.VarChar(100)
 
   @@map("phr_lab_results")
 }
 
 model ProductKey {
-  id                Int      @id @default(autoincrement())
-  uid               Int?
-  productId         String?  @db.VarChar(100) @map("product_id")
-  productKey        String?  @db.VarChar(2000) @map("product_key")
-  productName       String?  @db.VarChar(100) @map("product_name")
-  computerName      String?  @db.VarChar(100) @map("computer_name")
-  comment           String?  @db.VarChar(2000)
-  usedOn            DateTime? @map("used_on")
-  claimedDate       String?  @db.VarChar(100) @map("claimed_date")
-  keyType           String?  @db.VarChar(100) @map("key_type")
-  keyRetrievalNote  String?  @db.MediumText @map("key_retrieval_note")
+  id               Int       @id @default(autoincrement())
+  uid              Int?
+  productId        String?   @map("product_id") @db.VarChar(100)
+  productKey       String?   @unique(map: "product_key") @map("product_key") @db.VarChar(2000)
+  productName      String?   @map("product_name") @db.VarChar(100)
+  computerName     String?   @map("computer_name") @db.VarChar(100)
+  comment          String?   @db.VarChar(2000)
+  usedOn           DateTime? @map("used_on") @db.Date
+  claimedDate      String?   @map("claimed_date") @db.VarChar(100)
+  keyType          String?   @map("key_type") @db.VarChar(100)
+  keyRetrievalNote String?   @map("key_retrieval_note") @db.MediumText
 
   @@map("product_keys")
-  @@unique([productKey])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model account_line_items {
+  t_id            BigInt                              @id @default(autoincrement())
+  t_account       Int?
+  t_date          DateTime                            @db.Date
+  t_type          account_line_items_t_type?
+  t_schc_category account_line_items_t_schc_category?
+  t_amt           Decimal                             @default(0.0000) @db.Decimal(13, 4)
+  t_symbol        String?                             @db.VarChar(20)
+  t_qty           Int                                 @default(0)
+  t_price         Decimal                             @default(0.0000) @db.Decimal(13, 4)
+  t_commission    Decimal                             @default(0.0000) @db.Decimal(13, 4)
+  t_fee           Decimal                             @default(0.0000) @db.Decimal(13, 4)
+  t_method        String?                             @db.VarChar(20)
+  t_source        String?                             @db.VarChar(20)
+  t_origin        String?                             @db.VarChar(20)
+  opt_expiration  DateTime?                           @db.Date
+  opt_type        account_line_items_opt_type?
+  opt_strike      Decimal                             @default(0.0000) @db.Decimal(13, 4)
+  t_description   String?                             @db.VarChar(255)
+  t_comment       String?                             @db.VarChar(255)
+  t_from          DateTime?                           @db.Date
+  t_to            DateTime?                           @db.Date
+  t_interest_rate String?                             @db.VarChar(20)
+  parent_t_id     BigInt?
+  t_cusip         String?                             @db.VarChar(20)
+  when_added      DateTime?                           @db.DateTime(0)
+  when_deleted    DateTime?                           @db.DateTime(0)
+
+  @@index([t_account], map: "accounting_accounts_acct_id_fk")
+}
+
+model account_spend {
+  spend_id          Int                            @id @default(autoincrement())
+  account_id        Int
+  spend_date        DateTime?                      @db.Date
+  spend_category    String?                        @db.VarChar(40)
+  spend_description String?                        @db.VarChar(100)
+  spend_amount      Decimal                        @db.Decimal(10, 2)
+  is_business       Int                            @default(0) @db.TinyInt
+  transaction_type  String?                        @db.VarChar(20)
+  notes             String?                        @db.VarChar(50)
+  when_added        DateTime                       @default(now()) @db.DateTime(0)
+  when_deleted      DateTime?                      @db.DateTime(0)
+  t_schc_category   account_spend_t_schc_category?
+}
+
+model accounts {
+  acct_id      Int                @id @default(autoincrement())
+  acct_owner   Int                @default(0)
+  acct_name    String             @db.VarChar(50)
+  acct_type    accounts_acct_type @default(general)
+  when_deleted DateTime?          @db.DateTime(0)
+
+  @@unique([acct_owner, acct_name], map: "acct_owner")
+}
+
+model car_cms {
+  id           Int     @id @default(autoincrement())
+  dealer_name  String? @db.VarChar(255)
+  dealer_phone String? @db.VarChar(20)
+  dealer_city  String? @db.VarChar(20)
+  dealer_state String? @db.VarChar(20)
+  dealer_zip   String? @db.VarChar(10)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model car_picker {
+  date_unveiled       DateTime? @db.Date
+  expected_release    DateTime? @db.Date
+  release_date        DateTime? @db.Date
+  discontinued_date   DateTime? @db.Date
+  model_year          String?   @db.Char(4)
+  brand               String?   @db.VarChar(50)
+  model_name          String?   @db.VarChar(50)
+  model_trim          String?   @db.VarChar(50)
+  powertrain          String?   @db.VarChar(20)
+  motors              String?   @db.VarChar(20)
+  class               String?   @db.VarChar(50)
+  style               String?   @db.VarChar(20)
+  ev_type             String?   @db.VarChar(10)
+  seating             String?   @db.VarChar(5)
+  us_msrp             Int?      @db.MediumInt
+  global_msrp         String?   @db.VarChar(20)
+  battery_kwh         Decimal?  @db.Decimal(6, 2)
+  ev_range_mi         Int?
+  ice_range_mi        Int?
+  l2_mcr              Int?
+  max_dcfc            Int?
+  motor_kw            Int?
+  mfr_country         String?   @db.VarChar(50)
+  market_availability String?   @db.VarChar(50)
+  source              String?   @db.VarChar(4096)
+  comments            String?   @db.VarChar(4096)
+
+  @@unique([model_year, model_name, brand, model_trim], map: "car_picker_pk")
+  @@ignore
+}
+
+model earnings_annual {
+  symbol           String   @db.Char(5)
+  fiscalDateEnding DateTime @db.Date
+  reportedEPS      Decimal? @db.Decimal(10, 4)
+
+  @@id([symbol, fiscalDateEnding])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model earnings_latest {
+  symbol       String? @db.VarChar(20)
+  date         String? @db.VarChar(20)
+  qtr          String? @db.VarChar(20)
+  eps_est      Float?
+  eps          Float?
+  release_time String? @db.VarChar(10)
+
+  @@index([symbol], map: "earnings_latest_symbol_index")
+  @@ignore
+}
+
+model earnings_quarterly {
+  symbol             String    @db.Char(5)
+  fiscalDateEnding   DateTime  @db.Date
+  reportedDate       DateTime? @db.Date
+  reportedEPS        Decimal?  @db.Decimal(10, 4)
+  estimatedEPS       Decimal?  @db.Decimal(10, 4)
+  surprise           Decimal?  @db.Decimal(10, 4)
+  surprisePercentage Decimal?  @db.Decimal(10, 4)
+
+  @@id([symbol, fiscalDateEnding])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model ev_database {
+  Date_Unveiled       DateTime? @map("Date Unveiled") @db.Date
+  Expected_Release    DateTime? @map("Expected Release") @db.Date
+  Release_Date        DateTime? @map("Release Date") @db.Date
+  Discontinued        DateTime? @db.Date
+  YoM                 Decimal?  @db.Decimal(5, 2)
+  Planned             String?   @db.Text
+  Released            String?   @db.Text
+  Model_Year          Int?      @map("Model Year")
+  Brand               String?   @db.Text
+  Model_Name          String?   @map("Model Name") @db.Text
+  Trim                String?   @db.Text
+  Vehicle_Name        String?   @map("Vehicle Name") @db.Text
+  Powertrain          String?   @db.Text
+  Motors              String?   @db.Text
+  Class               String?   @db.Text
+  Style               String?   @db.Text
+  EV_Type             String?   @map("EV Type") @db.Text
+  Seating             String?   @db.Text
+  US_MSRP             String?   @map("US MSRP") @db.Text
+  Global_MSRP         String?   @map("Global MSRP") @db.Text
+  mi_EVR              String?   @map("$/mi EVR") @db.Text
+  kwh                 String?   @map("$/kwh") @db.Text
+  wh_mi               String?   @map("wh/mi") @db.Text
+  mi_kWh              String?   @map("mi/kWh") @db.Text
+  kWh_100mi           String?   @map("kWh/100mi") @db.Text
+  Batt_kWh            String?   @map("Batt kWh") @db.Text
+  EVR__mi_            Int?      @map("EVR (mi)")
+  Comb__Range         String?   @map("Comb. Range") @db.Text
+  ICER__mi_           String?   @map("ICER (mi)") @db.Text
+  EVR__km_            String?   @map("EVR (km)") @db.Text
+  L2_MCR              String?   @map("L2 MCR") @db.Text
+  Max_DCFC            String?   @map("Max DCFC") @db.Text
+  Motor__kW_          Int?      @map("Motor (kW)")
+  Mfr_Country         String?   @map("Mfr Country") @db.Text
+  Market_Availability String?   @map("Market Availability") @db.Text
+  Source              String?   @db.Text
+  Comments            String?   @db.Text
+
+  @@ignore
+}
+
+model fin_equity_awards {
+  id          Int      @id @default(autoincrement())
+  award_id    Int
+  grant_date  DateTime @db.Date
+  vest_date   DateTime @db.Date
+  share_count Int
+  symbol      String   @db.Char(4)
+  uid         Int
+  vest_price  Decimal? @db.Decimal(10, 2)
+
+  @@unique([grant_date, award_id, vest_date, symbol], map: "fin_equity_awards_pk")
+}
+
+model fin_payslip {
+  payslip_id           Int       @id @default(autoincrement())
+  uid                  Int
+  period_start         DateTime? @db.Date
+  period_end           DateTime? @db.Date
+  pay_date             DateTime? @db.Date
+  earnings_gross       Decimal?  @db.Decimal(10, 4)
+  earnings_bonus       Decimal?  @db.Decimal(10, 4)
+  earnings_net_pay     Decimal   @default(0.0000) @db.Decimal(10, 4)
+  earnings_rsu         Decimal?  @db.Decimal(10, 4)
+  imp_other            Decimal?  @db.Decimal(10, 4)
+  imp_legal            Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  imp_fitness          Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  imp_ltd              Decimal?  @default(0.0000) @db.Decimal(10, 4)
+  ps_oasdi             Decimal?  @db.Decimal(10, 4)
+  ps_medicare          Decimal?  @db.Decimal(10, 4)
+  ps_fed_tax           Decimal?  @db.Decimal(10, 4)
+  ps_fed_tax_addl      Decimal?  @db.Decimal(10, 4)
+  ps_state_tax         Decimal?  @db.Decimal(10, 4)
+  ps_state_tax_addl    Decimal?  @db.Decimal(10, 4)
+  ps_state_disability  Decimal?  @db.Decimal(10, 4)
+  ps_401k_pretax       Decimal?  @db.Decimal(10, 4)
+  ps_401k_aftertax     Decimal?  @db.Decimal(10, 4)
+  ps_401k_employer     Decimal?  @db.Decimal(6, 2)
+  ps_fed_tax_refunded  Decimal?  @db.Decimal(10, 4)
+  ps_payslip_file_hash String?   @db.VarChar(50)
+  ps_is_estimated      Boolean   @default(true)
+  ps_comment           String?   @db.VarChar(1000)
+  ps_pretax_medical    Decimal   @default(0.0000) @db.Decimal(10, 4)
+  ps_pretax_fsa        Decimal   @default(0.0000) @db.Decimal(10, 4)
+  ps_salary            Decimal   @default(0.0000) @db.Decimal(10, 4)
+  ps_vacation_payout   Decimal   @default(0.0000) @db.Decimal(10, 4)
+  ps_pretax_dental     Decimal   @default(0.0000) @db.Decimal(10, 4)
+  ps_pretax_vision     Decimal   @default(0.0000) @db.Decimal(10, 4)
+  other                String?   @db.MediumText
+
+  @@unique([uid, period_start, period_end, pay_date], map: "fin_payslip_pk")
+}
+
+model fin_payslip_uploads {
+  id          Int     @id @default(autoincrement())
+  file_name   String? @db.VarChar(200)
+  file_hash   String? @db.VarChar(50)
+  parsed_json String? @db.LongText
+}
+
+model graduated_tax {
+  year        Int
+  region      String             @db.Char(2)
+  income_over Int
+  type        graduated_tax_type @default(s)
+  rate        Decimal            @db.Decimal(10, 4)
+  verified    Boolean            @default(dbgenerated("(b'0')")) @db.Bit(1)
+
+  @@unique([year, region, income_over, type], map: "graduated_tax_pk")
+}
+
+model mls_data {
+  id                          Int      @id @default(autoincrement())
+  listingIdSHA                String?  @db.VarChar(40)
+  compassPropertyId           String?  @db.VarChar(32)
+  prettyAddress               String   @db.VarChar(255)
+  neighborhood                String?  @db.VarChar(255)
+  city                        String?  @db.VarChar(255)
+  state                       String?  @db.VarChar(255)
+  zip                         String?  @db.VarChar(255)
+  longitude                   Decimal? @db.Decimal(10, 7)
+  latitude                    Decimal? @db.Decimal(10, 7)
+  geoId                       String?  @db.VarChar(10)
+  countyFipsCode              String?  @db.VarChar(8)
+  bedrooms                    Int?
+  bathrooms                   Decimal? @db.Decimal(2, 1)
+  totalBathrooms              Decimal? @db.Decimal(2, 1)
+  fullBathrooms               Decimal? @db.Decimal(2, 1)
+  squareFeet                  Int?
+  status                      Int?
+  localizedStatus             String?  @db.VarChar(255)
+  lastPrice                   Int?
+  perSquareFoot               Decimal? @db.Decimal(6, 4)
+  buildingIdSHA               String?  @db.VarChar(40)
+  homeFactsJson               String?  @db.MediumText
+  stories                     Int?
+  totalFinishedSqft           Int?
+  totalAboveGradeFinishedSqft Int?
+  lotSize                     String?  @db.VarChar(20)
+  style                       String?  @db.VarChar(20)
+  yearBuilt                   Int?
+  zoning                      String?  @db.VarChar(20)
+  county                      String?  @db.VarChar(20)
+  apn                         String?  @db.VarChar(20)
+  hasFireplace                Boolean?
+  hasPool                     Boolean?
+  hasAirConditioning          Boolean?
+  hasView                     Boolean?
+}
+
+model mls_data_assessor {
+  id             Int     @id @default(autoincrement())
+  mls_data_id    Int
+  taxYear        Int?
+  tax            String? @db.VarChar(20)
+  dateUpdated    BigInt?
+  monthlyTax     String? @db.VarChar(20)
+  landValue      Int?
+  additionsValue Int?
+  year           Int?
+  previousValue  Int?
+}
+
+model photo {
+  id       Int     @id @default(autoincrement()) @db.UnsignedInt
+  thumb    String? @db.VarChar(255)
+  fullsize String? @db.VarChar(255)
+  male     Int?    @db.UnsignedTinyInt
+  female   Int?    @db.UnsignedTinyInt
+  views    Int?    @db.UnsignedTinyInt
+  reported Int?    @db.UnsignedTinyInt
+}
+
+model phr_patient_vitals {
+  id          Int       @id @default(autoincrement())
+  user_id     Int?
+  vital_name  String?   @db.VarChar(255)
+  vital_date  DateTime? @db.Date
+  vital_value String?   @db.VarChar(255)
+}
+
+model spgp_passtypes {
+  passtype_id  Int       @id @default(autoincrement())
+  display_name String?   @db.VarChar(50)
+  expiry       DateTime? @db.Date
+  info         String?   @db.VarChar(4096)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model spgp_promocodes {
+  id            BigInt  @id @default(autoincrement())
+  passtype_id   Int
+  rdmp_code     String  @unique(map: "spgp_promocodes_unique_codes") @db.VarChar(50)
+  assignee_r_id BigInt? @unique(map: "spgp_promocodes_unique_assignee")
+}
+
+model spgp_requests {
+  r_id              Int       @id @default(autoincrement())
+  uid               BigInt?
+  r_first           String    @db.VarChar(50)
+  r_last            String    @db.VarChar(50)
+  r_email           String    @db.VarChar(100)
+  r_birthdate       DateTime? @db.Date
+  r_previous_passid String?   @db.VarChar(50)
+  r_comment         String?   @db.VarChar(50)
+  r_total           Decimal?  @db.Decimal(10, 2)
+  r_redeemedMonth   String?   @db.VarChar(50)
+  passtype_id       Int?
+  deleted           Boolean   @default(false)
+  r_used_on         DateTime? @db.DateTime(0)
+
+  @@unique([uid, r_first, r_last, r_email, r_birthdate, passtype_id], map: "spgp_users_pk")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model stock_quotes {
+  c_date  DateTime @db.Date
+  c_time  DateTime @db.Time(0)
+  c_symb  String   @db.Char(5)
+  c_open  Decimal  @db.Decimal(10, 4)
+  c_high  Decimal  @db.Decimal(10, 4)
+  c_low   Decimal  @db.Decimal(10, 4)
+  c_close Decimal  @db.Decimal(10, 4)
+  c_vol   Int      @db.MediumInt
+
+  @@index([c_date, c_time, c_symb], map: "c_date")
+  @@index([c_symb(length: 2)], map: "symbol")
+  @@ignore
+}
+
+model stock_quotes_daily {
+  c_date  DateTime @db.Date
+  c_symb  String   @db.Char(5)
+  c_open  Decimal  @db.Decimal(10, 4)
+  c_high  Decimal  @db.Decimal(10, 4)
+  c_low   Decimal  @db.Decimal(10, 4)
+  c_close Decimal  @db.Decimal(10, 4)
+  c_vol   BigInt
+
+  @@unique([c_symb, c_date], map: "c_date")
+  @@index([c_symb], map: "symbol")
+}
+
+model timeseries_datapoint {
+  dp_id             Int               @id @default(autoincrement())
+  dp_series_id      Int
+  dp_date           DateTime?         @db.Date
+  dp_value          String?           @db.VarChar(20)
+  dp_comment        String?           @db.MediumText
+  timeseries_series timeseries_series @relation(fields: [dp_series_id], references: [id], onUpdate: Restrict, map: "timeseries_datapoint_timeseries_series_id_fk")
+
+  @@index([dp_series_id], map: "timeseries_datapoint_timeseries_series_id_fk")
+}
+
+model timeseries_documents {
+  id                Int                 @id @default(autoincrement())
+  uid               Int
+  name              String              @db.VarChar(50)
+  timeseries_series timeseries_series[]
+}
+
+model timeseries_series {
+  id                   Int                    @id @default(autoincrement())
+  document_id          Int
+  series_name          String                 @db.VarChar(50)
+  timeseries_datapoint timeseries_datapoint[]
+  timeseries_documents timeseries_documents   @relation(fields: [document_id], references: [id], onUpdate: Restrict, map: "timeseries_series_timeseries_documents_id_fk")
+
+  @@index([document_id], map: "timeseries_series_timeseries_documents_id_fk")
+}
+
+model users {
+  uid                   BigInt    @id @default(autoincrement())
+  email                 String    @unique(map: "users_pk") @db.VarChar(50)
+  pw                    String?   @db.VarChar(100)
+  salt                  BigInt    @default(0)
+  alias                 String?   @db.VarChar(50)
+  ax_maxmin             Boolean   @default(false)
+  ax_homes              Boolean?  @default(false)
+  ax_tax                Boolean   @default(false)
+  ax_evdb               Boolean?  @default(false)
+  ax_spgp               Boolean   @default(false)
+  ax_phr                Int       @default(0) @db.TinyInt
+  reset_token           String?   @db.VarChar(64)
+  reset_requested_at    DateTime? @db.DateTime(0)
+  passkey_credential_id String?   @db.VarChar(255)
+  passkey_public_key    String?   @db.Text
+}
+
+model vxcv_files {
+  hash          Bytes    @id @db.Binary(20)
+  filename      String   @db.VarChar(150)
+  mime          String   @db.VarChar(30)
+  downloads     Int      @default(0)
+  max_downloads Int      @default(7)
+  size          Int
+  uploaded      DateTime @db.DateTime(0)
+  blocked       Int      @default(0) @db.TinyInt
+  ip            Int
+}
+
+model vxcv_links {
+  uniqueid String @id @db.Char(5)
+  url      String @db.VarChar(15000)
+
+  @@index([url(length: 15)], map: "url")
+}
+
+model webauthn_challenges {
+  challenge  String   @id @db.VarChar(255)
+  user_id    Int?
+  created_at DateTime @default(now()) @db.Timestamp(0)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model words {
+  word String @db.VarChar(100)
+
+  @@ignore
+}
+
+enum accounts_acct_type {
+  general
+  brokerage
+}
+
+enum graduated_tax_type {
+  s
+  mfj
+  mfs
+  hoh
+}
+
+enum account_line_items_t_type {
+  bought_to_open    @map("bought to open")
+  sold_short        @map("sold short")
+  sold_to_close     @map("sold to close")
+  journal
+  interest
+  transfer
+  option_expiration @map("option expiration")
+  bought_to_cover   @map("bought to cover")
+  dividend
+  credit
+  deposit
+  equity
+  spend
+  refund
+}
+
+enum account_line_items_t_schc_category {
+  Advertising
+  Car_and_truck                         @map("Car and truck")
+  Commissions_and_fees                  @map("Commissions and fees")
+  Contract_labor                        @map("Contract labor")
+  Depletion
+  Depreciation
+  Employee_benefit                      @map("Employee benefit")
+  Insurance_other_than_health           @map("Insurance other than health")
+  Interest__Mortgage                    @map("Interest: Mortgage")
+  Interest__Other                       @map("Interest: Other")
+  Legal_and_Professional                @map("Legal and Professional")
+  Office_Expense                        @map("Office Expense")
+  Pension_and_Profit_Sharing            @map("Pension and Profit Sharing")
+  Rent_or_lease                         @map("Rent or lease")
+  Rent_or_lease__Vehicles               @map("Rent or lease: Vehicles")
+  Rent_or_lease__Property               @map("Rent or lease: Property")
+  Repairs_and_maintenance               @map("Repairs and maintenance")
+  Supplies
+  Taxes_and_licenses                    @map("Taxes and licenses")
+  Travel
+  Meals_50_                             @map("Meals 50%")
+  Meals_100_                            @map("Meals 100%")
+  Utilities
+  Wages
+  Other
+  Tuition
+  Energy_Efficient_Commercial_Buildings @map("Energy Efficient Commercial Buildings")
+  Meals_0_                              @map("Meals 0%")
+}
+
+enum account_spend_t_schc_category {
+  Advertising
+  Car_and_truck                         @map("Car and truck")
+  Commissions_and_fees                  @map("Commissions and fees")
+  Contract_labor                        @map("Contract labor")
+  Depletion
+  Depreciation
+  Employee_benefit                      @map("Employee benefit")
+  Insurance_other_than_health           @map("Insurance other than health")
+  Interest__Mortgage                    @map("Interest: Mortgage")
+  Interest__Other                       @map("Interest: Other")
+  Legal_and_Professional                @map("Legal and Professional")
+  Office_Expense                        @map("Office Expense")
+  Pension_and_Profit_Sharing            @map("Pension and Profit Sharing")
+  Rent_or_lease                         @map("Rent or lease")
+  Rent_or_lease__Vehicles               @map("Rent or lease: Vehicles")
+  Rent_or_lease__Property               @map("Rent or lease: Property")
+  Repairs_and_maintenance               @map("Repairs and maintenance")
+  Supplies
+  Taxes_and_licenses                    @map("Taxes and licenses")
+  Travel
+  Meals_50_                             @map("Meals 50%")
+  Meals_100_                            @map("Meals 100%")
+  Utilities
+  Wages
+  Other
+  Tuition
+  Energy_Efficient_Commercial_Buildings @map("Energy Efficient Commercial Buildings")
+  Meals_0_                              @map("Meals 0%")
+}
+
+enum account_line_items_opt_type {
+  call
+  put
 }
