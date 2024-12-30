@@ -29,3 +29,20 @@ model PhrLabResult {
 
   @@map("phr_lab_results")
 }
+
+model ProductKey {
+  id                Int      @id @default(autoincrement())
+  uid               Int?
+  productId         String?  @db.VarChar(100) @map("product_id")
+  productKey        String?  @db.VarChar(2000) @map("product_key")
+  productName       String?  @db.VarChar(100) @map("product_name")
+  computerName      String?  @db.VarChar(100) @map("computer_name")
+  comment           String?  @db.VarChar(2000)
+  usedOn            DateTime? @map("used_on")
+  claimedDate       String?  @db.VarChar(100) @map("claimed_date")
+  keyType           String?  @db.VarChar(100) @map("key_type")
+  keyRetrievalNote  String?  @db.MediumText @map("key_retrieval_note")
+
+  @@map("product_keys")
+  @@unique([productKey])
+}
