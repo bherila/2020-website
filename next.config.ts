@@ -1,16 +1,8 @@
 // @ts-check
-import {PHASE_DEVELOPMENT_SERVER} from 'next/constants'
 import type { NextConfig } from 'next'
 
-export default (phase: string): NextConfig => {
-  const isDev = phase === PHASE_DEVELOPMENT_SERVER
+export default (_phase: string): NextConfig => {
   return {
-    // assetPrefix: isDev ? undefined : 'https://cf.bherila.net',
-    modularizeImports: {
-      '@mui/icons-material': {
-        transform: '@mui/icons-material/{{member}}',
-      },
-    },
     trailingSlash: true,
     images: {
       remotePatterns: [
