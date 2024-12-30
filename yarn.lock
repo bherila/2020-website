@@ -2106,6 +2106,36 @@
     promise.series "^0.2.0"
     urlpattern-polyfill "^10.0.0"
 
+"@opennextjs/aws@https://pkg.pr.new/@opennextjs/aws@686":
+  version "3.3.0"
+  resolved "https://pkg.pr.new/@opennextjs/aws@686#6940c93ef63335dfdadfb47460c4d3e7e3679a96"
+  dependencies:
+    "@aws-sdk/client-dynamodb" "^3.398.0"
+    "@aws-sdk/client-lambda" "^3.398.0"
+    "@aws-sdk/client-s3" "^3.398.0"
+    "@aws-sdk/client-sqs" "^3.398.0"
+    "@esbuild-plugins/node-resolve" "0.2.2"
+    "@node-minify/core" "^8.0.6"
+    "@node-minify/terser" "^8.0.6"
+    "@tsconfig/node18" "^1.0.1"
+    aws4fetch "^1.0.18"
+    chalk "^5.3.0"
+    esbuild "0.19.2"
+    path-to-regexp "^6.3.0"
+    promise.series "^0.2.0"
+    urlpattern-polyfill "^10.0.0"
+
+"@opennextjs/cloudflare@https://pkg.pr.new/@opennextjs/cloudflare@7654867":
+  version "0.3.3"
+  resolved "https://pkg.pr.new/@opennextjs/cloudflare@7654867#3c3fe793d69a62949a0ddbb3c8a4878364823a3e"
+  dependencies:
+    "@dotenvx/dotenvx" "1.31.0"
+    "@opennextjs/aws" "https://pkg.pr.new/@opennextjs/aws@686"
+    enquirer "^2.4.1"
+    glob "^11.0.0"
+    rimraf "^6.0.1"
+    ts-morph "^23.0.0"
+
 "@opennextjs/cloudflare@https://pkg.pr.new/@opennextjs/cloudflare@main":
   version "0.3.3"
   resolved "https://pkg.pr.new/@opennextjs/cloudflare@main#fed330f133e34faa2b88bb09306c33df68330f17"

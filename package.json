@@ -62,7 +62,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241224.0",
     "@eslint/eslintrc": "^3",
-    "@opennextjs/cloudflare": "https://pkg.pr.new/@opennextjs/cloudflare@main",
+    "@opennextjs/cloudflare": "https://pkg.pr.new/@opennextjs/cloudflare@7654867",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.13",
     "@types/node": "^20",
