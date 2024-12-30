@@ -1,6 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.css'
 import * as React from 'react'
-import 'animate.css'
 import Footer from '@/components/footer'
 import Header from '@/components/header'
 import { ThemeProvider } from '@/components/ThemeProvider'

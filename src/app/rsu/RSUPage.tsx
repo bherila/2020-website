@@ -2,6 +2,7 @@
 import Container from '@/components/container'
 import Row from 'react-bootstrap/Row'
 import { useEffect, useState } from 'react'
+import Form from 'react-bootstrap/Form'
 import Table from 'react-bootstrap/Table'
 import currency from 'currency.js'
 import { fetchWrapper } from '@/lib/fetchWrapper'
@@ -144,34 +145,42 @@ export default function RSUPage() {
           }}
         >
           <Row>
-            <label>
-              Award id
-              <input type="tel" value={awardId} onChange={(e) => setAwardId(e.currentTarget.value)} />
-            </label>
+            <Form.Check
+              type="switch"
+              id="award-id-switch"
+              label="Award id"
+              value={awardId}
+              onChange={(e) => setAwardId(e.currentTarget.value)}
+            />
           </Row>
           <Row>
-            <label>
-              Symbol
-              <input type="text" value={symbol} onChange={(e) => setSymbol(e.currentTarget.value)} />
-            </label>
+            <Form.Check
+              type="switch"
+              id="symbol-switch"
+              label="Symbol"
+              value={symbol}
+              onChange={(e) => setSymbol(e.currentTarget.value)}
+            />
           </Row>
           <Row>
-            <label>
-              Grant date yyyy-mm-dd
-              <input
-                type="text"
-                value={grantDate}
-                onChange={(e) =>
-                  setGrantDate(e.currentTarget.value.trim().replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g, '$3-$1-$2'))
-                }
-              />
-            </label>
+            <Form.Check
+              type="switch"
+              id="grant-date-switch"
+              label="Grant date yyyy-mm-dd"
+              value={grantDate}
+              onChange={(e) =>
+                setGrantDate(e.currentTarget.value.trim().replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g, '$3-$1-$2'))
+              }
+            />
           </Row>
           <Row>
-            <label>
-              Sanity check # of shares
-              <input type="text" value={numShares} onChange={(e) => setNumShares(e.currentTarget.value)} />
-            </label>
+            <Form.Check
+              type="switch"
+              id="shares-switch"
+              label="Sanity check # of shares"
+              value={numShares}
+              onChange={(e) => setNumShares(e.currentTarget.value)}
+            />
           </Row>
           <Row>
             <label>

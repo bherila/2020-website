@@ -1,8 +1,7 @@
 'use client'
-import DataGrid, { Column } from 'devextreme-react/data-grid'
-import CheckBox from 'devextreme-react/check-box'
-import Form, { Item } from 'devextreme-react/form'
-import Button from 'devextreme-react/button'
+import { DataTable } from '@/components/ui/data-table'
+import Form from 'react-bootstrap/Form'
+import Button from 'react-bootstrap/Button'
 import { useEffect, useState } from 'react'
 import currency from 'currency.js'
 import AlphaVantageEarnings from '@/lib/AlphaVantageEarnings'
@@ -27,7 +26,7 @@ export default function MinMaxClientRenderer({ symbol, quotes, earnings }: Props
     annualizedImpliedVolatilityPercent: 1.3,
     daysToExpiration: 5,
   })
-  const [tableData, setTableData] = useState<StockQuote[]>([])
+  const [tableData, setTableData] = useState<StockQuoteExtended[]>([])
   useEffect(() => {
     setTableData(preprocessData(quotes, earnings, onlyNearEarnings))
   }, [quotes, earnings, onlyNearEarnings])
@@ -67,107 +66,92 @@ export default function MinMaxClientRenderer({ symbol, quotes, earnings }: Props
     <Container fluid className="py-4">
       <Row>
         <Col xs={12} sm={6}>
-          <DataGrid
-            dataSource={tableData}
-            focusedRowEnabled={true}
-            keyExpr="date"
-            sorting={{
-              showSortIndexes: true,
-              mode: 'multiple',
-            }}
-            focusedRowKey={selectedDate}
-            onFocusedRowChanged={(e: any) => {
-              if (e.row && e.row.data) {
-                setSelectedDate(e.row.data.date)
-              }
-            }}
-          >
-            <Column dataField="date" dataType="date" sortIndex={0} sortOrder={'asc'} />
-            <Column
-              dataField="prevClose"
-              dataType="number"
-              calculateSortValue={(row: any) => parseFloat(row.prevClose)}
-              format="$ #,##0.##"
-            />
-            <Column
-              dataField="open"
-              dataType="number"
-              calculateSortValue={(row: any) => parseFloat(row.open)}
-              format="$ #,##0.##"
-            />
-            <Column
-              dataField="close"
-              dataType="number"
-              calculateSortValue={(row: any) => parseFloat(row.close)}
-              format="$ #,##0.##"
-            />
-            <Column
-              dataField="change"
-              dataType="number"
-              calculateSortValue={(row: any) => parseFloat(row.change)}
-              format="$ #,##0.##"
-            />
-            <Column
-              dataField="pctChg"
-              dataType="number"
-              calculateSortValue={(row: any) => parseFloat(row.pctChg)}
-              format="#0.00%"
-            />
-            <Column
-              dataField="nearEarnings"
-              dataType="number"
-              calculateSortValue={(row: any) => parseFloat(row.nearEarnings)}
-              calculateDisplayValue={(row: any) => (row.nearEarnings === 0 ? '⭐️' : row.nearEarnings)}
-            />
-          </DataGrid>
-          <CheckBox
-            value={onlyNearEarnings}
-            text="Only show rows near earnings dates"
-            onValueChanged={(e: any) => setOnlyNearEarnings(e?.value)}
+          <DataTable
+            columns={[
+              { accessorKey: 'date', header: 'Date' },
+              { accessorKey: 'prevClose', header: 'Prev Close' },
+              { accessorKey: 'open', header: 'Open' },
+              { accessorKey: 'close', header: 'Close' },
+              { accessorKey: 'change', header: 'Change' },
+              { accessorKey: 'pctChg', header: '% Change' },
+              {
+                accessorKey: 'nearEarnings',
+                header: 'Near Earnings',
+                cell: ({ row }) => (row.original.nearEarnings === 0 ? '⭐️' : row.original.nearEarnings),
+              },
+            ]}
+            data={tableData}
+            onRowClick={(row) => setSelectedDate(row.date)}
+          />
+          <Form.Check
+            type="switch"
+            id="earnings-switch"
+            label="Only show rows near earnings dates"
+            checked={onlyNearEarnings}
+            onChange={(e) => setOnlyNearEarnings(e.target.checked)}
           />
         </Col>
         <Col xs={12} sm={6}>
           <h3>Inputs</h3>
-          <form
+          <Form
             onSubmit={(e) => {
               setInputs(Object.assign({}, inputs))
               e.preventDefault()
             }}
           >
-            <Form
-              id="form"
-              formData={inputs}
-              readOnly={false}
-              showColonAfterLabel={true}
-              labelLocation={'left'}
-              colCount={1}
-              width={'100%'}
-            >
-              <Item dataField="stockPrice" editorType="dxNumberBox" />
-              <Item
-                dataField="annualizedImpliedVolatilityPercent"
-                editorType="dxNumberBox"
-                editorOptions={{
-                  format: '#0%',
-                }}
-                title="Annualized Implied Volatility (%)"
+            <Form.Group className="mb-3">
+              <Form.Label>Stock Price</Form.Label>
+              <Form.Control
+                type="number"
+                value={inputs.stockPrice}
+                onChange={(e) => setInputs({ ...inputs, stockPrice: parseFloat(e.target.value) })}
               />
-              <Item dataField="daysToExpiration" editorType="dxNumberBox" />
-            </Form>
-            <Button text="Recalculate" type="normal" stylingMode="outlined" useSubmitBehavior={true} />
-          </form>
-          <DataGrid dataSource={outputs} style={{ paddingTop: '1em' }}>
-            <Column dataField="N_SD" dataType="number" format="0.0#" />
-            <Column dataField="SD_Value" dataType="number" format="$ #,##0.##" />
-            <Column dataField="SD_Percent_Change" dataType="number" format="#0.00%" />
-            <Column dataField="Min" dataType="number" format="$ #,##0.##" />
-            <Column dataField="Max" dataType="number" format="$ #,##0.##" />
-            <Column dataField="Probability" dataType="number" format="#0.00%" />
-          </DataGrid>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Annualized Implied Volatility (%)</Form.Label>
+              <Form.Control
+                type="number"
+                value={inputs.annualizedImpliedVolatilityPercent}
+                onChange={(e) => setInputs({ ...inputs, annualizedImpliedVolatilityPercent: parseFloat(e.target.value) })}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Days to Expiration</Form.Label>
+              <Form.Control
+                type="number"
+                value={inputs.daysToExpiration}
+                onChange={(e) => setInputs({ ...inputs, daysToExpiration: parseFloat(e.target.value) })}
+              />
+            </Form.Group>
+            <Button variant="outline-primary" type="submit">
+              Recalculate
+            </Button>
+          </Form>
+          <div style={{ paddingTop: '1em' }}>
+            <DataTable
+              columns={[
+                { accessorKey: 'N_SD', header: 'N_SD', cell: ({ row }) => row.original.N_SD.toFixed(2) },
+                { accessorKey: 'SD_Value', header: 'SD Value', cell: ({ row }) => `$${row.original.SD_Value.toFixed(2)}` },
+                {
+                  accessorKey: 'SD_Percent_Change',
+                  header: 'SD % Change',
+                  cell: ({ row }) => `${(row.original.SD_Percent_Change * 100).toFixed(2)}%`,
+                },
+                { accessorKey: 'Min', header: 'Min', cell: ({ row }) => `$${row.original.Min.toFixed(2)}` },
+                { accessorKey: 'Max', header: 'Max', cell: ({ row }) => `$${row.original.Max.toFixed(2)}` },
+                {
+                  accessorKey: 'Probability',
+                  header: 'Probability',
+                  cell: ({ row }) => `${(row.original.Probability * 100).toFixed(1)}%`,
+                },
+              ]}
+              data={outputs}
+            />
+          </div>
           {selectedDate && tableData ? (
             <>
               <DetailChart data={tableData} centerDate={selectedDate} symbol={symbol} />
-              <Button onClick={() => setSelectedDate('')} text="Clear selected date" />
+              <Button onClick={() => setSelectedDate('')}>Clear selected date</Button>
             </>
           ) : (
             <DetailChart data={tableData} centerDate={selectedDate ?? undefined} symbol={symbol} />
