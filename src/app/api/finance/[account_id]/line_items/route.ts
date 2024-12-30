@@ -67,7 +67,7 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
     const accountId = z.coerce.number().parse((await context.params).account_id)
     await validateAccess(accountId)
 
-    const { t_id } = await request.json()
+    const { t_id } = (await request.json()) as any
     if (!t_id) {
       return NextResponse.json({ error: 'Transaction ID is required' }, { status: 400 })
     }

@@ -70,7 +70,7 @@ async function genStockQuotesFromAlphaVantage(symbol: string) {
   const quoteResponse = await fetch(
     `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${process.env.ALPHAVANTAGE_API_KEY}&outputsize=full`,
   )
-  const quoteData = await quoteResponse.json()
+  const quoteData = (await quoteResponse.json()) as any
   const ts = quoteData['Time Series (Daily)']
   const dates = Object.keys(ts || {}).sort()
   const validNumber = /^[0-9.]+$/

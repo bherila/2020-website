@@ -18,8 +18,8 @@ export default function RsuChart({ rsu }: { rsu: IAward[] }) {
   }
   console.log(dataSource)
   return (
-    <Chart palette="dark" title="Shares vesting over time" dataSource={dataSource}>
-      <CommonSeriesSettings argumentField="vest_date" type="stackedBar" />
+    <Chart palette="Dark Moon" title="Shares vesting over time" dataSource={dataSource}>
+      <CommonSeriesSettings argumentField="vest_date" type="stackedbar" />
       {Array.from(award_ids).map((award_id) => (
         <Series key={award_id} valueField={award_id} name={award_id} />
       ))}

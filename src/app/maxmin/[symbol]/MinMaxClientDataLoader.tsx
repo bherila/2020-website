@@ -17,7 +17,7 @@ interface ResultType {
 export default function MinMaxClientDataLoader(props: { symbol: string }) {
   const { symbol } = props
   const uri = `/api/stocks/${symbol}/`
-  const { data, error } = useSWR<ResultType>(uri, fetcher)
+  const { data, error } = useSWR<ResultType>(uri, fetcher as any)
   if (!data) {
     return (
       <Container>

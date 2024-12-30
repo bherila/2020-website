@@ -25,7 +25,7 @@ export default function GraphiQLPage() {
 
   return (
     <div style={{ height: '100vh' }}>
-      <GraphiQLComponent fetcher={fetcher} />
+      <GraphiQLComponent fetcher={fetcher as any} />
     </div>
   )
 }

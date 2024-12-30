@@ -1,6 +1,5 @@
 // @ts-check
 import {PHASE_DEVELOPMENT_SERVER} from 'next/constants'
-import type { Configuration as WebpackConfig } from 'webpack'
 import type { NextConfig } from 'next'
 
 export default (phase: string): NextConfig => {
@@ -11,14 +10,6 @@ export default (phase: string): NextConfig => {
       '@mui/icons-material': {
         transform: '@mui/icons-material/{{member}}',
       },
-    },
-    // Optimize bundle size
-    webpack: (config: WebpackConfig, { dev, isServer }) => {
-      // Enable module concatenation
-      config.optimization = config.optimization || {}
-      config.optimization.concatenateModules = true
-
-      return config
     },
     trailingSlash: true,
     images: {
