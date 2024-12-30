@@ -1,13 +1,16 @@
 'use client'
-import { Chart, Series, ArgumentAxis, CommonSeriesSettings, Export, Legend, Margin } from 'devextreme-react/chart'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { IAward } from '@/app/rsu/IAward'
 import _ from 'lodash'
 import currency from 'currency.js'
+
+const colors = ['#D32F2F', '#FF8F00', '#FFD600', '#388E3C', '#1976D2', '#7B1FA2']
 
 export default function RsuChart({ rsu }: { rsu: IAward[] }) {
   const award_ids = new Set<string>()
   const vests = _.groupBy(rsu, 'vest_date')
   const dataSource = []
+
   for (const vestDate of Object.keys(vests)) {
     let o: { [key: string]: string | number } = { vest_date: vestDate }
     for (const vest of vests[vestDate]) {
@@ -16,17 +19,38 @@ export default function RsuChart({ rsu }: { rsu: IAward[] }) {
     }
     dataSource.push(o)
   }
-  console.log(dataSource)
+
   return (
-    <Chart palette="Dark Moon" title="Shares vesting over time" dataSource={dataSource}>
-      <CommonSeriesSettings argumentField="vest_date" type="stackedbar" />
-      {Array.from(award_ids).map((award_id) => (
-        <Series key={award_id} valueField={award_id} name={award_id} />
-      ))}
-      <Margin bottom={20} />
-      <ArgumentAxis valueMarginsEnabled={false} />
-      <Legend verticalAlignment="bottom" horizontalAlignment="center" />
-      <Export enabled={true} />
-    </Chart>
+    <ResponsiveContainer width="100%" height={400}>
+      <BarChart
+        data={dataSource}
+        margin={{
+          top: 20,
+          right: 30,
+          left: 20,
+          bottom: 5,
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" stroke="#666666" />
+        <XAxis dataKey="vest_date" />
+        <YAxis />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: '#222222',
+            border: 'none',
+            borderRadius: '4px',
+            color: '#ffffff',
+          }}
+          wrapperStyle={{
+            backgroundColor: '#333333',
+          }}
+        />
+        <Legend />
+        {Array.from(award_ids).map((award_id, index) => {
+          const color = colors[index % colors.length]
+          return <Bar key={award_id} dataKey={award_id} stackId="a" fill={color} />
+        })}
+      </BarChart>
+    </ResponsiveContainer>
   )
 }
