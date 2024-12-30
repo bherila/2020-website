@@ -1,10 +1,10 @@
 import Container from '@/components/container'
-import { getSession } from '@/server_lib/session'
 import MainTitle from '@/components/main-title'
 import Sidebar from '../components/Sidebar'
+import requireSession from '@/server_lib/requireSession'
 
 export default async function VaccinesPage() {
-  const session = await getSession()
+  const session = await requireSession()
   if (!session?.ax_phr) {
     return (
       <Container>
