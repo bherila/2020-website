@@ -6,13 +6,7 @@
 
 ## Performance Optimization
 - Cache API responses aggressively with s-maxage and stale-while-revalidate
-- Run middleware only on routes that need it
 - Use client-side caching for semi-static data like session info
-- Enable webpack optimizations:
-  - Use module concatenation (concatenateModules: true)
-  - Enable tree shaking in all environments (usedExports: true)
-- Minify critical scripts and inline them in <head>
-- Use @next/bundle-analyzer to monitor bundle sizes
 
 ## Data Serialization
 - Only pass plain objects between server and client components
