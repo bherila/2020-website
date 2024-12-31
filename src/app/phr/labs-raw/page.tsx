@@ -4,10 +4,10 @@ import { getSession } from '@/server_lib/session'
 import MainTitle from '@/components/main-title'
 import Sidebar from '../components/Sidebar'
 import LabsTable from './client'
-import { getLabResults } from '../labs.service'
-import { PhrLabResult } from '@prisma/client'
 import printRange, { checkLabRange } from '@/lib/lab-range-check'
 import SerializeLabResult from '../SerializeLabResult.server'
+import { PhrLabResult } from '../PhrLabResult.types'
+import { genLabResultsForLoggedInUser } from '../PhrLabResult.db'
 
 export default async function LabsTablePage() {
   const session = await getSession()
@@ -20,7 +20,7 @@ export default async function LabsTablePage() {
     )
   }
 
-  const labResults = await getLabResults()
+  const labResults: PhrLabResult[] = await genLabResultsForLoggedInUser()
 
   // convert to string[][] for Table2D
   const headers = [
@@ -39,14 +39,14 @@ export default async function LabsTablePage() {
     headers,
     ...labResults.map((row) => [
       row.testName ?? '',
-      row.collectionDatetime?.toLocaleString() ?? '',
-      row.resultDatetime?.toLocaleString() ?? '',
+      row.collectionDatetime?.toLocaleDateString() ?? '',
+      row.resultDatetime?.toLocaleDateString() ?? '',
       row.resultStatus ?? '',
       row.orderingProvider ?? '',
       row.resultingLab ?? '',
       row.analyte ?? '',
       `${row.value ?? ''} ${row.unit ?? ''}`.trim(),
-      printRange(SerializeLabResult(row)),
+      printRange(row),
       rangeData(row),
     ]),
   ]
@@ -67,8 +67,8 @@ function rangeData(row: PhrLabResult): string {
   const { isInRange, message } = checkLabRange({
     value,
     normalValue,
-    rangeMin: rangeMin?.toNumber() ?? null,
-    rangeMax: rangeMax?.toNumber() ?? null,
+    rangeMin: rangeMin ?? null,
+    rangeMax: rangeMax ?? null,
   })
   // Add the range status
   return !isInRange ? '⚠️:' + message : '✅'

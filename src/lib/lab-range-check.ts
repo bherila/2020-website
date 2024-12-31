@@ -1,5 +1,5 @@
 import LabResultSerializable from '@/app/phr/SerializedLabResult.type'
-import type { PhrLabResult } from '@prisma/client'
+import z from 'zod'
 
 export interface RangeCheck {
   isInRange: boolean
@@ -46,8 +46,14 @@ export function checkLabRange(result: {
     }
   }
 
-  const min = result.rangeMin ?? -Infinity
-  const max = result.rangeMax ?? Infinity
+  const min = z
+    .number()
+    .catch(() => -Infinity)
+    .parse(result.rangeMin)
+  const max = z
+    .number()
+    .catch(() => Infinity)
+    .parse(result.rangeMax)
 
   const effectiveMin = min < -999999 ? -Infinity : min
   const effectiveMax = max > 999999 ? Infinity : max
