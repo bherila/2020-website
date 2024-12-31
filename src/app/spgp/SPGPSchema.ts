@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import moment from 'moment'
 
 export const SPGPSchema = z.object({
   promoCode: z.string().optional(),
