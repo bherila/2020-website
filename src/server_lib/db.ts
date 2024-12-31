@@ -1,8 +1,7 @@
 import 'server-only'
-import mysql from 'serverless-mysql'
+import mysql from 'serverless-mysql2'
 
 const db = mysql({
-  library: require('mysql2'),
   config: {
     host: process.env.DBHOST,
     port: parseInt(process.env.DBPORT || '3306', 10),
@@ -15,7 +14,6 @@ const db = mysql({
 export async function sql(strings: TemplateStringsArray, ...values: any[]) {
   try {
     const query = strings.reduce((prev, curr, i) => `${prev}${curr}${values[i] !== undefined ? '?' : ''}`, '')
-
     const results = await db.query(
       query,
       values.filter((v) => v !== undefined),

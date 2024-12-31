@@ -92,7 +92,7 @@ export async function getLineItemsByAccount(accountId: number, getDeletedItems =
   // Ensure dates are formatted correctly
   result.map((item) => {
     if (item.t_date instanceof Date) {
-      item.t_date = item.t_date.toISOString().split('T')[0] // remove time
+      item.t_date = item.t_date?.toISOString().split('T')[0] // remove time
     }
     if (item.opt_expiration instanceof Date) {
       item.opt_expiration = item.opt_expiration.toISOString().split('T')[0] // remove time
