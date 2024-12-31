@@ -4,6 +4,7 @@
 
 - Use yarn for package management, not npm
 - Run `yarn add` instead of `npm install`
+- Jest requires `jest-environment-jsdom` to be installed separately for tests using JSDOM
 
 ## React Bootstrap Components
 
