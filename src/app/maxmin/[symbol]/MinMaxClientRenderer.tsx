@@ -1,7 +1,11 @@
 'use client'
 import { DataTable } from '@/components/ui/data-table'
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+import { useForm } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import currency from 'currency.js'
 import AlphaVantageEarnings from '@/lib/AlphaVantageEarnings'
@@ -19,15 +23,18 @@ interface Props {
 export default function MinMaxClientRenderer({ symbol, quotes, earnings }: Props) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [onlyNearEarnings, setOnlyNearEarnings] = useState(false)
-  const [inputs, setInputs] = useState({
-    stockPrice: 0,
-    annualizedImpliedVolatilityPercent: 1.3,
-    daysToExpiration: 5,
+  const form = useForm({
+    defaultValues: {
+      stockPrice: 0,
+      annualizedImpliedVolatilityPercent: 1.3,
+      daysToExpiration: 5,
+    },
   })
   const [tableData, setTableData] = useState<StockQuoteExtended[]>([])
   useEffect(() => {
     setTableData(preprocessData(quotes, earnings, onlyNearEarnings))
   }, [quotes, earnings, onlyNearEarnings])
+  const inputs = form.getValues()
   const sd1 = inputs.stockPrice * inputs.annualizedImpliedVolatilityPercent * Math.sqrt(inputs.daysToExpiration / 365)
   const outputs = [
     {
@@ -61,95 +68,130 @@ export default function MinMaxClientRenderer({ symbol, quotes, earnings }: Props
   }
 
   return (
-    <Container fluid className="py-4">
-      <DataTable
-        columns={[
-          { accessorKey: 'date', header: 'Date' },
-          { accessorKey: 'prevClose', header: 'Prev Close' },
-          { accessorKey: 'open', header: 'Open' },
-          { accessorKey: 'close', header: 'Close' },
-          { accessorKey: 'change', header: 'Change' },
-          { accessorKey: 'pctChg', header: '% Change' },
-          {
-            accessorKey: 'nearEarnings',
-            header: 'Near Earnings',
-            cell: ({ row }) => (row.original.nearEarnings === 0 ? '⭐️' : row.original.nearEarnings),
-          },
-        ]}
-        data={tableData}
-        onRowClick={(row) => setSelectedDate(row.date)}
-      />
-      <Form.Check
-        type="switch"
-        id="earnings-switch"
-        label="Only show rows near earnings dates"
-        checked={onlyNearEarnings}
-        onChange={(e) => setOnlyNearEarnings(e.target.checked)}
-      />
-      <h3>Inputs</h3>
-      <Form
-        onSubmit={(e) => {
-          setInputs(Object.assign({}, inputs))
-          e.preventDefault()
-        }}
-      >
-        <Form.Group className="mb-3">
-          <Form.Label>Stock Price</Form.Label>
-          <Form.Control
-            type="number"
-            value={inputs.stockPrice}
-            onChange={(e) => setInputs({ ...inputs, stockPrice: parseFloat(e.target.value) })}
-          />
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Label>Annualized Implied Volatility (%)</Form.Label>
-          <Form.Control
-            type="number"
-            value={inputs.annualizedImpliedVolatilityPercent}
-            onChange={(e) => setInputs({ ...inputs, annualizedImpliedVolatilityPercent: parseFloat(e.target.value) })}
-          />
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Label>Days to Expiration</Form.Label>
-          <Form.Control
-            type="number"
-            value={inputs.daysToExpiration}
-            onChange={(e) => setInputs({ ...inputs, daysToExpiration: parseFloat(e.target.value) })}
-          />
-        </Form.Group>
-        <Button variant="outline-primary" type="submit">
-          Recalculate
-        </Button>
-      </Form>
-      <div style={{ paddingTop: '1em' }}>
+    <Container fluid className="py-4 flex flex-row">
+      <div className="w-1/2">
         <DataTable
           columns={[
-            { accessorKey: 'N_SD', header: 'N_SD', cell: ({ row }) => row.original.N_SD.toFixed(2) },
-            { accessorKey: 'SD_Value', header: 'SD Value', cell: ({ row }) => `$${row.original.SD_Value.toFixed(2)}` },
+            { accessorKey: 'date', header: 'Date' },
+            { accessorKey: 'prevClose', header: 'Prev Close' },
+            { accessorKey: 'open', header: 'Open' },
+            { accessorKey: 'close', header: 'Close' },
+            { accessorKey: 'change', header: 'Change' },
+            { accessorKey: 'pctChg', header: '% Change' },
             {
-              accessorKey: 'SD_Percent_Change',
-              header: 'SD % Change',
-              cell: ({ row }) => `${(row.original.SD_Percent_Change * 100).toFixed(2)}%`,
-            },
-            { accessorKey: 'Min', header: 'Min', cell: ({ row }) => `$${row.original.Min.toFixed(2)}` },
-            { accessorKey: 'Max', header: 'Max', cell: ({ row }) => `$${row.original.Max.toFixed(2)}` },
-            {
-              accessorKey: 'Probability',
-              header: 'Probability',
-              cell: ({ row }) => `${(row.original.Probability * 100).toFixed(1)}%`,
+              accessorKey: 'nearEarnings',
+              header: 'Near Earnings',
+              cell: ({ row }) => (row.original.nearEarnings === 0 ? '⭐️' : row.original.nearEarnings),
             },
           ]}
-          data={outputs}
+          data={tableData}
+          onRowClick={(row) => setSelectedDate(row.date)}
         />
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="earnings-switch"
+            checked={onlyNearEarnings}
+            onCheckedChange={(checked) => setOnlyNearEarnings(checked as boolean)}
+          />
+          <Label htmlFor="earnings-switch">Only show rows near earnings dates</Label>
+        </div>
       </div>
-      {selectedDate && tableData ? (
-        <>
-          <DetailChart data={tableData} centerDate={selectedDate} symbol={symbol} />
-          <Button onClick={() => setSelectedDate('')}>Clear selected date</Button>
-        </>
-      ) : (
-        <DetailChart data={tableData} centerDate={selectedDate ?? undefined} symbol={symbol} />
-      )}
+      <div className="w-1/2">
+        <h3>Inputs</h3>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(() => {})} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="stockPrice"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Stock Price</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e)
+                        form.setValue('stockPrice', parseFloat(e.target.value))
+                      }}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="annualizedImpliedVolatilityPercent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Annualized Implied Volatility (%)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e)
+                        form.setValue('annualizedImpliedVolatilityPercent', parseFloat(e.target.value))
+                      }}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="daysToExpiration"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Days to Expiration</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e)
+                        form.setValue('daysToExpiration', parseFloat(e.target.value))
+                      }}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <Button type="submit" variant="outline">
+              Recalculate
+            </Button>
+          </form>
+        </Form>
+        <div style={{ paddingTop: '1em' }}>
+          <DataTable
+            columns={[
+              { accessorKey: 'N_SD', header: 'N_SD', cell: ({ row }) => row.original.N_SD.toFixed(2) },
+              { accessorKey: 'SD_Value', header: 'SD Value', cell: ({ row }) => `$${row.original.SD_Value.toFixed(2)}` },
+              {
+                accessorKey: 'SD_Percent_Change',
+                header: 'SD % Change',
+                cell: ({ row }) => `${(row.original.SD_Percent_Change * 100).toFixed(2)}%`,
+              },
+              { accessorKey: 'Min', header: 'Min', cell: ({ row }) => `$${row.original.Min.toFixed(2)}` },
+              { accessorKey: 'Max', header: 'Max', cell: ({ row }) => `$${row.original.Max.toFixed(2)}` },
+              {
+                accessorKey: 'Probability',
+                header: 'Probability',
+                cell: ({ row }) => `${(row.original.Probability * 100).toFixed(1)}%`,
+              },
+            ]}
+            data={outputs}
+          />
+        </div>
+        {selectedDate && tableData ? (
+          <>
+            <DetailChart data={tableData} centerDate={selectedDate} symbol={symbol} />
+            <Button onClick={() => setSelectedDate('')}>Clear selected date</Button>
+          </>
+        ) : (
+          <DetailChart data={tableData} centerDate={selectedDate ?? undefined} symbol={symbol} />
+        )}
+      </div>
     </Container>
   )
 }

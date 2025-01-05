@@ -1,7 +1,10 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
-import { Table, Button, Alert, Spinner } from 'react-bootstrap'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Spinner } from '@/components/ui/spinner'
 
 import { ProductKeyForImport } from './actions'
 import cn from 'classnames'
@@ -137,18 +140,19 @@ const ProductKeyUploader: React.FC<ProductKeyUploaderProps> = ({ uploadAction })
       </div>
 
       {error && (
-        <Alert variant="danger" className="mt-3">
-          {error}
+        <Alert variant="destructive" className="mt-3">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
       {file && productKeys.length > 0 && (
         <>
           <div className="d-flex justify-content-center pt-3">
-            <Button variant="primary" onClick={handleUpload} disabled={isLoading}>
+            <Button onClick={handleUpload} disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                  <Spinner className="mr-2" />
                   Uploading...
                 </>
               ) : (
@@ -156,29 +160,29 @@ const ProductKeyUploader: React.FC<ProductKeyUploaderProps> = ({ uploadAction })
               )}
             </Button>
           </div>
-          <Table size="sm" striped className="mt-3">
-            <thead>
-              <tr>
-                <th>Product ID</th>
-                <th>Product Key</th>
-                <th>Product Name</th>
-                <th>Claimed Date</th>
-                <th>Key Type</th>
-                <th>Key Retrieval Note</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table className="mt-3">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Product ID</TableHead>
+                <TableHead>Product Key</TableHead>
+                <TableHead>Product Name</TableHead>
+                <TableHead>Claimed Date</TableHead>
+                <TableHead>Key Type</TableHead>
+                <TableHead>Key Retrieval Note</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {productKeys.map((productKey, index) => (
-                <tr key={index}>
-                  <td>{productKey.productId}</td>
-                  <td>{productKey.productKey}</td>
-                  <td>{productKey.productName}</td>
-                  <td>{productKey.claimedDate}</td>
-                  <td>{productKey.keyType}</td>
-                  <td>{productKey.keyRetrievalNote}</td>
-                </tr>
+                <TableRow key={index}>
+                  <TableCell>{productKey.productId}</TableCell>
+                  <TableCell>{productKey.productKey}</TableCell>
+                  <TableCell>{productKey.productName}</TableCell>
+                  <TableCell>{productKey.claimedDate}</TableCell>
+                  <TableCell>{productKey.keyType}</TableCell>
+                  <TableCell>{productKey.keyRetrievalNote}</TableCell>
+                </TableRow>
               ))}
-            </tbody>
+            </TableBody>
           </Table>
         </>
       )}

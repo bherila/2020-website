@@ -25,6 +25,18 @@
 ## Best Practices
 
 - Use react-hook-form with zod for form validation and type safety
+- Example validation pattern:
+```ts
+const formSchema = z.object({
+  fieldName: z.string().min(1, 'Error message')
+})
+const form = useForm({
+  resolver: zodResolver(formSchema),
+  defaultValues: {
+    fieldName: ''
+  }
+})
+```
 - Prefer shadcn components over raw HTML elements for consistent styling
 - Keep forms on dedicated pages instead of inline/modal forms for better UX and accessibility
 - Use simple, focused forms - one primary action per form

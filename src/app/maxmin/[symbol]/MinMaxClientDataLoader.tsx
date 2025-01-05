@@ -4,8 +4,8 @@ import AlphaVantageEarnings from '@/lib/AlphaVantageEarnings'
 import StockQuote from '@/lib/StockQuote'
 import MinMaxClientRenderer from '@/app/maxmin/[symbol]/MinMaxClientRenderer'
 import Container from '@/components/container'
-import Spinner from 'react-bootstrap/Spinner'
 import cn from 'classnames'
+import { Spinner } from '@/components/ui/spinner'
 
 const fetcher = (e: any) => fetch(e).then((r) => r.json())
 

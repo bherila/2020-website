@@ -5,26 +5,24 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 function AccountList({ accounts }: { accounts: AccountTableRow[] }) {
   return (
-    <div>
-      <Table>
-        <TableHead>
-          <tr>
-            <TableHeader style={{ width: '120px', textAlign: 'right' }}>Account ID</TableHeader>
-            <TableHeader>Account Name</TableHeader>
-          </tr>
-        </TableHead>
-        <TableBody>
-          {accounts.map((account) => (
-            <TableRow key={account.acct_id}>
-              <TableCell style={{ width: '100px', textAlign: 'right' }}>{account.acct_id}</TableCell>
-              <TableCell>
-                <Link href={`/finance/${account.acct_id}`}>{account.acct_name}</Link>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead style={{ width: '120px', textAlign: 'right' }}>Account ID</TableHead>
+          <TableHead>Account Name</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {accounts.map((account) => (
+          <TableRow key={account.acct_id}>
+            <TableCell style={{ width: '100px', textAlign: 'right' }}>{account.acct_id}</TableCell>
+            <TableCell>
+              <Link href={`/finance/${account.acct_id}`}>{account.acct_name}</Link>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )
 }
 

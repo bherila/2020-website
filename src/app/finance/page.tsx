@@ -9,6 +9,7 @@ import { sql } from '@/server_lib/db'
 import { AccountTableRow } from '../api/finance/model'
 import { revalidatePath } from 'next/cache'
 import Container from '@/components/container'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 async function createAccount(acctName: string): Promise<void> {
   'use server'
@@ -45,10 +46,14 @@ export default async function Page() {
   return (
     <Container>
       <MainTitle>Accounting</MainTitle>
-      <p>Which account:</p>
-      <AccountList accounts={accounts} />
-      New account
-      <NewAccountForm createAccount={createAccount} />
+      <div className="w-full grid grid-cols-2 gap-4">
+        <div>
+          <AccountList accounts={accounts} />
+        </div>
+        <div>
+          <NewAccountForm createAccount={createAccount} />
+        </div>
+      </div>
     </Container>
   )
 }

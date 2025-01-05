@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Modal } from '@/components/ui/modal'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
@@ -46,11 +46,12 @@ export default function CdKeyEditModal({ show, onHide, cdKey, onSave }: EditModa
   }
 
   return (
-    <Modal open={show} onOpenChange={onHide}>
-      <Modal.Content>
-        <Modal.Header>
-          <Modal.Title>Edit CD Key</Modal.Title>
-        </Modal.Header>
+    <Dialog open={show} onOpenChange={onHide}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Edit CD Key</DialogTitle>
+          <DialogDescription>Make changes to the CD key details</DialogDescription>
+        </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -118,7 +119,7 @@ export default function CdKeyEditModal({ show, onHide, cdKey, onSave }: EditModa
             </Button>
           </div>
         </form>
-      </Modal.Content>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   )
 }

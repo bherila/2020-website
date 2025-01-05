@@ -1,6 +1,5 @@
 'use client'
 import { useState } from 'react'
-import { Alert } from 'react-bootstrap'
 
 export default function FolderUploader() {
   const [dragging, setDragging] = useState(false)

@@ -1,21 +1,18 @@
 'use client'
 
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Table from 'react-bootstrap/Table'
 import NewSPGPRequestForm from '@/app/spgp/NewSPGPRequestForm'
 import ImportCodeListClient from '@/app/spgp/ImportCodeListClient'
 import SPGPImportClient from '@/app/spgp/SPGPImportClient'
 import { useCallback, useEffect, useState } from 'react'
 import { ParsedSPGPPassType } from '@/app/spgp/SPGPPassTypes'
 import { fetchWrapper } from '@/lib/fetchWrapper'
-import Spinner from 'react-bootstrap/Spinner'
 import { SPGPRequestType, SPGPRequestTypeWithPromo } from '@/app/spgp/SPGPRequestSchema'
 import Card from 'react-bootstrap/Card'
 import { Button, FormControl, Tab, Tabs } from 'react-bootstrap'
 import Modal from 'react-bootstrap/Modal'
 import InputGroup from 'react-bootstrap/InputGroup'
 import SpgpRowActions from './SpgpRowActions'
+import { Table } from '@/components/ui/table'
 
 export default function SPGPClient({ admin, userEmail }: { admin: boolean; userEmail: string }) {
   const [loading, setLoading] = useState(true)
@@ -115,7 +112,7 @@ export default function SPGPClient({ admin, userEmail }: { admin: boolean; userE
                   )}
                 </InputGroup>
               )}
-              <Table striped bordered hover size="sm" style={{ fontSize: '8pt' }}>
+              <Table style={{ fontSize: '8pt' }}>
                 <thead>
                   <tr>
                     {admin && <th>#</th>}
