@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import Form from 'react-bootstrap/Form'
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Button from 'react-bootstrap/Button'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
 
 function getInitialNumbers() {
   const r = []
@@ -36,47 +35,37 @@ const BingoForm = (props: { onSubmit: (data: BingoData) => void }) => {
   }
 
   return (
-    <Container>
-      <Form>
-        <Form.Group as={Row} controlId="activateFreeSpace">
-          <Form.Label column sm={2}>
-            Activate free space?
-          </Form.Label>
-          <Col sm={10}>
-            <Form.Check
-              type="checkbox"
-              label="Yes"
-              checked={activateFreeSpace}
-              onChange={(e) => setActivateFreeSpace(e.target.checked)}
-            />
-          </Col>
-        </Form.Group>
+    <div className="space-y-6 max-w-2xl mx-auto">
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="activateFreeSpace"
+          checked={activateFreeSpace}
+          onCheckedChange={(checked) => setActivateFreeSpace(!!checked)}
+        />
+        <Label htmlFor="activateFreeSpace">Activate free space?</Label>
+      </div>
 
-        <Form.Group as={Row} controlId="itemsList">
-          <Form.Label column sm={2}>
-            List of items
-          </Form.Label>
-          <Col sm={10}>
-            <Form.Control as="textarea" rows={3} value={itemsList} onChange={(e) => setItemsList(e.target.value)} />
-          </Col>
-        </Form.Group>
+      <div className="space-y-2">
+        <Label htmlFor="itemsList">List of items</Label>
+        <Input
+          id="itemsList"
+          as="textarea"
+          rows={3}
+          value={itemsList}
+          onChange={(e) => setItemsList(e.target.value)}
+          className="min-h-[100px]"
+        />
+      </div>
 
-        <Form.Group as={Row} controlId="numCards">
-          <Form.Label column sm={2}>
-            Number of cards to generate
-          </Form.Label>
-          <Col sm={10}>
-            <Form.Control type="number" value={numCards} onChange={(e) => setNumCards(e.target.value)} />
-          </Col>
-        </Form.Group>
+      <div className="space-y-2">
+        <Label htmlFor="numCards">Number of cards to generate</Label>
+        <Input id="numCards" type="number" value={numCards} onChange={(e) => setNumCards(e.target.value)} />
+      </div>
 
-        <Form.Group as={Row}>
-          <Col sm={{ span: 10, offset: 2 }}>
-            <Button onClick={handleGenerateCards}>Generate Bingo Cards</Button>
-          </Col>
-        </Form.Group>
-      </Form>
-    </Container>
+      <Button onClick={handleGenerateCards} className="w-full">
+        Generate Bingo Cards
+      </Button>
+    </div>
   )
 }
 

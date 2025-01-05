@@ -1,7 +1,8 @@
 import { Metadata } from 'next'
 import { ReactNode } from 'react'
-import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import Container from '@/components/container'
+import MainTitle from '@/components/main-title'
 
 export const metadata: Metadata = {
   title: 'Ben Herila',
@@ -14,9 +15,9 @@ export default async function HomePage() {
   )
 
   return (
-    <div className="container mx-auto px-4">
+    <Container>
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold pt-5 pb-3">Hi, {Im} Ben</h1>
+        <MainTitle>Hi, {Im} Ben</MainTitle>
 
         <Line>
           {Im} a Software Engineer at Meta. {Im} currently working on{' '}
@@ -81,6 +82,6 @@ export default async function HomePage() {
           .
         </Line>
       </div>
-    </div>
+    </Container>
   )
 }

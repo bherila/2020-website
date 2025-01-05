@@ -1,19 +1,42 @@
 import MainTitle from '@/components/main-title'
 import Container from '@/components/container'
 import { getListOfRecipes } from '@/helpers/postHelpers'
-
-// Great reference! https://www.singlehanded.dev/blog/building-markdown-blog-with-nextjs-app-router
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
 
 export default function RecipesPage() {
   const recipes = getListOfRecipes()
   return (
     <Container>
+      <div className="py-4">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Recipes</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
       <MainTitle>Recipes</MainTitle>
-      {recipes.map((recipe: string) => (
-        <div key={recipe}>
-          <a href={recipe.replace('.md', '')}>{recipe}</a>
-        </div>
-      ))}
+      <ul className="list-disc pl-5 space-y-2">
+        {recipes.map((recipe) => (
+          <li key={recipe.slug}>
+            <a href={recipe.slug} className="hover:underline">
+              {recipe.title}
+            </a>
+          </li>
+        ))}
+      </ul>
     </Container>
   )
 }
