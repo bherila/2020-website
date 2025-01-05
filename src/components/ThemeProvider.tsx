@@ -19,16 +19,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useLocalStorage<Theme>('theme', 'auto')
   const [mounted, setMounted] = useState(false)
 
-  // Combine mount and theme effects
   useEffect(() => {
     setMounted(true)
     const root = document.documentElement
     const updateTheme = () => {
       if (theme === 'auto') {
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-        root.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light')
+        root.classList.toggle('dark', prefersDark)
       } else {
-        root.setAttribute('data-bs-theme', theme)
+        root.classList.toggle('dark', theme === 'dark')
       }
     }
 
@@ -41,7 +40,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, [theme])
 
-  // Avoid flickering by not rendering until mounted
   if (!mounted) {
     return null
   }

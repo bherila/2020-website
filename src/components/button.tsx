@@ -1,12 +1,11 @@
-import * as React from 'react'
+import { Button as ShadcnButton } from '@/components/ui/button'
 
 export default function Button(props: {
   children?: React.ReactNode
   disabled?: boolean
   onClick?: () => void
-  variant?: string
-  size?: string
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
+  size?: 'default' | 'sm' | 'lg' | 'icon'
 }): React.ReactElement {
-  const { children, size, ...xProps } = props
-  return <button {...xProps}>{props.children}</button>
+  return <ShadcnButton {...props} />
 }
