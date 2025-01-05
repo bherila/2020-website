@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import { Card, Row, Col, Table, Form, InputGroup, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import printRange, { checkLabRange, getLatestRangeInfo } from '@/lib/lab-range-check'
-import { Search } from 'react-bootstrap-icons'
 import SerializedLabResult from '../SerializedLabResult.type'
 
 interface GroupedResults {
@@ -31,9 +30,7 @@ export default function LabsCards({ labResults }: { labResults: SerializedLabRes
   return (
     <div className="container">
       <InputGroup className="mb-3 container">
-        <InputGroup.Text>
-          <Search style={{ height: '1rem' }} />
-        </InputGroup.Text>
+        <InputGroup.Text>🔍</InputGroup.Text>
         <InputGroup.Text>Filter:</InputGroup.Text>
         <Form.Control
           type="text"

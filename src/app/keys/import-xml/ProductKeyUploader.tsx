@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react'
 import { Table, Button, Alert, Spinner } from 'react-bootstrap'
-import { parseString } from 'xml2js'
+
 import { ProductKeyForImport } from './actions'
 import cn from 'classnames'
 
@@ -60,35 +60,43 @@ const ProductKeyUploader: React.FC<ProductKeyUploaderProps> = ({ uploadAction })
     reader.onload = (event) => {
       if (event.target) {
         const xml = event.target.result
-        parseString(xml!, (err, result) => {
-          if (err) {
-            console.error(err)
-            setError('Failed to parse XML file')
-          } else {
-            const uniqueProductKeys: Set<string> = new Set()
-            const productKeys: ProductKeyForImport[] = []
-            result.root.YourKey[0].Product_Key.forEach((productKey: any) => {
-              productKey.Key.forEach((key: any) => {
-                if (!uniqueProductKeys.has(key._)) {
-                  uniqueProductKeys.add(key._)
-                  productKeys.push({
-                    productId: productKey.$.Name,
-                    productKey: key._,
-                    productName: productKey.$.Name,
-                    computerName: '',
-                    comment: '',
-                    usedOn: '',
-                    claimedDate: key.$.ClaimedDate,
-                    keyType: key.$.Type,
-                    keyRetrievalNote: productKey.$.KeyRetrievalNote,
-                  })
-                }
+        const parser = new DOMParser()
+        const xmlDoc = parser.parseFromString(xml as string, 'text/xml')
+
+        const productKeys: ProductKeyForImport[] = []
+        const uniqueProductKeys = new Set<string>()
+
+        const productKeysNodes = xmlDoc.getElementsByTagName('Product_Key')
+        for (let i = 0; i < productKeysNodes.length; i++) {
+          const productKey = productKeysNodes[i]
+          const productName = productKey.getAttribute('Name') || ''
+
+          const keyNodes = productKey.getElementsByTagName('Key')
+          for (let j = 0; j < keyNodes.length; j++) {
+            const key = keyNodes[j]
+            const keyValue = key.textContent || ''
+            const claimedDate = key.getAttribute('ClaimedDate') || ''
+            const keyType = key.getAttribute('Type') || ''
+
+            if (keyValue && !uniqueProductKeys.has(keyValue)) {
+              uniqueProductKeys.add(keyValue)
+              productKeys.push({
+                productId: productName,
+                productKey: keyValue,
+                productName: productName,
+                computerName: '',
+                comment: '',
+                usedOn: '',
+                claimedDate: claimedDate,
+                keyType: keyType,
+                keyRetrievalNote: productKey.getAttribute('KeyRetrievalNote') || '',
               })
-            })
-            setProductKeys(productKeys)
-            setError(null)
+            }
           }
-        })
+        }
+
+        setProductKeys(productKeys)
+        setError(null)
       }
     }
     reader.readAsText(file)
