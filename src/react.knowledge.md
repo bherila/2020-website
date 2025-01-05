@@ -14,16 +14,9 @@
 - Use Tailwind utility classes for styling
 - Spacing scale matches Bootstrap (1 = 0.25rem)
 - Color names match Bootstrap: primary, secondary, success, danger, warning, info, light, dark
-
-### shadcn/ui Components
-- Use shadcn components for consistent UI
-- Install new components with: `npx shadcn add [component]`
-- Prefer shadcn components over custom implementations
-- Customize components through tailwind.config.js
-- Use shadcn Button component as base for all buttons
-- Use next/link for navigation
-- Container components should use Tailwind classes for layout
-- Typography components should use shadcn typography classes
+- Required plugins:
+  - @tailwindcss/typography for prose styling
+  - tailwindcss-animate for animations
 
 ### React Bootstrap Components
 - Avoid and replace with shadcn components
@@ -31,6 +24,7 @@
 
 ## Best Practices
 
+- Use react-hook-form with zod for form validation and type safety
 - Prefer shadcn components over raw HTML elements for consistent styling
 - Keep forms on dedicated pages instead of inline/modal forms for better UX and accessibility
 - Use simple, focused forms - one primary action per form

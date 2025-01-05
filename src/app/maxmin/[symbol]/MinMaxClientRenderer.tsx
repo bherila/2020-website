@@ -8,9 +8,7 @@ import AlphaVantageEarnings from '@/lib/AlphaVantageEarnings'
 import StockQuote from '@/lib/StockQuote'
 import { StockQuoteExtended } from '@/lib/StockQuoteExtended'
 import { DetailChart } from '@/app/maxmin/[symbol]/DetailChart'
-import Container from 'react-bootstrap/Container'
-import Col from 'react-bootstrap/Col'
-import Row from 'react-bootstrap/Row'
+import Container from '@/components/container'
 
 interface Props {
   symbol: string
@@ -64,100 +62,94 @@ export default function MinMaxClientRenderer({ symbol, quotes, earnings }: Props
 
   return (
     <Container fluid className="py-4">
-      <Row>
-        <Col xs={12} sm={6}>
-          <DataTable
-            columns={[
-              { accessorKey: 'date', header: 'Date' },
-              { accessorKey: 'prevClose', header: 'Prev Close' },
-              { accessorKey: 'open', header: 'Open' },
-              { accessorKey: 'close', header: 'Close' },
-              { accessorKey: 'change', header: 'Change' },
-              { accessorKey: 'pctChg', header: '% Change' },
-              {
-                accessorKey: 'nearEarnings',
-                header: 'Near Earnings',
-                cell: ({ row }) => (row.original.nearEarnings === 0 ? '⭐️' : row.original.nearEarnings),
-              },
-            ]}
-            data={tableData}
-            onRowClick={(row) => setSelectedDate(row.date)}
+      <DataTable
+        columns={[
+          { accessorKey: 'date', header: 'Date' },
+          { accessorKey: 'prevClose', header: 'Prev Close' },
+          { accessorKey: 'open', header: 'Open' },
+          { accessorKey: 'close', header: 'Close' },
+          { accessorKey: 'change', header: 'Change' },
+          { accessorKey: 'pctChg', header: '% Change' },
+          {
+            accessorKey: 'nearEarnings',
+            header: 'Near Earnings',
+            cell: ({ row }) => (row.original.nearEarnings === 0 ? '⭐️' : row.original.nearEarnings),
+          },
+        ]}
+        data={tableData}
+        onRowClick={(row) => setSelectedDate(row.date)}
+      />
+      <Form.Check
+        type="switch"
+        id="earnings-switch"
+        label="Only show rows near earnings dates"
+        checked={onlyNearEarnings}
+        onChange={(e) => setOnlyNearEarnings(e.target.checked)}
+      />
+      <h3>Inputs</h3>
+      <Form
+        onSubmit={(e) => {
+          setInputs(Object.assign({}, inputs))
+          e.preventDefault()
+        }}
+      >
+        <Form.Group className="mb-3">
+          <Form.Label>Stock Price</Form.Label>
+          <Form.Control
+            type="number"
+            value={inputs.stockPrice}
+            onChange={(e) => setInputs({ ...inputs, stockPrice: parseFloat(e.target.value) })}
           />
-          <Form.Check
-            type="switch"
-            id="earnings-switch"
-            label="Only show rows near earnings dates"
-            checked={onlyNearEarnings}
-            onChange={(e) => setOnlyNearEarnings(e.target.checked)}
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Annualized Implied Volatility (%)</Form.Label>
+          <Form.Control
+            type="number"
+            value={inputs.annualizedImpliedVolatilityPercent}
+            onChange={(e) => setInputs({ ...inputs, annualizedImpliedVolatilityPercent: parseFloat(e.target.value) })}
           />
-        </Col>
-        <Col xs={12} sm={6}>
-          <h3>Inputs</h3>
-          <Form
-            onSubmit={(e) => {
-              setInputs(Object.assign({}, inputs))
-              e.preventDefault()
-            }}
-          >
-            <Form.Group className="mb-3">
-              <Form.Label>Stock Price</Form.Label>
-              <Form.Control
-                type="number"
-                value={inputs.stockPrice}
-                onChange={(e) => setInputs({ ...inputs, stockPrice: parseFloat(e.target.value) })}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Annualized Implied Volatility (%)</Form.Label>
-              <Form.Control
-                type="number"
-                value={inputs.annualizedImpliedVolatilityPercent}
-                onChange={(e) => setInputs({ ...inputs, annualizedImpliedVolatilityPercent: parseFloat(e.target.value) })}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Days to Expiration</Form.Label>
-              <Form.Control
-                type="number"
-                value={inputs.daysToExpiration}
-                onChange={(e) => setInputs({ ...inputs, daysToExpiration: parseFloat(e.target.value) })}
-              />
-            </Form.Group>
-            <Button variant="outline-primary" type="submit">
-              Recalculate
-            </Button>
-          </Form>
-          <div style={{ paddingTop: '1em' }}>
-            <DataTable
-              columns={[
-                { accessorKey: 'N_SD', header: 'N_SD', cell: ({ row }) => row.original.N_SD.toFixed(2) },
-                { accessorKey: 'SD_Value', header: 'SD Value', cell: ({ row }) => `$${row.original.SD_Value.toFixed(2)}` },
-                {
-                  accessorKey: 'SD_Percent_Change',
-                  header: 'SD % Change',
-                  cell: ({ row }) => `${(row.original.SD_Percent_Change * 100).toFixed(2)}%`,
-                },
-                { accessorKey: 'Min', header: 'Min', cell: ({ row }) => `$${row.original.Min.toFixed(2)}` },
-                { accessorKey: 'Max', header: 'Max', cell: ({ row }) => `$${row.original.Max.toFixed(2)}` },
-                {
-                  accessorKey: 'Probability',
-                  header: 'Probability',
-                  cell: ({ row }) => `${(row.original.Probability * 100).toFixed(1)}%`,
-                },
-              ]}
-              data={outputs}
-            />
-          </div>
-          {selectedDate && tableData ? (
-            <>
-              <DetailChart data={tableData} centerDate={selectedDate} symbol={symbol} />
-              <Button onClick={() => setSelectedDate('')}>Clear selected date</Button>
-            </>
-          ) : (
-            <DetailChart data={tableData} centerDate={selectedDate ?? undefined} symbol={symbol} />
-          )}
-        </Col>
-      </Row>
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Days to Expiration</Form.Label>
+          <Form.Control
+            type="number"
+            value={inputs.daysToExpiration}
+            onChange={(e) => setInputs({ ...inputs, daysToExpiration: parseFloat(e.target.value) })}
+          />
+        </Form.Group>
+        <Button variant="outline-primary" type="submit">
+          Recalculate
+        </Button>
+      </Form>
+      <div style={{ paddingTop: '1em' }}>
+        <DataTable
+          columns={[
+            { accessorKey: 'N_SD', header: 'N_SD', cell: ({ row }) => row.original.N_SD.toFixed(2) },
+            { accessorKey: 'SD_Value', header: 'SD Value', cell: ({ row }) => `$${row.original.SD_Value.toFixed(2)}` },
+            {
+              accessorKey: 'SD_Percent_Change',
+              header: 'SD % Change',
+              cell: ({ row }) => `${(row.original.SD_Percent_Change * 100).toFixed(2)}%`,
+            },
+            { accessorKey: 'Min', header: 'Min', cell: ({ row }) => `$${row.original.Min.toFixed(2)}` },
+            { accessorKey: 'Max', header: 'Max', cell: ({ row }) => `$${row.original.Max.toFixed(2)}` },
+            {
+              accessorKey: 'Probability',
+              header: 'Probability',
+              cell: ({ row }) => `${(row.original.Probability * 100).toFixed(1)}%`,
+            },
+          ]}
+          data={outputs}
+        />
+      </div>
+      {selectedDate && tableData ? (
+        <>
+          <DetailChart data={tableData} centerDate={selectedDate} symbol={symbol} />
+          <Button onClick={() => setSelectedDate('')}>Clear selected date</Button>
+        </>
+      ) : (
+        <DetailChart data={tableData} centerDate={selectedDate ?? undefined} symbol={symbol} />
+      )}
     </Container>
   )
 }

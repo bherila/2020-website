@@ -1,7 +1,6 @@
 'use client'
 import Container from '@/components/container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
+
 import MainTitle from '@/components/main-title'
 import BingoForm, { BingoData } from '@/app/bingo/BIngoForm'
 import { useMemo, useState } from 'react'
@@ -56,39 +55,48 @@ export default function BingoPage() {
 
   return (
     <Container>
-      <Row>
-        <Col xs={12}>
-          <MainTitle>Bingo card generator</MainTitle>
-          <ul>
-            <li>Enter the list of items. Min 25 items.</li>
-            <li>
-              Pick # of cards you want. If you pick too big of a #, you might crash your browser. Up to a few hundred is
-              probably fine. A few thousand if you have a fast computer.
-            </li>
-            <li>Press generate button. Then Ctrl+P to print. Skip this first page :)</li>
-            <li>No duplicate cards will be generated!</li>
-            <li>
-              Source code available on{' '}
-              <a href="https://github.com/bherila/2020-website/tree/prod/src/app/bingo">Github repo</a>
-            </li>
-          </ul>
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={12}>
-          <BingoForm onSubmit={(data) => setInput(data)} />
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={12}>
-          {generatedCards.map((bingoCard, i) => (
-            <div key={i} style={{ textAlign: 'center', pageBreakBefore: 'always' }}>
-              <MainTitle>Card #{i}</MainTitle>
-              <BingoCard data={bingoCard} />
+      <MainTitle>Bingo Card Generator</MainTitle>
+      <div className="flex justify-center">
+        <div className="w-1/2">
+          <div className="space-y-8 my-8">
+            <div className="max-w-none">
+              <ul className="list-disc list-outside ml-6 space-y-2">
+                <li>Enter the list of items (minimum 25 items required)</li>
+                <li>
+                  Choose the number of cards to generate:
+                  <ul className="list-disc list-outside ml-6 mt-2">
+                    <li>Up to a few hundred cards works well on most browsers</li>
+                    <li>Up to a few thousand cards on faster computers</li>
+                  </ul>
+                </li>
+                <li>Click the generate button</li>
+                <li>Use Ctrl+P to print (skip the first page with the form)</li>
+                <li>Each generated card will be unique - no duplicates!</li>
+                <li>
+                  Source code available on{' '}
+                  <a
+                    href="https://github.com/bherila/2020-website/tree/prod/src/app/bingo"
+                    className="text-primary hover:underline"
+                  >
+                    Github repo
+                  </a>
+                </li>
+              </ul>
             </div>
-          ))}
-        </Col>
-      </Row>
+          </div>
+        </div>
+        <div className="w-1/2">
+          <BingoForm onSubmit={(data) => setInput(data)} />
+        </div>
+      </div>
+      <div className="w-full">
+        {generatedCards.map((bingoCard, i) => (
+          <div key={i} className="text-center" style={{ pageBreakBefore: 'always' }}>
+            <MainTitle>Card #{i}</MainTitle>
+            <BingoCard data={bingoCard} />
+          </div>
+        ))}
+      </div>
     </Container>
   )
 }

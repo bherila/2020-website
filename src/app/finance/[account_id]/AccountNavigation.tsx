@@ -1,6 +1,42 @@
 'use client'
-import Nav from 'react-bootstrap/Nav'
-import Breadcrumb from 'react-bootstrap/Breadcrumb'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from '@/components/ui/breadcrumb'
+import Link from 'next/link'
+
+const NAV_ITEMS = [
+  {
+    value: 'transactions',
+    title: 'Transactions',
+    href: (accountId: number) => `/finance/${accountId}`,
+  },
+  {
+    value: 'import',
+    title: 'Import',
+    href: (accountId: number) => `/finance/${accountId}/import-transactions`,
+  },
+  {
+    value: 'duplicates',
+    title: 'Duplicates',
+    href: (accountId: number) => `/finance/${accountId}/duplicates`,
+  },
+  {
+    value: 'summary',
+    title: 'Summary',
+    href: (accountId: number) => `/finance/${accountId}/summary`,
+  },
+  {
+    value: 'maintenance',
+    title: 'Maintenance',
+    href: (accountId: number) => `/finance/${accountId}/maintenance`,
+  },
+]
 
 export default function AccountNavigation({
   accountId,
@@ -9,44 +45,43 @@ export default function AccountNavigation({
 }: {
   accountId: number
   accountName: string
-  activeTab?: 'transactions' | 'import' | 'duplicates' | 'summary' | 'maintenance'
+  activeTab?: string
 }) {
-  return (
-    <div className="mt-4">
-      <Breadcrumb>
-        <Breadcrumb.Item href="/finance">Accounts</Breadcrumb.Item>
-        <Breadcrumb.Item active>
-          Account {accountId} - {accountName ?? 'no name'}
-        </Breadcrumb.Item>
-      </Breadcrumb>
+  const activeTabTitle = NAV_ITEMS.find((item) => item.value === activeTab)?.title || ''
 
-      <Nav variant="tabs" className="mb-3">
-        <Nav.Item>
-          <Nav.Link href={`/finance/${accountId}`} active={activeTab === 'transactions'}>
-            Transactions
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link href={`/finance/${accountId}/import-transactions`} active={activeTab === 'import'}>
-            Import
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link href={`/finance/${accountId}/duplicates`} active={activeTab === 'duplicates'}>
-            Duplicates
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link href={`/finance/${accountId}/summary`} active={activeTab === 'summary'}>
-            Summary
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link href={`/finance/${accountId}/maintenance`} active={activeTab === 'maintenance'}>
-            Maintenance
-          </Nav.Link>
-        </Nav.Item>
-      </Nav>
+  return (
+    <div className="mt-4 px-8">
+      <div className="py-4 px-4">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/finance">Accounts</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              Account {accountId} - {accountName ?? 'no name'}
+            </BreadcrumbItem>
+            {activeTabTitle && (
+              <>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{activeTabTitle}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </>
+            )}
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+
+      <Tabs defaultValue={activeTab} className="mb-3">
+        <TabsList>
+          {NAV_ITEMS.map((item) => (
+            <TabsTrigger key={item.value} value={item.value} asChild>
+              <Link href={item.href(accountId)}>{item.title}</Link>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
     </div>
   )
 }

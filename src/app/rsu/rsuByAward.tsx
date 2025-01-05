@@ -1,21 +1,21 @@
 import { IAward } from '@/app/rsu/IAward'
 import _ from 'lodash'
-import Table from 'react-bootstrap/Table'
 import currency from 'currency.js'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 export function RsuByAward(props: { rsu: IAward[] }) {
   const { rsu } = props
   const grouped = _.groupBy(rsu, (r) => r.award_id)
   const now = new Date().toISOString().slice(0, 10)
   return (
-    <Table size="sm">
-      <thead>
+    <Table>
+      <TableHead>
         <tr>
-          <th>Grant ID</th>
-          <th>Shares</th>
+          <TableHeader>Grant ID</TableHeader>
+          <TableHeader>Shares</TableHeader>
         </tr>
-      </thead>
-      <tbody>
+      </TableHead>
+      <TableBody>
         {Object.keys(grouped).map((k, i) => {
           const lRSU = grouped[k]
           const minDate = _.min(lRSU.map((x) => x.vest_date))
@@ -30,21 +30,21 @@ export function RsuByAward(props: { rsu: IAward[] }) {
           }
 
           return (
-            <tr key={i}>
-              <td>
+            <TableRow key={i}>
+              <TableCell>
                 {k}
                 <br />
                 <small>
                   {minDate} to {maxDate}
                 </small>
-              </td>
-              <td>
+              </TableCell>
+              <TableCell>
                 <span style={{ textDecoration: 'line-through' }}>{totalVested.value}</span>/{total.value}
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )
         })}
-      </tbody>
+      </TableBody>
     </Table>
   )
 }

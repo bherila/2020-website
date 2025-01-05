@@ -1,10 +1,10 @@
 'use client'
-import { useEffect, useState } from 'react'
-import Spinner from 'react-bootstrap/Spinner'
+import { useState } from 'react'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import TransactionsTable from './TransactionsTable'
 import { AccountLineItem, AccountLineItemSchema } from '@/lib/AccountLineItem'
 import z from 'zod'
+import { Spinner } from '@/components/ui/spinner'
 
 export default function AccountClient({ id, rawData }: { id: number; rawData: any }) {
   const [data, setData] = useState<AccountLineItem[]>(z.array(AccountLineItemSchema).parse(rawData))
@@ -28,9 +28,7 @@ export default function AccountClient({ id, rawData }: { id: number; rawData: an
 
   return data === null ? (
     <div className="d-flex justify-content-center">
-      <Spinner animation="border" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </Spinner>
+      <Spinner />
     </div>
   ) : (
     <TransactionsTable data={data} onDeleteTransaction={handleDeleteTransaction} />

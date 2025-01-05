@@ -1,13 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Table from 'react-bootstrap/Table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { colKeys, SPGPSchema } from '@/app/spgp/SPGPSchema'
 import { ZodError } from 'zod'
-import { Alert, Button } from 'react-bootstrap'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import { ParsedSPGPPassType } from '@/app/spgp/SPGPPassTypes'
-import Form from 'react-bootstrap/Form'
+import { Textarea } from '@/components/ui/textarea'
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
+import { useForm } from 'react-hook-form'
 
 export default function SPGPImportClient({ passTypes }: { passTypes: ParsedSPGPPassType[] }) {
   const [tsv, setTsv] = useState<string | null>(null)
@@ -51,51 +54,69 @@ export default function SPGPImportClient({ passTypes }: { passTypes: ParsedSPGPP
     .filter(Boolean)
 
   const [isLoading, setLoading] = useState(false)
+  const form = useForm()
+
   return (
-    <Form
-      onSubmit={(e) => {
-        e.preventDefault()
+    <form
+      onSubmit={form.handleSubmit(() => {
         setLoading(true)
         fetchWrapper.post('/api/spgp/', { action: 'spgp-import', data }).finally(() => setLoading(false))
-      }}
+      })}
     >
-      <textarea
+      <FormField
+        control={form.control}
         name="import"
-        rows={10}
-        style={{ width: '100%' }}
-        wrap="nowrap"
-        value={tsv ?? ''}
-        onChange={(e) => setTsv(e.currentTarget.value)}
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <Textarea
+                {...field}
+                rows={10}
+                className="w-full"
+                value={tsv ?? ''}
+                onChange={(e) => {
+                  field.onChange(e)
+                  setTsv(e.currentTarget.value)
+                }}
+              />
+            </FormControl>
+          </FormItem>
+        )}
       />
       {tsv && errors.size && (
-        <Alert color="danger">
-          Errors in the entry will be skipped:
-          <ol>
-            {Array.from(errors).map((err, i) => (
-              <li key={i}>{err}</li>
-            ))}
-          </ol>
+        <Alert variant="destructive">
+          <AlertTitle>Errors found</AlertTitle>
+          <AlertDescription>
+            Errors in the entry will be skipped:
+            <ol>
+              {Array.from(errors).map((err, i) => (
+                <li key={i}>{err}</li>
+              ))}
+            </ol>
+          </AlertDescription>
         </Alert>
       )}
-      <Button type="submit">Submit</Button>
-      <Table size="sm" striped hover style={{ fontSize: '8pt' }}>
-        <thead>
-          <tr>
+      <Button type="submit" className="mt-4" disabled={isLoading}>
+        {isLoading ? 'Submitting...' : 'Submit'}
+      </Button>
+      <Table className="text-xs">
+        <TableHeader>
+          <TableRow>
             {colKeys.map((col) => (
-              <th key={col}>{col}</th>
+              <TableHead key={col}>{col}</TableHead>
             ))}
-          </tr>
-        </thead>
-        <tbody>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {data.map((row, i) => (
-            <tr key={i}>
+            <TableRow key={i}>
               {colKeys.map((colKey) => (
-                <td key={colKey}>{(row as any)[colKey]?.toString() ?? '-'}</td>
+                <TableCell key={colKey}>{(row as any)[colKey]?.toString() ?? '-'}</TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
+        </TableBody>
       </Table>
-    </Form>
+    </form>
   )
 }

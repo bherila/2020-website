@@ -4,8 +4,6 @@ import { redirect } from 'next/navigation'
 import AuthRoutes from '@/app/auth/AuthRoutes'
 import MainTitle from '@/components/main-title'
 import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
 import CdKeysTabBar from '@/app/keys/CdKeysTabBar'
 import ProductKeyUploader from './ProductKeyUploader'
 import uploadProductKeys from './actions'
@@ -17,16 +15,12 @@ export default async function ImportXmlPage() {
 
   return (
     <Container>
-      <Row>
-        <Col xs={12}>
-          <MainTitle>Import XML</MainTitle>
-          <CdKeysTabBar />
-          <div className="pt-3">
-            <p>This page takes a exported XML file of product keys from MSDN, and imports them into the database.</p>
-            <ProductKeyUploader uploadAction={uploadProductKeys} />
-          </div>
-        </Col>
-      </Row>
+      <MainTitle>Import XML</MainTitle>
+      <CdKeysTabBar />
+      <div className="pt-3">
+        <p>This page takes a exported XML file of product keys from MSDN, and imports them into the database.</p>
+        <ProductKeyUploader uploadAction={uploadProductKeys} />
+      </div>
     </Container>
   )
 }

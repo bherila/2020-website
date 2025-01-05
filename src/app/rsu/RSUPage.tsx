@@ -1,13 +1,12 @@
 'use client'
-import Container from '@/components/container'
-import Row from 'react-bootstrap/Row'
 import { useEffect, useState } from 'react'
-import Form from 'react-bootstrap/Form'
-import Table from 'react-bootstrap/Table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Spinner } from '@/components/ui/spinner'
 import currency from 'currency.js'
 import { fetchWrapper } from '@/lib/fetchWrapper'
-import Spinner from 'react-bootstrap/Spinner'
-import Col from 'react-bootstrap/Col'
 import MainTitle from '@/components/main-title'
 import { IAward } from '@/app/rsu/IAward'
 import { RsuByVestDate } from '@/app/rsu/rsuByVestDate'
@@ -82,138 +81,162 @@ export default function RSUPage() {
 
   const now = new Date().toISOString().slice(0, 10)
   return (
-    <Container>
-      <Row>
-        <Col xs={12}>
-          <MainTitle>RSU App</MainTitle>
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={12}>
-          <RsuChartLazy rsu={rsu} />
-        </Col>
-      </Row>
-      <Row>
-        <Col md={6}>
-          <h3>All vests</h3>
-          <Table size="sm">
-            {header}
-            <tbody>
-              {rsu.map((r, i) => {
-                const vested = r.vest_date! < now
-                return (
-                  <tr key={i} style={vested ? vestStyle : {}}>
-                    <td>
-                      {vested && '✔ '}
-                      {r.vest_date}
-                    </td>
-                    <td>{r.grant_date}</td>
-                    <td>{r.share_count?.toString()}</td>
-                    <td>{r.award_id}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </Table>
-          {loading && (
-            <div style={{ textAlign: 'center' }} className="py-4">
-              <Spinner />
+    <div className="container mx-auto px-4">
+      <div className="mb-8">
+        <MainTitle>RSU App</MainTitle>
+      </div>
+
+      <div className="mb-8">
+        <RsuChartLazy rsu={rsu} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <Card className="col-span-2">
+          <div className="p-6">
+            <h3 className="text-xl font-semibold mb-4">All vests</h3>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Vest date</TableHead>
+                  <TableHead>Granted on</TableHead>
+                  <TableHead>Shares</TableHead>
+                  <TableHead>Grant ID</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rsu.map((r, i) => {
+                  const vested = r.vest_date! < now
+                  return (
+                    <TableRow key={i} className={vested ? 'opacity-50 line-through' : ''}>
+                      <TableCell>
+                        {vested && '✔ '}
+                        {r.vest_date}
+                      </TableCell>
+                      <TableCell>{r.grant_date}</TableCell>
+                      <TableCell>{r.share_count?.toString()}</TableCell>
+                      <TableCell>{r.award_id}</TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+            {loading && (
+              <div className="flex justify-center py-4">
+                <Spinner />
+              </div>
+            )}
+          </div>
+        </Card>
+
+        <div className="space-y-8">
+          <Card>
+            <div className="p-6">
+              <h3 className="text-xl font-semibold mb-4">Per vest date</h3>
+              <RsuByVestDate rsu={rsu} />
             </div>
-          )}
-        </Col>
-        <Col md={3}>
-          <h3>per vest date</h3>
-          <RsuByVestDate rsu={rsu} />
-        </Col>
-        <Col md={3}>
-          <h3>per award</h3>
-          <RsuByAward rsu={rsu} />
-        </Col>
-      </Row>
-      <Row>
-        <h3>Add an award</h3>
-        <p>Duplicate items (based on grant date + award id + vest date + symbol) will not be added</p>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            fetchWrapper
-              .post('/api/rsu/', rowsToImport)
-              .then((r) => setRsu(r))
-              .finally(() => {
-                setShares('')
-              })
-          }}
-        >
-          <Row>
-            <Form.Check
-              type="switch"
-              id="award-id-switch"
-              label="Award id"
-              value={awardId}
-              onChange={(e) => setAwardId(e.currentTarget.value)}
-            />
-          </Row>
-          <Row>
-            <Form.Check
-              type="switch"
-              id="symbol-switch"
-              label="Symbol"
-              value={symbol}
-              onChange={(e) => setSymbol(e.currentTarget.value)}
-            />
-          </Row>
-          <Row>
-            <Form.Check
-              type="switch"
-              id="grant-date-switch"
-              label="Grant date yyyy-mm-dd"
-              value={grantDate}
-              onChange={(e) =>
-                setGrantDate(e.currentTarget.value.trim().replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g, '$3-$1-$2'))
-              }
-            />
-          </Row>
-          <Row>
-            <Form.Check
-              type="switch"
-              id="shares-switch"
-              label="Sanity check # of shares"
-              value={numShares}
-              onChange={(e) => setNumShares(e.currentTarget.value)}
-            />
-          </Row>
-          <Row>
-            <label>
-              Shares: Paste in format Vest date THEN # of shares. Note that m/d/y dates will be converted to yyyy-mm-dd
-              format.
+          </Card>
+
+          <Card>
+            <div className="p-6">
+              <h3 className="text-xl font-semibold mb-4">Per award</h3>
+              <RsuByAward rsu={rsu} />
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      <Card>
+        <div className="p-6">
+          <h3 className="text-xl font-semibold mb-4">Add an award</h3>
+          <p className="mb-4 text-muted-foreground">
+            Duplicate items (based on grant date + award id + vest date + symbol) will not be added
+          </p>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              fetchWrapper
+                .post('/api/rsu/', rowsToImport)
+                .then((r) => setRsu(r))
+                .finally(() => {
+                  setShares('')
+                })
+            }}
+          >
+            <div className="space-y-4 mb-4">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium">Award ID</label>
+                <Input value={awardId} onChange={(e) => setAwardId(e.target.value)} placeholder="Enter award ID" />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium">Symbol</label>
+                <Input value={symbol} onChange={(e) => setSymbol(e.target.value)} placeholder="Enter symbol" />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium">Grant date (yyyy-mm-dd)</label>
+                <Input
+                  value={grantDate}
+                  onChange={(e) =>
+                    setGrantDate(e.target.value.trim().replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g, '$3-$1-$2'))
+                  }
+                  placeholder="Enter grant date"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium">Number of shares</label>
+                <Input
+                  value={numShares}
+                  onChange={(e) => setNumShares(e.target.value)}
+                  placeholder="Enter number of shares"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2 mb-4">
+              <label className="block text-sm font-medium">
+                Shares: Paste in format Vest date THEN # of shares. Note that m/d/y dates will be converted to yyyy-mm-dd
+                format.
+              </label>
               <textarea
+                className="w-full p-2 border rounded-md"
+                rows={10}
                 onChange={(e) =>
                   setShares(
                     e.currentTarget.value.replace(/\t\r?\n/g, '\t').replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g, '$3-$1-$2'),
                   )
                 }
                 value={shares}
-                rows={20}
-                style={{ width: '100%' }}
               />
-            </label>
-          </Row>
-          <Table>
-            {header}
-            <tbody>
-              {rowsToImport.map((r, i) => (
-                <tr key={i}>
-                  <td>{r.vest_date}</td>
-                  <td>{r.grant_date}</td>
-                  <td>{r.share_count?.toString()}</td>
-                  <td>{r.award_id}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-          <button type="submit">Import grants & vests</button>
-        </form>
-      </Row>
-    </Container>
+            </div>
+
+            <Table className="mb-4">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Vest date</TableHead>
+                  <TableHead>Granted on</TableHead>
+                  <TableHead>Shares</TableHead>
+                  <TableHead>Grant ID</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rowsToImport.map((r, i) => (
+                  <TableRow key={i}>
+                    <TableCell>{r.vest_date}</TableCell>
+                    <TableCell>{r.grant_date}</TableCell>
+                    <TableCell>{r.share_count?.toString()}</TableCell>
+                    <TableCell>{r.award_id}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+
+            <Button type="submit">Import grants & vests</Button>
+          </form>
+        </div>
+      </Card>
+    </div>
   )
 }

@@ -1,12 +1,11 @@
 import { useMemo, useState, useCallback } from 'react'
-import Button from 'react-bootstrap/Button'
 import { ZodError } from 'zod'
 import { AccountLineItem, AccountLineItemSchema, TransactionType } from '@/lib/AccountLineItem'
 import TransactionsTable from '../TransactionsTable'
 import { parseEtradeCsv } from './parseEtradeCsv'
-import Row from 'react-bootstrap/Row'
-import { Col } from 'react-bootstrap'
+
 import { parseQuickenQFX } from './parseQuickenQFX'
+import { Button } from '@/components/ui/button'
 
 export default function ImportTransactions(props: { onImportClick: (data: AccountLineItem[]) => void }) {
   const [text, setText] = useState<string>('')
@@ -78,23 +77,21 @@ export default function ImportTransactions(props: { onImportClick: (data: Accoun
         style={{ width: '100%' }}
       />
 
-      <Row className="my-2">
-        <Col xs={12}>
-          <Button
-            className="mx-1"
-            disabled={!data?.length}
-            onClick={(e) => {
-              e.preventDefault()
-              data && props.onImportClick(data)
-            }}
-          >
-            Import {data?.length ?? 'nothing'}
-          </Button>
-          <Button className="mx-1" onClick={() => setText('')} disabled={!text.length}>
-            Clear
-          </Button>
-        </Col>
-      </Row>
+      <div className="my-2">
+        <Button
+          className="mx-1"
+          disabled={!data?.length}
+          onClick={(e) => {
+            e.preventDefault()
+            data && props.onImportClick(data)
+          }}
+        >
+          Import {data?.length ?? 'nothing'}
+        </Button>
+        <Button className="mx-1" onClick={() => setText('')} disabled={!text.length}>
+          Clear
+        </Button>
+      </div>
 
       {data && <TransactionsTable data={data} />}
     </div>

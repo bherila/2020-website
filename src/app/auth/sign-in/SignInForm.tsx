@@ -10,7 +10,7 @@ import { signIn } from '@/lib/auth-client'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
-export default function SignIn() {
+export default function SignIn(props: { nextUrl: string | undefined }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
