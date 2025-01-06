@@ -30,13 +30,7 @@ const BingoForm = (props: { onSubmit: (data: BingoData) => void }) => {
   })
 
   const onSubmit = (data: BingoData) => {
-    props.onSubmit({
-      ...data,
-      itemsList: data.itemsList
-        .split('\n')
-        .map((r) => r.trim())
-        .filter(Boolean),
-    })
+    props.onSubmit(data)
   }
 
   return (

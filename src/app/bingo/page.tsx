@@ -5,6 +5,7 @@ import MainTitle from '@/components/main-title'
 import BingoForm, { BingoData } from '@/app/bingo/BIngoForm'
 import { useMemo, useState } from 'react'
 import BingoCard from '@/app/bingo/BingoCard'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 
 function createRandomSquareArray<T>(N: number, L: T[]): T[][] {
   if (L.length < N * N) {
@@ -34,8 +35,12 @@ export default function BingoPage() {
         return []
       }
       const cards = new Map<string, string[][]>()
+      const itemList = input.itemsList
+        .split('\n')
+        .map((r) => r.trim())
+        .filter(Boolean)
       while (cards.size < input.numCards) {
-        const card = createRandomSquareArray(5, input.itemsList)
+        const card = createRandomSquareArray(5, itemList)
         if (input.activateFreeSpace) {
           card[2][2] = 'Free Space :)'
         }
@@ -51,11 +56,18 @@ export default function BingoPage() {
       setError(err)
       return []
     }
-  }, [input])
+  }, [input?.itemsList, input?.numCards, input?.activateFreeSpace])
 
   return (
     <Container>
       <MainTitle>Bingo Card Generator</MainTitle>
+      {error && (
+        <Alert variant="destructive">
+          <AlertTitle>Error while generating cards</AlertTitle>
+          <AlertDescription>{error.message}</AlertDescription>
+        </Alert>
+      )}
+
       <div className="flex justify-center">
         <div className="w-1/2">
           <div className="space-y-8 my-8">

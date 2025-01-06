@@ -55,7 +55,7 @@ export default function ImportCodeListClient({ passTypes }: { passTypes: ParsedS
             </SelectTrigger>
             <SelectContent>
               {passTypes?.map((pt) => (
-                <SelectItem key={pt.passtype_id} value={pt.passtype_id}>
+                <SelectItem key={pt.passtype_id} value={pt.passtype_id.toString()}>
                   {pt.display_name} exp {pt.expiry}
                 </SelectItem>
               ))}

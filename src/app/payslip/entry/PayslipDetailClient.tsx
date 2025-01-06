@@ -77,7 +77,7 @@ const PayrollForm: React.FC<{ onSave?: (data: fin_payslip) => void }> = ({ onSav
                 name={field as keyof fin_payslip}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{field.replace(/_/g, ' ').replace(/^ps /, '')}</FormLabel>
+                    <FormLabel>{field.name}</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
