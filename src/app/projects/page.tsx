@@ -12,13 +12,13 @@ export const metadata: Metadata = {
 
 export default function ProjectsPage() {
   const ProjectTitle = ({ children }: { children: ReactNode }) => {
-    return <h2>{children}</h2>
+    return <h2 className="text-2xl font-bold mt-2 mb-2">{children}</h2>
   }
   const ProjectDate = ({ children }: { children: ReactNode }) => {
-    return <p>{children}</p>
+    return <p className="text-muted-foreground">{children}</p>
   }
   const ProjectDescription = ({ children }: { children: ReactNode }) => {
-    return <Typography variant="body1">{children}</Typography>
+    return <p className="py-2">{children}</p>
   }
   return (
     <Container>
@@ -45,7 +45,7 @@ export default function ProjectsPage() {
           also work with the CEO and major investors to design and implement financial models and reports. As a board
           director, I worked with investors and shape the governance of the company.
         </ProjectDescription>
-        <ul>
+        <ul className="list-disc pl-5 space-y-2">
           <li>Custom e-commerce backend</li>
           <li>Y Combinator backed, Winter 2015</li>
           <li>Winner of LAUNCH Festival, Best Consumer Startup</li>
