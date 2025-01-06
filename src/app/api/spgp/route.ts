@@ -1,12 +1,13 @@
 import 'server-only'
 import { NextRequest, NextResponse } from 'next/server'
 
-import { colKeys, ParsedSPGP, SPGPSchema } from '@/app/spgp/SPGPSchema'
-import db from '@/server_lib/db'
+import { ParsedSPGP, SPGPSchema } from '@/app/spgp/SPGPSchema'
+import { db } from '@/server_lib/db'
 import { getSession } from '@/server_lib/session'
 import { z } from 'zod'
 import GetSPGPPassTypes from '@/app/spgp/GetSPGPPassTypes'
-import { sessionSchema, sessionType } from '@/lib/sessionSchema'
+import { sessionType } from '@/lib/sessionSchema'
+import { sql } from 'kysely'
 
 async function checkGK(session: sessionType | null) {
   if (session?.ax_spgp != true) {
@@ -29,62 +30,41 @@ export async function GET(req: NextRequest) {
   }
 
   // get...everything
-  try {
-    const isAdmin = session.uid == 1 // TODO make this better
-    const requests = isAdmin
-      ? await db.query(
-          `select r_id,
-                uid,
-                r_first,
-                r_last,
-                r_email,
-                r_birthdate,
-                r_previous_passid,
-                r_comment,
-                r_total,
-                r_redeemedMonth,
-                r_used_on,
-                display_name as passtype_display_name,
-                pc.rdmp_code as r_promo
-         from spgp_requests
-                  left join spgp_passtypes sp on spgp_requests.passtype_id = sp.passtype_id
-                  left join spgp_promocodes pc on spgp_requests.r_id = pc.assignee_r_id
-         where deleted = 0`,
-        )
-      : await db.query(
-          `select r_id,
-                  uid,
-                  r_first,
-                  r_last,
-                  r_email,
-                  r_birthdate,
-                  r_previous_passid,
-                  r_comment,
-                  r_total,
-                  r_redeemedMonth,
-                  r_used_on,
-                  display_name as passtype_display_name,
-                  pc.rdmp_code as r_promo
-           from spgp_requests
-                    left join spgp_passtypes sp on spgp_requests.passtype_id = sp.passtype_id
-                    left join spgp_promocodes pc on spgp_requests.r_id = pc.assignee_r_id
-           where uid = ?
-             and deleted = 0`,
-          [session.uid],
-        )
-    const codes = isAdmin
-      ? await db.query(`select *
-                        from spgp_promocodes`)
-      : await db.query(
-          `select *
-         from spgp_promocodes
-         where assignee_r_id in (select r_id from spgp_requests where uid = ? and deleted=0)`,
-          [session.uid],
-        )
-    return NextResponse.json({ passTypes, requests, codes })
-  } finally {
-    await db.end()
-  }
+  const isAdmin = session.uid == 1 // TODO make this better
+  const requests = await db
+    .selectFrom('spgp_requests')
+    .leftJoin('spgp_passtypes', 'spgp_requests.passtype_id', 'spgp_passtypes.passtype_id')
+    .leftJoin('spgp_promocodes', 'spgp_requests.r_id', 'spgp_promocodes.assignee_r_id')
+    .select([
+      'spgp_requests.r_id',
+      'spgp_requests.uid',
+      'spgp_requests.r_first',
+      'spgp_requests.r_last',
+      'spgp_requests.r_email',
+      'spgp_requests.r_birthdate',
+      'spgp_requests.r_previous_passid',
+      'spgp_requests.r_comment',
+      'spgp_requests.r_total',
+      'spgp_requests.r_redeemedMonth',
+      'spgp_requests.r_used_on',
+      'spgp_passtypes.display_name as passtype_display_name',
+      'spgp_promocodes.rdmp_code as r_promo',
+    ])
+    .where('spgp_requests.deleted', '=', 0)
+    .where('spgp_requests.uid', isAdmin ? '>' : '=', isAdmin ? -1 : session.uid)
+    .orderBy('spgp_requests.r_id', 'asc')
+    .execute()
+
+  const codes = isAdmin
+    ? await db.selectFrom('spgp_promocodes').selectAll().execute()
+    : await db
+        .selectFrom('spgp_promocodes')
+        .innerJoin('spgp_requests', 'spgp_promocodes.assignee_r_id', 'spgp_requests.r_id')
+        .where('spgp_requests.uid', isAdmin ? '>' : '=', isAdmin ? -1 : session.uid)
+        .where('spgp_requests.deleted', '=', 0)
+        .selectAll('spgp_promocodes')
+        .execute()
+  return NextResponse.json({ passTypes, requests, codes })
 }
 
 export async function POST(req: NextRequest) {
@@ -95,77 +75,86 @@ export async function POST(req: NextRequest) {
   }
 
   const json: any = await req.json()
-  try {
-    if (json.action === 'import-codes') {
-      await importCodes(json)
-    } else if (json.action === 'spgp-import') {
-      await importData(json)
-    } else if (json.action === 'mark-used') {
-      if (session?.uid == 1) {
-        await db.query('update spgp_requests set r_used_on = NOW() where r_id = ?', [z.number().parse(json.id)])
-        return NextResponse.json({ ok: true, admin: true })
-      } else {
-        await db.query('update spgp_requests set r_used_on = NOW() where r_id = ? and uid = ?', [
-          z.number().parse(json.id),
-          session?.uid ?? -1,
-        ])
-      }
-    } else if (json.action === 'un-mark-used') {
-      if (session?.uid == 1) {
-        await db.query('update spgp_requests set r_used_on = null where r_id = ?', [z.number().parse(json.id)])
-        return NextResponse.json({ ok: true, admin: true })
-      } else {
-        await db.query('update spgp_requests set r_used_on = null where r_id = ? and uid = ?', [
-          z.number().parse(json.id),
-          session?.uid ?? -1,
-        ])
-      }
-    } else if (json.action === 'withdraw') {
-      if (session?.uid == 1) {
-        await db.query('update spgp_requests set deleted = 1 where r_id = ?', [z.number().parse(json.id)])
-        return NextResponse.json({ ok: true, admin: true })
-      } else {
-        await db.query('update spgp_requests set deleted = 1 where r_id = ? and uid = ?', [
-          z.number().parse(json.id),
-          session?.uid ?? -1,
-        ])
-      }
+  if (json.action === 'import-codes') {
+    await importCodes(json)
+  } else if (json.action === 'spgp-import') {
+    await importData(json)
+  } else if (json.action === 'mark-used') {
+    if (session?.uid == 1) {
+      await db
+        .updateTable('spgp_requests')
+        .set({ r_used_on: sql`NOW()` })
+        .where('r_id', '=', z.number().parse(json.id))
+        .execute()
+      return NextResponse.json({ ok: true, admin: true })
     } else {
-      // try to add request
-      await newRequest(json, session!)
+      await db
+        .updateTable('spgp_requests')
+        .set({ r_used_on: sql`NOW()` })
+        .where('r_id', '=', z.number().parse(json.id))
+        .where('uid', '=', session?.uid ?? -1)
+        .execute()
     }
-  } finally {
-    await db.end()
+  } else if (json.action === 'un-mark-used') {
+    if (session?.uid == 1) {
+      await db.updateTable('spgp_requests').set({ r_used_on: null }).where('r_id', '=', z.number().parse(json.id)).execute()
+      return NextResponse.json({ ok: true, admin: true })
+    } else {
+      await db
+        .updateTable('spgp_requests')
+        .set({ r_used_on: null })
+        .where('r_id', '=', z.number().parse(json.id))
+        .where('uid', '=', session?.uid ?? -1)
+        .execute()
+    }
+  } else if (json.action === 'withdraw') {
+    if (session?.uid == 1) {
+      await db.updateTable('spgp_requests').set({ deleted: 1 }).where('r_id', '=', z.number().parse(json.id)).execute()
+      return NextResponse.json({ ok: true, admin: true })
+    } else {
+      await db
+        .updateTable('spgp_requests')
+        .set({ deleted: 1 })
+        .where('r_id', '=', z.number().parse(json.id))
+        .where('uid', '=', session?.uid ?? -1)
+        .execute()
+    }
+  } else {
+    // try to add request
+    await newRequest(json, session!)
   }
   return NextResponse.json({})
 }
 
 async function importCodes(json: any) {
   const postSchema = z.object({
-    passTypeID: z.string(),
+    passTypeID: z.number(),
     promoCodes: z.array(z.string()),
   })
   const sanitizedData = postSchema.parse(json)
-  const dbRows: string[][] = sanitizedData.promoCodes.map((code) => [sanitizedData.passTypeID, code])
-  await db.query(
-    `insert ignore into spgp_promocodes (passtype_id, rdmp_code)
-     values ?`,
-    [dbRows],
-  )
+  const dbRows = sanitizedData.promoCodes.map((code) => ({
+    passtype_id: sanitizedData.passTypeID,
+    rdmp_code: code,
+  }))
+  await db.insertInto('spgp_promocodes').ignore().values(dbRows).execute()
   await assignCodes()
 }
 
 async function assignCodes() {
   // this has a race condition, make it better later. it's probably ok for now.
-  const availableCodes: { passtype_id: string; id: string }[] = await db.query(`
-      select passtype_id, id
-      from spgp_promocodes
-      where assignee_r_id is null`)
-  const neededRequests: { passtype_id: string; r_id: string }[] = await db.query(`
-        select spgp_requests.passtype_id, r_id
-        from spgp_requests
-                 left join spgp_promocodes on r_id = assignee_r_id
-        where spgp_promocodes.id is null`)
+  const availableCodes = await db
+    .selectFrom('spgp_promocodes')
+    .where('assignee_r_id', 'is', null)
+    .select(['passtype_id', 'id as id'])
+    .execute()
+
+  const neededRequests = await db
+    .selectFrom('spgp_requests')
+    .leftJoin('spgp_promocodes', 'spgp_requests.r_id', 'spgp_promocodes.assignee_r_id')
+    .where('spgp_promocodes.id', 'is', null)
+    .select(['spgp_requests.passtype_id', 'spgp_requests.r_id'])
+    .execute()
+
   console.info('Need ' + neededRequests.length + ' codes')
   for (const request of neededRequests) {
     const code = availableCodes.find((value, index, arr) => {
@@ -178,7 +167,7 @@ async function assignCodes() {
     })
     if (code) {
       console.info('Request ' + request.r_id + ' match code ' + code.id)
-      await db.query(`update spgp_promocodes set assignee_r_id = ? where id = ?`, [request.r_id, code.id])
+      await db.updateTable('spgp_promocodes').set({ assignee_r_id: request.r_id }).where('id', '=', code.id).execute()
     }
   }
 }
@@ -195,12 +184,9 @@ async function importData(json: any) {
 
   // pass type string to ID (caution! allows expired pass types!)
   const passTypeStringToID = new Map<string, number>()
-  const passTypeDbRows: any[] = await db.query(
-    `select passtype_id, display_name
-     from spgp_passtypes`,
-  )
+  const passTypeDbRows = await db.selectFrom('spgp_passtypes').select(['passtype_id', 'display_name']).execute()
   for (let passType of passTypeDbRows) {
-    passTypeStringToID.set(passType.display_name, passType.passtype_id)
+    passTypeStringToID.set(passType.display_name ?? '', passType.passtype_id)
   }
 
   const missingPassTypeRows = sanitizedData.filter((r) => r.passType === undefined || !passTypeStringToID.has(r.passType))
@@ -209,50 +195,55 @@ async function importData(json: any) {
   }
 
   // ensure request objects are inserted
-  await db.query(
-    `insert into spgp_requests (uid, r_email, r_first, r_last, r_birthdate, passtype_id, r_comment, r_redeemedMonth, r_total)
-     values ?
-     on duplicate key
-       update r_comment       = VALUES(r_comment),
-              r_redeemedMonth = VALUES(r_redeemedMonth),
-              r_total         = VALUES(r_total),
-              r_birthdate = VALUES(r_birthdate)`,
-    [
-      sanitizedData.map((r) => [
-        emailToUserID.get(r.email!),
-        r.email,
-        r.first,
-        r.last,
-        r.birthday,
-        passTypeStringToID.get(r.passType!),
-        r.notes,
-        r.redeemedMonth,
-        r.total,
-      ]),
-    ],
-  )
+  await db
+    .insertInto('spgp_requests')
+    .values(
+      sanitizedData.map((r) => ({
+        uid: emailToUserID.get(r.email!) ?? null,
+        r_email: r.email ?? '',
+        r_first: r.first ?? '',
+        r_last: r.last ?? '',
+        r_birthdate: r.birthday ?? null,
+        passtype_id: passTypeStringToID.get(r.passType!) ?? null,
+        r_comment: r.notes ?? null,
+        r_redeemedMonth: r.redeemedMonth ?? null,
+        r_total: r.total ?? null,
+      })),
+    )
+    .onDuplicateKeyUpdate({
+      r_comment: sql`VALUES(r_comment)`,
+      r_redeemedMonth: sql`VALUES(r_redeemedMonth)`,
+      r_total: sql`VALUES(r_total)`,
+      r_birthdate: sql`VALUES(r_birthdate)`,
+    })
+    .execute()
 
   // get request objects
   const rIDs = new Map<string, number>()
-  const requests: any[] = await db.query(
-    `select r_id, concat(r_email, r_first, r_last) c1
-     from spgp_requests`,
-  )
-  requests.forEach((row) => rIDs.set(row.c1, row.r_id))
+  const requests = await db
+    .selectFrom('spgp_requests')
+    .select(['r_id', sql`CONCAT(r_email, r_first, r_last)`.as('c1')])
+    .execute()
+
+  requests.forEach((row) => rIDs.set(row.c1 as string, row.r_id))
 
   // insert promo codes
   const promoCodesForInsert = sanitizedData
     .filter((r) => !!r.promoCode)
-    .map((row) => [passTypeStringToID.get(row.passType!), rIDs.get(row.email! + row.first + row.last), row.promoCode])
-  await db.query(
-    `insert into spgp_promocodes (passtype_id, assignee_r_id, rdmp_code)
-     values ?
-     on duplicate key update assignee_r_id = VALUES(assignee_r_id),
-                             passtype_id   = VALUES(passtype_id)`,
-    [promoCodesForInsert],
-  )
+    .map((row) => ({
+      passtype_id: passTypeStringToID.get(row.passType!) ?? -1,
+      assignee_r_id: rIDs.get(row.email! + row.first + row.last) ?? -1,
+      rdmp_code: row.promoCode ?? '',
+    }))
 
-  await db.end()
+  await db
+    .insertInto('spgp_promocodes')
+    .values(promoCodesForInsert)
+    .onDuplicateKeyUpdate({
+      assignee_r_id: sql`VALUES(assignee_r_id)`,
+      passtype_id: sql`VALUES(passtype_id)`,
+    })
+    .execute()
 }
 
 async function newRequest(json: any, session: sessionType) {
@@ -269,15 +260,23 @@ async function newRequest(json: any, session: sessionType) {
     throw new Error('Invalid pass type: ' + parsed.passType)
   }
 
-  await db.query(
-    `
-        insert into spgp_requests (uid, r_first, r_last, r_email, r_birthdate, r_previous_passid, passtype_id)
-        values (?, ?, ?, ?, ?, ?, ?)
-        on duplicate key update deleted = 0,
-                                r_previous_passid = VALUES(r_previous_passid),
-                                r_used_on = null`,
-    [uid, parsed.first, parsed.last, parsed.email, parsed.birthday, parsed.notes, pt.passtype_id],
-  )
+  await db
+    .insertInto('spgp_requests')
+    .values({
+      uid: uid,
+      r_first: parsed.first,
+      r_last: parsed.last,
+      r_email: parsed.email ?? '',
+      r_birthdate: parsed.birthday,
+      r_previous_passid: parsed.notes,
+      passtype_id: pt.passtype_id,
+    })
+    .onDuplicateKeyUpdate({
+      deleted: 0,
+      r_previous_passid: sql`VALUES(r_previous_passid)`,
+      r_used_on: null,
+    })
+    .execute()
 
   // After creating the request, assign if needed
   try {
@@ -288,26 +287,20 @@ async function newRequest(json: any, session: sessionType) {
 // ensures that users exist for all the given emails and returns a map
 // of the user email to the UID
 async function ensureUsers(emails: string[]): Promise<Map<string, number>> {
-  await db.query(
-    `insert ignore into users (email)
-     values ?`,
-    [emails.map((e) => [e])],
-  )
-  await db.query(
-    `update users
-     set ax_spgp = 1
-     where email in ?`,
-    [[emails]],
-  )
+  await db
+    .insertInto('users')
+    .values(emails.map((e) => ({ email: e })))
+    .ignore() // on conflict do nothing
+    .execute()
+
+  await db.updateTable('users').set({ ax_spgp: 1 }).where('email', 'in', emails).execute()
+
   const result = new Map<string, number>()
-  const dbr: any[] = await db.query(
-    `select uid, email
-     from users
-     where email in ?`,
-    [[emails]],
-  )
-  for (let row of dbr) {
+  const dbr = await db.selectFrom('users').select(['uid', 'email']).where('email', 'in', emails).execute()
+
+  for (const row of dbr) {
     result.set(z.string().email().parse(row.email), z.number().parse(row.uid))
   }
+
   return result
 }

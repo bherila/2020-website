@@ -25,7 +25,7 @@ export const mainNavigation: NavigationItem[] = [
       { title: 'Ski Pass Group Purchase 🔑', href: '/spgp', permission: 'ax_spgp', isProtected: true },
       { title: 'PHR 🔑', href: '/phr', permission: 'ax_phr', isProtected: true },
       { title: 'Accounts', href: '/finance' },
-      { title: 'Bingo card generator', href: '/bingo' }
-    ]
-  }
+      { title: 'Bingo card generator', href: '/bingo' },
+    ],
+  },
 ]

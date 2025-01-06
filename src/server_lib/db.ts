@@ -3,16 +3,18 @@ import { createPool } from 'mysql2' // do not use 'mysql2/promises'!
 import { Kysely, MysqlDialect } from 'kysely'
 import { DB } from './kysely'
 
+export const pool = createPool({
+  uri: process.env.DATABASE_URL,
+  database: process.env.DBNAME,
+  host: process.env.DBHOST,
+  user: process.env.DBUSER,
+  password: process.env.DBPASSWORD || '',
+  port: process.env.DBPORT ? parseInt(process.env.DBPORT) : 3306,
+  connectionLimit: 2,
+})
+
 const dialect = new MysqlDialect({
-  pool: createPool({
-    uri: process.env.DATABASE_URL,
-    database: process.env.DBNAME,
-    host: process.env.DBHOST,
-    user: process.env.DBUSER,
-    password: process.env.DBPASSWORD || '',
-    port: process.env.DBPORT ? parseInt(process.env.DBPORT) : 3306,
-    connectionLimit: 2,
-  }),
+  pool,
 })
 
 // Database interface is passed to Kysely's constructor, and from now on, Kysely

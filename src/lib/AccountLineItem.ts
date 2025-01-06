@@ -113,8 +113,8 @@ export const AccountLineItemSchema = z.object({
   opt_strike: currencyNumeric.default(0).nullable().optional(),
   t_description: z.string().max(255).nullable().optional(),
   t_comment: z.string().max(255).nullable().optional(),
-  t_from: z.coerce.date().nullable().optional(),
-  t_to: z.coerce.date().nullable().optional(),
+  t_from: ymdstring.nullable().optional(),
+  t_to: ymdstring.nullable().optional(),
   t_interest_rate: z.string().max(20).nullable().optional(),
   parent_t_id: z.number().nullable().optional(),
 })

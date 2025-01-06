@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { convertToTaxHierarchy, graduatedTaxSchema, tax_row } from '@/app/api/tax-brackets/schema'
-import db from '@/server_lib/db'
+import { db } from '@/server_lib/db'
 import { z } from 'zod'
 import { getSession } from '@/server_lib/session'
 import _ from 'lodash'
@@ -8,12 +8,11 @@ import _ from 'lodash'
 export async function GET(request: NextRequest) {
   // Handle GET request to fetch data from the database.
   try {
-    const rows: tax_row[] = await db.query('SELECT year, region, income_over, rate, type FROM graduated_tax')
+    const rows = await db.selectFrom('graduated_tax').selectAll().execute()
     return NextResponse.json(convertToTaxHierarchy(rows))
   } catch (e) {
     return NextResponse.json({ error: e?.toString() }, { status: 400 })
   } finally {
-    await db.end()
   }
 }
 
@@ -24,14 +23,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'not logged in' }, { status: 403 })
     }
     const data = z.array(graduatedTaxSchema).parse(await request.json())
-    const params = data.map((r) => {
-      return [r.year, r.region, r.income_over, r.rate, r.type]
-    })
-    const query = 'REPLACE INTO graduated_tax (year, region, income_over, rate, type) VALUES ?'
-    await db.query(query, [params])
+    await db
+      .replaceInto('graduated_tax')
+      .values(
+        data.map((r) => ({
+          year: r.year,
+          region: r.region ?? '',
+          income_over: r.income_over,
+          rate: r.rate,
+          type: r.type,
+        })),
+      )
+      .execute()
   } catch (e) {
     return NextResponse.json({ error: e?.toString() }, { status: 400 })
   } finally {
-    await db.end()
   }
 }

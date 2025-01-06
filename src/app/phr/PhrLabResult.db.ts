@@ -1,5 +1,5 @@
 import 'server-only'
-import db from '@/server_lib/db'
+import { db } from '@/server_lib/db'
 import { PhrLabResult, PhrLabResultSchema } from './PhrLabResult.types'
 import { getSession } from '@/server_lib/session'
 
@@ -34,7 +34,7 @@ export async function genLabResults(userId: string): Promise<PhrLabResult[]> {
         'normal_value as normalValue',
         'message_from_provider as messageFromProvider',
         'result_comment as resultComment',
-        'lab_director as labDirector'
+        'lab_director as labDirector',
       ])
       .where('user_id', '=', parseInt(userId))
       .orderBy('result_datetime', 'desc')

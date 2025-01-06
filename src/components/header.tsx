@@ -37,7 +37,7 @@ export default function Header({ session }: HeaderProps) {
               <NavigationMenuContent>
                 <div className="grid gap-3 p-4 w-[400px] md:w-[500px]">
                   {item.subitems.map((subitem) => {
-                    if (subitem.permission && !session?.[subitem.permission]) return null;
+                    if (subitem.permission && !session?.[subitem.permission]) return null
                     return (
                       <NavigationMenuLink key={subitem.href} asChild>
                         <Link
@@ -47,7 +47,7 @@ export default function Header({ session }: HeaderProps) {
                           {subitem.title}
                         </Link>
                       </NavigationMenuLink>
-                    );
+                    )
                   })}
                 </div>
               </NavigationMenuContent>
@@ -116,9 +116,9 @@ export default function Header({ session }: HeaderProps) {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                 <nav className="flex flex-col gap-4">
-                  {mainNavigation.map((item) => (
+                  {mainNavigation.map((item) =>
                     item.href ? (
-                      <Link 
+                      <Link
                         key={item.href}
                         href={item.href}
                         className="text-sm font-medium"
@@ -131,7 +131,7 @@ export default function Header({ session }: HeaderProps) {
                         <h4 className="font-medium">{item.title}</h4>
                         <div className="grid gap-2">
                           {item.subitems.map((subitem) => {
-                            if (subitem.permission && !session?.[subitem.permission]) return null;
+                            if (subitem.permission && !session?.[subitem.permission]) return null
                             return (
                               <Link
                                 key={subitem.href}
@@ -141,12 +141,12 @@ export default function Header({ session }: HeaderProps) {
                               >
                                 {subitem.title}
                               </Link>
-                            );
+                            )
                           })}
                         </div>
                       </div>
-                    ) : null
-                  ))}
+                    ) : null,
+                  )}
                   <div className="mt-4">
                     <AuthButtons />
                   </div>

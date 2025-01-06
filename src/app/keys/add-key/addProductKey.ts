@@ -50,10 +50,10 @@ export default async function addProductKey(formData: FormData) {
         product_key: productKey,
         computer_name: computerName || null,
         comment: comment || null,
-        used_on: usedOn
+        used_on: usedOn,
       })
-      .execute()
-      
+      .executeTakeFirst()
+
     redirect('/keys/')
   } catch (error) {
     console.error('Failed to add product key:', error)
