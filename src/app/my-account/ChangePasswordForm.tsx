@@ -1,36 +1,45 @@
 'use client'
 
 import { useState } from 'react'
-import { Form, Button, Alert } from 'react-bootstrap'
+import { useForm } from 'react-hook-form'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+const formSchema = z
+  .object({
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  })
 
 export default function ChangePasswordForm(props: { changePasswordAction: (formData: FormData) => Promise<void> }) {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      password: '',
+      confirmPassword: '',
+    },
+  })
 
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters')
-      return
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match')
-      return
-    }
-
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     const formData = new FormData()
-    formData.append('password', password)
+    formData.append('password', values.password)
 
     try {
       await props.changePasswordAction(formData)
       setSuccess(true)
       setError(null)
-      setPassword('')
-      setConfirmPassword('')
+      form.reset()
     } catch (err) {
       setError('Failed to change password')
       setSuccess(false)
@@ -38,35 +47,49 @@ export default function ChangePasswordForm(props: { changePasswordAction: (formD
   }
 
   return (
-    <Form onSubmit={handleSubmit}>
-      {error && <Alert variant="danger">{error}</Alert>}
-      {success && <Alert variant="success">Password changed successfully</Alert>}
+    <Form {...form}>
+      {error && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      {success && (
+        <Alert className="mb-4">
+          <AlertDescription>Password changed successfully</AlertDescription>
+        </Alert>
+      )}
 
-      <Form.Group className="mb-3" controlId="password">
-        <Form.Label>New Password</Form.Label>
-        <Form.Control
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          placeholder="Enter new password"
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>New Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="Enter new password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </Form.Group>
 
-      <Form.Group className="mb-3" controlId="confirmPassword">
-        <Form.Label>Confirm Password</Form.Label>
-        <Form.Control
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          placeholder="Confirm new password"
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirm Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="Confirm new password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </Form.Group>
 
-      <Button variant="primary" type="submit">
-        Change Password
-      </Button>
+        <Button type="submit">Change Password</Button>
+      </form>
     </Form>
   )
 }

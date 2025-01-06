@@ -47,12 +47,8 @@ export default async function Page() {
     <Container>
       <MainTitle>Accounting</MainTitle>
       <div className="w-full grid grid-cols-2 gap-4">
-        <div>
-          <AccountList accounts={accounts} />
-        </div>
-        <div>
-          <NewAccountForm createAccount={createAccount} />
-        </div>
+        <AccountList accounts={accounts} />
+        <NewAccountForm createAccount={createAccount} />
       </div>
     </Container>
   )

@@ -1,6 +1,6 @@
 'use client'
 import { FC, ChangeEvent, DragEvent, ClipboardEvent, useEffect, useState } from 'react'
-import Form from 'react-bootstrap/Form'
+import { Textarea } from './ui/textarea'
 
 interface DroppableTextAreaProps {
   data: string
@@ -52,9 +52,8 @@ const DroppableTextArea: FC<DroppableTextAreaProps> = ({ data, setData }) => {
   }, [file])
 
   return (
-    <Form>
-      <Form.Control
-        as="textarea"
+    <form>
+      <Textarea
         value={data}
         onChange={handleTextChange}
         style={{
@@ -77,7 +76,7 @@ const DroppableTextArea: FC<DroppableTextAreaProps> = ({ data, setData }) => {
       <label htmlFor="fileInput" className="btn btn-primary">
         {file == null ? 'Select a file' : file.name}
       </label>
-    </Form>
+    </form>
   )
 }
 

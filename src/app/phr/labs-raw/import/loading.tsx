@@ -2,7 +2,7 @@ import Container from '@/components/container'
 import MainTitle from '@/components/main-title'
 import Sidebar from '../../components/Sidebar'
 import LabsRawNavigation from '../LabsRawNavigation'
-import Spinner from 'react-bootstrap/Spinner'
+import { Spinner } from '@/components/ui/spinner'
 
 export default function Loading() {
   return (
@@ -12,9 +12,7 @@ export default function Loading() {
         <MainTitle>Labs (Raw)</MainTitle>
         <LabsRawNavigation />
         <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
+          <Spinner />
         </div>
       </Container>
     </div>

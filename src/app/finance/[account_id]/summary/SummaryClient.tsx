@@ -1,10 +1,10 @@
 'use client'
 
-import Masonry from 'react-responsive-masonry'
 import './summary.css'
 import currency from 'currency.js'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table'
+import Masonry from '@/components/ui/masonry'
 
 interface Props {
   totals: {

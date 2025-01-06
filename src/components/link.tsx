@@ -7,7 +7,7 @@ export default function CustomLink(props: { rel?: string; href: string; children
     <Link
       href={props.href}
       rel={props.rel}
-      className={cn('font-medium text-primary underline underline-offset-4 hover:text-primary/80', props.className)}
+      className={cn('underline underline-offset-4 hover:text-blue-400 transition-colors', props.className)}
     >
       {props.children}
     </Link>

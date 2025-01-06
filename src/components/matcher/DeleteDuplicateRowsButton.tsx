@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Button } from 'react-bootstrap'
+import { Button } from '@/components/ui/button'
 import { deleteDuplicateRows } from '@/lib/data2d'
 
 export default function DeleteDuplicateRowsButton(props: {

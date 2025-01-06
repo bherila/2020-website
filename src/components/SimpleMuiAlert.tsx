@@ -1,23 +1,26 @@
 import { ReactNode } from 'react'
-import Button from 'react-bootstrap/Button'
-import Modal from 'react-bootstrap/Modal'
+import { Dialog, DialogContent, DialogFooter, DialogClose } from '@/components/ui/dialog'
+import Button from './button'
 
-export default function SimpleMuiAlert(props: { children?: ReactNode; onClose: () => void; text?: string; open: boolean }) {
-  const { children, text, ...modalProps } = props
+interface SimpleMuiAlertProps {
+  children?: ReactNode
+  onClose: () => void
+  text?: string
+  open: boolean
+}
+
+export default function SimpleMuiAlert(props: SimpleMuiAlertProps) {
+  const { children, text, open, onClose } = props
+
   return (
-    <Modal {...modalProps} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
-      {/*<Modal.Header closeButton>*/}
-      {/*  <Modal.Title id="contained-modal-title-vcenter">*/}
-      {/*    */}
-      {/*  </Modal.Title>*/}
-      {/*</Modal.Header>*/}
-      <Modal.Body>
+    <Dialog open={open}>
+      <DialogContent>
         {children}
         {text}
-      </Modal.Body>
-      <Modal.Footer>
-        <Button onClick={props.onClose}>Close</Button>
-      </Modal.Footer>
-    </Modal>
+      </DialogContent>
+      <DialogFooter>
+        <Button onClick={onClose}>Close</Button>
+      </DialogFooter>
+    </Dialog>
   )
 }

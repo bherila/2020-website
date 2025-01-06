@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { fin_payslip_schema } from '@/app/payslip/payslipDbCols'
-import { Button } from 'react-bootstrap'
+import { Button } from '@/components/ui/button'
 import { PayslipTable } from '@/app/payslip/PayslipTable'
 import { parseEntities } from '@/app/payslip/payslipSchemaReducer'
 import { useRouter } from 'next/navigation'

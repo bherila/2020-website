@@ -1,11 +1,10 @@
 'use client'
-import Table from 'react-bootstrap/Table'
+
 import _ from 'lodash'
 import currency from 'currency.js'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { fin_payslip, fin_payslip_col, pay_data } from '@/app/payslip/payslipDbCols'
-import Stack from 'react-bootstrap/Stack'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import Tooltip from 'react-bootstrap/Tooltip'
 import PayslipEditButton from '@/app/payslip/PayslipEdit'
 import PopoverContent from './PopoverContent'
 
@@ -60,75 +59,72 @@ export function PayslipTable(props: Props) {
 
   function renderValueCellContents(row: fin_payslip, col: fin_payslip_col) {
     if (currency(row[col]).value > 0) {
-      const renderTooltip = (props: any) => (
-        <Tooltip id="button-tooltip" {...props}>
-          YTD: {fmtNum(ytd(row, col))}
-        </Tooltip>
-      )
-
       return (
-        <OverlayTrigger placement="right" delay={{ show: 100, hide: 400 }} overlay={renderTooltip}>
-          <span>{fmtNum(row[col])}</span>
-        </OverlayTrigger>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span>{fmtNum(row[col])}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>YTD: {fmtNum(ytd(row, col))}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       )
     }
     return <span>{fmtNum(row[col])}</span>
   }
 
   return (
-    <Table size="sm" striped bordered style={{ fontSize: '10pt', fontFamily: 'Atkinson Hyperlegible' }}>
-      <thead>
-        <tr>
+    <Table className="text-xs font-mono">
+      <TableHeader>
+        <TableRow>
           {cols
             .filter((c) => !c.hide)
             .map((s, i) => (
-              <th key={i} style={{ textAlign: 'center' }}>
+              <TableHead key={i} className="text-center">
                 {s.title.trim()}
-              </th>
+              </TableHead>
             ))}
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
+          <TableHead>Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
         {_.orderBy(data, 'period_end').map((row: fin_payslip, rid: number) => (
-          <tr key={rid}>
+          <TableRow key={rid}>
             {cols
               .filter((c) => !c.hide)
               .map((c: payslip_table_col, ci: number) => {
                 if (Array.isArray(c.field)) {
-                  // handle as blocks
                   return (
-                    <td key={c.title}>
-                      <Stack direction="horizontal" gap={2}>
-                        {c.field.map((subItem) => {
-                          return (
+                    <TableCell key={c.title}>
+                      <div className="flex gap-2 items-center">
+                        {c.field.map(
+                          (subItem) =>
                             row[subItem.field] > 0 && (
-                              <div key={subItem.field} color={subItem.color}>
-                                {subItem.title && (
-                                  <span style={{ fontWeight: 'bold', opacity: 0.5 }}>{subItem.title + ' '}</span>
-                                )}
+                              <div key={subItem.field} style={{ color: subItem.color }}>
+                                {subItem.title && <span className="font-semibold opacity-50 mr-1">{subItem.title}</span>}
                                 {renderValueCellContents(row, subItem.field)}
                               </div>
-                            )
-                          )
-                        })}
-                      </Stack>
-                    </td>
+                            ),
+                        )}
+                      </div>
+                    </TableCell>
                   )
                 } else {
                   return (
-                    <td style={{ textAlign: 'right' }} key={c.field}>
+                    <TableCell key={c.field} className="text-right">
                       {c.render ? c.render(row[c.field], row) : renderValueCellContents(row, c.field)}
-                    </td>
+                    </TableCell>
                   )
                 }
               })}
-            <td>
+            <TableCell>
               {typeof props.onRowEdited === 'function' && <PayslipEditButton content={row} onSave={props.onRowEdited} />}
-            </td>
-          </tr>
+            </TableCell>
+          </TableRow>
         ))}
-      </tbody>
+      </TableBody>
     </Table>
   )
 }
