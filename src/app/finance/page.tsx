@@ -5,11 +5,10 @@ import { redirect } from 'next/navigation'
 import AuthRoutes from '@/app/auth/AuthRoutes'
 import NewAccountForm from '@/app/finance/NewAccountForm'
 import AccountList from '@/app/finance/AccountList'
-import { sql } from '@/server_lib/db'
+import { db } from '@/server_lib/db'
 import { AccountTableRow } from '../api/finance/model'
 import { revalidatePath } from 'next/cache'
 import Container from '@/components/container'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 async function createAccount(acctName: string): Promise<void> {
   'use server'
@@ -23,10 +22,15 @@ async function createAccount(acctName: string): Promise<void> {
   if (acctName.length > 50) {
     throw new Error('Account name must be less than 50 characters')
   }
-  await sql`
-    INSERT INTO accounts (acct_owner, acct_name)
-    VALUES (${uid}, ${acctName})
-  `
+
+  await db
+    .insertInto('accounts')
+    .values({
+      acct_owner: uid,
+      acct_name: acctName,
+    })
+    .execute()
+
   revalidatePath(`/finance`)
 }
 
@@ -36,12 +40,13 @@ export default async function Page() {
     redirect(AuthRoutes.signIn)
   }
 
-  const accounts = (await sql`
-    select acct_id, acct_owner, acct_name 
-    from accounts 
-    where acct_owner = ${uid} and when_deleted is null
-    order by acct_name
-  `) as AccountTableRow[]
+  const accounts = await db
+    .selectFrom('accounts')
+    .select(['acct_id', 'acct_owner', 'acct_name'])
+    .where('acct_owner', '=', uid)
+    .where('when_deleted', 'is', null)
+    .orderBy('acct_name')
+    .execute()
 
   return (
     <Container>

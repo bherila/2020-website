@@ -1,7 +1,7 @@
 import 'server-only'
 
 import AuthRoutes from '@/app/auth/AuthRoutes'
-import { sql } from '@/server_lib/db'
+import { db } from '@/server_lib/db'
 import { getSession } from '@/server_lib/session'
 import { redirect } from 'next/navigation'
 import z from 'zod'
@@ -42,12 +42,18 @@ export default async function addProductKey(formData: FormData) {
   const { productName, productKey, computerName, comment, usedOn } = result.data
 
   try {
-    await sql`
-        INSERT INTO product_keys 
-        (uid, product_name, product_key, computer_name, comment, used_on) 
-        VALUES 
-        (${session.uid}, ${productName}, ${productKey}, ${computerName || null}, ${comment || null}, ${usedOn})
-      `
+    await db
+      .insertInto('product_keys')
+      .values({
+        uid: session.uid,
+        product_name: productName,
+        product_key: productKey,
+        computer_name: computerName || null,
+        comment: comment || null,
+        used_on: usedOn
+      })
+      .execute()
+      
     redirect('/keys/')
   } catch (error) {
     console.error('Failed to add product key:', error)

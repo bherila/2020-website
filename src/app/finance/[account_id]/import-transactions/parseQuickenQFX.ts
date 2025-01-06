@@ -1,5 +1,6 @@
-import { AccountLineItem, AccountLineItemSchema, TransactionType } from '@/lib/AccountLineItem'
+import { AccountLineItem, AccountLineItemSchema } from '@/lib/AccountLineItem'
 import { parseOptionDescription } from './StockOptionUtil'
+import { db } from '@/server_lib/db'
 
 export function parseQuickenQFX(data: string): AccountLineItem[] {
   const accountLineItems: AccountLineItem[] = []
@@ -71,11 +72,6 @@ export function parseQuickenQFX(data: string): AccountLineItem[] {
       }
     }
 
-    if (line.startsWith('<SECID>')) {
-      // Do nothing, symbol is now parsed from <MEMO>
-      // but CUSIP is parsed from <UNIQUEID> which follows
-    }
-
     if (line.startsWith('<UNIQUEID>')) {
       cusip = line.substring(10)
     }
@@ -109,7 +105,6 @@ export function parseQuickenQFX(data: string): AccountLineItem[] {
     }
 
     if (line.startsWith('</SELLOPT')) {
-      console.log(transactionDate, amount, quantity, price)
       if (transactionDate) {
         const accountLineItem: AccountLineItem = AccountLineItemSchema.parse({
           t_date: transactionDate,
@@ -140,6 +135,5 @@ export function parseQuickenQFX(data: string): AccountLineItem[] {
     }
   })
 
-  console.log(accountLineItems)
   return accountLineItems
 }

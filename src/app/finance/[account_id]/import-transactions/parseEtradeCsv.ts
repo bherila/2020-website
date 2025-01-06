@@ -15,7 +15,6 @@ export function parseEtradeCsv(csvString: string): AccountLineItem[] {
 
     if (transactionDate === 'TransactionDate') return
 
-    //   const optionDescription = description.replace(/^PUT |^CALL /, ''); // Remove leading "PUT " or "CALL "
     const option = parseOptionDescription(symbol)
 
     let t_type: TransactionType | null = null

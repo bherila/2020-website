@@ -1,30 +1,24 @@
 import 'server-only'
-import mysql from 'serverless-mysql2'
+import { createPool } from 'mysql2' // do not use 'mysql2/promises'!
+import { Kysely, MysqlDialect } from 'kysely'
+import { DB } from './kysely'
 
-const db = mysql({
-  config: {
-    host: process.env.DBHOST,
-    port: parseInt(process.env.DBPORT || '3306', 10),
-    user: process.env.DBUSER,
-    password: process.env.DBPASSWORD,
+const dialect = new MysqlDialect({
+  pool: createPool({
+    uri: process.env.DATABASE_URL,
     database: process.env.DBNAME,
-  },
+    host: process.env.DBHOST,
+    user: process.env.DBUSER,
+    password: process.env.DBPASSWORD || '',
+    port: process.env.DBPORT ? parseInt(process.env.DBPORT) : 3306,
+    connectionLimit: 2,
+  }),
 })
 
-export async function sql(strings: TemplateStringsArray, ...values: any[]) {
-  try {
-    const query = strings.reduce((prev, curr, i) => `${prev}${curr}${values[i] !== undefined ? '?' : ''}`, '')
-    const results = await db.query(
-      query,
-      values.filter((v) => v !== undefined),
-    )
-    return results
-  } catch (error) {
-    console.error('Database query error:', error)
-    throw error
-  } finally {
-    await db.end()
-  }
-}
-
-export default db
+// Database interface is passed to Kysely's constructor, and from now on, Kysely
+// knows your database structure.
+// Dialect is passed to Kysely's constructor, and from now on, Kysely knows how
+// to communicate with your database.
+export const db = new Kysely<DB>({
+  dialect,
+})

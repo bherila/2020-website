@@ -87,6 +87,7 @@ export const AccountLineItemSchema = z.object({
       'Supplies',
       'Taxes and licenses',
       'Travel',
+      'Meals 0%',
       'Meals 50%',
       'Meals 100%',
       'Utilities',

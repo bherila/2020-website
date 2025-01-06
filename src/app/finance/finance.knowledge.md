@@ -13,10 +13,19 @@
 - Never physically delete finance records
 
 ## Data Processing
-- Prefer SQL aggregations over client-side calculations
+- Use Kysely query builder for all database operations
+- Prefer database aggregations over client-side calculations
 - Use database for grouping, summing, and filtering when possible
 - Only fetch aggregated data needed for display
 - Minimize data transfer between server and client
+- Leverage Kysely's type safety for queries
+
+## Import Formats
+- Support tab-separated values (TSV) from Excel/Google Sheets
+- Support E*TRADE CSV format with option trade parsing
+- Support Quicken QFX format with option trade parsing
+- All imports validate against AccountLineItemSchema
+- Soft deletion used for all record removals
 
 ## API Response Format
 - Success: Return requested data directly

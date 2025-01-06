@@ -14,6 +14,7 @@ import {
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { mainNavigation } from '@/lib/navigationConfig'
 
 interface HeaderProps {
   session: sessionType
@@ -24,91 +25,36 @@ export default function Header({ session }: HeaderProps) {
 
   const NavigationItems = () => (
     <>
-      <NavigationMenuItem>
-        <Link href="/recipes" className="text-sm font-medium text-muted-foreground hover:text-primary px-4 py-2">
-          Recipes
-        </Link>
-      </NavigationMenuItem>
-      <NavigationMenuItem>
-        <Link href="/projects" className="text-sm font-medium text-muted-foreground hover:text-primary px-4 py-2">
-          Projects
-        </Link>
-      </NavigationMenuItem>
-      <NavigationMenuItem>
-        <NavigationMenuTrigger>Tools</NavigationMenuTrigger>
-        <NavigationMenuContent>
-          <div className="grid gap-3 p-4 w-[400px] md:w-[500px]">
-            <NavigationMenuLink asChild>
-              <Link
-                href="/maxmin/MSFT"
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-              >
-                MaxMin 🔑
-              </Link>
-            </NavigationMenuLink>
-            <NavigationMenuLink asChild>
-              <Link
-                href="/keys/"
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-              >
-                License Manager 🔑
-              </Link>
-            </NavigationMenuLink>
-            <NavigationMenuLink asChild>
-              <Link
-                href="/rsu/"
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-              >
-                Finance - RSU 🔑
-              </Link>
-            </NavigationMenuLink>
-            <NavigationMenuLink asChild>
-              <Link
-                href="/payslip/"
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-              >
-                Finance - Payslips 🔑
-              </Link>
-            </NavigationMenuLink>
-            {session?.ax_spgp && (
-              <NavigationMenuLink asChild>
-                <Link
-                  href="/spgp"
-                  className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                >
-                  Ski Pass Group Purchase 🔑
-                </Link>
-              </NavigationMenuLink>
-            )}
-            {session?.ax_phr && (
-              <NavigationMenuLink asChild>
-                <Link
-                  href="/phr"
-                  className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                >
-                  PHR 🔑
-                </Link>
-              </NavigationMenuLink>
-            )}
-            <NavigationMenuLink asChild>
-              <Link
-                href="/finance/"
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-              >
-                Accounts
-              </Link>
-            </NavigationMenuLink>
-            <NavigationMenuLink asChild>
-              <Link
-                href="/bingo/"
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-              >
-                Bingo card generator
-              </Link>
-            </NavigationMenuLink>
-          </div>
-        </NavigationMenuContent>
-      </NavigationMenuItem>
+      {mainNavigation.map((item) => (
+        <NavigationMenuItem key={item.title}>
+          {item.href ? (
+            <Link href={item.href} className="text-sm font-medium text-muted-foreground hover:text-primary px-4 py-2">
+              {item.title}
+            </Link>
+          ) : item.subitems ? (
+            <>
+              <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <div className="grid gap-3 p-4 w-[400px] md:w-[500px]">
+                  {item.subitems.map((subitem) => {
+                    if (subitem.permission && !session?.[subitem.permission]) return null;
+                    return (
+                      <NavigationMenuLink key={subitem.href} asChild>
+                        <Link
+                          href={subitem.href!}
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                        >
+                          {subitem.title}
+                        </Link>
+                      </NavigationMenuLink>
+                    );
+                  })}
+                </div>
+              </NavigationMenuContent>
+            </>
+          ) : null}
+        </NavigationMenuItem>
+      ))}
     </>
   )
 
@@ -118,7 +64,7 @@ export default function Header({ session }: HeaderProps) {
         <Button variant="ghost" asChild>
           <Link href="/auth/sign-in">Sign in</Link>
         </Button>
-        <Button asChild>
+        <Button variant="ghost" asChild>
           <Link href="/auth/sign-up">Sign up</Link>
         </Button>
       </div>
@@ -135,7 +81,7 @@ export default function Header({ session }: HeaderProps) {
 
   return (
     <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed w-full top-0 z-50 border-b">
-      <div className="container flex h-16 items-center justify-between px-4">
+      <div className="container-fluid flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link href="/" className="text-lg font-semibold hover:text-primary">
             Ben Herila
@@ -151,7 +97,7 @@ export default function Header({ session }: HeaderProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 ml-auto">
           <ThemeToggle />
 
           {/* Desktop Auth Buttons */}
@@ -170,45 +116,37 @@ export default function Header({ session }: HeaderProps) {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                 <nav className="flex flex-col gap-4">
-                  <Link href="/recipes" className="text-sm font-medium" onClick={() => setIsOpen(false)}>
-                    Recipes
-                  </Link>
-                  <Link href="/projects" className="text-sm font-medium" onClick={() => setIsOpen(false)}>
-                    Projects
-                  </Link>
-                  <div className="space-y-4">
-                    <h4 className="font-medium">Tools</h4>
-                    <div className="grid gap-2">
-                      <Link href="/maxmin/MSFT" className="text-sm" onClick={() => setIsOpen(false)}>
-                        MaxMin 🔑
+                  {mainNavigation.map((item) => (
+                    item.href ? (
+                      <Link 
+                        key={item.href}
+                        href={item.href}
+                        className="text-sm font-medium"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {item.title}
                       </Link>
-                      <Link href="/keys/" className="text-sm" onClick={() => setIsOpen(false)}>
-                        License Manager 🔑
-                      </Link>
-                      <Link href="/rsu/" className="text-sm" onClick={() => setIsOpen(false)}>
-                        Finance - RSU 🔑
-                      </Link>
-                      <Link href="/payslip/" className="text-sm" onClick={() => setIsOpen(false)}>
-                        Finance - Payslips 🔑
-                      </Link>
-                      {session?.ax_spgp && (
-                        <Link href="/spgp" className="text-sm" onClick={() => setIsOpen(false)}>
-                          Ski Pass Group Purchase 🔑
-                        </Link>
-                      )}
-                      {session?.ax_phr && (
-                        <Link href="/phr" className="text-sm" onClick={() => setIsOpen(false)}>
-                          PHR 🔑
-                        </Link>
-                      )}
-                      <Link href="/finance/" className="text-sm" onClick={() => setIsOpen(false)}>
-                        Accounts
-                      </Link>
-                      <Link href="/bingo/" className="text-sm" onClick={() => setIsOpen(false)}>
-                        Bingo card generator
-                      </Link>
-                    </div>
-                  </div>
+                    ) : item.subitems ? (
+                      <div key={item.title} className="space-y-4">
+                        <h4 className="font-medium">{item.title}</h4>
+                        <div className="grid gap-2">
+                          {item.subitems.map((subitem) => {
+                            if (subitem.permission && !session?.[subitem.permission]) return null;
+                            return (
+                              <Link
+                                key={subitem.href}
+                                href={subitem.href!}
+                                className="text-sm"
+                                onClick={() => setIsOpen(false)}
+                              >
+                                {subitem.title}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : null
+                  ))}
                   <div className="mt-4">
                     <AuthButtons />
                   </div>

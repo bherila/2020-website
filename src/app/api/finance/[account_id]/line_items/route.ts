@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/server_lib/session'
 import { AccountLineItem, AccountLineItemSchema } from '@/lib/AccountLineItem'
 import { z } from 'zod'
+import { db } from '@/server_lib/db'
 import {
   getLineItemsByAccount,
   createLineItem,
   bulkCreateLineItems,
   deleteLineItem,
 } from '@/server_lib/AccountLineItem.server'
-import { sql } from '@/server_lib/db'
 
 async function validateAccess(accountId: number) {
   const uid = (await getSession())?.uid
@@ -16,11 +16,12 @@ async function validateAccess(accountId: number) {
     throw new Error('not logged in')
   }
 
-  const [account] = (await sql`
-    SELECT acct_id, acct_owner
-    FROM accounts
-    WHERE acct_owner = ${uid} and acct_id = ${accountId}
-  `) as { acct_id: number; acct_owner: number }[]
+  const account = await db
+    .selectFrom('accounts')
+    .select(['acct_id', 'acct_owner'])
+    .where('acct_owner', '=', uid)
+    .where('acct_id', '=', accountId)
+    .executeTakeFirst()
 
   if (!account) {
     throw new Error('account not found or access denied')

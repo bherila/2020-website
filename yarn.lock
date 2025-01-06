@@ -6736,7 +6736,7 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-kysely@^0.27.4:
+kysely@^0.27.4, kysely@^0.27.5:
   version "0.27.5"
   resolved "https://registry.yarnpkg.com/kysely/-/kysely-0.27.5.tgz#e4662be051dd023eda2f68ee3d7e2647c94b0ef7"
   integrity sha512-s7hZHcQeSNKpzCkHRm8yA+0JPLjncSWnjb+2TIElwS2JAqYr+Kv3Ess+9KFfJS0C1xcQ1i9NkNHpWwCYpHMWsA==
@@ -8353,13 +8353,6 @@ server-only@^0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/server-only/-/server-only-0.0.1.tgz#0f366bb6afb618c37c9255a314535dc412cd1c9e"
   integrity sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==
-
-serverless-mysql2@^1.5.6:
-  version "1.5.6"
-  resolved "https://registry.yarnpkg.com/serverless-mysql2/-/serverless-mysql2-1.5.6.tgz#6d7e828bcd2b18a2ffb5fec375b8cdcce158ed04"
-  integrity sha512-IPjODZbvGK3jOph73NkrgOUdyb9M08Gt4v9fkmy5QKyFi1imlcNw1aeka9Vbg62I/aHfsQr7He2tAxNtygynQQ==
-  dependencies:
-    mysql2 "^3.12.0"
 
 set-function-length@^1.2.2:
   version "1.2.2"

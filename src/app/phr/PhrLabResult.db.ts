@@ -14,54 +14,33 @@ export async function genLabResultsForLoggedInUser(): Promise<PhrLabResult[]> {
 
 export async function genLabResults(userId: string): Promise<PhrLabResult[]> {
   try {
-    const rows: any[] = await db.query(
-      `
-          SELECT
-              id,
-              user_id,
-              test_name,
-              collection_datetime,
-              result_datetime,
-              result_status,
-              ordering_provider,
-              resulting_lab,
-              analyte,
-              value,
-              unit,
-              range_min,
-              range_max,
-              range_unit,
-              normal_value,
-              message_from_provider,
-              result_comment,
-              lab_director
-          FROM phr_lab_results
-          WHERE user_id = ?
-          ORDER BY result_datetime DESC`,
-      [userId],
-    )
-    return rows.map((row) =>
-      PhrLabResultSchema.parse({
-        id: row.id,
-        userId: row.user_id,
-        testName: row.test_name,
-        collectionDatetime: row.collection_datetime,
-        resultDatetime: row.result_datetime,
-        resultStatus: row.result_status,
-        orderingProvider: row.ordering_provider,
-        resultingLab: row.resulting_lab,
-        analyte: row.analyte,
-        value: row.value,
-        unit: row.unit,
-        rangeMin: row.range_min,
-        rangeMax: row.range_max,
-        rangeUnit: row.range_unit,
-        normalValue: row.normal_value,
-        messageFromProvider: row.message_from_provider,
-        resultComment: row.result_comment,
-        labDirector: row.lab_director,
-      }),
-    )
+    const rows = await db
+      .selectFrom('phr_lab_results')
+      .select([
+        'id',
+        'user_id as userId',
+        'test_name as testName',
+        'collection_datetime as collectionDatetime',
+        'result_datetime as resultDatetime',
+        'result_status as resultStatus',
+        'ordering_provider as orderingProvider',
+        'resulting_lab as resultingLab',
+        'analyte',
+        'value',
+        'unit',
+        'range_min as rangeMin',
+        'range_max as rangeMax',
+        'range_unit as rangeUnit',
+        'normal_value as normalValue',
+        'message_from_provider as messageFromProvider',
+        'result_comment as resultComment',
+        'lab_director as labDirector'
+      ])
+      .where('user_id', '=', parseInt(userId))
+      .orderBy('result_datetime', 'desc')
+      .execute()
+
+    return rows.map((row) => PhrLabResultSchema.parse(row))
   } catch (err) {
     console.error(err)
     return []

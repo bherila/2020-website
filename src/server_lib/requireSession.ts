@@ -9,9 +9,8 @@ export default async function requireSession(returnUrl?: string) {
   if (!session?.uid) {
     const headersList = await headers()
     const path = headersList.get('x-pathname') || returnUrl || '/'
-    const url = new URL(AuthRoutes.signIn)
-    url.searchParams.set('next', path)
-    redirect(url.toString())
+    const url = AuthRoutes.signIn + '?next=' + encodeURIComponent(path)
+    redirect(url)
   }
   return session
 }
