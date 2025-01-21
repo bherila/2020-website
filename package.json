@@ -19,7 +19,8 @@
     "build:worker": "opennextjs-cloudflare",
     "dev:worker": "wrangler dev --port 8771",
     "preview:worker": "yarn build:worker && yarn dev:worker",
-    "deploy:worker": "yarn build:worker && wrangler deploy"
+    "deploy:worker": "yarn build:worker && wrangler deploy",
+    "upload": "rsync -a --delete --progress --exclude='cache' .next bhnetzum@web1.dal.cloudplatform.net:~/bherila.net/_next/"
   },
   "dependencies": {
     "@headlessui/react": "2.2",
