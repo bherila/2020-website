@@ -3,6 +3,7 @@ import type { NextConfig } from 'next'
 
 export default (_phase: string): NextConfig => {
   return {
+    output: 'standalone',
     trailingSlash: true,
     images: {
       remotePatterns: [
