@@ -1,8 +1,17 @@
 'use client'
 import { useState } from 'react'
-import { Button, Form, Row, Col } from 'react-bootstrap'
-import { AccountLineItem } from '@/lib/AccountLineItem'
-import SimpleMuiAlert from '@/components/SimpleMuiAlert'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Delete } from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 
 interface Props {
   accountId: number
@@ -19,7 +28,6 @@ export default function MaintenanceClient({
 }: Props) {
   const [newName, setNewName] = useState(accountName)
   const [error, setError] = useState('')
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const handleRename = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -42,42 +50,48 @@ export default function MaintenanceClient({
 
   return (
     <>
-      <Row className="mb-4">
-        <Col md={6}>
-          <h3>Rename Account</h3>
-          <Form onSubmit={handleRename}>
-            <Form.Group className="mb-3">
-              <Form.Label>Account Name</Form.Label>
-              <Form.Control type="text" value={newName} onChange={(e) => setNewName(e.target.value)} required />
-            </Form.Group>
-            <Button type="submit" variant="primary">
-              Rename Account
+      <div className="mb-4">
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle>Rename Account</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleRename}>
+              <label>
+                Account Name
+                <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} required />
+              </label>
+              <button type="submit">Rename Account</button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mb-4">
+        <h3>Delete Account</h3>
+        <p className="text-danger">Warning: This action cannot be undone.</p>
+
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive">
+              <Delete className="me-2" />
+              Delete Account
             </Button>
-          </Form>
-        </Col>
-      </Row>
-
-      <Row className="mb-4">
-        <Col>
-          <h3>Delete Account</h3>
-          <p className="text-danger">Warning: This action cannot be undone.</p>
-          <Button onClick={() => setShowDeleteConfirm(true)} variant="danger">
-            Delete Account
-          </Button>
-        </Col>
-      </Row>
-
-      <SimpleMuiAlert open={!!error} onClose={() => setError('')} text={error} />
-
-      <SimpleMuiAlert open={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)}>
-        <p>Are you sure you want to delete this account? This action cannot be undone.</p>
-        <Button onClick={handleDelete} variant="danger" className="me-2">
-          Yes, Delete Account
-        </Button>
-        <Button onClick={() => setShowDeleteConfirm(false)} variant="secondary">
-          Cancel
-        </Button>
-      </SimpleMuiAlert>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogTitle>Delete Account</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this account? This action cannot be undone.
+            </AlertDialogDescription>
+            <AlertDialogAction asChild>
+              <Button variant="destructive" onClick={() => handleDelete()}>
+                Yes, Delete Account
+              </Button>
+            </AlertDialogAction>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </>
   )
 }

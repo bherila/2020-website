@@ -4,24 +4,45 @@
 
 - Use yarn for package management, not npm
 - Run `yarn add` instead of `npm install`
+- Run `npx shadcn` to install shadcn components, do not run `npx shadcn-ui`
 - Jest requires `jest-environment-jsdom` to be installed separately for tests using JSDOM
 
-## React Bootstrap Components
+## Styling Guidelines
 
-- Keep using `className` props on React Bootstrap components even if React 19 shows ref warnings
-- React Bootstrap components handle refs internally - don't try to work around ref warnings by replacing className with style props or alternative components
-- Avoid React Bootstrap components in Server Components - they don't work with SSR
-- For SSR pages, use simpler HTML elements or Next.js built-in components
-- Note: Masonry is not included in react-bootstrap, use react-responsive-masonry instead
+### Tailwind CSS
+- Default font: Sans-serif stack with system UI fonts and emoji support
+- Use Tailwind utility classes for styling
+- Spacing scale matches Bootstrap (1 = 0.25rem)
+- Color names match Bootstrap: primary, secondary, success, danger, warning, info, light, dark
+- Required plugins:
+  - @tailwindcss/typography for prose styling
+  - tailwindcss-animate for animations
+
+### React Bootstrap Components
+- Avoid and replace with shadcn components
+- Use shadcn Button component as base for all buttons
 
 ## Best Practices
 
-- Prefer React Bootstrap components over raw HTML elements for consistent styling
-- Use Next.js Link for navigation except within React Bootstrap components that provide their own Link variants
+- Use react-hook-form with zod for form validation and type safety
+- Example validation pattern:
+```ts
+const formSchema = z.object({
+  fieldName: z.string().min(1, 'Error message')
+})
+const form = useForm({
+  resolver: zodResolver(formSchema),
+  defaultValues: {
+    fieldName: ''
+  }
+})
+```
+- Prefer shadcn components over raw HTML elements for consistent styling
 - Keep forms on dedicated pages instead of inline/modal forms for better UX and accessibility
 - Use simple, focused forms - one primary action per form
 - Cache and share expensive data fetching across components using global state
 - Prevent duplicate API calls by sharing fetch promises between hooks
+- Use react-hook-form and zod for form validation
 
 ## UI Patterns
 

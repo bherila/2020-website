@@ -1,9 +1,10 @@
 'use client'
-import Table from 'react-bootstrap/Table'
-import Card from 'react-bootstrap/Card'
-import Masonry from 'react-responsive-masonry'
+
 import './summary.css'
 import currency from 'currency.js'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table'
+import Masonry from '@/components/ui/masonry'
 
 interface Props {
   totals: {
@@ -25,75 +26,75 @@ export default function SummaryClient({ totals, symbolSummary, monthSummary }: P
   return (
     <Masonry columnsCount={3} gutter="16px">
       <Card className="mb-4">
-        <Card.Header>
-          <h3 className="mb-0">Account Totals</h3>
-        </Card.Header>
-        <Card.Body>
-          <Table bordered size="sm">
-            <tbody>
-              <tr>
-                <td>Total Volume</td>
-                <td className="text-end">{currency(totals.total_volume).format()}</td>
-              </tr>
-              <tr>
-                <td>Total Commissions</td>
-                <td className="text-end">{currency(totals.total_commission).format()}</td>
-              </tr>
-              <tr>
-                <td>Total Fees</td>
-                <td className="text-end">{currency(totals.total_fee).format()}</td>
-              </tr>
-            </tbody>
+        <CardHeader>
+          <CardTitle>Account Totals</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableBody>
+              <TableRow>
+                <TableCell>Total Volume</TableCell>
+                <TableCell className="text-end">{currency(totals.total_volume).format()}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Total Commissions</TableCell>
+                <TableCell className="text-end">{currency(totals.total_commission).format()}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Total Fees</TableCell>
+                <TableCell className="text-end">{currency(totals.total_fee).format()}</TableCell>
+              </TableRow>
+            </TableBody>
           </Table>
-        </Card.Body>
+        </CardContent>
       </Card>
 
       <Card className="mb-4">
-        <Card.Header>
-          <h3 className="mb-0">By Symbol</h3>
-        </Card.Header>
-        <Card.Body>
-          <Table bordered size="sm">
-            <thead>
-              <tr>
-                <th>Symbol</th>
-                <th className="text-end">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
+        <CardHeader>
+          <CardTitle>By Symbol</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Symbol</TableHead>
+                <TableHead className="text-end">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {symbolSummary.map(({ t_symbol, total_amount }) => (
-                <tr key={t_symbol}>
-                  <td>{t_symbol}</td>
-                  <td className="text-end">{currency(total_amount).format()}</td>
-                </tr>
+                <TableRow key={t_symbol}>
+                  <TableCell>{t_symbol}</TableCell>
+                  <TableCell className="text-end">{currency(total_amount).format()}</TableCell>
+                </TableRow>
               ))}
-            </tbody>
+            </TableBody>
           </Table>
-        </Card.Body>
+        </CardContent>
       </Card>
 
       <Card className="mb-4">
-        <Card.Header>
-          <h3 className="mb-0">By Month</h3>
-        </Card.Header>
-        <Card.Body>
-          <Table bordered size="sm">
-            <thead>
-              <tr>
-                <th>Month</th>
-                <th className="text-end">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
+        <CardHeader>
+          <CardTitle>By Month</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Month</TableHead>
+                <TableHead className="text-end">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {monthSummary.map(({ month, total_amount }) => (
-                <tr key={month}>
-                  <td>{month}</td>
-                  <td className="text-end">{currency(total_amount).format()}</td>
-                </tr>
+                <TableRow key={month}>
+                  <TableCell>{month}</TableCell>
+                  <TableCell className="text-end">{currency(total_amount).format()}</TableCell>
+                </TableRow>
               ))}
-            </tbody>
+            </TableBody>
           </Table>
-        </Card.Body>
+        </CardContent>
       </Card>
     </Masonry>
   )

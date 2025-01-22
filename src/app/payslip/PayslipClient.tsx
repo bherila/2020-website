@@ -5,14 +5,13 @@ import { fetchWrapper } from '@/lib/fetchWrapper'
 import { redirect } from 'next/navigation'
 import AuthRoutes from '@/app/auth/AuthRoutes'
 import Container from '@/components/container'
-import Row from 'react-bootstrap/Row'
 import { payslip_table_col, PayslipTable } from '@/app/payslip/PayslipTable'
-import Spinner from 'react-bootstrap/Spinner'
+import { Loader2 } from 'lucide-react'
 import FileUploadClient from '@/app/payslip/FileUploadClient'
-import { Button, Col } from 'react-bootstrap'
+import { Button } from '@/components/ui/button'
 import styles from './dropzone.module.css'
 import currency from 'currency.js'
-import Table from 'react-bootstrap/Table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { genBrackets } from '@/lib/taxBracket'
 import { sum } from '@/components/matcher'
 
@@ -147,32 +146,28 @@ export default function PayslipClient({ year }: PayslipClientProps): React.React
 
   return (
     <Container fluid>
-      <Row>
-        <PayslipTable data={data} cols={cols} onRowEdited={editRow} />
-        {loading && (
-          <div className={styles.center}>
-            <Spinner />
-          </div>
-        )}
-        <TotalsTable data={data} />
-      </Row>
-      <Row>
-        <FileUploadClient onJsonPreview={updateJsonPreview} />
-        {Array.isArray(previewData) && previewData.length > 0 && (
-          <>
-            <h3>Upload data preview</h3>
-            <PayslipTable data={previewData} cols={cols} />
-            <Button
-              onClick={(e) => {
-                e.preventDefault()
-                doImport()
-              }}
-            >
-              Import
-            </Button>
-          </>
-        )}
-      </Row>
+      <PayslipTable data={data} cols={cols} onRowEdited={editRow} />
+      {loading && (
+        <div className={styles.center}>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        </div>
+      )}
+      <TotalsTable data={data} />
+      <FileUploadClient onJsonPreview={updateJsonPreview} />
+      {Array.isArray(previewData) && previewData.length > 0 && (
+        <>
+          <h3>Upload data preview</h3>
+          <PayslipTable data={previewData} cols={cols} />
+          <Button
+            onClick={(e) => {
+              e.preventDefault()
+              doImport()
+            }}
+          >
+            Import
+          </Button>
+        </>
+      )}
     </Container>
   )
 }
@@ -234,56 +229,62 @@ function TotalsTable(props: { data: fin_payslip[] }) {
   const refund = totalTax.subtract(fedWH)
   return (
     <div style={{ alignContent: 'center', flexDirection: 'column' }}>
-      <Table bordered style={{ width: '700px' }}>
-        <tbody>
-          <tr>
-            <td>Estimated W-2 Income</td>
-            <td>{income.value.toFixed(2)}</td>
-          </tr>
-          <tr>
-            <td>Pre-tax W-2 Subtractions</td>
-            <td>{pretax.value.toFixed(2)}</td>
-          </tr>
-          <tr>
-            <td>Standard Deduction</td>
-            <td>13850.00{/*  //TODO: Standard deduction */}</td>
-          </tr>
-          <tr>
-            <td>Estimated taxable income</td>
-            <td>{estTaxIncome.value.toFixed(2)}</td>
-          </tr>
-          <tr>
-            <td>Federal Tax Estimation</td>
-            <td>
-              <Table bordered size="sm" striped>
-                <tbody>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Description</TableHead>
+            <TableHead>Amount</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow>
+            <TableCell>Estimated W-2 Income</TableCell>
+            <TableCell>{income.value.toFixed(2)}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Pre-tax W-2 Subtractions</TableCell>
+            <TableCell>{pretax.value.toFixed(2)}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Standard Deduction</TableCell>
+            <TableCell>13850.00{/*  //TODO: Standard deduction */}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Estimated taxable income</TableCell>
+            <TableCell>{estTaxIncome.value.toFixed(2)}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Federal Tax Estimation</TableCell>
+            <TableCell>
+              <Table>
+                <TableBody>
                   {fedBrackets.map((m) => (
-                    <tr key={m.bracket.value}>
-                      <td>
+                    <TableRow key={m.bracket.value}>
+                      <TableCell>
                         ${m.amt.value} @ {m.bracket.value}
-                      </td>
-                      <td>{m.tax.value}</td>
-                    </tr>
+                      </TableCell>
+                      <TableCell>{m.tax.value}</TableCell>
+                    </TableRow>
                   ))}
-                  <tr>
-                    <td>Total:</td>
-                    <td>{totalTax.value}</td>
-                  </tr>
-                </tbody>
+                  <TableRow>
+                    <TableCell>Total:</TableCell>
+                    <TableCell>{totalTax.value}</TableCell>
+                  </TableRow>
+                </TableBody>
               </Table>
-            </td>
-          </tr>
-          <tr>
-            <td>Federal Taxes Paid</td>
-            <td>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Federal Taxes Paid</TableCell>
+            <TableCell>
               {fedWH.value.toFixed(2)} ({fedWH.divide(income).multiply(100).value.toFixed(1)}%)
-            </td>
-          </tr>
-          <tr>
-            <td>Est Federal Tax Due</td>
-            <td>{refund.value.toFixed(2)}</td>
-          </tr>
-        </tbody>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Est Federal Tax Due</TableCell>
+            <TableCell>{refund.value.toFixed(2)}</TableCell>
+          </TableRow>
+        </TableBody>
       </Table>
     </div>
   )

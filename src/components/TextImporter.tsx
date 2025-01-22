@@ -1,47 +1,46 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Button } from 'react-bootstrap'
-import Modal from 'react-bootstrap/Modal'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import Container from '@/components/container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
 import DroppableTextArea from '@/components/DroppableTextArea'
-import Form from 'react-bootstrap/Form'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import parseDelimitedText from '@/components/parseDelimitedText'
 import { SetDocumentProps } from '@/lib/data2d'
 
 export function SetDocumentButton(props: SetDocumentProps & { children: any }) {
-  const [showModal, setShowModal] = useState(false)
+  const [open, setOpen] = useState(false)
   return (
     <>
-      <Button onClick={() => setShowModal(true)}>{props.children ?? 'Load data'}</Button>
-      <SetDocumentModal {...props} {...{ showModal, setShowModal }} />
+      <Button onClick={() => setOpen(true)}>{props.children ?? 'Load data'}</Button>
+      <SetDocumentModal {...props} {...{ open, setOpen }} />
     </>
   )
 }
 
 function SetDocumentModal(
   props: SetDocumentProps & {
-    showModal: boolean
-    setShowModal: (shouldShow: boolean) => void
+    open: boolean
+    setOpen: (open: boolean) => void
   },
 ) {
-  const { showModal, setShowModal, ...childProps } = props
-  const handleCloseModal = () => setShowModal(false)
+  const { open, setOpen, ...childProps } = props
+  const handleCloseModal = () => setOpen(false)
   return (
-    <Modal size="lg" show={showModal} onHide={handleCloseModal}>
-      <Modal.Header closeButton>
-        <Modal.Title>Load data</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="sm:max-w-[800px]">
+        <DialogHeader>
+          <DialogTitle>Load data</DialogTitle>
+        </DialogHeader>
         <SetDocumentInline setDocFn={props.setDocFn} />
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleCloseModal}>
-          Cancel
-        </Button>
-      </Modal.Footer>
-    </Modal>
+        <DialogFooter>
+          <Button variant="outline" onClick={handleCloseModal}>
+            Cancel
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -55,40 +54,25 @@ function SetDocumentInline(props: SetDocumentProps) {
   return (
     <Container fluid>
       <DelimiterSelectionRow {...{ delimiter, setDelimiter }} />
-      <Row>
-        <Col xs={12}>
-          <DroppableTextArea data={text} setData={(t) => setText(t)} />
-        </Col>
-      </Row>
+      <DroppableTextArea data={text} setData={(t) => setText(t)} />
     </Container>
   )
 }
 
 function DelimiterSelectionRow({ delimiter, setDelimiter }: { delimiter: string; setDelimiter: (setter: string) => void }) {
   return (
-    <Row>
-      <Col lg={2}>
-        <Form.Label>Delimiter</Form.Label>
-      </Col>
-      <Col lg={10} className="d-flex justify-content-start">
-        <Form.Check
-          type="radio"
-          label="Tab"
-          name="delimiter"
-          id="tab-radio"
-          checked={delimiter === 'Tab'}
-          onChange={() => setDelimiter('Tab')}
-          className="me-4"
-        />
-        <Form.Check
-          type="radio"
-          label="CSV"
-          name="delimiter"
-          id="csv-radio"
-          checked={delimiter === 'CSV'}
-          onChange={() => setDelimiter('CSV')}
-        />
-      </Col>
-    </Row>
+    <div>
+      <Label>Delimiter</Label>
+      <RadioGroup defaultValue={delimiter} onValueChange={setDelimiter} className="flex gap-4">
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="Tab" id="tab-radio" />
+          <Label htmlFor="tab-radio">Tab</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="CSV" id="csv-radio" />
+          <Label htmlFor="csv-radio">CSV</Label>
+        </div>
+      </RadioGroup>
+    </div>
   )
 }

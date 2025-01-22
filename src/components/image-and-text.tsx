@@ -1,27 +1,22 @@
 import Link from 'next/link'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
 import cn from 'classnames'
+import { Button } from '@/components/ui/button'
 
 export default function ImageAndText({ children, imageUrl, alt, ctaText, ctaLink, extraClass }: ImageAndTextProps) {
   return (
-    <Row className={cn('pb-4', extraClass)}>
-      <Col xs={12} sm={4} md={4} lg={3}>
+    <div className={cn('flex flex-wrap pb-4', extraClass)}>
+      <div className="sm:w-1/3 md:w-1/3 lg:w-1/4">
         <img width="100%" src={imageUrl} alt={alt} />
-      </Col>
-      <Col xs={12} sm={8} md={8} lg={9}>
+      </div>
+      <div className="sm:w-2/3 md:w-2/3 lg:w-3/4 pl-6">
         {children}
-        {ctaText && ctaLink ? <>{renderCta(ctaText, ctaLink)}</> : null}
-      </Col>
-    </Row>
-  )
-}
-
-function renderCta(ctaText: string, ctaLink: string) {
-  return (
-    <Link href={ctaLink} className="btn btn-primary mt-3">
-      {ctaText}
-    </Link>
+        {ctaText && ctaLink ? (
+          <Button asChild className="mt-3 px-0 text-blue-400" variant="link">
+            <Link href={ctaLink}>{ctaText}</Link>
+          </Button>
+        ) : null}
+      </div>
+    </div>
   )
 }
 

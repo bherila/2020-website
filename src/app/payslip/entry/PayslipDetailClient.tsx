@@ -1,157 +1,210 @@
 'use client'
-import { useState } from 'react'
-import { Form, Button, Container, Row, Col } from 'react-bootstrap'
+import { useForm, Controller } from 'react-hook-form'
 import { fin_payslip } from '@/app/payslip/payslipDbCols'
-import DatePicker from '@/components/ui/DatePicker'
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 
 const PayrollForm: React.FC<{ onSave?: (data: fin_payslip) => void }> = ({ onSave }) => {
-  const [formData, setFormData] = useState<any>({})
+  const form = useForm<fin_payslip>()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.currentTarget
-    setFormData({ ...formData, [name]: value ? parseFloat(value) : undefined })
-  }
-
-  const handleDateChange = (date: Date | null, field: keyof fin_payslip) => {
-    setFormData({
-      ...formData,
-      [field]: date ? date.toISOString().split('T')[0] : '',
-    })
-  }
-
-  const handleCheckboxChange = () => {
-    setFormData({ ...formData, ps_is_estimated: !formData.ps_is_estimated })
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit = (data: fin_payslip) => {
     if (onSave) {
-      onSave(formData)
+      onSave(data)
     }
   }
 
   return (
-    <Container>
-      <Form onSubmit={handleSubmit}>
-        <h3>Pay Period</h3>
-        <Row>
-          <Col>
-            <Form.Group controlId="period_start">
-              <Form.Label>Period Start</Form.Label>
-              <DatePicker
-                selected={formData.period_start ? new Date(formData.period_start) : null}
-                onChange={(date) => handleDateChange(date, 'period_start')}
+    <div className="container">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <h3>Pay Period</h3>
+          <div className="grid grid-cols-3 gap-4">
+            <FormField
+              control={form.control}
+              name="period_start"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Period Start</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="period_end"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Period End</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="pay_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Pay Date</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <h3>Earnings</h3>
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              'ps_salary',
+              'earnings_gross',
+              'earnings_bonus',
+              'earnings_rsu',
+              'earnings_net_pay',
+              'ps_vacation_payout',
+            ].map((field) => (
+              <FormField
+                key={field}
+                control={form.control}
+                name={field as keyof fin_payslip}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{field.name}</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </Form.Group>
-          </Col>
-          <Col>
-            <Form.Group controlId="period_end">
-              <Form.Label>Period End</Form.Label>
-              <DatePicker
-                selected={formData.period_end ? new Date(formData.period_end) : null}
-                onChange={(date) => handleDateChange(date, 'period_end')}
+            ))}
+          </div>
+
+          <h3>Imputed Income</h3>
+          <div className="grid grid-cols-3 gap-4">
+            {['imp_legal', 'imp_fitness', 'imp_ltd', 'imp_other'].map((field) => (
+              <FormField
+                key={field}
+                control={form.control}
+                name={field as keyof fin_payslip}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{field.name}</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </Form.Group>
-          </Col>
-          <Col>
-            <Form.Group controlId="pay_date">
-              <Form.Label>Pay Date</Form.Label>
-              <DatePicker
-                selected={formData.pay_date ? new Date(formData.pay_date) : null}
-                onChange={(date) => handleDateChange(date, 'pay_date')}
+            ))}
+          </div>
+
+          <h3>Federal Taxes Paid</h3>
+          <div className="grid grid-cols-3 gap-4">
+            {['ps_oasdi', 'ps_medicare', 'ps_fed_tax', 'ps_fed_tax_addl', 'ps_fed_tax_refunded'].map((field) => (
+              <FormField
+                key={field}
+                control={form.control}
+                name={field as keyof fin_payslip}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{field.name}</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </Form.Group>
-          </Col>
-        </Row>
+            ))}
+          </div>
 
-        <h3>Earnings</h3>
-        <Row>
-          {['ps_salary', 'earnings_gross', 'earnings_bonus', 'earnings_rsu', 'earnings_net_pay', 'ps_vacation_payout'].map(
-            (field) => (
-              <Col key={field}>
-                <Form.Group controlId={field}>
-                  <Form.Label>{field.replace(/_/g, ' ').replace(/^ps /, '')}</Form.Label>
-                  <Form.Control type="number" name={field} value={formData[field] || ''} onChange={handleChange} />
-                </Form.Group>
-              </Col>
-            ),
-          )}
-        </Row>
+          <h3>State Taxes</h3>
+          <div className="grid grid-cols-3 gap-4">
+            {['ps_state_tax', 'ps_state_disability', 'ps_state_tax_addl'].map((field) => (
+              <FormField
+                key={field}
+                control={form.control}
+                name={field as keyof fin_payslip}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{field.name}</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+          </div>
 
-        <h3>Imputed Income</h3>
-        <Row>
-          {['imp_legal', 'imp_fitness', 'imp_ltd', 'imp_other'].map((field) => (
-            <Col key={field}>
-              <Form.Group controlId={field}>
-                <Form.Label>{field.replace(/_/g, ' ')}</Form.Label>
-                <Form.Control type="number" name={field} value={formData[field] || ''} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-          ))}
-        </Row>
+          <h3>Retirement Savings</h3>
+          <div className="grid grid-cols-3 gap-4">
+            {['ps_401k_pretax', 'ps_401k_aftertax', 'ps_401k_employer'].map((field) => (
+              <FormField
+                key={field}
+                control={form.control}
+                name={field as keyof fin_payslip}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{field.name}</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+          </div>
 
-        <h3>Federal Taxes Paid</h3>
-        <Row>
-          {['ps_oasdi', 'ps_medicare', 'ps_fed_tax', 'ps_fed_tax_addl', 'ps_fed_tax_refunded'].map((field) => (
-            <Col key={field}>
-              <Form.Group controlId={field}>
-                <Form.Label>{field.replace(/_/g, ' ')}</Form.Label>
-                <Form.Control type="number" name={field} value={formData[field] || ''} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-          ))}
-        </Row>
+          <h3>Pretax Deductions</h3>
+          <div className="grid grid-cols-3 gap-4">
+            {['ps_pretax_medical', 'ps_pretax_fsa', 'ps_pretax_vision', 'ps_pretax_dental'].map((field) => (
+              <FormField
+                key={field}
+                control={form.control}
+                name={field as keyof fin_payslip}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{field.name}</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
+          </div>
 
-        <h3>State Taxes</h3>
-        <Row>
-          {['ps_state_tax', 'ps_state_disability', 'ps_state_tax_addl'].map((field) => (
-            <Col key={field}>
-              <Form.Group controlId={field}>
-                <Form.Label>{field.replace(/_/g, ' ')}</Form.Label>
-                <Form.Control type="number" name={field} value={formData[field] || ''} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-          ))}
-        </Row>
-
-        <h3>Retirement Savings</h3>
-        <Row>
-          {['ps_401k_pretax', 'ps_401k_aftertax', 'ps_401k_employer'].map((field) => (
-            <Col key={field}>
-              <Form.Group controlId={field}>
-                <Form.Label>{field.replace(/_/g, ' ')}</Form.Label>
-                <Form.Control type="number" name={field} value={formData[field] || ''} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-          ))}
-        </Row>
-
-        <h3>Pretax Deductions</h3>
-        <Row>
-          {['ps_pretax_medical', 'ps_pretax_fsa', 'ps_pretax_vision', 'ps_pretax_dental'].map((field) => (
-            <Col key={field}>
-              <Form.Group controlId={field}>
-                <Form.Label>{field.replace(/_/g, ' ')}</Form.Label>
-                <Form.Control type="number" name={field} value={formData[field] || ''} onChange={handleChange} />
-              </Form.Group>
-            </Col>
-          ))}
-        </Row>
-
-        <Form.Group controlId="ps_is_estimated">
-          <Form.Check
-            type="checkbox"
-            label="Values are estimated"
-            checked={formData.ps_is_estimated}
-            onChange={handleCheckboxChange}
+          <FormField
+            control={form.control}
+            name="ps_is_estimated"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox checked={field.value ?? false} onCheckedChange={field.onChange} />
+                </FormControl>
+                <FormLabel>Values are estimated</FormLabel>
+              </FormItem>
+            )}
           />
-        </Form.Group>
 
-        <Button variant="primary" type="submit">
-          Save
-        </Button>
+          <Button type="submit">Save</Button>
+        </form>
       </Form>
-    </Container>
+    </div>
   )
 }
 

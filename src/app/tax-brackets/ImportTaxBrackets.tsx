@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import Button from 'react-bootstrap/Button'
+import { Button } from '@/components/ui/button'
 import currency from 'currency.js'
 import { z, ZodError } from 'zod'
 import { graduatedTaxSchema, tax_row } from '@/app/api/tax-brackets/schema'
@@ -46,6 +46,7 @@ export default function ImportTaxBrackets(props: { onImportClick: (data: tax_row
         style={{ width: '100%' }}
       />
       <Button
+        variant="outline"
         disabled={!data?.length}
         onClick={(e) => {
           e.preventDefault()

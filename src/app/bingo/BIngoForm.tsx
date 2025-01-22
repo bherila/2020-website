@@ -1,82 +1,77 @@
-import { useState } from 'react'
-import Form from 'react-bootstrap/Form'
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Button from 'react-bootstrap/Button'
+import { useForm, Controller } from 'react-hook-form'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Textarea } from '@/components/ui/textarea'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 
-function getInitialNumbers() {
-  const r = []
-  for (let i = 0; i < 99; ++i) {
-    r.push(i.toString())
-  }
-  return r
-}
+const formSchema = z.object({
+  itemsList: z.string().min(1, 'At least one item is required'),
+  activateFreeSpace: z.boolean().default(false),
+  numCards: z.number().min(1, 'Must generate at least 1 card').max(1000, 'Maximum of 1000 cards allowed'),
+})
 
-export interface BingoData {
-  itemsList: string[]
-  activateFreeSpace: boolean
-  numCards: number
-}
+export type BingoData = z.infer<typeof formSchema>
 
 const BingoForm = (props: { onSubmit: (data: BingoData) => void }) => {
-  const [activateFreeSpace, setActivateFreeSpace] = useState(false)
-  const [itemsList, setItemsList] = useState(getInitialNumbers().join('\n'))
-  const [numCards, setNumCards] = useState('')
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<BingoData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      itemsList: Array.from({ length: 99 }, (_, i) => i.toString()).join('\n'),
+      activateFreeSpace: false,
+      numCards: 10,
+    },
+  })
 
-  const handleGenerateCards = () => {
-    props.onSubmit({
-      itemsList: itemsList
-        .split('\n')
-        .map((r) => r.trim())
-        .filter(Boolean),
-      activateFreeSpace,
-      numCards: parseInt(numCards, 10),
-    })
+  const onSubmit = (data: BingoData) => {
+    props.onSubmit(data)
   }
 
   return (
-    <Container>
-      <Form>
-        <Form.Group as={Row} controlId="activateFreeSpace">
-          <Form.Label column sm={2}>
-            Activate free space?
-          </Form.Label>
-          <Col sm={10}>
-            <Form.Check
-              type="checkbox"
-              label="Yes"
-              checked={activateFreeSpace}
-              onChange={(e) => setActivateFreeSpace(e.target.checked)}
-            />
-          </Col>
-        </Form.Group>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mx-auto">
+      <Controller
+        name="activateFreeSpace"
+        control={control}
+        render={({ field }) => (
+          <div className="flex items-center space-x-2">
+            <Checkbox id="activateFreeSpace" checked={field.value} onCheckedChange={field.onChange} />
+            <Label htmlFor="activateFreeSpace">Activate free space?</Label>
+          </div>
+        )}
+      />
 
-        <Form.Group as={Row} controlId="itemsList">
-          <Form.Label column sm={2}>
-            List of items
-          </Form.Label>
-          <Col sm={10}>
-            <Form.Control as="textarea" rows={3} value={itemsList} onChange={(e) => setItemsList(e.target.value)} />
-          </Col>
-        </Form.Group>
+      <div className="space-y-2">
+        <Label htmlFor="itemsList">List of items</Label>
+        <Controller
+          name="itemsList"
+          control={control}
+          render={({ field }) => <Textarea {...field} id="itemsList" rows={3} className="min-h-[100px]" />}
+        />
+        {errors.itemsList && <p className="text-sm text-red-500">{errors.itemsList.message}</p>}
+      </div>
 
-        <Form.Group as={Row} controlId="numCards">
-          <Form.Label column sm={2}>
-            Number of cards to generate
-          </Form.Label>
-          <Col sm={10}>
-            <Form.Control type="number" value={numCards} onChange={(e) => setNumCards(e.target.value)} />
-          </Col>
-        </Form.Group>
+      <div className="space-y-2">
+        <Label htmlFor="numCards">Number of cards to generate</Label>
+        <Controller
+          name="numCards"
+          control={control}
+          render={({ field }) => (
+            <Input {...field} id="numCards" type="number" onChange={(e) => field.onChange(parseInt(e.target.value))} />
+          )}
+        />
+        {errors.numCards && <p className="text-sm text-red-500">{errors.numCards.message}</p>}
+      </div>
 
-        <Form.Group as={Row}>
-          <Col sm={{ span: 10, offset: 2 }}>
-            <Button onClick={handleGenerateCards}>Generate Bingo Cards</Button>
-          </Col>
-        </Form.Group>
-      </Form>
-    </Container>
+      <Button type="submit" className="w-full">
+        Generate Bingo Cards
+      </Button>
+    </form>
   )
 }
 

@@ -3,7 +3,10 @@
 import { useState, useMemo } from 'react'
 import { z } from 'zod'
 import productKeySchema from '@/lib/productKeySchema'
-import { Button, Table, Badge, Form } from 'react-bootstrap'
+import { Button } from '@/components/ui/button'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { ClearFilterButton } from '@/lib/ClearFilterButton'
 import { CDKey, EditCDKeyFormData } from './types'
 import { updateCDKey } from './actions'
@@ -122,100 +125,97 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
 
   return (
     <div>
-      <Table size="sm" striped>
-        <thead>
-          <tr>
-            <th onClick={() => handleSort('product_name')} style={{ cursor: 'pointer' }}>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead onClick={() => handleSort('product_name')} className="cursor-pointer">
               Product Name {sortField === 'product_name' && (sortDirection === 'asc' ? '↑' : '↓')}
-            </th>
-            <th onClick={() => handleSort('product_key')} style={{ cursor: 'pointer' }}>
+            </TableHead>
+            <TableHead onClick={() => handleSort('product_key')} className="cursor-pointer">
               License Key {sortField === 'product_key' && (sortDirection === 'asc' ? '↑' : '↓')}
-            </th>
-            <th onClick={() => handleSort('comment')} style={{ cursor: 'pointer' }}>
+            </TableHead>
+            <TableHead onClick={() => handleSort('comment')} className="cursor-pointer">
               Comment {sortField === 'comment' && (sortDirection === 'asc' ? '↑' : '↓')}
-            </th>
-            <th onClick={() => handleSort('used_on')} style={{ cursor: 'pointer' }}>
+            </TableHead>
+            <TableHead onClick={() => handleSort('used_on')} className="cursor-pointer">
               Used On {sortField === 'used_on' && (sortDirection === 'asc' ? '↑' : '↓')}
-            </th>
-            <th onClick={() => handleSort('computer_name')} style={{ cursor: 'pointer' }}>
+            </TableHead>
+            <TableHead onClick={() => handleSort('computer_name')} className="cursor-pointer">
               Computer Name {sortField === 'computer_name' && (sortDirection === 'asc' ? '↑' : '↓')}
-            </th>
-            <th>Actions</th>
-          </tr>
-          <tr>
-            <th className="position-relative">
-              <Form.Control
-                size="sm"
-                type="text"
-                placeholder="Filter product name..."
-                value={productNameFilter}
-                onChange={(e) => setProductNameFilter(e.target.value)}
-              />
-              {productNameFilter && (
-                <ClearFilterButton onClick={() => setProductNameFilter('')} ariaLabel="Clear product name filter" />
-              )}
-            </th>
-            <th className="position-relative">
-              <Form.Control
-                size="sm"
-                type="text"
-                placeholder="Filter product key..."
-                value={productKeyFilter}
-                onChange={(e) => setProductKeyFilter(e.target.value)}
-              />
-              {productKeyFilter && (
-                <ClearFilterButton onClick={() => setProductKeyFilter('')} ariaLabel="Clear product key filter" />
-              )}
-            </th>
-            <th className="position-relative">
-              <Form.Control
-                size="sm"
-                type="text"
-                placeholder="Filter comment..."
-                value={commentFilter}
-                onChange={(e) => setCommentFilter(e.target.value)}
-              />
-              {commentFilter && <ClearFilterButton onClick={() => setCommentFilter('')} ariaLabel="Clear comment filter" />}
-            </th>
-            <th></th>
-            <th className="position-relative">
-              <Form.Control
-                size="sm"
-                type="text"
-                placeholder="Filter computer name..."
-                value={computerNameFilter}
-                onChange={(e) => setComputerNameFilter(e.target.value)}
-              />
-              {computerNameFilter && (
-                <ClearFilterButton onClick={() => setComputerNameFilter('')} ariaLabel="Clear computer name filter" />
-              )}
-            </th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
+            </TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <div className="relative">
+                <Input
+                  placeholder="Filter product name..."
+                  value={productNameFilter}
+                  onChange={(e) => setProductNameFilter(e.target.value)}
+                />
+                {productNameFilter && (
+                  <ClearFilterButton onClick={() => setProductNameFilter('')} ariaLabel="Clear product name filter" />
+                )}
+              </div>
+            </TableCell>
+            <TableCell>
+              <div className="relative">
+                <Input
+                  placeholder="Filter product key..."
+                  value={productKeyFilter}
+                  onChange={(e) => setProductKeyFilter(e.target.value)}
+                />
+                {productKeyFilter && (
+                  <ClearFilterButton onClick={() => setProductKeyFilter('')} ariaLabel="Clear product key filter" />
+                )}
+              </div>
+            </TableCell>
+            <TableCell>
+              <div className="relative">
+                <Input
+                  placeholder="Filter comment..."
+                  value={commentFilter}
+                  onChange={(e) => setCommentFilter(e.target.value)}
+                />
+                {commentFilter && (
+                  <ClearFilterButton onClick={() => setCommentFilter('')} ariaLabel="Clear comment filter" />
+                )}
+              </div>
+            </TableCell>
+            <TableCell></TableCell>
+            <TableCell>
+              <div className="relative">
+                <Input
+                  placeholder="Filter computer name..."
+                  value={computerNameFilter}
+                  onChange={(e) => setComputerNameFilter(e.target.value)}
+                />
+                {computerNameFilter && (
+                  <ClearFilterButton onClick={() => setComputerNameFilter('')} ariaLabel="Clear computer name filter" />
+                )}
+              </div>
+            </TableCell>
+            <TableCell></TableCell>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {processedRows.map((key) => (
-            <tr key={key.product_key}>
-              <td>{highlightMatch(key.product_name || 'Unknown Product', productNameFilter)}</td>
-              <td style={{ whiteSpace: 'nowrap', fontFamily: 'monospace' }}>
+            <TableRow key={key.product_key}>
+              <TableCell>{highlightMatch(key.product_name || 'Unknown Product', productNameFilter)}</TableCell>
+              <TableCell className="whitespace-nowrap font-mono">
                 {key.product_key && key.product_key.length > 50
                   ? renderProductKey(key.product_key)
                   : highlightMatch(key.product_key || '', productKeyFilter)}
-              </td>
-              <td>
+              </TableCell>
+              <TableCell>
                 {key.comment}
-                {key.product_id && (
-                  <Badge bg="secondary" className="ms-2">
-                    ID: {key.product_id}
-                  </Badge>
-                )}
-              </td>
-              <td style={{ whiteSpace: 'nowrap' }}>{key.used_on?.toISOString()?.slice(0, 10)}</td>
-              <td>{key.computer_name}</td>
-              <td>
+                {key.product_id && <Badge className="ml-2">ID: {key.product_id}</Badge>}
+              </TableCell>
+              <TableCell className="whitespace-nowrap">{key.used_on?.toISOString()?.slice(0, 10)}</TableCell>
+              <TableCell>{key.computer_name}</TableCell>
+              <TableCell>
                 <Button
-                  size="sm"
-                  variant="outline-primary"
+                  variant="outline"
                   onClick={() => {
                     setSelectedKey(key)
                     setShowEditModal(true)
@@ -223,10 +223,10 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
                 >
                   Edit
                 </Button>
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
+        </TableBody>
       </Table>
 
       {showEditModal && selectedKey && (

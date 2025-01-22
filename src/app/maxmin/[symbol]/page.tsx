@@ -2,9 +2,9 @@ import 'server-only'
 
 import { Metadata, ResolvingMetadata } from 'next'
 import { redirect } from 'next/navigation'
-import Container from 'react-bootstrap/Container'
 import MinMaxClientDataLoader from './MinMaxClientDataLoader'
 import requireSession from '@/server_lib/requireSession'
+import Container from '@/components/container'
 
 interface Props {
   params: Promise<{ symbol: string }>

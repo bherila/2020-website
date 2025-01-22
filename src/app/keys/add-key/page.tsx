@@ -3,9 +3,6 @@ import { getSession } from '@/server_lib/session'
 import { redirect } from 'next/navigation'
 import AuthRoutes from '@/app/auth/AuthRoutes'
 import MainTitle from '@/components/main-title'
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
 import CdKeysTabBar from '@/app/keys/CdKeysTabBar'
 import AddKeyClientComponent from './AddKeyClientComponent'
 import addProductKey from './addProductKey'
@@ -21,14 +18,12 @@ export default async function AddKeyPage() {
     .filter((r) => typeof r === 'string')
 
   return (
-    <Container>
-      <Row>
-        <Col xs={12}>
-          <MainTitle>Add License Key</MainTitle>
-          <CdKeysTabBar />
-          <AddKeyClientComponent addProductKey={addProductKey} productNames={productNames} />
-        </Col>
-      </Row>
-    </Container>
+    <div className="container mx-auto px-4">
+      <div className="mt-8">
+        <MainTitle>Add License Key</MainTitle>
+        <CdKeysTabBar />
+        <AddKeyClientComponent addProductKey={addProductKey} productNames={productNames} />
+      </div>
+    </div>
   )
 }

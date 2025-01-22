@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { Button } from 'react-bootstrap'
 import { deleteRowsWithOnlyOneColumn, deleteUniformColumns } from '@/lib/data2d'
+import { Button } from '@/components/ui/button'
 
 export default function CleanupDataButton(props: { csvData: string[][]; setCsvData: (newData: string[][]) => void }) {
   const { csvData, setCsvData } = props

@@ -1,8 +1,7 @@
 'use client'
 
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-
-import { Table } from 'react-bootstrap'
+import { Table, TableBody, TableHead, TableRow, TableHeader, TableCell } from '@/components/ui/table'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -19,42 +18,42 @@ export function DataTable<TData, TValue>({ columns, data, onRowClick }: DataTabl
 
   return (
     <div className="rounded-md border">
-      <Table striped bordered hover>
-        <thead>
+      <Table>
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <th key={header.id}>
+                  <TableHead key={header.id}>
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
+                  </TableHead>
                 )
               })}
             </tr>
           ))}
-        </thead>
-        <tbody>
+        </TableHeader>
+        <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <tr
+              <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && 'selected'}
                 onClick={() => typeof onRowClick === 'function' && onRowClick(row.original)}
                 style={{ cursor: onRowClick ? 'pointer' : 'default' }}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                  <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                 ))}
-              </tr>
+              </TableRow>
             ))
           ) : (
-            <tr>
-              <td colSpan={columns.length} className="h-24 text-center">
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
                 No results.
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
+        </TableBody>
       </Table>
     </div>
   )

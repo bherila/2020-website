@@ -1,28 +1,26 @@
 'use client'
 import { usePathname } from 'next/navigation'
-import Nav from 'react-bootstrap/Nav'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Link from 'next/link'
+
+const navItems = [
+  { name: 'View', uri: '/phr/labs-raw' },
+  { name: 'Import', uri: '/phr/labs-raw/import' },
+]
 
 export default function LabsRawNavigation() {
   const pathname = usePathname()
-
   const normalizedPathname = pathname.replace(/\/+$/, '')
 
   return (
-    <Nav variant="tabs" className="mb-3">
-      <Nav.Item>
-        <Link href="/phr/labs-raw" className={`nav-link ${normalizedPathname === '/phr/labs-raw' ? 'active' : ''}`}>
-          View
-        </Link>
-      </Nav.Item>
-      <Nav.Item>
-        <Link
-          href="/phr/labs-raw/import"
-          className={`nav-link ${normalizedPathname === '/phr/labs-raw/import' ? 'active' : ''}`}
-        >
-          Import
-        </Link>
-      </Nav.Item>
-    </Nav>
+    <Tabs defaultValue={normalizedPathname} className="mb-3">
+      <TabsList>
+        {navItems.map((item) => (
+          <TabsTrigger key={item.uri} value={item.uri} asChild>
+            <Link href={item.uri}>{item.name}</Link>
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </Tabs>
   )
 }

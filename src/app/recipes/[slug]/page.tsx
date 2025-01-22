@@ -1,13 +1,20 @@
 import Container from '@/components/container'
 import { getListOfRecipes, getRecipeContent } from '@/helpers/postHelpers'
 import ReactMarkdown from 'react-markdown'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
+import MainTitle from '@/components/main-title'
 
 export async function generateStaticParams() {
   const posts = getListOfRecipes()
   return posts.map((post) => ({
-    slug: post,
+    slug: post.slug,
   }))
 }
 
@@ -15,28 +22,38 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
   const { content, data } = getRecipeContent((await params).slug)
   return (
     <Container>
-      <Row className="pt-5 pb-3">
-        <a href="../">&laquo; Back to Recipes</a>
-      </Row>
-      <Row className="pb-4">
-        <h1>{data.title}</h1>
-      </Row>
-      <Row>
-        <Col sm={4} xs={12}>
-          <h2 style={{ fontSize: '150%' }}>Ingredients</h2>
-          <ul>
+      <div className="py-4">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/recipes">Recipes</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{data.title}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+      <MainTitle>{data.title}</MainTitle>
+      <div className="flex flex-col md:flex-row">
+        <div className="sm:w-64 p-2">
+          <h2 className="text-2xl font-bold mb-4">Ingredients</h2>
+          <ul className="list-disc pl-5 space-y-2">
             {data.ingredients.map((x: string, i: number) => (
               <li key={i}>{x}</li>
             ))}
           </ul>
-        </Col>
-        <Col sm={8} xs={12}>
-          <h2 className="d-none d-sm-block" style={{ fontSize: '150%' }}>
-            &nbsp;
-          </h2>
+        </div>
+        <div className="p-2">
+          <h2 className="text-2xl font-bold mb-4">Instructions</h2>
           <ReactMarkdown>{content}</ReactMarkdown>
-        </Col>
-      </Row>
+        </div>
+      </div>
     </Container>
   )
 }

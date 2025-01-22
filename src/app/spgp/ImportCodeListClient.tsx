@@ -1,28 +1,36 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ParsedSPGPPassType } from '@/app/spgp/SPGPPassTypes'
-import Form from 'react-bootstrap/Form'
 import { fetchWrapper } from '@/lib/fetchWrapper'
-import Card from 'react-bootstrap/Card'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useForm } from 'react-hook-form'
 
 export default function ImportCodeListClient({ passTypes }: { passTypes: ParsedSPGPPassType[] }) {
-  const [tsv, setTsv] = useState<string>('')
-  const [sel, setSel] = useState<string>('')
+  const { register, handleSubmit, setValue, watch } = useForm({
+    defaultValues: {
+      tsv: '',
+      selectedPassType: '',
+    },
+  })
+  const tsv = watch('tsv')
+  const selectedPassType = watch('selectedPassType')
 
-  const errors = new Set<string>()
   const data = tsv
     .split('\n')
     .map((line) => line.trim().split(' ')[0].trim())
     .filter(Boolean)
 
   const [submitting, setSubmitting] = useState(false)
-  const submitForm = async () => {
+  const onSubmit = async () => {
     setSubmitting(true)
     try {
       await fetchWrapper.post('/api/spgp/', {
         action: 'import-codes',
-        passTypeID: sel,
+        passTypeID: selectedPassType,
         promoCodes: data,
       })
     } finally {
@@ -32,35 +40,35 @@ export default function ImportCodeListClient({ passTypes }: { passTypes: ParsedS
 
   return (
     <Card>
-      <Card.Header>Import codes</Card.Header>
-      <Card.Body>
-        <Form
-          onSubmit={(e) => {
-            e.preventDefault()
-            submitForm()
-          }}
-        >
-          <select disabled={submitting} value={sel} onChange={(x) => setSel(x.currentTarget.value)}>
-            {passTypes?.map((pt) => (
-              <option key={pt.passtype_id} value={pt.passtype_id}>
-                {pt.display_name} exp {pt.expiry}
-              </option>
-            ))}
-          </select>
-          <button type={'submit'} disabled={submitting}>
-            Import {data.length} code(s)
-          </button>
-          <textarea
+      <CardHeader>
+        <CardTitle>Import codes</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <Select
+            value={selectedPassType}
+            onValueChange={(value) => setValue('selectedPassType', value)}
             disabled={submitting}
-            name="import"
-            rows={10}
-            style={{ width: '100%' }}
-            wrap="nowrap"
-            value={tsv ?? ''}
-            onChange={(e) => setTsv(e.currentTarget.value)}
-          />
-        </Form>
-      </Card.Body>
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select pass type" />
+            </SelectTrigger>
+            <SelectContent>
+              {passTypes?.map((pt) => (
+                <SelectItem key={pt.passtype_id} value={pt.passtype_id.toString()}>
+                  {pt.display_name} exp {pt.expiry}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Textarea {...register('tsv')} rows={10} placeholder="Paste codes here (one per line)" disabled={submitting} />
+
+          <Button type="submit" disabled={submitting}>
+            {submitting ? 'Importing...' : `Import ${data.length} code(s)`}
+          </Button>
+        </form>
+      </CardContent>
     </Card>
   )
 }

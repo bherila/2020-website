@@ -5,7 +5,17 @@ import matter from 'gray-matter'
 export function getListOfRecipes() {
   const folder = path.join(process.cwd(), 'posts/recipes')
   const files = fs.readdirSync(folder)
-  return files.filter((file) => file.endsWith('.md')).map((filename) => filename.replace('.md', ''))
+  const recipes = files
+    .filter((file) => file.endsWith('.md'))
+    .map((filename) => {
+      const content = getRecipeContent(filename.replace('.md', ''))
+      return {
+        slug: filename.replace('.md', ''),
+        title: content.data.title,
+      }
+    })
+    .sort((a, b) => a.title.localeCompare(b.title))
+  return recipes
 }
 
 export function getRecipeContent(slug: string): matter.GrayMatterFile<string> {

@@ -1,7 +1,12 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { useForm } from 'react-hook-form'
 
 type AddProductKeyProps = {
   addProductKey: (formData: FormData) => Promise<void>
@@ -9,130 +14,88 @@ type AddProductKeyProps = {
 }
 
 export default function AddKeyClientComponent({ addProductKey, productNames }: AddProductKeyProps) {
-  const [validated, setValidated] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [selectedProductName, setSelectedProductName] = useState<string[]>([])
+  const form = useForm()
 
-  const handleProductNameChange = (selected: any[]) => {
-    // If it's a new option, take the first item, otherwise use the selected value
-    const newProductName = selected.length > 0 ? (selected[0] as { label: string }).label || selected[0] : []
-    setSelectedProductName(newProductName ? [newProductName] : [])
-  }
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const form = event.currentTarget
-
-    // Reset previous states
-    setError(null)
-    setValidated(false)
-
-    if (form.checkValidity() === false || selectedProductName.length === 0) {
-      event.stopPropagation()
-      setValidated(true)
-      return
-    }
-
-    const formData = new FormData(form)
-    formData.set('productName', selectedProductName[0])
-
+  const handleSubmit = async () => {
     try {
-      // Set submitting state to prevent multiple submissions
       setIsSubmitting(true)
-
+      const formData = new FormData()
+      Object.entries(form.getValues()).forEach(([key, value]) => {
+        if (value) formData.set(key, value)
+      })
       await addProductKey(formData)
     } catch (error) {
-      // Handle and display error
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
-
       setError(errorMessage)
       console.error('Error adding product key:', error)
     } finally {
-      // Always reset submitting state
       setIsSubmitting(false)
     }
   }
 
   return (
-    <Container className="mt-4">
-      <Row className="justify-content-md-center">
-        <Col md={8}>
-          {error && (
-            <Alert variant="danger" onClose={() => setError(null)} dismissible>
-              {error}
-            </Alert>
-          )}
+    <div className="max-w-2xl mx-auto mt-8 px-4">
+      {error && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
-          <Form noValidate validated={validated} onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="productName">
-              <Form.Label>Product Name</Form.Label>
-              {/* <Typeahead
-                id="product-name-typeahead"
-                labelKey="name"
-                onChange={handleProductNameChange}
-                options={productNames}
-                placeholder="Select or enter product name"
-                selected={selectedProductName}
-                allowNew
-                newSelectionPrefix="Create new product: "
-                disabled={isSubmitting}
-              /> */}
-              <input
-                type="text"
-                name="productName"
-                placeholder="Enter product name"
-                value={selectedProductName[0] || ''}
-                onChange={(e) => setSelectedProductName([e.target.value])}
-                required
-                disabled={isSubmitting}
-              />
-              {selectedProductName.length === 0 && validated && (
-                <div className="text-danger small">Please provide a product name.</div>
-              )}
-            </Form.Group>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="productName">Product Name</Label>
+          <Input
+            id="productName"
+            placeholder="Enter product name"
+            {...form.register('productName', { required: true })}
+            disabled={isSubmitting}
+          />
+        </div>
 
-            <Form.Group className="mb-3" controlId="productKey">
-              <Form.Label>License Key</Form.Label>
-              <Form.Control
-                as="textarea"
-                name="productKey"
-                rows={4}
-                placeholder="Enter license key"
-                style={{ resize: 'vertical', whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}
-                required
-                disabled={isSubmitting}
-              />
-              <Form.Control.Feedback type="invalid">Please provide a license key.</Form.Control.Feedback>
-            </Form.Group>
+        <div className="space-y-2">
+          <Label htmlFor="productKey">License Key</Label>
+          <Textarea
+            id="productKey"
+            placeholder="Enter license key"
+            rows={4}
+            {...form.register('productKey', { required: true })}
+            disabled={isSubmitting}
+          />
+        </div>
 
-            <Form.Group className="mb-3" controlId="usedOn">
-              <Form.Label>Used On (Optional)</Form.Label>
-              <Form.Control type="date" name="usedOn" placeholder="Select date when key was used" disabled={isSubmitting} />
-            </Form.Group>
+        <div className="space-y-2">
+          <Label htmlFor="usedOn">Used On (Optional)</Label>
+          <Input id="usedOn" type="date" {...form.register('usedOn')} disabled={isSubmitting} />
+        </div>
 
-            <Form.Group className="mb-3" controlId="computerName">
-              <Form.Label>Computer Name (Optional)</Form.Label>
-              <Form.Control type="text" name="computerName" placeholder="Enter computer name" disabled={isSubmitting} />
-            </Form.Group>
+        <div className="space-y-2">
+          <Label htmlFor="computerName">Computer Name (Optional)</Label>
+          <Input
+            id="computerName"
+            placeholder="Enter computer name"
+            {...form.register('computerName')}
+            disabled={isSubmitting}
+          />
+        </div>
 
-            <Form.Group className="mb-3" controlId="comment">
-              <Form.Label>Comment (Optional)</Form.Label>
-              <Form.Control
-                as="textarea"
-                name="comment"
-                rows={3}
-                placeholder="Enter any additional notes"
-                disabled={isSubmitting}
-              />
-            </Form.Group>
+        <div className="space-y-2">
+          <Label htmlFor="comment">Comment (Optional)</Label>
+          <Textarea
+            id="comment"
+            placeholder="Enter any additional notes"
+            rows={3}
+            {...form.register('comment')}
+            disabled={isSubmitting}
+          />
+        </div>
 
-            <Button variant="primary" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Adding License Key...' : 'Add License Key'}
-            </Button>
-          </Form>
-        </Col>
-      </Row>
-    </Container>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Adding License Key...' : 'Add License Key'}
+        </Button>
+      </form>
+    </div>
   )
 }

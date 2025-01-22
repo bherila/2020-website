@@ -2,7 +2,7 @@ import 'server-only'
 import { getSession } from '@/server_lib/session'
 import { redirect } from 'next/navigation'
 import AuthRoutes from '@/app/auth/AuthRoutes'
-import { Container, Row, Col } from 'react-bootstrap'
+import Container from '@/components/container'
 import AccountNavigation from '../AccountNavigation'
 import { sql } from '@/server_lib/db'
 
@@ -24,17 +24,9 @@ export default async function DuplicatesPage({ params }: { params: Promise<{ acc
 
   return (
     <Container fluid>
-      <Row>
-        <Col xs={12}>
-          <AccountNavigation accountId={parseInt(_param.account_id)} activeTab="duplicates" accountName={account_name} />
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={12}>
-          <h2>Duplicate Transactions</h2>
-          <p>Coming soon: Tools to identify and manage duplicate transactions.</p>
-        </Col>
-      </Row>
+      <AccountNavigation accountId={parseInt(_param.account_id)} activeTab="duplicates" accountName={account_name} />
+      <h2>Duplicate Transactions</h2>
+      <p>Coming soon: Tools to identify and manage duplicate transactions.</p>
     </Container>
   )
 }

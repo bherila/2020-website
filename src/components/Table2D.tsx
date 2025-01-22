@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import Table from 'react-bootstrap/Table'
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table'
 
 interface Props {
   data: string[][]
@@ -25,37 +25,37 @@ const Table2D: React.FC<Props> = ({ data, onColumnClick }) => {
   }
 
   return (
-    <Table striped bordered hover size="sm">
-      <thead>
-        <tr>
+    <Table>
+      <TableHeader>
+        <TableRow>
           {data[0].map((header, columnIndex) => (
-            <th
+            <TableHead
               key={columnIndex}
               onMouseOver={() => handleHeaderHover(columnIndex)}
               onClick={() => handleHeaderClick(columnIndex)}
               className={highlightedColumn === columnIndex ? 'table-active' : ''}
             >
               {header}
-            </th>
+            </TableHead>
           ))}
-        </tr>
-      </thead>
-      <tbody>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
         {data.slice(1).map((row, rowIndex) => (
-          <tr key={rowIndex}>
+          <TableRow key={rowIndex}>
             {row.map((cell, columnIndex) => (
-              <td
+              <TableCell
                 key={columnIndex}
                 onMouseOver={() => handleHeaderHover(columnIndex)}
                 onClick={() => handleHeaderClick(columnIndex)}
                 className={highlightedColumn === columnIndex ? 'table-active' : ''}
               >
                 {cell}
-              </td>
+              </TableCell>
             ))}
-          </tr>
+          </TableRow>
         ))}
-      </tbody>
+      </TableBody>
     </Table>
   )
 }

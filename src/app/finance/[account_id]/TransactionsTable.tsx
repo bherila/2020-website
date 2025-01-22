@@ -1,7 +1,5 @@
 'use client'
-import Table from 'react-bootstrap/Table'
 import { useState, useMemo } from 'react'
-import Form from 'react-bootstrap/Form'
 import currency from 'currency.js'
 import { AccountLineItem } from '@/lib/AccountLineItem'
 
@@ -122,7 +120,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
   const totalAmount = sortedData.reduce((sum, row) => sum.add(currency(row.t_amt || 0)), currency(0))
 
   return (
-    <Table size="sm" bordered striped style={{ fontSize: '90%' }}>
+    <table style={{ fontSize: '90%' }}>
       <thead>
         <tr>
           <th onClick={() => handleSort('t_date')} style={{ cursor: 'pointer' }}>
@@ -198,8 +196,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
         </tr>
         <tr>
           <th className="position-relative" style={{ width: '120px' }}>
-            <Form.Control
-              size="sm"
+            <input
               type="text"
               placeholder="Filter date..."
               value={dateFilter}
@@ -209,8 +206,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
           </th>
           {!isTypeColumnEmpty && (
             <th className="position-relative" style={{ width: '100px' }}>
-              <Form.Control
-                size="sm"
+              <input
                 type="text"
                 placeholder="Filter type..."
                 value={typeFilter}
@@ -220,8 +216,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
             </th>
           )}
           <th className="position-relative">
-            <Form.Control
-              size="sm"
+            <input
               type="text"
               placeholder="Filter description..."
               value={descriptionFilter}
@@ -238,8 +233,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
           <th></th>
           {!isCategoryColumnEmpty && (
             <th className="position-relative" style={{ width: '140px' }}>
-              <Form.Control
-                size="sm"
+              <input
                 type="text"
                 placeholder="Filter category..."
                 value={categoryFilter}
@@ -252,8 +246,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
           )}
           {!isCusipColumnEmpty && (
             <th className="position-relative" style={{ width: '100px' }}>
-              <Form.Control
-                size="sm"
+              <input
                 type="text"
                 placeholder="Filter CUSIP..."
                 value={cusipFilter}
@@ -264,8 +257,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
           )}
           {!isSymbolColumnEmpty && (
             <th className="position-relative" style={{ width: '100px' }}>
-              <Form.Control
-                size="sm"
+              <input
                 type="text"
                 placeholder="Filter symbol..."
                 value={symbolFilter}
@@ -276,8 +268,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
           )}
           {!isOptionExpiryColumnEmpty && (
             <th className="position-relative" style={{ width: '100px' }}>
-              <Form.Control
-                size="sm"
+              <input
                 type="text"
                 placeholder="Filter option expiry..."
                 value={optExpirationFilter}
@@ -290,8 +281,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
           )}
           {!isOptionTypeColumnEmpty && (
             <th className="position-relative" style={{ width: '100px' }}>
-              <Form.Control
-                size="sm"
+              <input
                 type="text"
                 placeholder="Filter option type..."
                 value={optTypeFilter}
@@ -305,8 +295,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
           {!isStrikeColumnEmpty && <th></th>}
           {!isMemoColumnEmpty && (
             <th className="position-relative" style={{ width: '200px' }}>
-              <Form.Control
-                size="sm"
+              <input
                 type="text"
                 placeholder="Filter memo..."
                 value={memoFilter}
@@ -498,6 +487,6 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
           {onDeleteTransaction && <td></td>}
         </tr>
       </tfoot>
-    </Table>
+    </table>
   )
 }

@@ -2,13 +2,15 @@ import 'server-only'
 import { getSession } from '@/server_lib/session'
 import { redirect } from 'next/navigation'
 import AuthRoutes from '@/app/auth/AuthRoutes'
-import { Container, Row, Col, Button } from 'react-bootstrap'
 import AccountNavigation from '../AccountNavigation'
 import MaintenanceClient from './MaintenanceClient'
 import { sql } from '@/server_lib/db'
 import { revalidatePath } from 'next/cache'
 import TransactionsTable from '../TransactionsTable'
 import { getLineItemsByAccount } from '@/server_lib/AccountLineItem.server'
+import Container from '@/components/container'
+import MainTitle from '@/components/main-title'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default async function MaintenancePage({ params }: { params: Promise<{ account_id: string }> }) {
   const uid = (await getSession())?.uid
@@ -72,35 +74,31 @@ export default async function MaintenancePage({ params }: { params: Promise<{ ac
 
   return (
     <Container fluid>
-      <Row>
-        <Col xs={12}>
-          <AccountNavigation accountId={parseInt(account_id)} activeTab="maintenance" accountName={account_name} />
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={12}>
-          <h2>Account Maintenance</h2>
-          <MaintenanceClient
-            accountId={parseInt(account_id)}
-            accountName={account_name}
-            handleRename={handleRename}
-            handleDelete={handleDelete}
-          />
-        </Col>
-      </Row>
-
-      <Row className="mb-4">
-        <Col>
-          <h3>View Deleted Transactions</h3>
-          {deletedTransactions.length > 0 ? (
-            <div className="mt-3">
-              <TransactionsTable data={deletedTransactions} />
-            </div>
-          ) : (
-            <p className="mt-3">No deleted transactions found.</p>
-          )}
-        </Col>
-      </Row>
+      <AccountNavigation accountId={parseInt(account_id)} activeTab="maintenance" accountName={account_name} />
+      <Container>
+        <MainTitle>Account Maintenance</MainTitle>
+        <MaintenanceClient
+          accountId={parseInt(account_id)}
+          accountName={account_name}
+          handleRename={handleRename}
+          handleDelete={handleDelete}
+        />
+        <hr />
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle>Deleted Transactions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {deletedTransactions.length > 0 ? (
+              <div className="mt-3">
+                <TransactionsTable data={deletedTransactions} />
+              </div>
+            ) : (
+              <p className="mt-3">No deleted transactions found.</p>
+            )}
+          </CardContent>
+        </Card>
+      </Container>
     </Container>
   )
 }

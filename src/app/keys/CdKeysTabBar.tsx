@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Nav } from 'react-bootstrap'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -27,14 +27,16 @@ export default function CdKeysTabBar() {
   ]
 
   return (
-    <Nav variant="tabs" className="mt-4">
-      {tabs.map((tab) => (
-        <Nav.Item key={tab.href}>
-          <Link href={tab.href} passHref legacyBehavior>
-            <Nav.Link active={tab.active}>{tab.label}</Nav.Link>
+    <Tabs defaultValue={tabs.find((tab) => tab.active)?.href} className="mt-4">
+      <TabsList>
+        {tabs.map((tab) => (
+          <Link href={tab.href} key={tab.href} passHref legacyBehavior>
+            <TabsTrigger value={tab.href} data-state={tab.active ? 'active' : 'inactive'}>
+              {tab.label}
+            </TabsTrigger>
           </Link>
-        </Nav.Item>
-      ))}
-    </Nav>
+        ))}
+      </TabsList>
+    </Tabs>
   )
 }

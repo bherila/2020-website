@@ -1,9 +1,7 @@
 'use client'
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
 import { DragEvent, FormEvent, useState } from 'react'
 import { parseEntities } from '@/app/payslip/payslipSchemaReducer'
+import Container from '@/components/container'
 
 export default function PayslipJsonDebugPage() {
   const [json, setJson] = useState('{}')
@@ -36,34 +34,37 @@ export default function PayslipJsonDebugPage() {
 
   return (
     <Container>
-      <Row>
-        <div
-          onDrop={handleDrop}
-          style={{
-            border: '2px dashed #666',
-            padding: '10px',
-            borderRadius: '5px',
-            width: '100%',
-          }}
-        >
-          <p>You can drop a JSON file in here</p>
+      <div
+        onDrop={handleDrop}
+        style={{
+          border: '2px dashed #666',
+          padding: '10px',
+          borderRadius: '5px',
+          width: '100%',
+        }}
+      >
+        <p>You can drop a JSON file in here</p>
+        <textarea
+          onDragOver={handleDragOver}
+          onChange={(e) => setJson(e.currentTarget.value)}
+          value={json}
+          rows={20}
+          style={{ width: '100%' }}
+        />
+      </div>
+      <div className="flex flex-row">
+        <div className="w-1/2 pr-2">
+          <textarea readOnly value={entitles} rows={15} className="w-full p-2 border-2 border-gray-300 rounded" />
+        </div>
+        <div className="w-1/2 pl-2">
           <textarea
-            onDragOver={handleDragOver}
-            onChange={(e) => setJson(e.currentTarget.value)}
-            value={json}
+            readOnly
+            value={JSON.stringify(parsed, null, 2)}
             rows={20}
-            style={{ width: '100%' }}
+            className="w-full p-2 border-2 border-gray-300 rounded"
           />
         </div>
-      </Row>
-      <Row>
-        <Col xs={6}>
-          <textarea readOnly value={entitles} rows={15} style={{ width: '100%' }} />
-        </Col>
-        <Col xs={6}>
-          <textarea readOnly value={JSON.stringify(parsed, null, 2)} rows={20} style={{ width: '100%' }} />
-        </Col>
-      </Row>
+      </div>
     </Container>
   )
 }

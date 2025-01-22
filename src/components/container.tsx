@@ -1,12 +1,23 @@
-'use client'
 import * as React from 'react'
-import RBSContainer from 'react-bootstrap/Container'
+import cn from 'classnames'
 
-export default function Container(props: { children?: React.ReactNode; fluid?: boolean }): React.ReactElement {
-  const { children, ...remainingProps } = props
+export default function Container(props: {
+  className?: string
+  children?: React.ReactNode
+  fluid?: boolean
+}): React.ReactElement {
   return (
-    <main>
-      <RBSContainer {...remainingProps}>{children}</RBSContainer>
+    <main
+      className={cn(
+        'mt-16',
+        {
+          'container mx-auto px-4': !props.fluid,
+          'w-full': props.fluid,
+        },
+        props.className,
+      )}
+    >
+      {props.children}
     </main>
   )
 }

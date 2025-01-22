@@ -1,9 +1,7 @@
 'use client'
 
 import { useTheme } from './ThemeProvider'
-import Nav from 'react-bootstrap/Nav'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import Tooltip from 'react-bootstrap/Tooltip'
+
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
 
@@ -18,10 +16,12 @@ export function ThemeToggle() {
   const label = `Theme: ${theme}`
 
   return (
-    <OverlayTrigger placement="bottom" overlay={<Tooltip>{label}</Tooltip>}>
-      <Nav.Link onClick={cycleTheme} aria-label={label}>
-        {icon}
-      </Nav.Link>
-    </OverlayTrigger>
+    <button
+      onClick={cycleTheme}
+      aria-label={label}
+      className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+    >
+      {icon}
+    </button>
   )
 }

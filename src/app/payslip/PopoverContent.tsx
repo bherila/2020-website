@@ -1,40 +1,42 @@
-import { useState } from 'react'
-import { Button, Modal } from 'react-bootstrap'
+'use client'
 
-interface CustomModalProps {
-  show: boolean
-  onHide: () => void
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
+
+interface CustomDialogProps {
+  open: boolean
+  onClose: () => void
   value: any
 }
 
-const CustomModal: React.FC<CustomModalProps> = ({ show, onHide, value }) => {
+const CustomDialog: React.FC<CustomDialogProps> = ({ open, onClose, value }) => {
   return (
-    <Modal show={show} onHide={onHide} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>Detail view</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <textarea
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>Detail view</DialogTitle>
+        </DialogHeader>
+        <Textarea
           readOnly
-          style={{ width: '100%', fontFamily: 'Atkinson Hyperlegible' }}
-          rows={20}
+          className="font-mono h-[400px]"
           value={typeof value === 'string' ? value : JSON.stringify(value, null, 2)}
         />
-      </Modal.Body>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   )
 }
 
 function PopoverContent(props: { content: any }) {
-  const [showModal, setShowModal] = useState(false)
-
-  const handleShowModal = () => setShowModal(true)
-  const handleHideModal = () => setShowModal(false)
+  const [open, setOpen] = useState(false)
 
   return (
     <div>
-      <button onClick={handleShowModal}>Show Modal</button>
-      {showModal && <CustomModal show={showModal} onHide={handleHideModal} value={props.content} />}
+      <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
+        View Details
+      </Button>
+      <CustomDialog open={open} onClose={() => setOpen(false)} value={props.content} />
     </div>
   )
 }

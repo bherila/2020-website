@@ -1,41 +1,46 @@
 'use client'
-import { Nav } from 'react-bootstrap'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+
+const tabs = [
+  {
+    name: 'List',
+    href: '/payslip',
+    active: (path: string) =>
+      path.startsWith('/payslip') && !path.startsWith('/payslip/import') && !path.startsWith('/payslip/config'),
+  },
+  {
+    name: 'Import PDF',
+    href: '/payslip/import/pdf',
+    active: (path: string) => path.startsWith('/payslip/import/pdf'),
+  },
+  {
+    name: 'Import JSON',
+    href: '/payslip/import/json',
+    active: (path: string) => path.startsWith('/payslip/import/json'),
+  },
+  {
+    name: 'Configuration',
+    href: '/payslip/config',
+    active: (path: string) => path.startsWith('/payslip/config'),
+  },
+]
 
 export default function PayslipNavigation() {
   const pathname = usePathname()
 
   return (
-    <Nav variant="tabs" className="mb-3 container-fluid mt-4 justify-content-center">
-      <Nav.Item>
-        <Nav.Link
-          as={Link}
-          href="/payslip"
-          active={
-            pathname.startsWith('/payslip') &&
-            !pathname.startsWith('/payslip/import') &&
-            !pathname.startsWith('/payslip/config')
-          }
-        >
-          List
-        </Nav.Link>
-      </Nav.Item>
-      <Nav.Item>
-        <Nav.Link as={Link} href="/payslip/import/pdf" active={pathname.startsWith('/payslip/import/pdf')}>
-          Import PDF
-        </Nav.Link>
-      </Nav.Item>
-      <Nav.Item>
-        <Nav.Link as={Link} href="/payslip/import/json" active={pathname.startsWith('/payslip/import/json')}>
-          Import JSON
-        </Nav.Link>
-      </Nav.Item>
-      <Nav.Item>
-        <Nav.Link as={Link} href="/payslip/config" active={pathname.startsWith('/payslip/config')}>
-          Configuration
-        </Nav.Link>
-      </Nav.Item>
-    </Nav>
+    <Tabs defaultValue={tabs.find((tab) => tab.active(pathname))?.href} className="mb-3 mt-4 w-full">
+      <TabsList className="w-full">
+        {tabs.map((tab) => (
+          <Link href={tab.href} key={tab.href} passHref legacyBehavior>
+            <TabsTrigger value={tab.href} data-state={tab.active(pathname) ? 'active' : 'inactive'}>
+              {tab.name}
+            </TabsTrigger>
+          </Link>
+        ))}
+      </TabsList>
+    </Tabs>
   )
 }

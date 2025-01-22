@@ -2,10 +2,10 @@ import 'server-only'
 import { getSession } from '@/server_lib/session'
 import { redirect } from 'next/navigation'
 import AuthRoutes from '@/app/auth/AuthRoutes'
-import { Container, Row, Col } from 'react-bootstrap'
 import AccountNavigation from '../AccountNavigation'
 import { sql } from '@/server_lib/db'
 import SummaryClient from './SummaryClient'
+import Container from '@/components/container'
 
 export default async function SummaryPage({ params }: { params: Promise<{ account_id: string }> }) {
   const uid = (await getSession())?.uid
@@ -56,16 +56,8 @@ export default async function SummaryPage({ params }: { params: Promise<{ accoun
 
   return (
     <Container fluid>
-      <Row>
-        <Col xs={12}>
-          <AccountNavigation accountId={parseInt(_param.account_id)} activeTab="summary" accountName={account_name} />
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={12}>
-          <SummaryClient totals={totals} symbolSummary={symbolSummary} monthSummary={monthSummary} />
-        </Col>
-      </Row>
+      <AccountNavigation accountId={parseInt(_param.account_id)} activeTab="summary" accountName={account_name} />
+      <SummaryClient totals={totals} symbolSummary={symbolSummary} monthSummary={monthSummary} />
     </Container>
   )
 }
