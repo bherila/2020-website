@@ -7416,7 +7416,7 @@ printable-characters@^1.0.42:
   resolved "https://registry.yarnpkg.com/printable-characters/-/printable-characters-1.0.42.tgz#3f18e977a9bd8eb37fcc4ff5659d7be90868b3d8"
   integrity sha512-dKp+C4iXWK4vVYZmYSd0KBH5F/h1HoZRsbJ82AVKRO3PEo8L4lBS/vLwhVtpwwuYcoIsVY+1JYKR268yn480uQ==
 
-prisma@^6.1.0:
+prisma@^6.2.1:
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/prisma/-/prisma-6.2.1.tgz#457b210326d66d0e6f583cc6f9cd2819b984408f"
   integrity sha512-hhyM0H13pQleQ+br4CkzGizS5I0oInoeTw3JfLw1BRZduBSQxPILlJLwi+46wZzj9Je7ndyQEMGw/n5cN2fknA==
