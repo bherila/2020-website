@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import db from '@/server_lib/db'
 import { getSession } from '@/server_lib/session'
 import { z, ZodError } from 'zod'
-import { compareAsc, format } from 'date-fns'
 
 export async function POST(req: NextRequest) {
   try {
