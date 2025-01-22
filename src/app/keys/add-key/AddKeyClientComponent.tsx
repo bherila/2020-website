@@ -2,8 +2,6 @@
 
 import React, { useState } from 'react'
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap'
-import { Typeahead } from 'react-bootstrap-typeahead'
-import 'react-bootstrap-typeahead/css/Typeahead.css'
 
 type AddProductKeyProps = {
   addProductKey: (formData: FormData) => Promise<void>
@@ -69,7 +67,7 @@ export default function AddKeyClientComponent({ addProductKey, productNames }: A
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="productName">
               <Form.Label>Product Name</Form.Label>
-              <Typeahead
+              {/* <Typeahead
                 id="product-name-typeahead"
                 labelKey="name"
                 onChange={handleProductNameChange}
@@ -78,6 +76,15 @@ export default function AddKeyClientComponent({ addProductKey, productNames }: A
                 selected={selectedProductName}
                 allowNew
                 newSelectionPrefix="Create new product: "
+                disabled={isSubmitting}
+              /> */}
+              <input
+                type="text"
+                name="productName"
+                placeholder="Enter product name"
+                value={selectedProductName[0] || ''}
+                onChange={(e) => setSelectedProductName([e.target.value])}
+                required
                 disabled={isSubmitting}
               />
               {selectedProductName.length === 0 && validated && (

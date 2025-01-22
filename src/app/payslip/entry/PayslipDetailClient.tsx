@@ -1,9 +1,8 @@
 'use client'
 import { useState } from 'react'
 import { Form, Button, Container, Row, Col } from 'react-bootstrap'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
 import { fin_payslip } from '@/app/payslip/payslipDbCols'
+import DatePicker from '@/components/ui/DatePicker'
 
 const PayrollForm: React.FC<{ onSave?: (data: fin_payslip) => void }> = ({ onSave }) => {
   const [formData, setFormData] = useState<any>({})

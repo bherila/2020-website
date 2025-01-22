@@ -1,5 +1,4 @@
 'use client'
-import { X } from 'react-bootstrap-icons'
 
 interface ClearFilterButtonProps {
   onClick: () => void
@@ -13,6 +12,6 @@ export const ClearFilterButton = ({ onClick, ariaLabel }: ClearFilterButtonProps
     style={{ cursor: 'pointer' }}
     aria-label={ariaLabel}
   >
-    <X color="gray" size={16} />
+    ❌
   </button>
 )

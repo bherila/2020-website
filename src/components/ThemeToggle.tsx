@@ -4,8 +4,6 @@ import { useTheme } from './ThemeProvider'
 import Nav from 'react-bootstrap/Nav'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
-import { SunFill, MoonFill, Circle } from 'react-bootstrap-icons'
-
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
 
@@ -16,7 +14,7 @@ export function ThemeToggle() {
     setTheme(themes[nextIndex])
   }
 
-  const icon = theme === 'light' ? <SunFill /> : theme === 'dark' ? <MoonFill /> : <Circle />
+  const icon = theme === 'light' ? '☀️' : theme === 'dark' ? '🌙' : '🌒'
   const label = `Theme: ${theme}`
 
   return (

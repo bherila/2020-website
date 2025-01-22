@@ -27,7 +27,7 @@ export function parseDate(str: string | undefined | null | Date): DateContainer 
 
   // Handle various date formats
   let date: dayjs.Dayjs | null = null
-  
+
   if (str.match(/^\d{4}-\d{2}-\d{2}$/)) {
     date = dayjs(str, 'YYYY-MM-DD')
   } else if (str.match(/^\d{1,2} [a-z]{3} \d{4}$/i)) {

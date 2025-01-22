@@ -2,7 +2,6 @@
 import Table from 'react-bootstrap/Table'
 import { useState, useMemo } from 'react'
 import Form from 'react-bootstrap/Form'
-import { X, Trash } from 'react-bootstrap-icons'
 import currency from 'currency.js'
 import { AccountLineItem } from '@/lib/AccountLineItem'
 
@@ -21,7 +20,7 @@ const ClearFilterButton = ({ onClick, ariaLabel }: { onClick: () => void; ariaLa
     style={{ cursor: 'pointer' }}
     aria-label={ariaLabel}
   >
-    <X color="gray" size={16} />
+    ❌
   </button>
 )
 
@@ -195,11 +194,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
               Memo {sortField === 't_comment' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
           )}
-          {onDeleteTransaction && (
-            <th style={{ textAlign: 'center' }}>
-              <Trash size={16} />
-            </th>
-          )}
+          {onDeleteTransaction && <th style={{ textAlign: 'center' }}>🗑️</th>}
         </tr>
         <tr>
           <th className="position-relative" style={{ width: '120px' }}>
@@ -472,7 +467,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
                   className="btn btn-link p-0"
                   aria-label="Delete transaction"
                 >
-                  <Trash size={16} />
+                  🗑️
                 </button>
               </td>
             )}
