@@ -1,14 +1,11 @@
-import { z } from 'zod'
-import productKeySchema from '@/lib/productKeySchema'
-
-export type CDKey = z.infer<typeof productKeySchema>
+import { ProductKey } from '@/lib/prisma-generated-zod'
 
 export interface GroupedCDKeys {
-  [productName: string]: CDKey[]
+  [productName: string]: ProductKey[]
 }
 
 export interface EditCDKeyFormData {
-  computer_name: string
+  computerName: string
   comment: string
-  used_on: string
+  usedOn: string
 }

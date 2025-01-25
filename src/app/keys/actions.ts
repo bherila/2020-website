@@ -7,7 +7,7 @@ import { prisma } from '@/server_lib/prisma'
  * Updates a CD key in the database.
  *
  * @param {number} id - The ID of the CD key to update.
- * @param {{ computer_name: string | null; comment: string | null; used_on: string | null }} data - The updated data.
+ * @param {{ computerName: string | null; comment: string | null; usedOn: string | null }} data - The updated data.
  * @returns {{ success: boolean; updatedRow: any; error?: string }} - The result of the update operation.
  */
 export async function updateCDKey(
@@ -26,7 +26,7 @@ export async function updateCDKey(
     })
 
     // Revalidate the cache
-    revalidatePath('/cdkeys')
+    revalidatePath('/keys/')
 
     // Return the updated row
     return {
@@ -36,5 +36,31 @@ export async function updateCDKey(
   } catch (error) {
     console.error('Error updating CD key:', error)
     return { success: false, error: 'Failed to update CD key' }
+  }
+}
+
+/**
+ * Deletes a CD key from the database.
+ *
+ * @param {number} id - The ID of the CD key to delete.
+ * @returns {{ success: boolean; error?: string }} - The result of the delete operation.
+ */
+export async function deleteCDKey(id: number) {
+  try {
+    // Delete the CD key
+    await prisma.productKey.delete({
+      where: { id },
+    })
+
+    // Revalidate the cache
+    revalidatePath('/keys/')
+
+    // Return success
+    return {
+      success: true,
+    }
+  } catch (error) {
+    console.error('Error deleting CD key:', error)
+    return { success: false, error: 'Failed to delete CD key' }
   }
 }

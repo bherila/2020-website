@@ -50,6 +50,7 @@
     "currency.js": "^2.0.4",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "decimal.js": "^10.5.0",
     "jose": "^5.9.6",
     "lodash": "^4.17.21",
     "lucide-react": "^0.469.0",

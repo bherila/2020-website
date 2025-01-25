@@ -13,7 +13,7 @@ const ProductKeySchema = z.object({
   usedOn: z.string().optional(),
 })
 
-export default async function addProductKey(formData: FormData) {
+export default async function addProductKey(formData: FormData): Promise<void> {
   'use server'
 
   const session = await requireSession()
@@ -32,20 +32,25 @@ export default async function addProductKey(formData: FormData) {
 
   const { productName, productKey, computerName, comment, usedOn } = result.data
 
-  try {
-    await prisma.productKey.create({
-      data: {
-        uid: session.uid,
-        productName,
-        productKey,
-        computerName: computerName || null,
-        comment: comment || null,
-        usedOn,
-      },
-    })
-    redirect('/keys/')
-  } catch (error) {
-    console.error('Failed to add product key:', error)
-    throw new Error('Failed to add product key')
+  // check if the product key already exists
+  const existingKey = await prisma.productKey.findUnique({
+    where: {
+      productKey: productKey,
+    },
+  })
+  if (existingKey) {
+    throw new Error('Product key already exists')
   }
+
+  await prisma.productKey.create({
+    data: {
+      uid: session.uid,
+      productName,
+      productKey,
+      computerName: computerName || null,
+      comment: comment || null,
+      usedOn,
+    },
+  })
+  redirect('/keys/')
 }
