@@ -1,26 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession } from '@/server_lib/session'
-import { AccountLineItem, AccountLineItemSchema } from '@/lib/AccountLineItem'
+import { AccountLineItemSchema } from '@/lib/AccountLineItem'
 import { z } from 'zod'
-import {
-  getLineItemsByAccount,
-  createLineItem,
-  bulkCreateLineItems,
-  deleteLineItem,
-} from '@/server_lib/AccountLineItem.server'
-import { sql } from '@/server_lib/db'
+import { prisma } from '@/server_lib/prisma'
+import requireSession from '@/server_lib/requireSession'
 
 async function validateAccess(accountId: number) {
-  const uid = (await getSession())?.uid
-  if (!uid) {
-    throw new Error('not logged in')
-  }
+  const { uid } = await requireSession()
 
-  const [account] = (await sql`
-    SELECT acct_id, acct_owner
-    FROM accounts
-    WHERE acct_owner = ${uid} and acct_id = ${accountId}
-  `) as { acct_id: number; acct_owner: number }[]
+  const account = await prisma.finAccounts.findFirst({
+    where: {
+      acct_owner: uid,
+      acct_id: accountId,
+    },
+    select: {
+      acct_id: true,
+      acct_owner: true,
+    },
+  })
 
   if (!account) {
     throw new Error('account not found or access denied')
@@ -35,7 +31,17 @@ export async function GET(request: NextRequest, context: { params: Promise<{ acc
     await validateAccess(accountId)
     const url = new URL(request.url)
     const includeDeleted = url.searchParams.get('includeDeleted') === 'true'
-    const items = await getLineItemsByAccount(accountId, includeDeleted)
+
+    const items = await prisma.finAccountLineItems.findMany({
+      where: {
+        t_account: accountId,
+        when_deleted: includeDeleted ? undefined : null,
+      },
+      orderBy: {
+        t_date: 'desc',
+      },
+    })
+
     return NextResponse.json(items)
   } catch (e) {
     return NextResponse.json({ error: e?.toString() }, { status: 400 })
@@ -50,13 +56,18 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ac
     const body = await request.json()
     if (Array.isArray(body)) {
       const items = z.array(AccountLineItemSchema).parse(body)
-      await bulkCreateLineItems(items)
+      await prisma.finAccountLineItems.createMany({
+        data: items,
+      })
     } else {
       const item = AccountLineItemSchema.parse(body)
-      await createLineItem(item)
+      await prisma.finAccountLineItems.create({
+        data: item,
+      })
     }
 
-    return await GET(request, context)
+    // Return updated list
+    return GET(request, context)
   } catch (e) {
     return NextResponse.json({ error: e?.toString() }, { status: 400 })
   }
@@ -72,7 +83,11 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
       return NextResponse.json({ error: 'Transaction ID is required' }, { status: 400 })
     }
 
-    await deleteLineItem(t_id)
+    await prisma.finAccountLineItems.update({
+      where: { t_id },
+      data: { when_deleted: new Date() },
+    })
+
     return NextResponse.json({ success: true })
   } catch (e) {
     return NextResponse.json({ error: e?.toString() }, { status: 400 })

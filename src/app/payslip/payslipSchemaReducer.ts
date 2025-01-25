@@ -8,7 +8,7 @@ const mentionText = (o: any, prop: string): string | null =>
 const normVal = (o: any, prop: string): string | null =>
   (o.properties ?? o.propertiesList).find((p: any) => p.type === prop)?.normalizedValue?.text ?? null
 
-export function parseEntities(json: string): fin_payslip {
+export function parseEntities(json: string): Omit<fin_payslip, 'payslip_id'> {
   let obj: any = {}
   try {
     obj = JSON.parse(json)
@@ -127,7 +127,7 @@ export function parseEntities(json: string): fin_payslip {
   }
 
   // Initialize the result object
-  const result: fin_payslip = {}
+  const result: any = {}
 
   // Map the data to the desired object fields
   parsed.forEach((item) => {

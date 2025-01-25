@@ -1,24 +1,37 @@
 import 'server-only'
-import CdKeyClient from '@/app/keys/CdKeyClient'
 import MainTitle from '@/components/main-title'
-import db from '@/server_lib/db'
-import { z } from 'zod'
-import productKeySchema from '@/lib/productKeySchema'
-import CdKeysTabBar from '@/app/keys/CdKeysTabBar'
+import CdKeysTabBar from './CdKeysTabBar'
+import CdKeyClient from './CdKeyClient'
 import requireSession from '@/server_lib/requireSession'
-import Container from '@/components/container'
+import { prisma } from '@/server_lib/prisma'
 
-export default async function CdKeyPage() {
-  await requireSession('/keys')
+export default async function CdKeysPage() {
+  await requireSession()
 
-  const rows = await db.query('SELECT * FROM product_keys')
-  const parsedRows = z.array(productKeySchema).parse(rows)
+  const productKeys = (
+    await prisma.productKey.findMany({
+      orderBy: {
+        productName: 'asc',
+      },
+    })
+  ).map((key) => ({
+    id: key.id,
+    uid: key.uid,
+    product_id: key.productId || null,
+    product_name: key.productName || null,
+    product_key: key.productKey || null,
+    computer_name: key.computerName || null,
+    comment: key.comment || null,
+    used_on: key.usedOn || null,
+  }))
 
   return (
-    <Container>
-      <MainTitle>License Manager</MainTitle>
-      <CdKeysTabBar />
-      <CdKeyClient initialRows={parsedRows} />
-    </Container>
+    <div className="container mx-auto px-4">
+      <div className="mt-8">
+        <MainTitle>License Keys</MainTitle>
+        <CdKeysTabBar />
+        <CdKeyClient initialRows={productKeys} />
+      </div>
+    </div>
   )
 }

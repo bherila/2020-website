@@ -1,5 +1,5 @@
-import db from '@/server_lib/db'
-import { getSession } from '@/server_lib/session'
+import { prisma } from '@/server_lib/prisma'
+import requireSession from '@/server_lib/requireSession'
 import { redirect } from 'next/navigation'
 
 export interface ProductKeyForImport {
@@ -19,47 +19,26 @@ export interface ProductKeyForImport {
 export default async function uploadProductKeys(productKeys: ProductKeyForImport[]) {
   'use server'
 
-  const session = await getSession()
-  if (!session?.uid) {
-    throw new Error('Unauthorized')
-  }
+  const session = await requireSession()
 
   try {
-    // Prepare batch insert query
-    const insertQuery = `
-      INSERT INTO product_keys (
-        uid, 
-        product_id, 
-        product_key, 
-        product_name, 
-        computer_name, 
-        comment, 
-        used_on, 
-        claimed_date, 
-        key_type, 
-        key_retrieval_note
-      ) VALUES ?
-    `
+    // Use Prisma's createMany for batch insert
+    await prisma.productKey.createMany({
+      data: productKeys.map((key) => ({
+        uid: session.uid,
+        productId: key.productId,
+        productKey: key.productKey,
+        productName: key.productName,
+        computerName: key.computerName || null,
+        comment: key.comment || null,
+        usedOn: key.usedOn || null,
+        claimedDate: key.claimedDate || null,
+        keyType: key.keyType || null,
+        keyRetrievalNote: key.keyRetrievalNote || null,
+      })),
+    })
 
-    // Map product keys to match database schema, adding current user's ID
-    const mappedKeys = productKeys.map((key) => [
-      session.uid,
-      key.productId,
-      key.productKey,
-      key.productName,
-      key.computerName || null,
-      key.comment || null,
-      key.usedOn || null,
-      key.claimedDate || null,
-      key.keyType || null,
-      key.keyRetrievalNote || null,
-    ])
-
-    // Execute batch insert
-    await db.query(insertQuery, [mappedKeys])
-
-    // Redirect to main cdkeys page
-    redirect('/cdkeys')
+    redirect('/keys')
   } catch (error) {
     console.error('Error uploading product keys:', error)
     throw error

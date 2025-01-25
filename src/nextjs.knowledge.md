@@ -2,7 +2,9 @@
 - Use 'server-only' import for server components
 - Handle loading and error states explicitly
 - Prefer static paths when possible
-- Prefer server components with getSession over client components with useSession hook
+- Use requireSession() for auth checks in server components
+- requireSession handles redirect to login, no need for manual redirect
+- Prefer Prisma queries over raw SQL in server components
 
 ## Performance Optimization
 - Cache API responses aggressively with s-maxage and stale-while-revalidate

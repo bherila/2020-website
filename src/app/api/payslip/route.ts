@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createHash } from 'crypto'
 import deepRemoveKey from '@/lib/DeepRemoveKey'
-import db from '@/server_lib/db'
-import { fin_payslip, fin_payslip_schema } from '@/app/payslip/payslipDbCols'
+import { prisma } from '@/server_lib/prisma'
+import { fin_payslip_schema } from '@/app/payslip/payslipDbCols'
 import { getSession } from '@/server_lib/session'
 import { z } from 'zod'
 
@@ -20,46 +20,18 @@ export async function GET(req: NextRequest) {
     return NextResponse.json('Invalid year', { status: 400 })
   }
 
-  let data: any[] = await db.query(
-    `
-      select payslip_id,
-             cast(period_start as char) as period_start,
-             cast(period_end as char)   as period_end,
-             cast(pay_date as char)     as pay_date,
-             earnings_gross,
-             earnings_bonus,
-             earnings_net_pay,
-             earnings_rsu,
-             imp_other,
-             imp_legal,
-             imp_fitness,
-             imp_ltd,
-             ps_oasdi,
-             ps_medicare,
-             ps_fed_tax,
-             ps_fed_tax_addl,
-             ps_state_tax,
-             ps_state_tax_addl,
-             ps_state_disability,
-             ps_401k_pretax,
-             ps_401k_aftertax,
-             ps_401k_employer,
-             ps_fed_tax_refunded,
-             ps_payslip_file_hash,
-             ps_is_estimated,
-             ps_comment,
-             ps_pretax_medical,
-             ps_pretax_dental,
-             ps_pretax_vision,
-             ps_pretax_fsa,
-             ps_salary,
-             ps_vacation_payout,
-             other
-      from fin_payslip
-      where uid = ? and pay_date > ? and pay_date < ?
-      order by pay_date`,
-    [uid, start, end],
-  )
+  let data = await prisma.finPayslips.findMany({
+    where: {
+      uid: uid,
+      pay_date: {
+        gt: start,
+        lt: end,
+      },
+    },
+    orderBy: {
+      pay_date: 'asc',
+    },
+  })
 
   data = data.map((r) => ({
     ...r,
@@ -79,87 +51,35 @@ export async function POST(req: NextRequest) {
 
   const parsedJson = formData.get('parsed_json') as string
   if (parsedJson) {
-    const rowsToInsert: any[][] = z
+    const rowsToInsert = z
       .array(fin_payslip_schema)
       .parse(JSON.parse(parsedJson))
-      .map((obj: fin_payslip) => {
-        return [
-          uid,
-          obj.period_start ?? null,
-          obj.period_end ?? null,
-          obj.pay_date ?? null,
-          obj.earnings_gross ?? null,
-          obj.earnings_bonus ?? null,
-          obj.earnings_net_pay ?? null,
-          obj.earnings_rsu ?? null,
-          obj.imp_other ?? null,
-          obj.imp_legal ?? null,
-          obj.imp_fitness ?? null,
-          obj.imp_ltd ?? null,
-          obj.ps_oasdi ?? null,
-          obj.ps_medicare ?? null,
-          obj.ps_fed_tax ?? null,
-          obj.ps_fed_tax_addl ?? null,
-          obj.ps_state_tax ?? null,
-          obj.ps_state_tax_addl ?? null,
-          obj.ps_state_disability ?? null,
-          obj.ps_401k_pretax ?? null,
-          obj.ps_401k_aftertax ?? null,
-          obj.ps_401k_employer ?? null,
-          obj.ps_fed_tax_refunded ?? null,
-          obj.ps_payslip_file_hash ?? null,
-          obj.ps_is_estimated ? 1 : 0,
-          obj.ps_comment ?? null,
-          obj.ps_vacation_payout ?? null,
-          obj.ps_pretax_medical ?? null,
-          obj.ps_pretax_dental ?? null,
-          obj.ps_pretax_vision ?? null,
-          obj.ps_pretax_fsa ?? null,
-          obj.ps_salary ?? null,
-          JSON.stringify(obj.other),
-        ]
+      .map((obj: z.infer<typeof fin_payslip_schema>) => {
+        return {
+          ...obj,
+          other: JSON.stringify(obj.other),
+        }
       })
     try {
-      await db.query(
-        `
-            replace into fin_payslip ( uid, period_start
-                                     , period_end
-                                     , pay_date
-                                     , earnings_gross
-                                     , earnings_bonus
-                                     , earnings_net_pay
-                                     , earnings_rsu
-                                     , imp_other
-                                     , imp_legal
-                                     , imp_fitness
-                                     , imp_ltd
-                                     , ps_oasdi
-                                     , ps_medicare
-                                     , ps_fed_tax
-                                     , ps_fed_tax_addl
-                                     , ps_state_tax
-                                     , ps_state_tax_addl
-                                     , ps_state_disability
-                                     , ps_401k_pretax
-                                     , ps_401k_aftertax
-                                     , ps_401k_employer
-                                     , ps_fed_tax_refunded
-                                     , ps_payslip_file_hash
-                                     , ps_is_estimated
-                                     , ps_comment
-                                     , ps_vacation_payout
-                                     , ps_pretax_medical
-                                     , ps_pretax_dental
-                                     , ps_pretax_vision
-                                     , ps_pretax_fsa
-                                     , ps_salary
-                                     , other)
-            values ?
-        `,
-        [rowsToInsert],
+      await prisma.$transaction(
+        rowsToInsert.map((row) =>
+          prisma.finPayslips.upsert({
+            where: {
+              uid_period_start_period_end_pay_date: {
+                uid,
+                period_start: new Date(row.period_start!),
+                period_end: new Date(row.period_end!),
+                pay_date: new Date(row.pay_date!),
+              },
+            },
+            create: { uid, ...row },
+            update: row,
+          }),
+        ),
       )
-    } finally {
-      await db.end()
+    } catch (error) {
+      console.error('Error saving payslips:', error)
+      return NextResponse.json({ error: 'Failed to save payslips' }, { status: 500 })
     }
     return await GET(req)
   }
@@ -196,13 +116,16 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await db.query(
-      `insert into fin_payslip_uploads (file_name, file_hash, parsed_json)
-       values (?, ?, ?)`,
-      [fileName, hash, JSON.stringify(parseResult)],
-    )
-  } finally {
-    await db.end()
+    await prisma.finPayslipUploads.create({
+      data: {
+        file_name: fileName,
+        file_hash: hash,
+        parsed_json: JSON.stringify(parseResult),
+      },
+    })
+  } catch (error) {
+    console.error('Error saving upload record:', error)
+    return NextResponse.json({ error: 'Failed to save upload record' }, { status: 500 })
   }
 
   return NextResponse.json([fileName, hash, parseResult])

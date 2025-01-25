@@ -1,18 +1,21 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useState } from 'react'
-import { Loader2, Key } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useSession } from '@/hooks/useSession'
+import { Loader2 } from 'lucide-react'
 import { signIn } from '@/lib/auth-client'
-import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
 export default function SignIn(props: { nextUrl: string | undefined }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const router = useRouter()
+  const { session } = useSession()
   const [loading, setLoading] = useState(false)
 
   return (
@@ -40,9 +43,9 @@ export default function SignIn(props: { nextUrl: string | undefined }) {
           <div className="grid gap-2">
             <div className="flex items-center">
               <Label htmlFor="password">Password</Label>
-              <Link href="#" className="ml-auto inline-block text-sm underline">
+              {/* <Link href="#" className="ml-auto inline-block text-sm underline">
                 Forgot your password?
-              </Link>
+              </Link> */}
             </div>
 
             <Input
@@ -60,7 +63,23 @@ export default function SignIn(props: { nextUrl: string | undefined }) {
             className="w-full"
             disabled={loading}
             onClick={async () => {
-              await signIn.email({ email, password })
+              setLoading(true)
+              try {
+                await signIn.email(
+                  { email, password },
+                  {
+                    onSuccess: () => {
+                      const redirectUrl = props.nextUrl || '/'
+                      router.push(redirectUrl)
+                    },
+                    onError: (error) => {
+                      console.log(error)
+                    },
+                  },
+                )
+              } finally {
+                setLoading(false)
+              }
             }}
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : 'Login'}
@@ -88,16 +107,6 @@ export default function SignIn(props: { nextUrl: string | undefined }) {
           </div>
         </div>
       </CardContent>
-      <CardFooter>
-        <div className="flex justify-center w-full border-t py-4">
-          <p className="text-center text-xs text-neutral-500">
-            Powered by{' '}
-            <Link href="https://better-auth.com" className="underline" target="_blank">
-              <span className="dark:text-orange-200/90">better-auth.</span>
-            </Link>
-          </p>
-        </div>
-      </CardFooter>
     </Card>
   )
 }

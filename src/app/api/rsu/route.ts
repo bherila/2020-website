@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db from '@/server_lib/db'
+import { prisma } from '@/server_lib/prisma'
 import { getSession } from '@/server_lib/session'
 import { z, ZodError } from 'zod'
 
@@ -18,47 +18,33 @@ export async function POST(req: NextRequest) {
         symbol: z.coerce.string(),
       }),
     )
-    const data = schema
-      .parse(await req.json())
-      .map((r) => [uid, r.award_id, r.grant_date, r.vest_date, r.share_count, r.symbol])
-    await db.query('insert into fin_equity_awards (uid, award_id, grant_date, vest_date, share_count, symbol) values ?', [
-      data,
-    ])
+    const data = schema.parse(await req.json())
+    await prisma.finEquityAwards.createMany({
+      data: data.map((row) => ({
+        ...row,
+        uid,
+      })),
+    })
     return NextResponse.json(await getRows(uid))
   } catch (e) {
     if (e instanceof ZodError) {
       return NextResponse.json(e.message, { status: 400 })
     }
     return NextResponse.json(e, { status: 400 })
-  } finally {
-    await db.end()
   }
 }
 
 async function getRows(uid: number) {
-  return await db.query(
-    `select id,
-            award_id,
-            cast(grant_date as char) as grant_date,
-            cast(vest_date as char) as vest_date,
-            share_count,
-            symbol,
-            uid
-     from fin_equity_awards
-     where uid = ?
-     order by vest_date, grant_date`,
-    [uid],
-  )
+  return await prisma.finEquityAwards.findMany({
+    where: { uid },
+    orderBy: [{ vest_date: 'asc' }, { grant_date: 'asc' }],
+  })
 }
 
 export async function GET(req: NextRequest) {
-  try {
-    const uid = (await getSession())?.uid
-    if (!uid) {
-      return NextResponse.json('Unauthorized', { status: 403 })
-    }
-    return NextResponse.json(await getRows(uid))
-  } finally {
-    await db.end()
+  const uid = (await getSession())?.uid
+  if (!uid) {
+    return NextResponse.json('Unauthorized', { status: 403 })
   }
+  return NextResponse.json(await getRows(uid))
 }

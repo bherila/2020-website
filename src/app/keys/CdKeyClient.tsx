@@ -65,9 +65,6 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
       if (typeof aVal === 'string' && typeof bVal === 'string') {
         return aVal.localeCompare(bVal) * direction
       }
-      if (aVal instanceof Date && bVal instanceof Date) {
-        return (aVal.getTime() - bVal.getTime()) * direction
-      }
       return 0
     })
   }, [rows, sortField, sortDirection, productNameFilter, productKeyFilter, commentFilter, computerNameFilter])
@@ -76,9 +73,9 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
     if (!selectedKey) return
 
     const result = await updateCDKey(selectedKey.id!, {
-      computer_name: formData.computer_name || null,
+      computerName: formData.computer_name || null,
       comment: formData.comment || null,
-      used_on: formData.used_on || null,
+      usedOn: formData.used_on || null,
     })
 
     if (result.success && result.updatedRow) {
@@ -211,7 +208,7 @@ export default function CdKeyClient({ initialRows }: CdKeyClientProps) {
                 {key.comment}
                 {key.product_id && <Badge className="ml-2">ID: {key.product_id}</Badge>}
               </TableCell>
-              <TableCell className="whitespace-nowrap">{key.used_on?.toISOString()?.slice(0, 10)}</TableCell>
+              <TableCell className="whitespace-nowrap">{key.used_on}</TableCell>
               <TableCell>{key.computer_name}</TableCell>
               <TableCell>
                 <Button

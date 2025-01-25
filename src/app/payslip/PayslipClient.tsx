@@ -3,7 +3,6 @@ import { fin_payslip } from '@/app/payslip/payslipDbCols'
 import { useCallback, useEffect, useState } from 'react'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import { redirect } from 'next/navigation'
-import AuthRoutes from '@/app/auth/AuthRoutes'
 import Container from '@/components/container'
 import { payslip_table_col, PayslipTable } from '@/app/payslip/PayslipTable'
 import { Loader2 } from 'lucide-react'
@@ -95,15 +94,10 @@ export default function PayslipClient({ year }: PayslipClientProps): React.React
   const [rawData, setRawData] = useState<any[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   useEffect(() => {
-    fetchWrapper
-      .get(`/api/payslip/?year=${year}`)
-      .then((res) => {
-        setRawData(res)
-        setLoading(false)
-      })
-      .catch(() => {
-        redirect(AuthRoutes.signIn)
-      })
+    fetchWrapper.get(`/api/payslip/?year=${year}`).then((res) => {
+      setRawData(res)
+      setLoading(false)
+    })
   }, [])
 
   const editRow = async (row: fin_payslip) => {
@@ -142,7 +136,7 @@ export default function PayslipClient({ year }: PayslipClientProps): React.React
   const updateJsonPreview = useCallback((e: any[]) => setPreviewData(e), [])
 
   // Filter by date
-  const data = rawData.filter((r: fin_payslip) => r.pay_date > '2024-01-01' && r.pay_date < '2025-01-01')
+  const data = rawData.filter((r: fin_payslip) => r.pay_date! > '2024-01-01' && r.pay_date! < '2025-01-01')
 
   return (
     <Container fluid>

@@ -52,7 +52,7 @@ export function PayslipTable(props: Props) {
       .filter(
         (d) =>
           // same year and prior or equal month:
-          d.period_end <= row.period_end && d.period_end.slice(0, 4) === row.period_end.slice(0, 4),
+          d.period_end! <= row.period_end! && d.period_end!.slice(0, 4) === row.period_end!.slice(0, 4),
       )
       .reduce((prev, cur) => currency(cur[col]).add(prev), currency(0))
   }

@@ -1,19 +1,16 @@
 import 'server-only'
-import { getSession } from '@/server_lib/session'
-import { redirect } from 'next/navigation'
-import AuthRoutes from '@/app/auth/AuthRoutes'
-import JsonImportClient from './JsonImportClient'
-import Container from '@/components/container'
+import MainTitle from '@/components/main-title'
+import requireSession from '@/server_lib/requireSession'
 
-export default async function ImportJsonPage() {
-  if (!(await getSession())?.uid) {
-    redirect(AuthRoutes.signIn)
-  }
+export default async function PayslipJsonImportPage() {
+  await requireSession()
 
   return (
-    <Container>
-      <h3>Import JSON</h3>
-      <JsonImportClient />
-    </Container>
+    <div className="container mx-auto px-4">
+      <div className="mt-8">
+        <MainTitle>Import Payslip JSON</MainTitle>
+        {/* Add JSON import form here */}
+      </div>
+    </div>
   )
 }

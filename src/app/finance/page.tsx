@@ -1,15 +1,13 @@
 import 'server-only'
 import MainTitle from '@/components/main-title'
 import { getSession } from '@/server_lib/session'
-import { redirect } from 'next/navigation'
-import AuthRoutes from '@/app/auth/AuthRoutes'
+import { prisma } from '@/server_lib/prisma'
 import NewAccountForm from '@/app/finance/NewAccountForm'
 import AccountList from '@/app/finance/AccountList'
-import { sql } from '@/server_lib/db'
 import { AccountTableRow } from '../api/finance/model'
 import { revalidatePath } from 'next/cache'
 import Container from '@/components/container'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import requireSession from '@/server_lib/requireSession'
 
 async function createAccount(acctName: string): Promise<void> {
   'use server'
@@ -23,25 +21,29 @@ async function createAccount(acctName: string): Promise<void> {
   if (acctName.length > 50) {
     throw new Error('Account name must be less than 50 characters')
   }
-  await sql`
-    INSERT INTO accounts (acct_owner, acct_name)
-    VALUES (${uid}, ${acctName})
-  `
+  await prisma.finAccounts.create({
+    data: {
+      acct_owner: uid,
+      acct_name: acctName,
+    },
+  })
   revalidatePath(`/finance`)
 }
 
 export default async function Page() {
-  const uid = (await getSession())?.uid
-  if (!uid) {
-    redirect(AuthRoutes.signIn)
-  }
-
-  const accounts = (await sql`
-    select acct_id, acct_owner, acct_name 
-    from accounts 
-    where acct_owner = ${uid} and when_deleted is null
-    order by acct_name
-  `) as AccountTableRow[]
+  const { uid } = await requireSession()
+  const accounts = (await prisma.finAccounts.findMany({
+    where: {
+      acct_owner: uid,
+      when_deleted: null,
+    },
+    orderBy: { acct_name: 'asc' },
+    select: {
+      acct_id: true,
+      acct_owner: true,
+      acct_name: true,
+    },
+  })) as AccountTableRow[]
 
   return (
     <Container>

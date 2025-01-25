@@ -2,31 +2,31 @@ import 'server-only'
 import AccountClient from './Client'
 import AccountNavigation from './AccountNavigation'
 import { z } from 'zod'
-import { sql } from '@/server_lib/db'
 import { getLineItemsByAccount } from '@/server_lib/AccountLineItem.server'
-import requireSession from '@/server_lib/requireSession'
 import Container from '@/components/container'
+import requireSession from '@/server_lib/requireSession'
+import { prisma } from '@/server_lib/prisma'
 
 export default async function AccountIdPage({ params }: { params: Promise<{ account_id: string }> }) {
-  const session = await requireSession(`/finance/${(await params).account_id}`)
-  const uid = session.uid
-
+  const { uid } = await requireSession(`/finance/${(await params).account_id}`)
   const _param = await params
-  const account_name = (
-    (await sql`select acct_name from accounts where acct_id = ${_param.account_id} and acct_owner = ${uid}`) as {
-      acct_name: string
-    }[]
-  )[0]?.acct_name
-  if (!account_name) {
+  const account = await prisma.finAccounts.findUnique({
+    where: { acct_id: parseInt(_param.account_id), acct_owner: uid },
+  })
+
+  if (!account) {
     throw new Error('account not found')
   }
 
-  const account_id = z.coerce.number().parse((await params).account_id)
-  const items = await getLineItemsByAccount(account_id, false)
+  const account_id = z.coerce.number().parse(_param.account_id)
+  const items = await prisma.finAccountLineItems.findMany({
+    where: { t_account: account_id },
+    orderBy: { t_date: 'desc' },
+  })
 
   return (
     <Container fluid>
-      {account_id && <AccountNavigation accountId={account_id} activeTab="transactions" accountName={account_name} />}
+      {account_id && <AccountNavigation accountId={account_id} activeTab="transactions" accountName={account.acct_name} />}
       <AccountClient id={account_id} rawData={items} />
     </Container>
   )

@@ -1,13 +1,16 @@
 import 'server-only'
-import { getSession } from '@/server_lib/session'
-import { redirect } from 'next/navigation'
-import AuthRoutes from '@/app/auth/AuthRoutes'
-import RSUPage from '@/app/rsu/RSUPage'
+import MainTitle from '@/components/main-title'
+import requireSession from '@/server_lib/requireSession'
 
 export default async function TimeseriesDataPage() {
-  if (!(await getSession())?.uid) {
-    redirect(AuthRoutes.signIn + '?next=/timeseries-data/')
-    return null
-  }
-  return <RSUPage />
+  await requireSession()
+
+  return (
+    <div className="container mx-auto px-4">
+      <div className="mt-8">
+        <MainTitle>Timeseries Data</MainTitle>
+        {/* Add timeseries data content here */}
+      </div>
+    </div>
+  )
 }

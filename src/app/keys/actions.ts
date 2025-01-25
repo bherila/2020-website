@@ -1,26 +1,37 @@
 'use server'
 import 'server-only'
-import db from '@/server_lib/db'
 import { revalidatePath } from 'next/cache'
+import { prisma } from '@/server_lib/prisma'
 
+/**
+ * Updates a CD key in the database.
+ *
+ * @param {number} id - The ID of the CD key to update.
+ * @param {{ computer_name: string | null; comment: string | null; used_on: string | null }} data - The updated data.
+ * @returns {{ success: boolean; updatedRow: any; error?: string }} - The result of the update operation.
+ */
 export async function updateCDKey(
   id: number,
-  data: { computer_name: string | null; comment: string | null; used_on: string | null },
+  data: { computerName: string | null; comment: string | null; usedOn: string | null },
 ) {
   try {
-    await db.query(
-      `UPDATE product_keys 
-       SET computer_name = ?, 
-           comment = ?,
-           used_on = ?
-       WHERE id = ?`,
-      [data.computer_name, data.comment, data.used_on, id],
-    )
+    // Update the CD key
+    const updatedRow = await prisma.productKey.update({
+      where: { id },
+      data: {
+        computerName: data.computerName,
+        comment: data.comment,
+        usedOn: data.usedOn,
+      },
+    })
+
+    // Revalidate the cache
     revalidatePath('/cdkeys')
-    const q: any[] = (await db.query('SELECT * FROM product_keys WHERE id = ?', [id])) ?? []
+
+    // Return the updated row
     return {
       success: true,
-      updatedRow: q[0],
+      updatedRow,
     }
   } catch (error) {
     console.error('Error updating CD key:', error)

@@ -1,26 +1,20 @@
 import 'server-only'
-import { getSession } from '@/server_lib/session'
-import { redirect } from 'next/navigation'
-import AuthRoutes from '@/app/auth/AuthRoutes'
 import MainTitle from '@/components/main-title'
-import Container from '@/components/container'
 import CdKeysTabBar from '@/app/keys/CdKeysTabBar'
-import ProductKeyUploader from './ProductKeyUploader'
 import uploadProductKeys from './actions'
+import requireSession from '@/server_lib/requireSession'
+import ProductKeyUploader from './ProductKeyUploader'
 
 export default async function ImportXmlPage() {
-  if (!(await getSession())?.uid) {
-    redirect(AuthRoutes.signIn)
-  }
+  await requireSession()
 
   return (
-    <Container>
-      <MainTitle>Import XML</MainTitle>
-      <CdKeysTabBar />
-      <div className="pt-3">
-        <p>This page takes a exported XML file of product keys from MSDN, and imports them into the database.</p>
+    <div className="container mx-auto px-4">
+      <div className="mt-8">
+        <MainTitle>Import License Keys</MainTitle>
+        <CdKeysTabBar />
         <ProductKeyUploader uploadAction={uploadProductKeys} />
       </div>
-    </Container>
+    </div>
   )
 }

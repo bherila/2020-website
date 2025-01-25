@@ -191,11 +191,6 @@ export default function Header({ session }: HeaderProps) {
                       <Link href="/payslip/" className="text-sm" onClick={() => setIsOpen(false)}>
                         Finance - Payslips 🔑
                       </Link>
-                      {session?.ax_spgp && (
-                        <Link href="/spgp" className="text-sm" onClick={() => setIsOpen(false)}>
-                          Ski Pass Group Purchase 🔑
-                        </Link>
-                      )}
                       {session?.ax_phr && (
                         <Link href="/phr" className="text-sm" onClick={() => setIsOpen(false)}>
                           PHR 🔑

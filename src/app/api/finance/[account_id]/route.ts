@@ -1,19 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server'
-import db from '@/server_lib/db'
-import { AccountTableRow, AccountTableSchema } from '@/app/api/finance/model'
+import { prisma } from '@/server_lib/prisma'
 import { z } from 'zod'
-import { getSession } from '@/server_lib/session'
+import requireSession from '@/server_lib/requireSession'
 
 async function getTheAccount(context: { params: Promise<{ account_id: string }> }) {
-  const uid = (await getSession())?.uid
-  if (!uid) {
-    throw new Error('not logged in')
-  }
-  const accounts: AccountTableRow[] = z
-    .array(AccountTableSchema)
-    .parse(
-      await db.query('select acct_id, acct_owner, acct_name from accounts where acct_owner = ? order by acct_name', [uid]),
-    )
+  const session = await requireSession()
+  const uid = session.uid
+  const accounts = await prisma.finAccounts.findMany({
+    where: { acct_owner: uid },
+    orderBy: { acct_name: 'asc' },
+    select: {
+      acct_id: true,
+      acct_owner: true,
+      acct_name: true,
+    },
+  })
   const accountId = z.coerce.number().parse((await context.params).account_id)
   const theAccount = accounts.find((a) => a.acct_id === accountId)
   if (!theAccount) {

@@ -1,19 +1,16 @@
 import 'server-only'
-import { getSession } from '@/server_lib/session'
-import { redirect } from 'next/navigation'
-import AuthRoutes from '@/app/auth/AuthRoutes'
-import FileUploadClient from '@/app/payslip/FileUploadClient'
-import Container from '@/components/container'
+import MainTitle from '@/components/main-title'
+import requireSession from '@/server_lib/requireSession'
 
-export default async function ImportPdfPage() {
-  if (!(await getSession())?.uid) {
-    redirect(AuthRoutes.signIn)
-  }
+export default async function PayslipPdfImportPage() {
+  await requireSession()
 
   return (
-    <Container>
-      <h3>Import PDF</h3>
-      <FileUploadClient acceptTypes={['application/pdf']} />
-    </Container>
+    <div className="container mx-auto px-4">
+      <div className="mt-8">
+        <MainTitle>Import Payslip PDF</MainTitle>
+        {/* Add PDF import form here */}
+      </div>
+    </div>
   )
 }

@@ -8,7 +8,7 @@ const ProductKeySchema = z.object({
   product_name: z.string().max(100).nullable(),
   computer_name: z.string().max(100).nullable(),
   comment: z.string().max(2000).nullable(),
-  used_on: z.coerce.date().nullable(),
+  used_on: z.string().nullable(),
 })
 
 export default ProductKeySchema

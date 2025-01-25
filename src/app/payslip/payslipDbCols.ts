@@ -3,42 +3,7 @@ import currency from 'currency.js'
 
 export type pay_data = string | number | currency | null
 
-export interface fin_payslip {
-  period_start?: any
-  period_end?: any
-  pay_date?: any
-  earnings_gross?: pay_data
-  earnings_bonus?: pay_data
-  earnings_net_pay?: pay_data
-  earnings_rsu?: pay_data
-  imp_other?: pay_data
-  imp_legal?: pay_data
-  imp_fitness?: pay_data
-  imp_ltd?: pay_data
-  ps_oasdi?: pay_data
-  ps_medicare?: pay_data
-  ps_fed_tax?: pay_data
-  ps_fed_tax_addl?: pay_data
-  ps_state_tax?: pay_data
-  ps_state_tax_addl?: pay_data
-  ps_state_disability?: pay_data
-  ps_401k_pretax?: pay_data
-  ps_401k_aftertax?: pay_data
-  ps_401k_employer?: pay_data
-  ps_fed_tax_refunded?: pay_data
-  ps_payslip_file_hash?: string | null
-  ps_is_estimated?: boolean | null
-  ps_comment?: string | null
-  ps_vacation_payout?: pay_data
-  ps_pretax_medical?: pay_data
-  ps_pretax_vision?: pay_data
-  ps_pretax_dental?: pay_data
-  ps_pretax_fsa?: pay_data
-  ps_salary?: pay_data
-  other?: any
-}
-
-const maybeStr = z.coerce.string().nullable().optional()
+const maybeStr = z.coerce.string().optional()
 const maybeNum = z.coerce.number().default(0)
 
 export const fin_payslip_schema = z.object({
@@ -75,5 +40,7 @@ export const fin_payslip_schema = z.object({
   ps_vacation_payout: maybeNum,
   other: z.any(),
 })
+
+export type fin_payslip = z.infer<typeof fin_payslip_schema>
 
 export type fin_payslip_col = keyof fin_payslip

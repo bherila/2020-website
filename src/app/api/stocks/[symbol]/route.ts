@@ -2,8 +2,8 @@ import 'server-only'
 import { NextRequest, NextResponse } from 'next/server'
 import { notFound } from 'next/navigation'
 import StockQuote from '@/lib/StockQuote'
-import mysql from '@/server_lib/db'
 import AlphaVantageEarnings from '@/lib/AlphaVantageEarnings'
+import { prisma } from '@/server_lib/prisma'
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ symbol: string }> }) {
   const { symbol } = await params
@@ -37,29 +37,34 @@ async function genEarningsFromAlphaVantage(symbol: string) {
 
   const earningsData: AlphaVantageEarnings = await earningsResponse.json()
 
-  const annualMysqlData = earningsData.annualEarnings?.map((e) => [symbol, e.fiscalDateEnding, e.reportedEPS])
+  const annualEarningsData = earningsData.annualEarnings?.map((e) => ({
+    symbol,
+    fiscalDateEnding: new Date(e.fiscalDateEnding),
+    reportedEPS: e.reportedEPS ? parseFloat(e.reportedEPS) : null,
+  }))
 
-  if (annualMysqlData) {
-    await mysql.query('insert ignore into earnings_annual (symbol, fiscalDateEnding, reportedEPS) values ?', [
-      annualMysqlData,
-    ])
+  if (annualEarningsData) {
+    await prisma.earningsAnnual.createMany({
+      data: annualEarningsData,
+      skipDuplicates: true,
+    })
   }
 
-  const monthlyMysqlData = earningsData.quarterlyEarnings?.map((e) => [
+  const quarterlyEarningsData = earningsData.quarterlyEarnings?.map((e) => ({
     symbol,
-    e.fiscalDateEnding,
-    e.reportedDate,
-    e.reportedEPS,
-    e.estimatedEPS,
-    e.surprise,
-    e.surprisePercentage,
-  ])
+    fiscalDateEnding: new Date(e.fiscalDateEnding),
+    reportedDate: e.reportedDate ? new Date(e.reportedDate) : null,
+    reportedEPS: e.reportedEPS ? parseFloat(e.reportedEPS) : null,
+    estimatedEPS: e.estimatedEPS ? parseFloat(e.estimatedEPS) : null,
+    surprise: e.surprise ? parseFloat(e.surprise) : null,
+    surprisePercentage: e.surprisePercentage ? parseFloat(e.surprisePercentage) : null,
+  }))
 
-  if (monthlyMysqlData) {
-    await mysql.query(
-      'insert ignore into earnings_quarterly (symbol, fiscalDateEnding, reportedDate, reportedEPS, estimatedEPS, surprise, surprisePercentage) values ?',
-      [monthlyMysqlData],
-    )
+  if (quarterlyEarningsData) {
+    await prisma.earningsQuarterly.createMany({
+      data: quarterlyEarningsData,
+      skipDuplicates: true,
+    })
   }
 
   return earningsData
@@ -108,16 +113,18 @@ async function genStockQuotesFromAlphaVantage(symbol: string) {
 
   if (tableData.length > 0) {
     // cache data in mysql for more advanced analysis later
-    await mysql.query(
-      'insert ignore into stock_quotes_daily (c_date, c_symb, c_open, c_high, c_low, c_close, c_vol) values ' +
-        tableData
-          .map(
-            (row) =>
-              `('${row.date}', '${symbol}', '${row.open}', '${row.max}', '${row.min}', '${row.close}', '${row.volume}')`,
-          )
-          .join(','),
-    )
-    await mysql.end()
+    await prisma.stockQuotesDaily.createMany({
+      data: tableData.map((row) => ({
+        c_date: new Date(row.date),
+        c_symb: symbol,
+        c_open: parseFloat(row.open),
+        c_high: parseFloat(row.max),
+        c_low: parseFloat(row.min),
+        c_close: parseFloat(row.close),
+        c_vol: BigInt(row.volume),
+      })),
+      skipDuplicates: true,
+    })
   }
   return tableData
 }

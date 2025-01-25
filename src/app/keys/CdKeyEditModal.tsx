@@ -19,7 +19,7 @@ export default function CdKeyEditModal({ show, onHide, cdKey, onSave }: EditModa
   const [formData, setFormData] = useState<EditCDKeyFormData>({
     computer_name: cdKey?.computer_name || '',
     comment: cdKey?.comment || '',
-    used_on: cdKey?.used_on?.toISOString().split('T')[0] || '',
+    used_on: cdKey?.used_on || '',
   })
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function CdKeyEditModal({ show, onHide, cdKey, onSave }: EditModa
       setFormData({
         computer_name: cdKey.computer_name || '',
         comment: cdKey.comment || '',
-        used_on: cdKey.used_on?.toISOString().split('T')[0] || '',
+        used_on: cdKey.used_on || '',
       })
     }
   }, [cdKey])

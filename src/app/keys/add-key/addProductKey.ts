@@ -1,9 +1,7 @@
 import 'server-only'
-
-import AuthRoutes from '@/app/auth/AuthRoutes'
-import { sql } from '@/server_lib/db'
-import { getSession } from '@/server_lib/session'
 import { redirect } from 'next/navigation'
+import { prisma } from '@/server_lib/prisma'
+import requireSession from '@/server_lib/requireSession'
 import z from 'zod'
 
 // Zod schema for validating product key form data
@@ -12,20 +10,13 @@ const ProductKeySchema = z.object({
   productKey: z.string().min(1, 'Product key is required'),
   computerName: z.string().optional(),
   comment: z.string().optional(),
-  usedOn: z
-    .string()
-    .date()
-    .optional()
-    .transform((val) => (val ? new Date(val) : null)),
+  usedOn: z.string().optional(),
 })
 
 export default async function addProductKey(formData: FormData) {
   'use server'
 
-  const session = await getSession()
-  if (!session?.uid) {
-    redirect(AuthRoutes.signIn)
-  }
+  const session = await requireSession()
 
   // Convert FormData to a plain object for Zod parsing
   const data = Object.fromEntries(formData.entries())
@@ -42,12 +33,16 @@ export default async function addProductKey(formData: FormData) {
   const { productName, productKey, computerName, comment, usedOn } = result.data
 
   try {
-    await sql`
-        INSERT INTO product_keys 
-        (uid, product_name, product_key, computer_name, comment, used_on) 
-        VALUES 
-        (${session.uid}, ${productName}, ${productKey}, ${computerName || null}, ${comment || null}, ${usedOn})
-      `
+    await prisma.productKey.create({
+      data: {
+        uid: session.uid,
+        productName,
+        productKey,
+        computerName: computerName || null,
+        comment: comment || null,
+        usedOn,
+      },
+    })
     redirect('/keys/')
   } catch (error) {
     console.error('Failed to add product key:', error)

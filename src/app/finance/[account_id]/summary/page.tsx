@@ -1,28 +1,28 @@
 import 'server-only'
-import { getSession } from '@/server_lib/session'
-import { redirect } from 'next/navigation'
-import AuthRoutes from '@/app/auth/AuthRoutes'
 import AccountNavigation from '../AccountNavigation'
-import { sql } from '@/server_lib/db'
 import SummaryClient from './SummaryClient'
 import Container from '@/components/container'
+import requireSession from '@/server_lib/requireSession'
+import { prisma } from '@/server_lib/prisma'
 
 export default async function SummaryPage({ params }: { params: Promise<{ account_id: string }> }) {
-  const uid = (await getSession())?.uid
-  if (!uid) {
-    redirect(AuthRoutes.signIn)
-  }
+  const { uid } = await requireSession()
 
   const _param = await params
-  const account_name = (
-    (await sql`select acct_name from accounts where acct_id = ${_param.account_id} and acct_owner = ${uid}`) as {
-      acct_name: string
-    }[]
-  )[0]?.acct_name
+  const account_name = await prisma.finAccounts.findUnique({
+    where: {
+      acct_id: parseInt(_param.account_id),
+      acct_owner: uid,
+    },
+    select: {
+      acct_name: true,
+    },
+  })
   if (!account_name) {
     throw new Error('account not found')
   }
 
+  const sql = prisma.$queryRaw
   const [totals] = (await sql`
     SELECT 
       SUM(ABS(t_amt)) as total_volume,
@@ -56,7 +56,7 @@ export default async function SummaryPage({ params }: { params: Promise<{ accoun
 
   return (
     <Container fluid>
-      <AccountNavigation accountId={parseInt(_param.account_id)} activeTab="summary" accountName={account_name} />
+      <AccountNavigation accountId={parseInt(_param.account_id)} activeTab="summary" accountName={account_name.acct_name} />
       <SummaryClient totals={totals} symbolSummary={symbolSummary} monthSummary={monthSummary} />
     </Container>
   )
