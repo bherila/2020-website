@@ -25,6 +25,15 @@
 - Themes supported: light/dark/system
 - Access theme state with useTheme() hook from next-themes
 
+## Accessibility Requirements
+
+- All pages must have proper heading hierarchy (h1 > h2 > h3)
+- ARIA labels required for navigation elements
+- Link text must be descriptive (avoid "click here")
+- Color contrast ratios must meet WCAG AA standards
+- Form inputs must have associated labels
+- Interactive elements must be keyboard-navigable
+
 ## React Bootstrap Components
 
 - Avoid and replace with shadcn components

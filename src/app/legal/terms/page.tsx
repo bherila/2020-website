@@ -1,5 +1,6 @@
 import Container from '@/components/container'
 import MainTitle from '@/components/main-title'
+import { ContactEmail } from '@/lib/contact-email'
 
 const brand = 'Ben Herila'
 
@@ -226,8 +227,8 @@ export default function PrivacyPage() {
         <br />
         &zwj;
         <br />
-        <strong>SECTION 19 – CONTACT INFORMATION</strong> Questions about the Terms of Service should be sent to us at
-        benjamin_herila@alumni.brown.edu.
+        <strong>SECTION 19 – CONTACT INFORMATION</strong> Questions about the Terms of Service should be sent to us at{' '}
+        <ContactEmail />.
       </p>
     </Container>
   )

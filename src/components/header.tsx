@@ -134,7 +134,10 @@ export default function Header({ session }: HeaderProps) {
     )
 
   return (
-    <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed w-full top-0 z-50 border-b">
+    <header
+      aria-label="Main navigation"
+      className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed w-full top-0 z-50 border-b"
+    >
       <div className="container flex h-16 items-center justify-between px-4 mx-auto">
         <div className="flex items-center gap-6">
           <Link href="/" className="text-lg font-semibold hover:text-primary">

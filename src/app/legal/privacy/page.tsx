@@ -1,134 +1,102 @@
 import Container from '@/components/container'
 import MainTitle from '@/components/main-title'
+import { H2Section } from '@/lib/h2-section'
+import { BulletList } from '@/lib/bullet-list'
+import { ContactEmail } from '@/lib/contact-email'
 
 export default function PrivacyPage() {
   return (
     <Container>
       <MainTitle>Privacy Policy</MainTitle>
-      <h2>Introduction</h2>
+      <H2Section title="Introduction">
+        <p className="text-lg">
+          This Privacy Policy describes how <span id="website-name">Ben Herila</span> ("we", "us", or "our") collects, uses,
+          and discloses your personal information when you use our website (the "Service").
+        </p>
+      </H2Section>
 
-      <p>
-        This privacy policy explains how <span id="website-name">Ben Herila Website</span> (the "Website") collects, uses,
-        and discloses information when you use our Website. We respect your privacy and are committed to protecting your
-        personal information.
-      </p>
+      <H2Section title="Information We Collect">
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-xl font-semibold mb-2">Personal Information</h3>
+            <p>We collect personal information that you voluntarily provide when:</p>
+            <BulletList>
+              <li>Creating an account</li>
+              <li>Contacting us through forms or email</li>
+              <li>Using interactive features of the Service</li>
+            </BulletList>
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold mb-2">Automated Collection</h3>
+            <p>We automatically collect certain information through:</p>
+            <BulletList>
+              <li>Server logs (IP address, browser type, access times)</li>
+              <li>Cookies and similar technologies</li>
+              <li>Google Analytics (with anonymized IP addresses)</li>
+            </BulletList>
+          </div>
+        </div>
+      </H2Section>
 
-      <h2>Information We Collect</h2>
+      <H2Section title="How We Use Information">
+        <BulletList>
+          <li>Provide and maintain our Service</li>
+          <li>Respond to inquiries and support requests</li>
+          <li>Analyze usage patterns for improvements</li>
+          <li>Prevent fraudulent activity</li>
+        </BulletList>
+      </H2Section>
 
-      <p>
-        We collect two types of information from users of our Website: (1) personal information that users provide to us,
-        and (2) non-personal information collected through Google Analytics.
-      </p>
+      <H2Section title="Data Sharing">
+        <p>We may share information with:</p>
+        <BulletList>
+          <li>Service providers under confidentiality agreements</li>
+          <li>Legal authorities when required by law</li>
+          <li>Successor entities in business transfers</li>
+        </BulletList>
+      </H2Section>
 
-      <h3>Personal Information</h3>
+      <H2Section title="Security Measures">
+        <p>We implement:</p>
+        <BulletList>
+          <li>SSL encryption for data transmission</li>
+          <li>Regular security audits</li>
+          <li>Access controls and authentication protocols</li>
+        </BulletList>
+      </H2Section>
+      <H2Section title="Your California Privacy Rights">
+        <p>Under CCPA, California residents have the right to:</p>
+        <BulletList>
+          <li>Request disclosure of collected data categories</li>
+          <li>Request deletion of personal information</li>
+          <li>Opt-out of data sales (we do not sell personal data)</li>
+        </BulletList>
+        <p className="mt-4">
+          To exercise these rights, contact us at <ContactEmail />
+        </p>
+      </H2Section>
 
-      <p>We collect personal information from you when you:</p>
+      <H2Section title="Policy Updates">
+        <p>We will notify you of material changes through:</p>
+        <BulletList>
+          <li>Email notifications to registered users</li>
+          <li>Prominent website notices</li>
+          <li>Updated effective date (currently May 5, 2024)</li>
+        </BulletList>
+      </H2Section>
 
-      <ul>
-        <li>Contact us through our website form or email</li>
-        <li>Create an account or register for a service</li>
-      </ul>
-
-      <p>
-        This personal information may include your name, email address, phone number, and any other information you provide
-        to us.
-      </p>
-
-      <h3>Non-Personal Information</h3>
-
-      <p>We use Google Analytics to collect non-personal information about your use of our Website, including:</p>
-
-      <ul>
-        <li>IP address</li>
-        <li>Browser type</li>
-        <li>Operating system</li>
-        <li>Referring URL</li>
-        <li>Pages visited</li>
-        <li>Time spent on the Website</li>
-      </ul>
-
-      <p>
-        Google Analytics uses cookies to collect this information. You can learn more about Google Analytics' data practices
-        by visiting their website.
-      </p>
-
-      <h2>How We Use Your Information</h2>
-
-      <p>We use your personal information to:</p>
-
-      <ul>
-        <li>Respond to your inquiries and provide customer support</li>
-        <li>Provide the services you have requested</li>
-        <li>Communicate with you about our Website and services</li>
-      </ul>
-
-      <p>We use non-personal information to:</p>
-
-      <ul>
-        <li>Analyze and improve our Website and services</li>
-        <li>Understand how users interact with our Website</li>
-        <li>Improve our marketing efforts</li>
-      </ul>
-
-      <h2>Disclosure of Information</h2>
-
-      <p>
-        We do not sell, trade, or rent your personal information to third parties. We may disclose your information in the
-        following circumstances:
-      </p>
-
-      <ul>
-        <li>To comply with legal requirements or respond to legal process</li>
-        <li>To protect the rights, safety, and property of our company, our employees, customers, or the public</li>
-        <li>In the event of a merger, acquisition, or bankruptcy</li>
-      </ul>
-
-      <h2>Security</h2>
-
-      <p>
-        We take reasonable measures to protect your personal information from unauthorized access, use, and disclosure,
-        including encryption and secure socket layer (SSL) technology.
-      </p>
-
-      <h2>IMPORTANT NOTICE FOR CALIFORNIA RESIDENTS</h2>
-      <p>This company does not meet the criteria that would require CCPA compliance. It does not:</p>
-      <ul>
-        <li>Have annual gross revenue of over $25 million</li>
-        <li>
-          Buy, receive, sell or share the personal information of 50,000 or more consumers (a “consumer” is defined as a
-          California resident), households or devices for commercial purposes each year
-        </li>
-        <li>Derive 50% or more of annual revenue from selling consumer personal information</li>
-      </ul>
-
-      <h2>IMPORTANT NOTICE FOR EU RESIDENTS</h2>
-      <p>
-        This website is not intended for use by individuals residing in the European Union (EU). We might not comply with
-        the General Data Protection Regulation (GDPR) and other EU data protection laws. If you are an EU resident, please
-        do not access or use this website, as we cannot ensure the protection of your personal data in accordance with EU
-        standards. By using this website, you acknowledge that you are not an EU resident and consent to our processing of
-        your personal data in accordance with our privacy policy.
-      </p>
-
-      <h2>Changes to This Privacy Policy</h2>
-
-      <p>
-        We may update this privacy policy from time to time. We will notify you of any significant changes by posting a
-        notice on our Website or sending you an email.
-      </p>
-
-      <h2>Contact Us</h2>
-
-      <p>
-        If you have any questions about this privacy policy or our use of your information, please contact us at{' '}
-        <span id="contact-info">benjamin_herila@alumni.brown.edu</span>.
-      </p>
-
-      <h2>Effective Date</h2>
-
-      <p>
-        This privacy policy was last updated on <span id="effective-date">May 5, 2024</span>.
-      </p>
+      <H2Section title="Contact Information">
+        <p>
+          For privacy-related inquiries:
+          <br />
+          Email: <ContactEmail />
+          <br />
+          Phone:{' '}
+          <a href="tel:+19088831378" className="text-primary underline">
+            (908) 883-1378
+          </a>
+        </p>
+      </H2Section>
     </Container>
   )
 }
