@@ -18,8 +18,17 @@
   - @tailwindcss/typography for prose styling
   - tailwindcss-animate for animations
 
-### React Bootstrap Components
+### Theme Management
+
+- Use next-themes for theme management
+- ThemeProvider should wrap the app in layout.tsx
+- Themes supported: light/dark/system
+- Access theme state with useTheme() hook from next-themes
+
+## React Bootstrap Components
+
 - Avoid and replace with shadcn components
+- Keep using `className` props on React Bootstrap components even if React 19 shows ref warnings
 - Use shadcn Button component as base for all buttons
 
 ## Best Practices
@@ -53,6 +62,10 @@ const form = useForm({
   - Keep filter UI in table header
   - Extract reusable filter/sort components to lib/
   - Follow TransactionsTable.tsx as reference implementation
+
+## Deprecated
+
+- Removed custom ThemeProvider component in favor of next-themes
 
 ## Component Organization
 

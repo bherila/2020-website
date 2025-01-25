@@ -135,7 +135,7 @@ export default function Header({ session }: HeaderProps) {
 
   return (
     <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 fixed w-full top-0 z-50 border-b">
-      <div className="container flex h-16 items-center justify-between px-4">
+      <div className="container flex h-16 items-center justify-between px-4 mx-auto">
         <div className="flex items-center gap-6">
           <Link href="/" className="text-lg font-semibold hover:text-primary">
             Ben Herila
@@ -154,12 +154,10 @@ export default function Header({ session }: HeaderProps) {
         <div className="flex items-center gap-4">
           <ThemeToggle />
 
-          {/* Desktop Auth Buttons */}
           <div className="hidden md:block">
             <AuthButtons />
           </div>
 
-          {/* Mobile Menu Button */}
           <div className="md:hidden">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
