@@ -1,6 +1,5 @@
 'use client'
 import Link from 'next/link'
-import { type sessionType } from '@/lib/sessionSchema'
 import { ThemeToggle } from './ThemeToggle'
 import { Button } from '@/components/ui/button'
 import { Menu } from 'lucide-react'
@@ -16,99 +15,65 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
 interface HeaderProps {
-  session: sessionType
+  session: any
 }
+
+const navigationItems = [
+  { label: 'Recipes', href: '/recipes' },
+  { label: 'Projects', href: '/projects' },
+  {
+    label: 'Tools',
+    subItems: [
+      { label: 'MaxMin 🔑', href: '/maxmin/MSFT' },
+      { label: 'License Manager 🔑', href: '/keys/' },
+      { label: 'Finance - RSU 🔑', href: '/rsu/' },
+      { label: 'Finance - Payslips 🔑', href: '/payslip/' },
+      { label: 'Ski Pass Group Purchase 🔑', href: '/spgp', condition: 'ax_spgp' },
+      { label: 'PHR 🔑', href: '/phr', condition: 'ax_phr' },
+      { label: 'Accounts', href: '/finance/' },
+      { label: 'Bingo card generator', href: '/bingo/' },
+    ],
+    href: '#',
+  },
+]
 
 export default function Header({ session }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const NavigationItems = () => (
     <>
-      <NavigationMenuItem>
-        <Link href="/recipes" className="text-sm font-medium text-muted-foreground hover:text-primary px-4 py-2">
-          Recipes
-        </Link>
-      </NavigationMenuItem>
-      <NavigationMenuItem>
-        <Link href="/projects" className="text-sm font-medium text-muted-foreground hover:text-primary px-4 py-2">
-          Projects
-        </Link>
-      </NavigationMenuItem>
-      <NavigationMenuItem>
-        <NavigationMenuTrigger>Tools</NavigationMenuTrigger>
-        <NavigationMenuContent>
-          <div className="grid gap-3 p-4 w-[400px] md:w-[500px]">
-            <NavigationMenuLink asChild>
-              <Link
-                href="/maxmin/MSFT"
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-              >
-                MaxMin 🔑
-              </Link>
-            </NavigationMenuLink>
-            <NavigationMenuLink asChild>
-              <Link
-                href="/keys/"
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-              >
-                License Manager 🔑
-              </Link>
-            </NavigationMenuLink>
-            <NavigationMenuLink asChild>
-              <Link
-                href="/rsu/"
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-              >
-                Finance - RSU 🔑
-              </Link>
-            </NavigationMenuLink>
-            <NavigationMenuLink asChild>
-              <Link
-                href="/payslip/"
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-              >
-                Finance - Payslips 🔑
-              </Link>
-            </NavigationMenuLink>
-            {session?.ax_spgp && (
-              <NavigationMenuLink asChild>
-                <Link
-                  href="/spgp"
-                  className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                >
-                  Ski Pass Group Purchase 🔑
-                </Link>
-              </NavigationMenuLink>
-            )}
-            {session?.ax_phr && (
-              <NavigationMenuLink asChild>
-                <Link
-                  href="/phr"
-                  className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                >
-                  PHR 🔑
-                </Link>
-              </NavigationMenuLink>
-            )}
-            <NavigationMenuLink asChild>
-              <Link
-                href="/finance/"
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-              >
-                Accounts
-              </Link>
-            </NavigationMenuLink>
-            <NavigationMenuLink asChild>
-              <Link
-                href="/bingo/"
-                className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-              >
-                Bingo card generator
-              </Link>
-            </NavigationMenuLink>
-          </div>
-        </NavigationMenuContent>
-      </NavigationMenuItem>
+      {navigationItems.map((item) => (
+        <NavigationMenuItem key={item.label}>
+          {item.subItems ? (
+            <>
+              <NavigationMenuTrigger className="flex items-center justify-between w-full">
+                {item.label}
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <div className="grid gap-3 p-4 w-[400px] md:w-[500px]">
+                  {item.subItems.map(
+                    (subItem) =>
+                      (!subItem.condition || session?.[subItem.condition]) && (
+                        <NavigationMenuLink asChild key={subItem.label}>
+                          <Link
+                            href={subItem.href}
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          >
+                            {subItem.label}
+                          </Link>
+                        </NavigationMenuLink>
+                      ),
+                  )}
+                </div>
+              </NavigationMenuContent>
+            </>
+          ) : (
+            <Link href={item.href} className="text-sm font-medium text-muted-foreground hover:text-primary px-4 py-2">
+              {item.label}
+            </Link>
+          )}
+        </NavigationMenuItem>
+      ))}
     </>
   )
 
@@ -171,40 +136,33 @@ export default function Header({ session }: HeaderProps) {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                 <nav className="flex flex-col gap-4">
-                  <Link href="/recipes" className="text-sm font-medium" onClick={() => setIsOpen(false)}>
-                    Recipes
-                  </Link>
-                  <Link href="/projects" className="text-sm font-medium" onClick={() => setIsOpen(false)}>
-                    Projects
-                  </Link>
-                  <div className="space-y-4">
-                    <h4 className="font-medium">Tools</h4>
-                    <div className="grid gap-2">
-                      <Link href="/maxmin/MSFT" className="text-sm" onClick={() => setIsOpen(false)}>
-                        MaxMin 🔑
+                  {navigationItems.map((item) => (
+                    <div key={item.label}>
+                      <Link href={item.href} className="text-sm font-medium" onClick={() => setIsOpen(false)}>
+                        {item.label}
                       </Link>
-                      <Link href="/keys/" className="text-sm" onClick={() => setIsOpen(false)}>
-                        License Manager 🔑
-                      </Link>
-                      <Link href="/rsu/" className="text-sm" onClick={() => setIsOpen(false)}>
-                        Finance - RSU 🔑
-                      </Link>
-                      <Link href="/payslip/" className="text-sm" onClick={() => setIsOpen(false)}>
-                        Finance - Payslips 🔑
-                      </Link>
-                      {session?.ax_phr && (
-                        <Link href="/phr" className="text-sm" onClick={() => setIsOpen(false)}>
-                          PHR 🔑
-                        </Link>
+                      {item.subItems && (
+                        <div className="space-y-4">
+                          <h4 className="font-medium">{item.label}</h4>
+                          <div className="grid gap-2">
+                            {item.subItems.map(
+                              (subItem) =>
+                                (!subItem.condition || session?.[subItem.condition]) && (
+                                  <Link
+                                    key={subItem.label}
+                                    href={subItem.href}
+                                    className="text-sm"
+                                    onClick={() => setIsOpen(false)}
+                                  >
+                                    {subItem.label}
+                                  </Link>
+                                ),
+                            )}
+                          </div>
+                        </div>
                       )}
-                      <Link href="/finance/" className="text-sm" onClick={() => setIsOpen(false)}>
-                        Accounts
-                      </Link>
-                      <Link href="/bingo/" className="text-sm" onClick={() => setIsOpen(false)}>
-                        Bingo card generator
-                      </Link>
                     </div>
-                  </div>
+                  ))}
                   <div className="mt-4">
                     <AuthButtons />
                   </div>
