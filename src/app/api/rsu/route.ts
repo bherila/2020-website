@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-async function getRows(uid: number) {
+async function getRows(uid: string) {
   return await prisma.finEquityAwards.findMany({
     where: { uid },
     orderBy: [{ vest_date: 'asc' }, { grant_date: 'asc' }],

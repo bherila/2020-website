@@ -6,9 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { authClient } from '@/lib/auth-client'
-
 import { object, string } from 'zod'
+import authClient from '@/lib/auth-client'
 import router from 'next/router'
 
 export const signUpSchema = object({
@@ -50,7 +49,7 @@ function SignupForm() {
         onSuccess: () => {
           router.push('/dashboard')
         },
-        onError: (ctx) => {
+        onError: (ctx: any) => {
           setApiError(ctx.error.message)
         },
       })

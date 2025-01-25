@@ -1,6 +1,6 @@
 export default interface SerializedLabResult {
   id: number
-  userId: number | null
+  userId: string | null
   testName: string | null
   collectionDatetime: number | null
   resultDatetime: number | null

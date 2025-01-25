@@ -15,16 +15,16 @@ datasource db {
 }
 
 model User {
-  id               String        @id
-  name             String        @db.Text
-  email            String        @unique
+  id               String        @id @db.VarChar(50)
+  name             String        @db.VarChar(50)
+  email            String        @unique @db.VarChar(50)
   emailVerified    Boolean
   image            String?       @db.Text
   createdAt        DateTime
   updatedAt        DateTime
   twoFactorEnabled Boolean?
-  username         String?       @unique
-  inviteCode       String?
+  username         String?       @unique @db.VarChar(50)
+  inviteCode       String?       @db.VarChar(50)
   accounts         Account[]
   sessions         Session[]
   twofactors       TwoFactor[]
@@ -40,7 +40,7 @@ model Session {
   updatedAt DateTime
   ipAddress String?  @db.Text
   userAgent String?  @db.Text
-  userId    String
+  userId    String   @db.VarChar(50)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId], map: "session_userId_fkey")
@@ -51,7 +51,7 @@ model Account {
   id                    String    @id
   accountId             String    @db.Text
   providerId            String    @db.Text
-  userId                String
+  userId                String    @db.VarChar(50)
   accessToken           String?   @db.Text
   refreshToken          String?   @db.Text
   idToken               String?   @db.Text
@@ -82,7 +82,7 @@ model TwoFactor {
   id          String @id
   secret      String @db.Text
   backupCodes String @db.Text
-  userId      String
+  userId      String @db.VarChar(50)
   user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId], map: "twoFactor_userId_fkey")
@@ -91,7 +91,7 @@ model TwoFactor {
 
 model PhrLabResult {
   id                  Int       @id @default(autoincrement())
-  userId              Int?      @map("user_id")
+  userId              String?   @map("user_id")
   testName            String?   @map("test_name") @db.VarChar(255)
   collectionDatetime  DateTime? @map("collection_datetime") @db.DateTime(0)
   resultDatetime      DateTime? @map("result_datetime") @db.DateTime(0)
@@ -114,7 +114,7 @@ model PhrLabResult {
 
 model ProductKey {
   id               Int       @id @default(autoincrement())
-  uid              Int?
+  uid              String?
   productId        String?   @map("product_id") @db.VarChar(100)
   productKey       String?   @unique(map: "product_key") @map("product_key") @db.VarChar(2000)
   productName      String?   @map("product_name") @db.VarChar(100)
@@ -180,7 +180,7 @@ model FinAccountSpending {
 
 model FinAccounts {
   acct_id      Int                @id @default(autoincrement())
-  acct_owner   Int                @default(0)
+  acct_owner   String             @db.VarChar(50)
   acct_name    String             @db.VarChar(50)
   acct_type    accounts_acct_type @default(general)
   when_deleted DateTime?          @db.DateTime(0)
@@ -219,7 +219,7 @@ model FinEquityAwards {
   vest_date   String   @db.Char(10)
   share_count Int
   symbol      String   @db.Char(4)
-  uid         Int
+  uid         String   @db.VarChar(50)
   vest_price  Decimal? @db.Decimal(10, 2)
 
   @@unique([grant_date, award_id, vest_date, symbol], map: "fin_equity_awards_pk")
@@ -228,7 +228,7 @@ model FinEquityAwards {
 
 model FinPayslips {
   payslip_id           Int       @id @default(autoincrement())
-  uid                  Int
+  uid                  String?   @db.VarChar(50)
   period_start         DateTime? @db.Date
   period_end           DateTime? @db.Date
   pay_date             DateTime? @db.Date
@@ -289,7 +289,7 @@ model GraduatedTax {
 
 model PHRPatientVitals {
   id          Int       @id @default(autoincrement())
-  user_id     Int?
+  user_id     String?   @db.VarChar(50)
   vital_name  String?   @db.VarChar(255)
   vital_date  DateTime? @db.Date
   vital_value String?   @db.VarChar(255)

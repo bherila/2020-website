@@ -8,9 +8,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import authClient from '@/lib/auth-client'
 
 const formSchema = z
   .object({
+    currentPassword: z.string().min(1, 'Current password is required'),
     password: z.string().min(8, 'Password must be at least 8 characters'),
     confirmPassword: z.string(),
   })
@@ -32,11 +34,11 @@ export default function ChangePasswordForm(props: { changePasswordAction: (formD
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const formData = new FormData()
-    formData.append('password', values.password)
-
     try {
-      await props.changePasswordAction(formData)
+      await authClient.changePassword({
+        currentPassword: values.currentPassword,
+        newPassword: values.password,
+      })
       setSuccess(true)
       setError(null)
       form.reset()
@@ -60,6 +62,20 @@ export default function ChangePasswordForm(props: { changePasswordAction: (formD
       )}
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="currentPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Current Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="Enter current password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="password"

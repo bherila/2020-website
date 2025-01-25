@@ -28,7 +28,6 @@ const navigationItems = [
       { label: 'License Manager 🔑', href: '/keys/' },
       { label: 'Finance - RSU 🔑', href: '/rsu/' },
       { label: 'Finance - Payslips 🔑', href: '/payslip/' },
-      { label: 'Ski Pass Group Purchase 🔑', href: '/spgp', condition: 'ax_spgp' },
       { label: 'PHR 🔑', href: '/phr', condition: 'ax_phr' },
       { label: 'Accounts', href: '/finance/' },
       { label: 'Bingo card generator', href: '/bingo/' },

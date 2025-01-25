@@ -1,9 +1,13 @@
 import 'server-only'
-import { betterAuth } from 'better-auth'
+import { betterAuth, boolean } from 'better-auth'
+import { nextCookies } from 'better-auth/next-js'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { prisma } from './prisma'
 
-export const auth = betterAuth({
+const boolType = { type: 'boolean', required: false, defaultValue: false, input: false }
+
+const auth = betterAuth({
+  plugins: [nextCookies()],
   database: prismaAdapter(prisma, {
     provider: 'mysql',
   }),
@@ -17,3 +21,5 @@ export const auth = betterAuth({
     new Set(['http://localhost:3000', 'https://www.bherila.net', process.env.NEXT_PUBLIC_APP_URL!]),
   ).filter(Boolean),
 })
+
+export default auth
