@@ -8,16 +8,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { createAccount } from './finAccount.create.action'
 
 const formSchema = z.object({
   accountName: z.string().min(1, 'Account name is required'),
 })
 
-type NewAccountFormProps = {
-  createAccount: (acctName: string) => Promise<void>
-}
-
-const NewAccountForm = ({ createAccount }: NewAccountFormProps) => {
+const NewAccountForm = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,7 +35,7 @@ const NewAccountForm = ({ createAccount }: NewAccountFormProps) => {
   }
 
   return (
-    <Card className="w-[350px]">
+    <Card className="sm:w-full md:w-1/3">
       <CardHeader>
         <CardTitle>Create New Account</CardTitle>
       </CardHeader>

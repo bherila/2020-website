@@ -167,7 +167,7 @@ model FinAccountSpending {
   spend_date        DateTime?                      @db.Date
   spend_category    String?                        @db.VarChar(40)
   spend_description String?                        @db.VarChar(100)
-  spend_amount      Decimal                        @db.Decimal(10, 2)
+  spend_amount      String?                        @db.VarChar(20)
   is_business       Int                            @default(0) @db.TinyInt
   transaction_type  String?                        @db.VarChar(20)
   notes             String?                        @db.VarChar(50)
@@ -183,12 +183,23 @@ model FinAccounts {
   acct_owner   String             @db.VarChar(50)
   acct_name    String             @db.VarChar(50)
   acct_type    accounts_acct_type @default(general)
+  acct_last_balance String             @db.VarChar(20) @default("0")
+  acct_sort_order Int             @default(0)
   when_deleted DateTime?          @db.DateTime(0)
 
   @@unique([acct_owner, acct_name], map: "acct_owner")
   @@map("fin_accounts")
 }
 
+model FinAccountBalanceSnapshot {
+  snapshot_id Int @id @default(autoincrement())
+  acct_id Int
+  balance String @db.VarChar(20)
+  when_added DateTime @default(now()) @db.DateTime(0)
+
+  @@map("fin_account_balance_snapshot")
+  @@index([acct_id], map: "fin_accounts_acct_id_fk")
+}
 
 model EarningsAnnual {
   symbol           String   @db.Char(5)
