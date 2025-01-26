@@ -13,6 +13,7 @@ import { RsuByVestDate } from '@/app/rsu/rsuByVestDate'
 import { RsuByAward } from '@/app/rsu/rsuByAward'
 import { vestStyle } from '@/app/rsu/vestStyle'
 import dynamic from 'next/dynamic'
+import Container from '@/components/container'
 
 const RsuChartLazy = dynamic(() => import('./RsuChart'), {
   loading: () => <Spinner />,
@@ -81,7 +82,7 @@ export default function RSUPage() {
 
   const now = new Date().toISOString().slice(0, 10)
   return (
-    <div className="container mx-auto px-4">
+    <Container>
       <div className="mb-8">
         <MainTitle>RSU App</MainTitle>
       </div>
@@ -237,6 +238,6 @@ export default function RSUPage() {
           </form>
         </div>
       </Card>
-    </div>
+    </Container>
   )
 }

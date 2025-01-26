@@ -9,12 +9,12 @@ export function RsuByAward(props: { rsu: IAward[] }) {
   const now = new Date().toISOString().slice(0, 10)
   return (
     <Table>
-      <TableHead>
+      <TableHeader>
         <tr>
-          <TableHeader>Grant ID</TableHeader>
-          <TableHeader>Shares</TableHeader>
+          <TableHead>Grant ID</TableHead>
+          <TableHead>Shares</TableHead>
         </tr>
-      </TableHead>
+      </TableHeader>
       <TableBody>
         {Object.keys(grouped).map((k, i) => {
           const lRSU = grouped[k]
