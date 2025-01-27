@@ -4,6 +4,7 @@ import currency from 'currency.js'
 import { AccountLineItem } from '@/lib/AccountLineItem'
 
 import './TransactionsTable.css'
+import { Table } from '@/components/ui/table'
 
 interface Props {
   data: AccountLineItem[]
@@ -51,19 +52,19 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
 
   // Determine if new columns should be hidden
   const isQtyColumnEmpty = useMemo(() => {
-    return data.every((row) => row.t_qty == null || row.t_qty === 0)
+    return data.every((row) => row.t_qty == null || Number(row.t_qty) === 0)
   }, [data])
 
   const isPriceColumnEmpty = useMemo(() => {
-    return data.every((row) => row.t_price == null || row.t_price === 0)
+    return data.every((row) => row.t_price == null || Number(row.t_price) === 0)
   }, [data])
 
   const isCommissionColumnEmpty = useMemo(() => {
-    return data.every((row) => row.t_commission == null || row.t_commission === 0)
+    return data.every((row) => row.t_commission == null || Number(row.t_commission) === 0)
   }, [data])
 
   const isFeeColumnEmpty = useMemo(() => {
-    return data.every((row) => row.t_fee == null || row.t_fee === 0)
+    return data.every((row) => row.t_fee == null || Number(row.t_fee) === 0)
   }, [data])
 
   const isTypeColumnEmpty = useMemo(() => {
@@ -91,7 +92,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
   }, [data])
 
   const isStrikeColumnEmpty = useMemo(() => {
-    return data.every((row) => row.opt_strike == null || row.opt_strike === 0)
+    return data.every((row) => row.opt_strike == null || Number(row.opt_strike) === 0)
   }, [data])
 
   const filteredData = data.filter(
@@ -120,7 +121,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
   const totalAmount = sortedData.reduce((sum, row) => sum.add(currency(row.t_amt || 0)), currency(0))
 
   return (
-    <table style={{ fontSize: '90%' }}>
+    <Table style={{ fontSize: '90%' }}>
       <thead>
         <tr>
           <th onClick={() => handleSort('t_date')} style={{ cursor: 'pointer' }}>
@@ -366,7 +367,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
             <td
               className={'numericCol'}
               style={{
-                color: row.t_amt >= 0 ? 'green' : 'red',
+                color: Number(row.t_amt) >= 0 ? 'green' : 'red',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -487,6 +488,6 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
           {onDeleteTransaction && <td></td>}
         </tr>
       </tfoot>
-    </table>
+    </Table>
   )
 }

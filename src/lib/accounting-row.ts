@@ -3,29 +3,7 @@ import currency from 'currency.js'
 import { DateContainer, parseDate } from '@/lib/DateHelper'
 
 import { OptionType, StockOptionSchema } from '../components/matcher'
-
-/*
-  create table accounting
-  (
-      t_id           bigint auto_increment,
-      t_account      char(5)                    null,
-      t_date         date                       not null,
-      t_type         enum ('Bought To Open', 'Sold Short', 'Sold To Close', 'Journal', 'Interest', 'Transfer', 'Option Expiration', 'Bought To Cover', 'Dividend', 'Credit') null,
-      t_symbol       char(5)                    null,
-      t_qty          int            default 0   not null,
-      t_amt          DECIMAL(13, 4) default 0   not null,
-      t_price        DECIMAL(13, 4) default 0   not null,
-      t_commission   DECIMAL(13, 4) default 0   not null,
-      t_method       char(5)                    null,
-      t_source       char(5)                    null,
-      t_origin       char(5)                    null,
-      opt_expiration date                       null,
-      opt_type       enum ('call', 'put')       null,
-      opt_strike     DECIMAL(13, 4) default 0   not null
-      constraint accounting_pk
-          primary key (t_id)
-  );
- */
+import { AccountLineItem } from '@/server_lib/AccountLineItem.server'
 
 export const TransactionTypes = [
   'bought to open',
@@ -41,30 +19,6 @@ export const TransactionTypes = [
   'deposit',
   'equity',
 ] as const
-
-export interface AccountingDbRow {
-  t_id?: number
-  t_account?: string
-  t_date?: string | null
-  t_type?: (typeof TransactionTypes)[number]
-  t_symbol?: string
-  t_qty?: number
-  t_amt?: number // number as string (mysql DECIMAL)
-  t_price?: number // number as string (mysql DECIMAL)
-  t_commission?: number // number as string (mysql DECIMAL)
-  t_fee?: number // number as string (mysql DECIMAL)
-  t_method?: string | null
-  t_source?: string | null
-  t_origin?: string | null
-  t_description?: string
-  t_comment?: string
-  opt_expiration?: string | null
-  opt_type?: OptionType
-  opt_strike?: number
-  t_from?: string | null
-  t_to?: string | null
-  t_interest_rate?: string | null
-}
 
 export interface EtradeSchema {
   id: string
@@ -85,15 +39,15 @@ export interface EtradeSchema {
   InterestRate: string | null
 }
 
-export function db2eTrade(row: AccountingDbRow): EtradeSchema {
+export function db2eTrade(row: AccountLineItem): EtradeSchema {
   return {
     id: row.t_id!.toString(),
     TransactionDate: parseDate(row.t_date),
     TransactionType: row.t_type!,
     SecurityType: '',
     Symbol: row.t_symbol!,
-    Amount: currency(row.t_amt!),
-    Price: currency(row.t_price!),
+    Amount: currency(row.t_amt!.toString()),
+    Price: currency(row.t_price!.toString()),
     Quantity: currency(row.t_qty!),
     Commission: currency(row.t_commission!),
     Fee: currency(row.t_fee!),

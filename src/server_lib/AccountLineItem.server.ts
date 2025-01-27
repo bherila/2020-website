@@ -1,8 +1,5 @@
 import 'server-only'
 import { prisma } from '@/server_lib/prisma'
-import type { FinAccountLineItems } from '@prisma/client'
-
-export type AccountLineItem = FinAccountLineItems
 
 export async function getLineItemsByAccount(accountId: number): Promise<AccountLineItem[]> {
   return prisma.finAccountLineItems.findMany({

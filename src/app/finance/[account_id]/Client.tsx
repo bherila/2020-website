@@ -2,12 +2,11 @@
 import { useState } from 'react'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import TransactionsTable from './TransactionsTable'
-import { AccountLineItem, AccountLineItemSchema } from '@/lib/AccountLineItem'
-import z from 'zod'
+import { AccountLineItem } from '@/lib/AccountLineItem'
 import { Spinner } from '@/components/ui/spinner'
 
-export default function AccountClient({ id, rawData }: { id: number; rawData: any }) {
-  const [data, setData] = useState<AccountLineItem[]>(z.array(AccountLineItemSchema).parse(rawData))
+export default function AccountClient({ id, rawData }: { id: number; rawData: AccountLineItem[] }) {
+  const [data, setData] = useState<AccountLineItem[]>(rawData);
 
   const handleDeleteTransaction = async (t_id: string) => {
     try {

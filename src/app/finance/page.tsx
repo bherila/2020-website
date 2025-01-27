@@ -1,8 +1,7 @@
 import 'server-only'
-import { getSession } from '@/server_lib/session'
 import { prisma } from '@/server_lib/prisma'
-import { revalidatePath } from 'next/cache'
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table'
+import StackedBalanceChart from '@/components/charts/StackedBalanceChart'
 import Container from '@/components/container'
 import Link from '@/components/link'
 import MainTitle from '@/components/main-title'
@@ -10,10 +9,12 @@ import NewAccountForm from '@/app/finance/NewAccountForm'
 import requireSession from '@/server_lib/requireSession'
 import currency from 'currency.js'
 import EditBalanceDisplay from './EditBalanceDisplay'
-import { updateBalance } from './finAccount.updateBalance.action'
+import { formatDistance } from 'date-fns'
 
 export default async function Page() {
   const { uid } = await requireSession()
+  
+  // Get accounts
   const accounts = await prisma.finAccounts.findMany({
     where: {
       acct_owner: uid,
@@ -22,30 +23,78 @@ export default async function Page() {
     orderBy: [{ acct_sort_order: 'asc' }, { acct_name: 'asc' }],
   })
 
+  // Get balance history for all accounts
+  const balanceHistory = await prisma.finAccountBalanceSnapshot.findMany({
+    where: {
+      acct_id: {
+        in: accounts.map(a => a.acct_id)
+      }
+    },
+    orderBy: {
+      when_added: 'asc'
+    }
+  })
+
+  // Group snapshots by quarter and account, keeping only the latest balance per quarter
+  const quarterlyBalances = balanceHistory.reduce((acc: { [quarter: string]: { [acct: string]: string } }, snapshot) => {
+    const date = snapshot.when_added
+    const quarter = `${date.getFullYear()}-Q${Math.floor(date.getMonth() / 3) + 1}`
+    
+    if (!acc[quarter]) {
+      acc[quarter] = {}
+    }
+    
+    // Always update the balance since we're iterating in chronological order
+    // This ensures we keep the latest balance for each account in the quarter
+    acc[quarter][snapshot.acct_id] = snapshot.balance
+    
+    return acc
+  }, {})
+
+  // Convert to array format needed by chart
+  const chartDataArray = Object.entries(quarterlyBalances).map(([quarter, balances]) => {
+    return [
+      quarter,
+      ...accounts.map(account => balances[account.acct_id] || '0')
+    ]
+  })
+
   return (
     <Container>
       <MainTitle>Accounting</MainTitle>
+      <div className="mb-8">
+        <StackedBalanceChart 
+          data={chartDataArray} 
+          labels={accounts.map(a => a.acct_name)}
+        />
+      </div>
       <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:space-x-4 space-y-4 sm:space-y-0">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Account Name</TableHead>
-              <TableHead className="text-right">Last Balance</TableHead>
+              <TableHead className="text-right" style={{ textAlign: 'right', width: '200px' }}>
+                Last Balance
+              </TableHead>
+              <TableHead className="text-right whitespace-nowrap w-0">Last update</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {accounts.map((account) => (
-              <TableRow key={account.acct_id}>
-                <TableCell>
+              <tr key={account.acct_id}>
+                <td className="px-2">
                   <Link href={`/finance/${account.acct_id}`}>{account.acct_name}</Link>
-                </TableCell>
-                <TableCell className="flex items-end justify-end">
+                </td>
+                <td className="flex items-end justify-end">
                   <EditBalanceDisplay
                     acct_id={account.acct_id}
                     defaultBalance={currency(account.acct_last_balance).toString()}
                   />
-                </TableCell>
-              </TableRow>
+                </td>
+                <td className="px-2" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                  {formatDistance(new Date(), account.acct_last_balance_date ?? new Date())}
+                </td>
+              </tr>
             ))}
           </TableBody>
         </Table>

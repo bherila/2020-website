@@ -1,7 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  provider        = "prisma-client-js"
   previewFeatures = ["typedSql"]
+  binaryTargets   = ["native", "debian-openssl-3.0.x"]
 }
 
 generator zod {
@@ -15,16 +15,16 @@ datasource db {
 }
 
 model User {
-  id               String        @id @db.VarChar(50)
-  name             String        @db.VarChar(50)
-  email            String        @unique @db.VarChar(50)
+  id               String      @id @db.VarChar(50)
+  name             String      @db.VarChar(50)
+  email            String      @unique @db.VarChar(50)
   emailVerified    Boolean
-  image            String?       @db.Text
+  image            String?     @db.Text
   createdAt        DateTime
   updatedAt        DateTime
   twoFactorEnabled Boolean?
-  username         String?       @unique @db.VarChar(50)
-  inviteCode       String?       @db.VarChar(50)
+  username         String?     @unique @db.VarChar(50)
+  inviteCode       String?     @db.VarChar(50)
   accounts         Account[]
   sessions         Session[]
   twofactors       TwoFactor[]
@@ -113,92 +113,93 @@ model PhrLabResult {
 }
 
 model ProductKey {
-  id               Int       @id @default(autoincrement())
+  id               Int     @id @default(autoincrement())
   uid              String?
-  productId        String?   @map("product_id") @db.VarChar(100)
-  productKey       String?   @unique(map: "product_key") @map("product_key") @db.VarChar(2000)
-  productName      String?   @map("product_name") @db.VarChar(100)
-  computerName     String?   @map("computer_name") @db.VarChar(100)
-  comment          String?   @db.VarChar(2000)
-  usedOn           String?   @map("used_on") @db.Char(10)
-  claimedDate      String?   @map("claimed_date") @db.VarChar(100)
-  keyType          String?   @map("key_type") @db.VarChar(100)
-  keyRetrievalNote String?   @map("key_retrieval_note") @db.MediumText
+  productId        String? @map("product_id") @db.VarChar(100)
+  productKey       String? @unique(map: "product_key") @map("product_key") @db.VarChar(2000)
+  productName      String? @map("product_name") @db.VarChar(100)
+  computerName     String? @map("computer_name") @db.VarChar(100)
+  comment          String? @db.VarChar(2000)
+  usedOn           String? @map("used_on") @db.Char(10)
+  claimedDate      String? @map("claimed_date") @db.VarChar(100)
+  keyType          String? @map("key_type") @db.VarChar(100)
+  keyRetrievalNote String? @map("key_retrieval_note") @db.MediumText
 
   @@map("product_keys")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model FinAccountLineItems {
-  t_id            BigInt                              @id @default(autoincrement())
+  t_id            Int                          @id @default(autoincrement())
   t_account       Int?
-  t_date          DateTime                            @db.Date
+  t_date          String                       @db.VarChar(10)
   t_type          String?
   t_schc_category String?
-  t_amt           Decimal?                            @db.Decimal(13, 4)
-  t_symbol        String?                             @db.VarChar(20)
-  t_qty           Int                                 @default(0)
-  t_price         Decimal?                            @db.Decimal(13, 4)
-  t_commission    Decimal?                            @db.Decimal(13, 4)
-  t_fee           Decimal?                            @db.Decimal(13, 4)
-  t_method        String?                             @db.VarChar(20)
-  t_source        String?                             @db.VarChar(20)
-  t_origin        String?                             @db.VarChar(20)
-  opt_expiration  DateTime?                           @db.Date
+  t_amt           Decimal?                     @db.Decimal(13, 4)
+  t_symbol        String?                      @db.VarChar(20)
+  t_qty           Float                        @default(0) @db.Float
+  t_price         Decimal?                     @db.Decimal(13, 4)
+  t_commission    Decimal?                     @db.Decimal(13, 4)
+  t_fee           Decimal?                     @db.Decimal(13, 4)
+  t_method        String?                      @db.VarChar(20)
+  t_source        String?                      @db.VarChar(20)
+  t_origin        String?                      @db.VarChar(20)
+  opt_expiration  String?                      @db.VarChar(10)
   opt_type        account_line_items_opt_type?
-  opt_strike      Decimal?                            @db.Decimal(13, 4)
-  t_description   String?                             @db.VarChar(255)
-  t_comment       String?                             @db.VarChar(255)
-  t_from          DateTime?                           @db.Date
-  t_to            DateTime?                           @db.Date
-  t_interest_rate String?                             @db.VarChar(20)
-  parent_t_id     BigInt?
-  t_cusip         String?                             @db.VarChar(20)
-  when_added      DateTime?                           @db.DateTime(0)
-  when_deleted    DateTime?                           @db.DateTime(0)
+  opt_strike      Decimal?                     @db.Decimal(13, 4)
+  t_description   String?                      @db.VarChar(255)
+  t_comment       String?                      @db.VarChar(255)
+  t_from          String?                      @db.VarChar(10)
+  t_to            String?                      @db.VarChar(10)
+  t_interest_rate String?                      @db.VarChar(20)
+  parent_t_id     Int?
+  t_cusip         String?                      @db.VarChar(20)
+  when_added      DateTime?                    @db.DateTime(0)
+  when_deleted    DateTime?                    @db.DateTime(0)
 
   @@index([t_account], map: "accounting_accounts_acct_id_fk")
   @@map("fin_account_line_items")
 }
 
 model FinAccountSpending {
-  spend_id          Int                            @id @default(autoincrement())
+  spend_id          Int       @id @default(autoincrement())
   account_id        Int
-  spend_date        DateTime?                      @db.Date
-  spend_category    String?                        @db.VarChar(40)
-  spend_description String?                        @db.VarChar(100)
-  spend_amount      String?                        @db.VarChar(20)
-  is_business       Int                            @default(0) @db.TinyInt
-  transaction_type  String?                        @db.VarChar(20)
-  notes             String?                        @db.VarChar(50)
-  when_added        DateTime                       @default(now()) @db.DateTime(0)
-  when_deleted      DateTime?                      @db.DateTime(0)
+  spend_date        DateTime? @db.Date
+  spend_category    String?   @db.VarChar(40)
+  spend_description String?   @db.VarChar(100)
+  spend_amount      String?   @db.VarChar(20)
+  is_business       Int       @default(0) @db.TinyInt
+  transaction_type  String?   @db.VarChar(20)
+  notes             String?   @db.VarChar(50)
+  when_added        DateTime  @default(now()) @db.DateTime(0)
+  when_deleted      DateTime? @db.DateTime(0)
   t_schc_category   String?
 
   @@map("fin_account_spending")
 }
 
 model FinAccounts {
-  acct_id      Int                @id @default(autoincrement())
-  acct_owner   String             @db.VarChar(50)
-  acct_name    String             @db.VarChar(50)
-  acct_type    accounts_acct_type @default(general)
-  acct_last_balance String             @db.VarChar(20) @default("0")
-  acct_sort_order Int             @default(0)
-  when_deleted DateTime?          @db.DateTime(0)
+  acct_id                Int                @id @default(autoincrement())
+  acct_owner             String             @db.VarChar(50)
+  acct_name              String             @db.VarChar(50)
+  acct_type              accounts_acct_type @default(general)
+  when_deleted           DateTime?          @db.DateTime(0)
+  acct_last_balance      String             @default("0") @db.VarChar(20)
+  acct_last_balance_date DateTime?          @db.DateTime(0)
+  acct_sort_order        Int                @default(0)
 
   @@unique([acct_owner, acct_name], map: "acct_owner")
   @@map("fin_accounts")
 }
 
 model FinAccountBalanceSnapshot {
-  snapshot_id Int @id @default(autoincrement())
-  acct_id Int
-  balance String @db.VarChar(20)
-  when_added DateTime @default(now()) @db.DateTime(0)
+  snapshot_id Int      @id @default(autoincrement())
+  acct_id     Int
+  balance     String   @db.VarChar(20)
+  when_added  DateTime @default(now()) @db.DateTime(0)
 
-  @@map("fin_account_balance_snapshot")
   @@index([acct_id], map: "fin_accounts_acct_id_fk")
+  @@map("fin_account_balance_snapshot")
 }
 
 model EarningsAnnual {
@@ -338,32 +339,32 @@ model StockQuotesDaily {
 }
 
 model TimeSeriesDatapoint {
-  dp_id             Int               @id @default(autoincrement())
+  dp_id             Int              @id @default(autoincrement())
   dp_series_id      Int
-  dp_date           DateTime?         @db.Date
-  dp_value          String?           @db.VarChar(20)
-  dp_comment        String?           @db.MediumText
-  timeseries_series TimeSeriesSeries  @relation(fields: [dp_series_id], references: [id], onUpdate: Restrict, map: "timeseries_datapoint_timeseries_series_id_fk")
+  dp_date           DateTime?        @db.Date
+  dp_value          String?          @db.VarChar(20)
+  dp_comment        String?          @db.MediumText
+  timeseries_series TimeSeriesSeries @relation(fields: [dp_series_id], references: [id], onUpdate: Restrict, map: "timeseries_datapoint_timeseries_series_id_fk")
 
   @@index([dp_series_id], map: "timeseries_datapoint_timeseries_series_id_fk")
   @@map("timeseries_datapoint")
 }
 
 model TimeSeriesDocument {
-  id                Int                 @id @default(autoincrement())
+  id                Int                @id @default(autoincrement())
   uid               Int
-  name              String              @db.VarChar(50)
+  name              String             @db.VarChar(50)
   timeseries_series TimeSeriesSeries[]
 
   @@map("timeseries_documents")
 }
 
 model TimeSeriesSeries {
-  id                   Int                    @id @default(autoincrement())
+  id                   Int                   @id @default(autoincrement())
   document_id          Int
-  series_name          String                 @db.VarChar(50)
+  series_name          String                @db.VarChar(50)
   timeseries_datapoint TimeSeriesDatapoint[]
-  timeseries_documents TimeSeriesDocument   @relation(fields: [document_id], references: [id], onUpdate: Restrict, map: "timeseries_series_timeseries_documents_id_fk")
+  timeseries_documents TimeSeriesDocument    @relation(fields: [document_id], references: [id], onUpdate: Restrict, map: "timeseries_series_timeseries_documents_id_fk")
 
   @@index([document_id], map: "timeseries_series_timeseries_documents_id_fk")
   @@map("timeseries_series")

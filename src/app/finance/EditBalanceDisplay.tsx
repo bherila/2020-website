@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Edit } from 'lucide-react'
-import { useState } from 'react'
+import { createRef, useState } from 'react'
 import currency from 'currency.js'
 import { updateBalance } from './finAccount.updateBalance.action'
 
@@ -10,6 +10,16 @@ export default function EditBalanceDisplay({ acct_id, defaultBalance }: { acct_i
   const [balance, setBalance] = useState(defaultBalance)
   const [isEditing, setIsEditing] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const inputRef = createRef<HTMLInputElement>()
+
+  const handleClick = () => {
+    setIsEditing(true)
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus()
+      }
+    }, 100)
+  }
 
   const handleSubmit = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -29,18 +39,22 @@ export default function EditBalanceDisplay({ acct_id, defaultBalance }: { acct_i
       {isEditing ? (
         <div>
           <Input
-            type="text"
+            autoFocus
             className="w-60 text-right"
-            value={balance}
-            onChange={(e) => setBalance(e.target.value)}
-            onKeyPress={handleSubmit}
             disabled={isSubmitting}
+            onBlur={() => setIsEditing(false)}
+            onChange={(e) => setBalance(e.target.value)}
+            onFocus={(e) => e.target.select()}
+            onKeyPress={handleSubmit}
+            ref={inputRef}
+            type="text"
+            value={balance}
           />
         </div>
       ) : (
         <div>
           {balance}{' '}
-          <Button onClick={() => setIsEditing(true)} variant="ghost">
+          <Button onClick={handleClick} variant="ghost">
             <Edit className="cursor-pointer" />
           </Button>
         </div>
