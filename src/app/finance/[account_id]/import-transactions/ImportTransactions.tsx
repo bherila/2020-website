@@ -1,6 +1,6 @@
 import { useMemo, useState, useCallback } from 'react'
 import { ZodError } from 'zod'
-import { AccountLineItem, AccountLineItemSchema, TransactionType } from '@/lib/AccountLineItem'
+import { AccountLineItem, AccountLineItemSchema } from '@/lib/AccountLineItem'
 import TransactionsTable from '../TransactionsTable'
 import { parseEtradeCsv } from './parseEtradeCsv'
 
@@ -131,7 +131,7 @@ function parseData(text: string): { data: AccountLineItem[] | null; parseError: 
           t_description: row[1],
           t_amt: row[2], // Pass raw string for t_amt, letting Zod handle the parsing
           t_comment: row[3],
-          t_type: 'spend' as TransactionType,
+          t_type: 'spend',
           t_schc_category: null,
         }),
       )

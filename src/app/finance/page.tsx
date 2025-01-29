@@ -51,11 +51,23 @@ export default async function Page() {
     return acc
   }, {})
 
-  // Convert to array format needed by chart
-  const chartDataArray = Object.entries(quarterlyBalances).map(([quarter, balances]) => {
+  // Sort quarters chronologically
+  const sortedQuarters = Object.keys(quarterlyBalances).sort()
+  
+  // Convert to array format needed by chart, carrying forward previous balances
+  const chartDataArray = sortedQuarters.map((quarter, index) => {
+    const currentBalances = quarterlyBalances[quarter]
+    const previousQuarter = index > 0 ? sortedQuarters[index - 1] : null
+    const previousBalances = previousQuarter ? quarterlyBalances[previousQuarter] : {}
+
     return [
       quarter,
-      ...accounts.map(account => balances[account.acct_id] || '0')
+      ...accounts.map(account => {
+        // Use current balance if available, otherwise use previous quarter's balance, or '0' if no previous
+        return currentBalances[account.acct_id] || 
+               previousBalances[account.acct_id] || 
+               '0'
+      })
     ]
   })
 

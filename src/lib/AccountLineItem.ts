@@ -13,7 +13,7 @@ export const AccountLineItemSchema = z.object({
   t_amt: z.string(),
   t_symbol: z.string().max(20).nullable().optional(),
   t_cusip: z.string().max(20).nullable().optional(),
-  t_qty: z.string().default('0'),
+  t_qty: z.number().default(0),
   t_price: z.string().default('0'),
   t_commission: z.string().default('0'),
   t_fee: z.string().default('0'),

@@ -1,4 +1,4 @@
-import { AccountLineItem, AccountLineItemSchema, TransactionType } from '@/lib/AccountLineItem'
+import { AccountLineItem, AccountLineItemSchema } from '@/lib/AccountLineItem'
 import { parseOptionDescription } from './StockOptionUtil'
 
 export function parseQuickenQFX(data: string): AccountLineItem[] {
@@ -6,7 +6,7 @@ export function parseQuickenQFX(data: string): AccountLineItem[] {
   const lines = data.split('\n')
 
   let transactionDate: Date | null = null
-  let transactionType: TransactionType | null = null
+  let transactionType: string | null = null
   let symbol: string | null = null
   let quantity: number | null = null
   let amount: number | null = null
