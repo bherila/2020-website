@@ -6,7 +6,7 @@ import { AccountLineItem } from '@/lib/AccountLineItem'
 import { Spinner } from '@/components/ui/spinner'
 
 export default function AccountClient({ id, rawData }: { id: number; rawData: AccountLineItem[] }) {
-  const [data, setData] = useState<AccountLineItem[]>(rawData);
+  const [data, setData] = useState<AccountLineItem[]>(rawData)
 
   const handleDeleteTransaction = async (t_id: string) => {
     try {

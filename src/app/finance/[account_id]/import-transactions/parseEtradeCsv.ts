@@ -10,8 +10,7 @@ export function parseEtradeCsv(csvString: string): AccountLineItem[] {
     const columns = row.split(',')
     if (columns.length < 9) return // Skip rows with insufficient data
 
-    const [transactionDate,  symbol, quantity, amount, price, commission, description] =
-      columns
+    const [transactionDate, symbol, quantity, amount, price, commission, description] = columns
 
     if (transactionDate === 'TransactionDate') return
 

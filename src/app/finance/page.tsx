@@ -13,7 +13,7 @@ import { formatDistance } from 'date-fns'
 
 export default async function Page() {
   const { uid } = await requireSession()
-  
+
   // Get accounts
   const accounts = await prisma.finAccounts.findMany({
     where: {
@@ -27,33 +27,33 @@ export default async function Page() {
   const balanceHistory = await prisma.finAccountBalanceSnapshot.findMany({
     where: {
       acct_id: {
-        in: accounts.map(a => a.acct_id)
-      }
+        in: accounts.map((a) => a.acct_id),
+      },
     },
     orderBy: {
-      when_added: 'asc'
-    }
+      when_added: 'asc',
+    },
   })
 
   // Group snapshots by quarter and account, keeping only the latest balance per quarter
   const quarterlyBalances = balanceHistory.reduce((acc: { [quarter: string]: { [acct: string]: string } }, snapshot) => {
     const date = snapshot.when_added
     const quarter = `${date.getFullYear()}-Q${Math.floor(date.getMonth() / 3) + 1}`
-    
+
     if (!acc[quarter]) {
       acc[quarter] = {}
     }
-    
+
     // Always update the balance since we're iterating in chronological order
     // This ensures we keep the latest balance for each account in the quarter
     acc[quarter][snapshot.acct_id] = snapshot.balance
-    
+
     return acc
   }, {})
 
   // Sort quarters chronologically
   const sortedQuarters = Object.keys(quarterlyBalances).sort()
-  
+
   // Convert to array format needed by chart, carrying forward previous balances
   const chartDataArray = sortedQuarters.map((quarter, index) => {
     const currentBalances = quarterlyBalances[quarter]
@@ -62,12 +62,10 @@ export default async function Page() {
 
     return [
       quarter,
-      ...accounts.map(account => {
+      ...accounts.map((account) => {
         // Use current balance if available, otherwise use previous quarter's balance, or '0' if no previous
-        return currentBalances[account.acct_id] || 
-               previousBalances[account.acct_id] || 
-               '0'
-      })
+        return currentBalances[account.acct_id] || previousBalances[account.acct_id] || '0'
+      }),
     ]
   })
 
@@ -75,10 +73,7 @@ export default async function Page() {
     <Container>
       <MainTitle>Accounting</MainTitle>
       <div className="mb-8">
-        <StackedBalanceChart 
-          data={chartDataArray} 
-          labels={accounts.map(a => a.acct_name)}
-        />
+        <StackedBalanceChart data={chartDataArray} labels={accounts.map((a) => a.acct_name)} />
       </div>
       <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:space-x-4 space-y-4 sm:space-y-0">
         <Table>

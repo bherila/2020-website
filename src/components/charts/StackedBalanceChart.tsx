@@ -5,21 +5,37 @@ import { format } from 'date-fns'
 
 const colors = [
   // Reds
-  '#D32F2F', '#C62828', '#B71C1C',
+  '#D32F2F',
+  '#C62828',
+  '#B71C1C',
   // Oranges
-  '#FF8F00', '#F57C00', '#EF6C00',
+  '#FF8F00',
+  '#F57C00',
+  '#EF6C00',
   // Yellows
-  '#FFD600', '#FFC107', '#FFA000',
-  // Greens  
-  '#388E3C', '#2E7D32', '#1B5E20',
+  '#FFD600',
+  '#FFC107',
+  '#FFA000',
+  // Greens
+  '#388E3C',
+  '#2E7D32',
+  '#1B5E20',
   // Blues
-  '#1976D2', '#1565C0', '#0D47A1',
+  '#1976D2',
+  '#1565C0',
+  '#0D47A1',
   // Purples
-  '#7B1FA2', '#6A1B9A', '#4A148C',
+  '#7B1FA2',
+  '#6A1B9A',
+  '#4A148C',
   // Teals
-  '#00796B', '#00695C', '#004D40',
+  '#00796B',
+  '#00695C',
+  '#004D40',
   // Pinks
-  '#C2185B', '#AD1457', '#880E4F'
+  '#C2185B',
+  '#AD1457',
+  '#880E4F',
 ]
 
 interface StackedBalanceChartProps {
@@ -35,12 +51,12 @@ export default function StackedBalanceChart({ data, labels }: StackedBalanceChar
     const dataPoint: { [key: string]: any } = {
       date: date,
     }
-    
+
     balances.forEach((balance, index) => {
       const label = labels?.[index] || `balance${index + 1}`
       dataPoint[label] = typeof balance === 'string' ? currency(balance).value : balance
     })
-    
+
     return dataPoint
   })
 
@@ -59,7 +75,7 @@ export default function StackedBalanceChart({ data, labels }: StackedBalanceChar
         }}
       >
         <CartesianGrid strokeDasharray="3 3" stroke="#666666" />
-        <XAxis 
+        <XAxis
           dataKey="date"
           tickFormatter={(date: string) => {
             if (date.includes('Q')) {
