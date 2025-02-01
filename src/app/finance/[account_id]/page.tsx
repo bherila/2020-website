@@ -69,7 +69,6 @@ export default async function AccountIdPage({ params }: { params: Promise<{ acco
   return (
     <Container fluid>
       {account_id && <AccountNavigation accountId={account_id} activeTab="transactions" accountName={account.acct_name} />}
-      <AccountBalanceHistory balanceHistory={balances.map((balance) => [balance.when_added.valueOf(), balance.balance])} />
       <AccountClient id={account_id} rawData={itemsConverted} />
     </Container>
   )
