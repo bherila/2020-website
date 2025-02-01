@@ -41,7 +41,7 @@ export default async function BalanceHistoryPage({ params }: { params: Promise<{
 
   return (
     <Container fluid>
-      <AccountNavigation accountId={account_id} activeTab="balance" accountName={account.acct_name} />
+      <AccountNavigation accountId={account_id} activeTab="balance-timeseries" accountName={account.acct_name} />
       <AccountBalanceHistory balanceHistory={balances.map((balance) => [balance.when_added.valueOf(), balance.balance])} />
       <Table className="container mx-auto w-[500px]">
         <TableHeader>
