@@ -1,14 +1,13 @@
-'use client'
-
 import './summary.css'
 import currency from 'currency.js'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table'
 import Masonry from '@/components/ui/masonry'
+import Decimal from 'decimal.js'
 
 interface Props {
   totals: {
-    total_volume: number
+    total_volume: Decimal
     total_commission: number
     total_fee: number
   }
@@ -34,7 +33,7 @@ export default function SummaryClient({ totals, symbolSummary, monthSummary }: P
             <TableBody>
               <TableRow>
                 <TableCell>Total Volume</TableCell>
-                <TableCell className="text-end">{currency(totals.total_volume).format()}</TableCell>
+                <TableCell className="text-end">{currency(totals.total_volume.valueOf()).format()}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Total Commissions</TableCell>

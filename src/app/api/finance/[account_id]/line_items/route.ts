@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { AccountLineItemSchema } from '@/lib/AccountLineItem'
+import { AccountLineItem, AccountLineItemSchema } from '@/lib/AccountLineItem'
 import { z } from 'zod'
 import { prisma } from '@/server_lib/prisma'
 import requireSession from '@/server_lib/requireSession'
+import currency from 'currency.js'
 
 async function validateAccess(accountId: number) {
   const { uid } = await requireSession()
@@ -35,14 +36,33 @@ export async function GET(request: NextRequest, context: { params: Promise<{ acc
     const items = await prisma.finAccountLineItems.findMany({
       where: {
         t_account: accountId,
-        when_deleted: includeDeleted ? undefined : null,
+        when_deleted: includeDeleted ? { not: null } : null,
       },
       orderBy: {
         t_date: 'desc',
       },
     })
 
-    return NextResponse.json(items)
+    const itemsConverted = items.map((item) => {
+      const r = {
+        ...item,
+        t_price: item.t_price?.toString(),
+        t_amt: item.t_amt?.toString(),
+        t_fee: item.t_fee?.toString(),
+        t_commission: item.t_commission?.toString(),
+        opt_strike: item.opt_strike?.toString(),
+        t_harvested_amount: !item.t_harvested_amount ? undefined : item.t_harvested_amount.toString(),
+      } as any
+      delete r.when_added
+      delete r.when_deleted
+      for (const key of Object.keys(r)) {
+        if (r[key] == null) {
+          delete r[key]
+        }
+      }
+      return r
+    })
+    return NextResponse.json(itemsConverted)
   } catch (e) {
     return NextResponse.json({ error: e?.toString() }, { status: 400 })
   }
@@ -53,22 +73,40 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ac
     const accountId = z.coerce.number().parse((await context.params).account_id)
     await validateAccess(accountId)
 
+    function enrich(item: z.infer<typeof AccountLineItemSchema>) {
+      item.t_account = accountId
+      if (item.t_amt) {
+        item.t_amt = currency(item.t_amt).toString()
+      }
+      if (item.t_commission) {
+        item.t_commission = currency(item.t_commission).toString()
+      }
+      if (item.t_fee) {
+        item.t_fee = currency(item.t_fee).toString()
+      }
+      if (item.t_price) {
+        item.t_price = currency(item.t_price).toString()
+      }
+      return item
+    }
+
     const body = await request.json()
     if (Array.isArray(body)) {
-      const items = z.array(AccountLineItemSchema).parse(body)
+      const items = z.array(AccountLineItemSchema).parse(body).map(enrich)
       await prisma.finAccountLineItems.createMany({
         data: items,
       })
     } else {
       const item = AccountLineItemSchema.parse(body)
-      await prisma.finAccountLineItems.create({
-        data: item,
+      await prisma.finAccountLineItems.createMany({
+        data: [enrich(item)],
       })
     }
 
     // Return updated list
     return GET(request, context)
   } catch (e) {
+    console.error(e, e instanceof Error ? (e as Error).stack : undefined)
     return NextResponse.json({ error: e?.toString() }, { status: 400 })
   }
 }

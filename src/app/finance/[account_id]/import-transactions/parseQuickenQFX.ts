@@ -2,6 +2,9 @@ import { AccountLineItem, AccountLineItemSchema } from '@/lib/AccountLineItem'
 import { parseOptionDescription } from './StockOptionUtil'
 
 export function parseQuickenQFX(data: string): AccountLineItem[] {
+  if (!data.startsWith('OFXHEADER')) {
+    return []
+  }
   const accountLineItems: AccountLineItem[] = []
   const lines = data.split('\n')
 

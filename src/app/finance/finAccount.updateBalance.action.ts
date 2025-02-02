@@ -1,7 +1,8 @@
 'use server'
-import { prisma } from '@/server_lib/prisma'
 import { getSession } from '@/server_lib/session'
+import { prisma } from '@/server_lib/prisma'
 import { revalidatePath } from 'next/cache'
+import currency from 'currency.js'
 
 export async function updateBalance(acct_id: number, newBalance: string): Promise<void> {
   'use server'
@@ -26,7 +27,7 @@ export async function updateBalance(acct_id: number, newBalance: string): Promis
   // update balance of the account
   await prisma.finAccounts.update({
     where: { acct_id, acct_owner },
-    data: { acct_last_balance: newBalance, acct_last_balance_date: new Date() },
+    data: { acct_last_balance: currency(newBalance).value.toString(), acct_last_balance_date: new Date() },
   })
 
   // add a finAccountBalanceSnapshot

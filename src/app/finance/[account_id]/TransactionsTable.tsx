@@ -124,80 +124,81 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
     <Table style={{ fontSize: '90%' }}>
       <thead>
         <tr>
-          <th onClick={() => handleSort('t_date')} style={{ cursor: 'pointer' }}>
+          <th className="clickable dateCol" onClick={() => handleSort('t_date')}>
             Date {sortField === 't_date' && (sortDirection === 'asc' ? '↑' : '↓')}
           </th>
           {!isTypeColumnEmpty && (
-            <th onClick={() => handleSort('t_type')} style={{ cursor: 'pointer' }}>
+            <th className="clickable" onClick={() => handleSort('t_type')}>
               Type {sortField === 't_type' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
           )}
-          <th onClick={() => handleSort('t_description')} style={{ cursor: 'pointer' }}>
+          <th className="clickable descriptionCol" onClick={() => handleSort('t_description')}>
             Description {sortField === 't_description' && (sortDirection === 'asc' ? '↑' : '↓')}
           </th>
           {!isQtyColumnEmpty && (
-            <th onClick={() => handleSort('t_qty')} style={{ cursor: 'pointer' }}>
+            <th className="clickable" onClick={() => handleSort('t_qty')}>
               Qty {sortField === 't_qty' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
           )}
           {!isPriceColumnEmpty && (
-            <th onClick={() => handleSort('t_price')} style={{ cursor: 'pointer' }}>
+            <th className="clickable" onClick={() => handleSort('t_price')}>
               Price {sortField === 't_price' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
           )}
           {!isCommissionColumnEmpty && (
-            <th onClick={() => handleSort('t_commission')} style={{ cursor: 'pointer' }}>
+            <th className="clickable" onClick={() => handleSort('t_commission')}>
               Comm. {sortField === 't_commission' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
           )}
           {!isFeeColumnEmpty && (
-            <th onClick={() => handleSort('t_fee')} style={{ cursor: 'pointer' }}>
+            <th className="clickable" onClick={() => handleSort('t_fee')}>
               Fee {sortField === 't_fee' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
           )}
-          <th onClick={() => handleSort('t_amt')} style={{ cursor: 'pointer' }}>
+          <th className="clickable" onClick={() => handleSort('t_amt')}>
             Amount {sortField === 't_amt' && (sortDirection === 'asc' ? '↑' : '↓')}
           </th>
           {!isCategoryColumnEmpty && (
-            <th onClick={() => handleSort('t_schc_category')} style={{ cursor: 'pointer' }}>
+            <th className="clickable" onClick={() => handleSort('t_schc_category')}>
               Category {sortField === 't_schc_category' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
           )}
           {!isCusipColumnEmpty && (
-            <th onClick={() => handleSort('t_cusip')} style={{ cursor: 'pointer' }}>
+            <th className="clickable" onClick={() => handleSort('t_cusip')}>
               CUSIP {sortField === 't_cusip' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
           )}
           {!isSymbolColumnEmpty && (
-            <th onClick={() => handleSort('t_symbol')} style={{ cursor: 'pointer' }}>
+            <th className="clickable" onClick={() => handleSort('t_symbol')}>
               Symbol {sortField === 't_symbol' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
           )}
           {!isOptionExpiryColumnEmpty && (
-            <th onClick={() => handleSort('opt_expiration')} style={{ cursor: 'pointer' }}>
+            <th className="clickable" onClick={() => handleSort('opt_expiration')}>
               Option Expiry {sortField === 'opt_expiration' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
           )}
           {!isOptionTypeColumnEmpty && (
-            <th onClick={() => handleSort('opt_type')} style={{ cursor: 'pointer' }}>
+            <th className="clickable" onClick={() => handleSort('opt_type')}>
               Option Type {sortField === 'opt_type' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
           )}
           {!isStrikeColumnEmpty && (
-            <th onClick={() => handleSort('opt_strike')} style={{ cursor: 'pointer' }}>
+            <th className="clickable" onClick={() => handleSort('opt_strike')}>
               Strike {sortField === 'opt_strike' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
           )}
           {!isMemoColumnEmpty && (
-            <th onClick={() => handleSort('t_comment')} style={{ cursor: 'pointer', width: '200px' }}>
+            <th className="clickable" onClick={() => handleSort('t_comment')} style={{ width: '200px' }}>
               Memo {sortField === 't_comment' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
           )}
-          {onDeleteTransaction && <th style={{ textAlign: 'center' }}>🗑️</th>}
+          {onDeleteTransaction && <th className="text-center">🗑️</th>}
         </tr>
         <tr>
-          <th className="position-relative" style={{ width: '120px' }}>
+          <th className="position-relative dateCol">
             <input
+              className="w-full"
               type="text"
               placeholder="Filter date..."
               value={dateFilter}
@@ -206,8 +207,9 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
             {dateFilter && <ClearFilterButton onClick={() => setDateFilter('')} ariaLabel="Clear date filter" />}
           </th>
           {!isTypeColumnEmpty && (
-            <th className="position-relative" style={{ width: '100px' }}>
+            <th className="position-relative typeCol" style={{ width: '100px' }}>
               <input
+                className="w-full"
                 type="text"
                 placeholder="Filter type..."
                 value={typeFilter}
@@ -216,7 +218,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
               {typeFilter && <ClearFilterButton onClick={() => setTypeFilter('')} ariaLabel="Clear type filter" />}
             </th>
           )}
-          <th className="position-relative">
+          <th className="position-relative descriptionCol">
             <input
               type="text"
               placeholder="Filter description..."
@@ -312,7 +314,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
         {sortedData.map((row, i) => (
           <tr key={row.t_id + ':' + i}>
             <td
-              className="numericCol"
+              className="dateCol"
               onClick={() => {
                 const formattedDate = row.t_date
                 if (dateFilter === formattedDate) {
@@ -333,7 +335,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
                     setTypeFilter(row.t_type || '')
                   }
                 }}
-                style={{ cursor: 'pointer' }}
+                className="typeCol clickable"
               >
                 {row.t_type}
               </td>
@@ -346,7 +348,7 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
                   setDescriptionFilter(row.t_description || '')
                 }
               }}
-              style={{ cursor: 'pointer' }}
+              className="descriptionCol clickable"
             >
               {row.t_description}
             </td>
@@ -466,26 +468,26 @@ export default function TransactionsTable({ data, onDeleteTransaction }: Props) 
       </tbody>
       <tfoot>
         <tr>
-          <td></td>
-          <td>
+          <td className="totalCell"></td>
+          <td className="totalCell">
             <strong>Total</strong>
           </td>
-          {!isTypeColumnEmpty && <td></td>}
-          {!isQtyColumnEmpty && <td></td>}
-          {!isPriceColumnEmpty && <td></td>}
-          {!isCommissionColumnEmpty && <td></td>}
-          {!isFeeColumnEmpty && <td></td>}
-          <td className="numericCol">
+          {!isTypeColumnEmpty && <td className="totalCell"></td>}
+          {!isQtyColumnEmpty && <td className="totalCell"></td>}
+          {!isPriceColumnEmpty && <td className="totalCell"></td>}
+          {!isCommissionColumnEmpty && <td className="totalCell"></td>}
+          {!isFeeColumnEmpty && <td className="totalCell"></td>}
+          <td className="totalCell numericCol">
             <strong>{totalAmount.format()}</strong>
           </td>
-          {!isCategoryColumnEmpty && <td></td>}
-          {!isCusipColumnEmpty && <td></td>}
-          {!isSymbolColumnEmpty && <td></td>}
-          {!isOptionExpiryColumnEmpty && <td></td>}
-          {!isOptionTypeColumnEmpty && <td></td>}
-          {!isStrikeColumnEmpty && <td></td>}
-          {!isMemoColumnEmpty && <td></td>}
-          {onDeleteTransaction && <td></td>}
+          {!isCategoryColumnEmpty && <td className="totalCell"></td>}
+          {!isCusipColumnEmpty && <td className="totalCell"></td>}
+          {!isSymbolColumnEmpty && <td className="totalCell"></td>}
+          {!isOptionExpiryColumnEmpty && <td className="totalCell"></td>}
+          {!isOptionTypeColumnEmpty && <td className="totalCell"></td>}
+          {!isStrikeColumnEmpty && <td className="totalCell"></td>}
+          {!isMemoColumnEmpty && <td className="totalCell"></td>}
+          {onDeleteTransaction && <td className="totalCell"></td>}
         </tr>
       </tfoot>
     </Table>

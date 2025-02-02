@@ -6,6 +6,8 @@ import { parseEtradeCsv } from './parseEtradeCsv'
 
 import { parseQuickenQFX } from './parseQuickenQFX'
 import { Button } from '@/components/ui/button'
+import { splitDelimitedText } from '@/lib/splitDelimitedText'
+import { parseWealthfrontHAR } from './parseWealthfrontHAR'
 
 export default function ImportTransactions(props: { onImportClick: (data: AccountLineItem[]) => void }) {
   const [text, setText] = useState<string>('')
@@ -116,23 +118,65 @@ function parseData(text: string): { data: AccountLineItem[] | null; parseError: 
       parseError: null,
     }
   }
+  // Try parsing as Wealthfront HAR
+  const Wealthfront = parseWealthfrontHAR(text)
+  if (Wealthfront.length > 0) {
+    return {
+      data: Wealthfront,
+      parseError: null,
+    }
+  }
 
   const data: AccountLineItem[] = []
   let parseError: string | null = null
   try {
-    for (const line of text.split('\n')) {
-      const row = line.split(line.includes('\t') ? '\t' : ',')
-      if (row[0] === 'Date') {
+    const lines = splitDelimitedText(text)
+    let dateColIndex: number | null = null
+    let timeColIndex: number | null = null
+    let descriptionColIndex: number | null = null
+    let amountColIndex: number | null = null
+    let commentColIndex: number | null = null
+    let typeColIndex: number | null = null
+    let categoryColIndex: number | null = null
+    if (lines.length > 0) {
+      const getColumnIndex = (...headers: string[]) => {
+        for (const header of headers) {
+          const index = lines[0].indexOf(header)
+          if (index !== -1) {
+            return index
+          }
+        }
+        return null
+      }
+      dateColIndex = getColumnIndex('Date', 'Transaction Date')
+      timeColIndex = getColumnIndex('Time')
+      descriptionColIndex = getColumnIndex('Description', 'Desc')
+      amountColIndex = getColumnIndex('Amount', 'Amt')
+      commentColIndex = getColumnIndex('Comment')
+      typeColIndex = getColumnIndex('Type')
+      categoryColIndex = getColumnIndex('Category')
+    }
+    if (dateColIndex == null) {
+      throw new Error('Date column not found')
+    }
+    if (descriptionColIndex == null) {
+      throw new Error('Description column not found')
+    }
+    if (amountColIndex == null) {
+      throw new Error('Amount column not found')
+    }
+    for (const row of lines) {
+      if (row[dateColIndex] === 'Date') {
         continue
       }
       data.push(
         AccountLineItemSchema.parse({
-          t_date: row[0],
-          t_description: row[1],
-          t_amt: row[2], // Pass raw string for t_amt, letting Zod handle the parsing
-          t_comment: row[3],
-          t_type: 'spend',
-          t_schc_category: null,
+          t_date: row[dateColIndex],
+          t_description: row[descriptionColIndex],
+          t_amt: row[amountColIndex], // Pass raw string for t_amt, letting Zod handle the parsing
+          t_comment: commentColIndex ? row[commentColIndex] : null,
+          t_type: typeColIndex ? row[typeColIndex] : null,
+          t_schc_category: categoryColIndex ? row[categoryColIndex] : null,
         }),
       )
     }

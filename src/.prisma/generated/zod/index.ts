@@ -152,6 +152,7 @@ export const FinAccountLineItemsScalarFieldEnumSchema = z.enum([
   't_interest_rate',
   'parent_t_id',
   't_cusip',
+  't_harvested_amount',
   'when_added',
   'when_deleted',
 ])
@@ -592,14 +593,14 @@ export const FinAccountLineItemsSchema = z.object({
   opt_type: account_line_items_opt_typeSchema.nullable(),
   t_id: z.number().int(),
   t_account: z.number().int().nullable(),
-  t_date: z.string().nullable(),
+  t_date: z.string(),
   t_type: z.string().nullable(),
   t_schc_category: z.string().nullable(),
   t_amt: z
     .instanceof(Prisma.Decimal, { message: "Field 't_amt' must be a Decimal. Location: ['Models', 'FinAccountLineItems']" })
     .nullable(),
   t_symbol: z.string().nullable(),
-  t_qty: z.number().int(),
+  t_qty: z.number(),
   t_price: z
     .instanceof(Prisma.Decimal, {
       message: "Field 't_price' must be a Decimal. Location: ['Models', 'FinAccountLineItems']",
@@ -629,6 +630,11 @@ export const FinAccountLineItemsSchema = z.object({
   t_interest_rate: z.string().nullable(),
   parent_t_id: z.number().int().nullable(),
   t_cusip: z.string().nullable(),
+  t_harvested_amount: z
+    .instanceof(Prisma.Decimal, {
+      message: "Field 't_harvested_amount' must be a Decimal. Location: ['Models', 'FinAccountLineItems']",
+    })
+    .nullable(),
   when_added: z.coerce.date().nullable(),
   when_deleted: z.coerce.date().nullable(),
 })
@@ -1258,6 +1264,7 @@ export const FinAccountLineItemsSelectSchema: z.ZodType<Prisma.FinAccountLineIte
     t_interest_rate: z.boolean().optional(),
     parent_t_id: z.boolean().optional(),
     t_cusip: z.boolean().optional(),
+    t_harvested_amount: z.boolean().optional(),
     when_added: z.boolean().optional(),
     when_deleted: z.boolean().optional(),
   })
@@ -2907,10 +2914,7 @@ export const FinAccountLineItemsWhereInputSchema: z.ZodType<Prisma.FinAccountLin
       .union([z.lazy(() => IntNullableFilterSchema), z.number()])
       .optional()
       .nullable(),
-    t_date: z
-      .union([z.lazy(() => StringNullableFilterSchema), z.string()])
-      .optional()
-      .nullable(),
+    t_date: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
     t_type: z
       .union([z.lazy(() => StringNullableFilterSchema), z.string()])
       .optional()
@@ -2932,7 +2936,7 @@ export const FinAccountLineItemsWhereInputSchema: z.ZodType<Prisma.FinAccountLin
       .union([z.lazy(() => StringNullableFilterSchema), z.string()])
       .optional()
       .nullable(),
-    t_qty: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    t_qty: z.union([z.lazy(() => FloatFilterSchema), z.number()]).optional(),
     t_price: z
       .union([
         z.lazy(() => DecimalNullableFilterSchema),
@@ -3020,6 +3024,15 @@ export const FinAccountLineItemsWhereInputSchema: z.ZodType<Prisma.FinAccountLin
       .union([z.lazy(() => StringNullableFilterSchema), z.string()])
       .optional()
       .nullable(),
+    t_harvested_amount: z
+      .union([
+        z.lazy(() => DecimalNullableFilterSchema),
+        z
+          .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+          .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+      ])
+      .optional()
+      .nullable(),
     when_added: z
       .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
       .optional()
@@ -3036,7 +3049,7 @@ export const FinAccountLineItemsOrderByWithRelationInputSchema: z.ZodType<Prisma
     .object({
       t_id: z.lazy(() => SortOrderSchema).optional(),
       t_account: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
-      t_date: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
+      t_date: z.lazy(() => SortOrderSchema).optional(),
       t_type: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       t_schc_category: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       t_amt: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
@@ -3058,6 +3071,7 @@ export const FinAccountLineItemsOrderByWithRelationInputSchema: z.ZodType<Prisma
       t_interest_rate: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       parent_t_id: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       t_cusip: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
+      t_harvested_amount: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       when_added: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       when_deleted: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       _relevance: z.lazy(() => FinAccountLineItemsOrderByRelevanceInputSchema).optional(),
@@ -3092,10 +3106,7 @@ export const FinAccountLineItemsWhereUniqueInputSchema: z.ZodType<Prisma.FinAcco
           .union([z.lazy(() => IntNullableFilterSchema), z.number().int()])
           .optional()
           .nullable(),
-        t_date: z
-          .union([z.lazy(() => StringNullableFilterSchema), z.string()])
-          .optional()
-          .nullable(),
+        t_date: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
         t_type: z
           .union([z.lazy(() => StringNullableFilterSchema), z.string()])
           .optional()
@@ -3117,7 +3128,7 @@ export const FinAccountLineItemsWhereUniqueInputSchema: z.ZodType<Prisma.FinAcco
           .union([z.lazy(() => StringNullableFilterSchema), z.string()])
           .optional()
           .nullable(),
-        t_qty: z.union([z.lazy(() => IntFilterSchema), z.number().int()]).optional(),
+        t_qty: z.union([z.lazy(() => FloatFilterSchema), z.number()]).optional(),
         t_price: z
           .union([
             z.lazy(() => DecimalNullableFilterSchema),
@@ -3205,6 +3216,15 @@ export const FinAccountLineItemsWhereUniqueInputSchema: z.ZodType<Prisma.FinAcco
           .union([z.lazy(() => StringNullableFilterSchema), z.string()])
           .optional()
           .nullable(),
+        t_harvested_amount: z
+          .union([
+            z.lazy(() => DecimalNullableFilterSchema),
+            z
+              .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+              .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          ])
+          .optional()
+          .nullable(),
         when_added: z
           .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
           .optional()
@@ -3222,7 +3242,7 @@ export const FinAccountLineItemsOrderByWithAggregationInputSchema: z.ZodType<Pri
     .object({
       t_id: z.lazy(() => SortOrderSchema).optional(),
       t_account: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
-      t_date: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
+      t_date: z.lazy(() => SortOrderSchema).optional(),
       t_type: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       t_schc_category: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       t_amt: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
@@ -3244,6 +3264,7 @@ export const FinAccountLineItemsOrderByWithAggregationInputSchema: z.ZodType<Pri
       t_interest_rate: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       parent_t_id: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       t_cusip: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
+      t_harvested_amount: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       when_added: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       when_deleted: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       _count: z.lazy(() => FinAccountLineItemsCountOrderByAggregateInputSchema).optional(),
@@ -3278,10 +3299,7 @@ export const FinAccountLineItemsScalarWhereWithAggregatesInputSchema: z.ZodType<
         .union([z.lazy(() => IntNullableWithAggregatesFilterSchema), z.number()])
         .optional()
         .nullable(),
-      t_date: z
-        .union([z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string()])
-        .optional()
-        .nullable(),
+      t_date: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
       t_type: z
         .union([z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string()])
         .optional()
@@ -3303,7 +3321,7 @@ export const FinAccountLineItemsScalarWhereWithAggregatesInputSchema: z.ZodType<
         .union([z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string()])
         .optional()
         .nullable(),
-      t_qty: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
+      t_qty: z.union([z.lazy(() => FloatWithAggregatesFilterSchema), z.number()]).optional(),
       t_price: z
         .union([
           z.lazy(() => DecimalNullableWithAggregatesFilterSchema),
@@ -3389,6 +3407,15 @@ export const FinAccountLineItemsScalarWhereWithAggregatesInputSchema: z.ZodType<
         .nullable(),
       t_cusip: z
         .union([z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string()])
+        .optional()
+        .nullable(),
+      t_harvested_amount: z
+        .union([
+          z.lazy(() => DecimalNullableWithAggregatesFilterSchema),
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+        ])
         .optional()
         .nullable(),
       when_added: z
@@ -7902,7 +7929,7 @@ export const ProductKeyUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ProductK
 export const FinAccountLineItemsCreateInputSchema: z.ZodType<Prisma.FinAccountLineItemsCreateInput> = z
   .object({
     t_account: z.number().int().optional().nullable(),
-    t_date: z.string().optional().nullable(),
+    t_date: z.string(),
     t_type: z.string().optional().nullable(),
     t_schc_category: z.string().optional().nullable(),
     t_amt: z
@@ -7911,7 +7938,7 @@ export const FinAccountLineItemsCreateInputSchema: z.ZodType<Prisma.FinAccountLi
       .optional()
       .nullable(),
     t_symbol: z.string().optional().nullable(),
-    t_qty: z.number().int().optional(),
+    t_qty: z.number().optional(),
     t_price: z
       .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
       .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
@@ -7947,6 +7974,11 @@ export const FinAccountLineItemsCreateInputSchema: z.ZodType<Prisma.FinAccountLi
     t_interest_rate: z.string().optional().nullable(),
     parent_t_id: z.number().int().optional().nullable(),
     t_cusip: z.string().optional().nullable(),
+    t_harvested_amount: z
+      .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+      .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+      .optional()
+      .nullable(),
     when_added: z.coerce.date().optional().nullable(),
     when_deleted: z.coerce.date().optional().nullable(),
   })
@@ -7956,7 +7988,7 @@ export const FinAccountLineItemsUncheckedCreateInputSchema: z.ZodType<Prisma.Fin
   .object({
     t_id: z.number().int().optional(),
     t_account: z.number().int().optional().nullable(),
-    t_date: z.string().optional().nullable(),
+    t_date: z.string(),
     t_type: z.string().optional().nullable(),
     t_schc_category: z.string().optional().nullable(),
     t_amt: z
@@ -7965,7 +7997,7 @@ export const FinAccountLineItemsUncheckedCreateInputSchema: z.ZodType<Prisma.Fin
       .optional()
       .nullable(),
     t_symbol: z.string().optional().nullable(),
-    t_qty: z.number().int().optional(),
+    t_qty: z.number().optional(),
     t_price: z
       .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
       .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
@@ -8001,6 +8033,11 @@ export const FinAccountLineItemsUncheckedCreateInputSchema: z.ZodType<Prisma.Fin
     t_interest_rate: z.string().optional().nullable(),
     parent_t_id: z.number().int().optional().nullable(),
     t_cusip: z.string().optional().nullable(),
+    t_harvested_amount: z
+      .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+      .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+      .optional()
+      .nullable(),
     when_added: z.coerce.date().optional().nullable(),
     when_deleted: z.coerce.date().optional().nullable(),
   })
@@ -8012,10 +8049,7 @@ export const FinAccountLineItemsUpdateInputSchema: z.ZodType<Prisma.FinAccountLi
       .union([z.number().int(), z.lazy(() => NullableIntFieldUpdateOperationsInputSchema)])
       .optional()
       .nullable(),
-    t_date: z
-      .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
-      .optional()
-      .nullable(),
+    t_date: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
     t_type: z
       .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
       .optional()
@@ -8037,7 +8071,7 @@ export const FinAccountLineItemsUpdateInputSchema: z.ZodType<Prisma.FinAccountLi
       .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
       .optional()
       .nullable(),
-    t_qty: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    t_qty: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
     t_price: z
       .union([
         z
@@ -8123,6 +8157,15 @@ export const FinAccountLineItemsUpdateInputSchema: z.ZodType<Prisma.FinAccountLi
       .nullable(),
     t_cusip: z
       .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+      .optional()
+      .nullable(),
+    t_harvested_amount: z
+      .union([
+        z
+          .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+          .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+        z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+      ])
       .optional()
       .nullable(),
     when_added: z
@@ -8143,10 +8186,7 @@ export const FinAccountLineItemsUncheckedUpdateInputSchema: z.ZodType<Prisma.Fin
       .union([z.number().int(), z.lazy(() => NullableIntFieldUpdateOperationsInputSchema)])
       .optional()
       .nullable(),
-    t_date: z
-      .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
-      .optional()
-      .nullable(),
+    t_date: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
     t_type: z
       .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
       .optional()
@@ -8168,7 +8208,7 @@ export const FinAccountLineItemsUncheckedUpdateInputSchema: z.ZodType<Prisma.Fin
       .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
       .optional()
       .nullable(),
-    t_qty: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    t_qty: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
     t_price: z
       .union([
         z
@@ -8256,6 +8296,15 @@ export const FinAccountLineItemsUncheckedUpdateInputSchema: z.ZodType<Prisma.Fin
       .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
       .optional()
       .nullable(),
+    t_harvested_amount: z
+      .union([
+        z
+          .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+          .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+        z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+      ])
+      .optional()
+      .nullable(),
     when_added: z
       .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
       .optional()
@@ -8271,7 +8320,7 @@ export const FinAccountLineItemsCreateManyInputSchema: z.ZodType<Prisma.FinAccou
   .object({
     t_id: z.number().int().optional(),
     t_account: z.number().int().optional().nullable(),
-    t_date: z.string().optional().nullable(),
+    t_date: z.string(),
     t_type: z.string().optional().nullable(),
     t_schc_category: z.string().optional().nullable(),
     t_amt: z
@@ -8280,7 +8329,7 @@ export const FinAccountLineItemsCreateManyInputSchema: z.ZodType<Prisma.FinAccou
       .optional()
       .nullable(),
     t_symbol: z.string().optional().nullable(),
-    t_qty: z.number().int().optional(),
+    t_qty: z.number().optional(),
     t_price: z
       .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
       .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
@@ -8316,6 +8365,11 @@ export const FinAccountLineItemsCreateManyInputSchema: z.ZodType<Prisma.FinAccou
     t_interest_rate: z.string().optional().nullable(),
     parent_t_id: z.number().int().optional().nullable(),
     t_cusip: z.string().optional().nullable(),
+    t_harvested_amount: z
+      .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+      .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+      .optional()
+      .nullable(),
     when_added: z.coerce.date().optional().nullable(),
     when_deleted: z.coerce.date().optional().nullable(),
   })
@@ -8328,10 +8382,7 @@ export const FinAccountLineItemsUpdateManyMutationInputSchema: z.ZodType<Prisma.
         .union([z.number().int(), z.lazy(() => NullableIntFieldUpdateOperationsInputSchema)])
         .optional()
         .nullable(),
-      t_date: z
-        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
-        .optional()
-        .nullable(),
+      t_date: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
       t_type: z
         .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
         .optional()
@@ -8353,7 +8404,7 @@ export const FinAccountLineItemsUpdateManyMutationInputSchema: z.ZodType<Prisma.
         .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
         .optional()
         .nullable(),
-      t_qty: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+      t_qty: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
       t_price: z
         .union([
           z
@@ -8439,6 +8490,15 @@ export const FinAccountLineItemsUpdateManyMutationInputSchema: z.ZodType<Prisma.
         .nullable(),
       t_cusip: z
         .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_harvested_amount: z
+        .union([
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+        ])
         .optional()
         .nullable(),
       when_added: z
@@ -8460,10 +8520,7 @@ export const FinAccountLineItemsUncheckedUpdateManyInputSchema: z.ZodType<Prisma
         .union([z.number().int(), z.lazy(() => NullableIntFieldUpdateOperationsInputSchema)])
         .optional()
         .nullable(),
-      t_date: z
-        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
-        .optional()
-        .nullable(),
+      t_date: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
       t_type: z
         .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
         .optional()
@@ -8485,7 +8542,7 @@ export const FinAccountLineItemsUncheckedUpdateManyInputSchema: z.ZodType<Prisma
         .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
         .optional()
         .nullable(),
-      t_qty: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+      t_qty: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
       t_price: z
         .union([
           z
@@ -8571,6 +8628,15 @@ export const FinAccountLineItemsUncheckedUpdateManyInputSchema: z.ZodType<Prisma
         .nullable(),
       t_cusip: z
         .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_harvested_amount: z
+        .union([
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+        ])
         .optional()
         .nullable(),
       when_added: z
@@ -12891,6 +12957,19 @@ export const IntNullableFilterSchema: z.ZodType<Prisma.IntNullableFilter> = z
   })
   .strict()
 
+export const FloatFilterSchema: z.ZodType<Prisma.FloatFilter> = z
+  .object({
+    equals: z.number().optional(),
+    in: z.number().array().optional(),
+    notIn: z.number().array().optional(),
+    lt: z.number().optional(),
+    lte: z.number().optional(),
+    gt: z.number().optional(),
+    gte: z.number().optional(),
+    not: z.union([z.number(), z.lazy(() => NestedFloatFilterSchema)]).optional(),
+  })
+  .strict()
+
 export const Enumaccount_line_items_opt_typeNullableFilterSchema: z.ZodType<Prisma.Enumaccount_line_items_opt_typeNullableFilter> =
   z
     .object({
@@ -12956,6 +13035,7 @@ export const FinAccountLineItemsCountOrderByAggregateInputSchema: z.ZodType<Pris
       t_interest_rate: z.lazy(() => SortOrderSchema).optional(),
       parent_t_id: z.lazy(() => SortOrderSchema).optional(),
       t_cusip: z.lazy(() => SortOrderSchema).optional(),
+      t_harvested_amount: z.lazy(() => SortOrderSchema).optional(),
       when_added: z.lazy(() => SortOrderSchema).optional(),
       when_deleted: z.lazy(() => SortOrderSchema).optional(),
     })
@@ -12973,6 +13053,7 @@ export const FinAccountLineItemsAvgOrderByAggregateInputSchema: z.ZodType<Prisma
       t_fee: z.lazy(() => SortOrderSchema).optional(),
       opt_strike: z.lazy(() => SortOrderSchema).optional(),
       parent_t_id: z.lazy(() => SortOrderSchema).optional(),
+      t_harvested_amount: z.lazy(() => SortOrderSchema).optional(),
     })
     .strict()
 
@@ -13003,6 +13084,7 @@ export const FinAccountLineItemsMaxOrderByAggregateInputSchema: z.ZodType<Prisma
       t_interest_rate: z.lazy(() => SortOrderSchema).optional(),
       parent_t_id: z.lazy(() => SortOrderSchema).optional(),
       t_cusip: z.lazy(() => SortOrderSchema).optional(),
+      t_harvested_amount: z.lazy(() => SortOrderSchema).optional(),
       when_added: z.lazy(() => SortOrderSchema).optional(),
       when_deleted: z.lazy(() => SortOrderSchema).optional(),
     })
@@ -13035,6 +13117,7 @@ export const FinAccountLineItemsMinOrderByAggregateInputSchema: z.ZodType<Prisma
       t_interest_rate: z.lazy(() => SortOrderSchema).optional(),
       parent_t_id: z.lazy(() => SortOrderSchema).optional(),
       t_cusip: z.lazy(() => SortOrderSchema).optional(),
+      t_harvested_amount: z.lazy(() => SortOrderSchema).optional(),
       when_added: z.lazy(() => SortOrderSchema).optional(),
       when_deleted: z.lazy(() => SortOrderSchema).optional(),
     })
@@ -13052,6 +13135,7 @@ export const FinAccountLineItemsSumOrderByAggregateInputSchema: z.ZodType<Prisma
       t_fee: z.lazy(() => SortOrderSchema).optional(),
       opt_strike: z.lazy(() => SortOrderSchema).optional(),
       parent_t_id: z.lazy(() => SortOrderSchema).optional(),
+      t_harvested_amount: z.lazy(() => SortOrderSchema).optional(),
     })
     .strict()
 
@@ -13073,6 +13157,24 @@ export const IntNullableWithAggregatesFilterSchema: z.ZodType<Prisma.IntNullable
     _sum: z.lazy(() => NestedIntNullableFilterSchema).optional(),
     _min: z.lazy(() => NestedIntNullableFilterSchema).optional(),
     _max: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  })
+  .strict()
+
+export const FloatWithAggregatesFilterSchema: z.ZodType<Prisma.FloatWithAggregatesFilter> = z
+  .object({
+    equals: z.number().optional(),
+    in: z.number().array().optional(),
+    notIn: z.number().array().optional(),
+    lt: z.number().optional(),
+    lte: z.number().optional(),
+    gt: z.number().optional(),
+    gte: z.number().optional(),
+    not: z.union([z.number(), z.lazy(() => NestedFloatWithAggregatesFilterSchema)]).optional(),
+    _count: z.lazy(() => NestedIntFilterSchema).optional(),
+    _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
+    _sum: z.lazy(() => NestedFloatFilterSchema).optional(),
+    _min: z.lazy(() => NestedFloatFilterSchema).optional(),
+    _max: z.lazy(() => NestedFloatFilterSchema).optional(),
   })
   .strict()
 
@@ -15291,6 +15393,16 @@ export const NullableIntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.Nulla
   })
   .strict()
 
+export const FloatFieldUpdateOperationsInputSchema: z.ZodType<Prisma.FloatFieldUpdateOperationsInput> = z
+  .object({
+    set: z.number().optional(),
+    increment: z.number().optional(),
+    decrement: z.number().optional(),
+    multiply: z.number().optional(),
+    divide: z.number().optional(),
+  })
+  .strict()
+
 export const NullableEnumaccount_line_items_opt_typeFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableEnumaccount_line_items_opt_typeFieldUpdateOperationsInput> =
   z
     .object({
@@ -16246,6 +16358,24 @@ export const NestedFloatNullableFilterSchema: z.ZodType<Prisma.NestedFloatNullab
       .union([z.number(), z.lazy(() => NestedFloatNullableFilterSchema)])
       .optional()
       .nullable(),
+  })
+  .strict()
+
+export const NestedFloatWithAggregatesFilterSchema: z.ZodType<Prisma.NestedFloatWithAggregatesFilter> = z
+  .object({
+    equals: z.number().optional(),
+    in: z.number().array().optional(),
+    notIn: z.number().array().optional(),
+    lt: z.number().optional(),
+    lte: z.number().optional(),
+    gt: z.number().optional(),
+    gte: z.number().optional(),
+    not: z.union([z.number(), z.lazy(() => NestedFloatWithAggregatesFilterSchema)]).optional(),
+    _count: z.lazy(() => NestedIntFilterSchema).optional(),
+    _avg: z.lazy(() => NestedFloatFilterSchema).optional(),
+    _sum: z.lazy(() => NestedFloatFilterSchema).optional(),
+    _min: z.lazy(() => NestedFloatFilterSchema).optional(),
+    _max: z.lazy(() => NestedFloatFilterSchema).optional(),
   })
   .strict()
 
@@ -20399,7 +20529,7 @@ export const ProductKeyDeleteManyArgsSchema: z.ZodType<Prisma.ProductKeyDeleteMa
 export const FinAccountLineItemsCreateArgsSchema: z.ZodType<Prisma.FinAccountLineItemsCreateArgs> = z
   .object({
     select: FinAccountLineItemsSelectSchema.optional(),
-    data: z.union([FinAccountLineItemsCreateInputSchema, FinAccountLineItemsUncheckedCreateInputSchema]).optional(),
+    data: z.union([FinAccountLineItemsCreateInputSchema, FinAccountLineItemsUncheckedCreateInputSchema]),
   })
   .strict()
 

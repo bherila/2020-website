@@ -1,12 +1,20 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import TransactionsTable from './TransactionsTable'
 import { AccountLineItem } from '@/lib/AccountLineItem'
 import { Spinner } from '@/components/ui/spinner'
 
-export default function AccountClient({ id, rawData }: { id: number; rawData: AccountLineItem[] }) {
-  const [data, setData] = useState<AccountLineItem[]>(rawData)
+export default function AccountClient({ id }: { id: number }) {
+  const [data, setData] = useState<AccountLineItem[]>([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchWrapper.get(`/api/finance/${id}/line_items/`)
+      setData(data.filter(Boolean))
+    }
+    fetchData()
+  }, [id])
 
   const handleDeleteTransaction = async (t_id: string) => {
     try {
@@ -25,7 +33,7 @@ export default function AccountClient({ id, rawData }: { id: number; rawData: Ac
     }
   }
 
-  return data === null ? (
+  return data === null || data.length === 0 ? (
     <div className="d-flex justify-content-center">
       <Spinner />
     </div>

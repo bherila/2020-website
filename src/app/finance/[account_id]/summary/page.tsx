@@ -4,6 +4,7 @@ import SummaryClient from './SummaryClient'
 import Container from '@/components/container'
 import requireSession from '@/server_lib/requireSession'
 import { prisma } from '@/server_lib/prisma'
+import Decimal from 'decimal.js'
 
 export default async function SummaryPage({ params }: { params: Promise<{ account_id: string }> }) {
   const { uid } = await requireSession()
@@ -23,36 +24,36 @@ export default async function SummaryPage({ params }: { params: Promise<{ accoun
   }
 
   const sql = prisma.$queryRaw
-  const [totals] = (await sql`
+  const [totals] = (await prisma.$queryRawUnsafe(`
     SELECT 
       SUM(ABS(t_amt)) as total_volume,
       SUM(t_commission) as total_commission,
       SUM(t_fee) as total_fee
-    FROM account_line_items 
+    FROM fin_account_line_items 
     WHERE t_account = ${_param.account_id}
     AND when_deleted IS NULL
-  `) as { total_volume: number; total_commission: number; total_fee: number }[]
+  `)) as { total_volume: Decimal; total_commission: number; total_fee: number }[]
 
-  const symbolSummary = (await sql`
+  const symbolSummary = (await prisma.$queryRawUnsafe(`
     SELECT t_symbol, SUM(t_amt) as total_amount
-    FROM account_line_items
+    FROM fin_account_line_items
     WHERE t_account = ${_param.account_id}
     AND when_deleted IS NULL
     AND t_symbol IS NOT NULL
     GROUP BY t_symbol
     ORDER BY (SUM(t_amt)) DESC
-  `) as { t_symbol: string; total_amount: number }[]
+  `)) as { t_symbol: string; total_amount: number }[]
 
-  const monthSummary = (await sql`
+  const monthSummary = (await prisma.$queryRawUnsafe(`
     SELECT 
       DATE_FORMAT(t_date, '%Y-%m') as month,
       SUM(t_amt) as total_amount
-    FROM account_line_items
+    FROM fin_account_line_items
     WHERE t_account = ${_param.account_id}
     AND when_deleted IS NULL
     GROUP BY DATE_FORMAT(t_date, '%Y-%m')
     ORDER BY month DESC
-  `) as { month: string; total_amount: number }[]
+  `)) as { month: string; total_amount: number }[]
 
   return (
     <Container fluid>

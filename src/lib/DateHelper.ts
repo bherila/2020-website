@@ -21,7 +21,7 @@ export function parseDate(str: string | undefined | null | Date): DateContainer 
     return new DateContainer(str)
   }
 
-  if (str.length > 16) {
+  if (str.length > '2024-07-02 17:00:00.000'.length) {
     return null
   }
 
@@ -46,6 +46,10 @@ export function parseDate(str: string | undefined | null | Date): DateContainer 
     date = dayjs(str, 'MM/DD')
   } else if (str.match(/\d{2}\/\d{2}\/\d{4}/)) {
     date = dayjs(str, 'MM/DD/YYYY')
+  } else if (str.match(/^\d{1,2}\/\d{1,2}\/\d{2}$/)) {
+    date = dayjs(str, 'MM/DD/YY')
+  } else if (str.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}$/)) {
+    date = dayjs(str, 'YYYY-MM-DD HH:mm:ss.SSS')
   }
 
   return date?.isValid() ? new DateContainer(date.toDate()) : null

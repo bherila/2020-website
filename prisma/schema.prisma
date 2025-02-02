@@ -154,6 +154,7 @@ model FinAccountLineItems {
   t_interest_rate String?                      @db.VarChar(20)
   parent_t_id     Int?
   t_cusip         String?                      @db.VarChar(20)
+  t_harvested_amount Decimal?                  @db.Decimal(13, 4)
   when_added      DateTime?                    @db.DateTime(0)
   when_deleted    DateTime?                    @db.DateTime(0)
 
