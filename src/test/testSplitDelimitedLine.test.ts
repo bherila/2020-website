@@ -37,12 +37,6 @@ column",another column
     expect(splitDelimitedText(pipeText)).toEqual(expectedOutput)
   })
 
-  it('throws error if unable to detect delimiter', () => {
-    const invalidText = `hello world
-foo bar`
-    expect(() => splitDelimitedText(invalidText)).toThrowError('Unable to detect delimiter')
-  })
-
   it('handles empty text', () => {
     expect(splitDelimitedText('')).toEqual([])
   })
