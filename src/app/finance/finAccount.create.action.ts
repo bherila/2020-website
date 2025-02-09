@@ -3,7 +3,11 @@ import { prisma } from '@/server_lib/prisma'
 import { getSession } from '@/server_lib/session'
 import { revalidatePath } from 'next/cache'
 
-export async function createAccount(acctName: string, isDebt: boolean = false): Promise<void> {
+export async function createAccount(
+  acctName: string,
+  isDebt: boolean = false,
+  isRetirement: boolean = false,
+): Promise<void> {
   'use server'
   const uid = (await getSession())?.uid
   if (!uid) {
@@ -20,6 +24,7 @@ export async function createAccount(acctName: string, isDebt: boolean = false): 
       acct_owner: uid,
       acct_name: acctName,
       acct_is_debt: isDebt,
+      acct_is_retirement: isRetirement,
     },
   })
   revalidatePath(`/finance`)

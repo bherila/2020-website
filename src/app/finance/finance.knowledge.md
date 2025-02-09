@@ -13,12 +13,22 @@
 - Never physically delete finance records
 
 ## Account Types
-- Accounts can be marked as debt/liability using `acct_is_debt` boolean
-- Use checkbox in account creation form to set this flag
-- Debt accounts represent financial liabilities like credit cards
-- Default is non-debt (false) if not explicitly set
-- Accounts are displayed in two groups: Assets and Liabilities
-- Filtering is done server-side using `acct_is_debt` flag
+- Accounts can be categorized with multiple boolean flags:
+  - `acct_is_debt`: Indicates a liability account
+  - `acct_is_retirement`: Indicates a retirement account
+- Accounts are displayed in three groups: Assets, Liabilities, and Retirement
+- Filtering is done server-side using account type flags
+- Liability accounts are displayed as negative values in charts and tables
+- Retirement accounts are displayed with dashed/striped bars in charts
+- Account flags can be modified directly on the account maintenance page
+- Flags are updated via server action with immediate effect
+
+## Visualization
+- Stacked balance chart shows:
+  - Liability accounts as negative bars with reduced opacity
+  - Retirement accounts with dashed/striped bars
+- Checkboxes allow toggling visibility of Liabilities and Retirement accounts
+- Tooltip shows absolute value of account balances
 
 ## API Response Format
 - Success: Return requested data directly

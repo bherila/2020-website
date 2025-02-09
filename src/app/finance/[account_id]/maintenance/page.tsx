@@ -8,12 +8,13 @@ import { prisma } from '@/server_lib/prisma'
 import requireSession from '@/server_lib/requireSession'
 import { DeleteAccountSection } from './DeleteAccountSection'
 import { redirect } from 'next/navigation'
+import { EditAccountFlags } from './EditAccountFlags'
 
 export default async function MaintenancePage({ params }: { params: Promise<{ account_id: string }> }) {
   await requireSession()
-  const accountId = (await params).account_id
+  const accountId = parseInt((await params).account_id, 10)
   const account = await prisma.finAccounts.findUnique({
-    where: { acct_id: parseInt(accountId) },
+    where: { acct_id: Number(accountId) },
   })
   if (!account) {
     redirect(`/finance/`)
@@ -21,11 +22,16 @@ export default async function MaintenancePage({ params }: { params: Promise<{ ac
 
   return (
     <Container fluid>
-      <AccountNavigation accountId={parseInt(accountId)} activeTab="maintenance" accountName={account.acct_name} />
+      <AccountNavigation accountId={accountId} activeTab="maintenance" accountName={account.acct_name} />
       <Container>
         <MainTitle>Account Maintenance</MainTitle>
-        <MaintenanceClient accountId={parseInt(accountId)} accountName={account.acct_name} />
-        <Card className="shadow-sm">
+        <MaintenanceClient accountId={accountId} accountName={account.acct_name} />
+        <EditAccountFlags
+          accountId={accountId.toString()}
+          isDebt={account.acct_is_debt}
+          isRetirement={account.acct_is_retirement}
+        />
+        <Card className="shadow-sm mt-8">
           <CardHeader>
             <CardTitle>Deleted Transactions</CardTitle>
           </CardHeader>

@@ -164,6 +164,7 @@ export const FinAccountsScalarFieldEnumSchema = z.enum([
   'acct_last_balance',
   'acct_last_balance_date',
   'acct_is_debt',
+  'acct_is_retirement',
   'acct_sort_order',
   'when_deleted',
 ])
@@ -624,6 +625,7 @@ export const FinAccountsSchema = z.object({
   acct_last_balance: z.string(),
   acct_last_balance_date: z.coerce.date().nullable(),
   acct_is_debt: z.boolean(),
+  acct_is_retirement: z.boolean(),
   acct_sort_order: z.number().int(),
   when_deleted: z.coerce.date().nullable(),
 })
@@ -1232,6 +1234,7 @@ export const FinAccountsSelectSchema: z.ZodType<Prisma.FinAccountsSelect> = z
     acct_last_balance: z.boolean().optional(),
     acct_last_balance_date: z.boolean().optional(),
     acct_is_debt: z.boolean().optional(),
+    acct_is_retirement: z.boolean().optional(),
     acct_sort_order: z.boolean().optional(),
     when_deleted: z.boolean().optional(),
   })
@@ -3377,6 +3380,7 @@ export const FinAccountsWhereInputSchema: z.ZodType<Prisma.FinAccountsWhereInput
       .optional()
       .nullable(),
     acct_is_debt: z.union([z.lazy(() => BoolFilterSchema), z.boolean()]).optional(),
+    acct_is_retirement: z.union([z.lazy(() => BoolFilterSchema), z.boolean()]).optional(),
     acct_sort_order: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
     when_deleted: z
       .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
@@ -3393,6 +3397,7 @@ export const FinAccountsOrderByWithRelationInputSchema: z.ZodType<Prisma.FinAcco
     acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
     acct_last_balance_date: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
     acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
+    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
     acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
     when_deleted: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
     _relevance: z.lazy(() => FinAccountsOrderByRelevanceInputSchema).optional(),
@@ -3435,6 +3440,7 @@ export const FinAccountsWhereUniqueInputSchema: z.ZodType<Prisma.FinAccountsWher
           .optional()
           .nullable(),
         acct_is_debt: z.union([z.lazy(() => BoolFilterSchema), z.boolean()]).optional(),
+        acct_is_retirement: z.union([z.lazy(() => BoolFilterSchema), z.boolean()]).optional(),
         acct_sort_order: z.union([z.lazy(() => IntFilterSchema), z.number().int()]).optional(),
         when_deleted: z
           .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
@@ -3452,6 +3458,7 @@ export const FinAccountsOrderByWithAggregationInputSchema: z.ZodType<Prisma.FinA
     acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
     acct_last_balance_date: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
     acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
+    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
     acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
     when_deleted: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
     _count: z.lazy(() => FinAccountsCountOrderByAggregateInputSchema).optional(),
@@ -3490,6 +3497,7 @@ export const FinAccountsScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.F
         .optional()
         .nullable(),
       acct_is_debt: z.union([z.lazy(() => BoolWithAggregatesFilterSchema), z.boolean()]).optional(),
+      acct_is_retirement: z.union([z.lazy(() => BoolWithAggregatesFilterSchema), z.boolean()]).optional(),
       acct_sort_order: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
       when_deleted: z
         .union([z.lazy(() => DateTimeNullableWithAggregatesFilterSchema), z.coerce.date()])
@@ -8368,6 +8376,7 @@ export const FinAccountsCreateInputSchema: z.ZodType<Prisma.FinAccountsCreateInp
     acct_last_balance: z.string().optional(),
     acct_last_balance_date: z.coerce.date().optional().nullable(),
     acct_is_debt: z.boolean().optional(),
+    acct_is_retirement: z.boolean().optional(),
     acct_sort_order: z.number().int().optional(),
     when_deleted: z.coerce.date().optional().nullable(),
   })
@@ -8381,6 +8390,7 @@ export const FinAccountsUncheckedCreateInputSchema: z.ZodType<Prisma.FinAccounts
     acct_last_balance: z.string().optional(),
     acct_last_balance_date: z.coerce.date().optional().nullable(),
     acct_is_debt: z.boolean().optional(),
+    acct_is_retirement: z.boolean().optional(),
     acct_sort_order: z.number().int().optional(),
     when_deleted: z.coerce.date().optional().nullable(),
   })
@@ -8396,6 +8406,7 @@ export const FinAccountsUpdateInputSchema: z.ZodType<Prisma.FinAccountsUpdateInp
       .optional()
       .nullable(),
     acct_is_debt: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
+    acct_is_retirement: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
     acct_sort_order: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
     when_deleted: z
       .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
@@ -8415,6 +8426,7 @@ export const FinAccountsUncheckedUpdateInputSchema: z.ZodType<Prisma.FinAccounts
       .optional()
       .nullable(),
     acct_is_debt: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
+    acct_is_retirement: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
     acct_sort_order: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
     when_deleted: z
       .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
@@ -8431,6 +8443,7 @@ export const FinAccountsCreateManyInputSchema: z.ZodType<Prisma.FinAccountsCreat
     acct_last_balance: z.string().optional(),
     acct_last_balance_date: z.coerce.date().optional().nullable(),
     acct_is_debt: z.boolean().optional(),
+    acct_is_retirement: z.boolean().optional(),
     acct_sort_order: z.number().int().optional(),
     when_deleted: z.coerce.date().optional().nullable(),
   })
@@ -8446,6 +8459,7 @@ export const FinAccountsUpdateManyMutationInputSchema: z.ZodType<Prisma.FinAccou
       .optional()
       .nullable(),
     acct_is_debt: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
+    acct_is_retirement: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
     acct_sort_order: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
     when_deleted: z
       .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
@@ -8465,6 +8479,7 @@ export const FinAccountsUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FinAcco
       .optional()
       .nullable(),
     acct_is_debt: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
+    acct_is_retirement: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
     acct_sort_order: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
     when_deleted: z
       .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
@@ -12724,6 +12739,7 @@ export const FinAccountsCountOrderByAggregateInputSchema: z.ZodType<Prisma.FinAc
     acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
     acct_last_balance_date: z.lazy(() => SortOrderSchema).optional(),
     acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
+    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
     acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
     when_deleted: z.lazy(() => SortOrderSchema).optional(),
   })
@@ -12744,6 +12760,7 @@ export const FinAccountsMaxOrderByAggregateInputSchema: z.ZodType<Prisma.FinAcco
     acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
     acct_last_balance_date: z.lazy(() => SortOrderSchema).optional(),
     acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
+    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
     acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
     when_deleted: z.lazy(() => SortOrderSchema).optional(),
   })
@@ -12757,6 +12774,7 @@ export const FinAccountsMinOrderByAggregateInputSchema: z.ZodType<Prisma.FinAcco
     acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
     acct_last_balance_date: z.lazy(() => SortOrderSchema).optional(),
     acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
+    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
     acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
     when_deleted: z.lazy(() => SortOrderSchema).optional(),
   })

@@ -14,6 +14,7 @@ import { createAccount } from './finAccount.create.action'
 const formSchema = z.object({
   accountName: z.string().min(1, 'Account name is required'),
   isDebt: z.boolean().optional().default(false),
+  isRetirement: z.boolean().optional().default(false),
 })
 
 const NewAccountForm = () => {
@@ -22,12 +23,13 @@ const NewAccountForm = () => {
     defaultValues: {
       accountName: '',
       isDebt: false,
+      isRetirement: false,
     },
   })
 
-  const onSubmit = async (values: { accountName: string; isDebt: boolean }) => {
+  const onSubmit = async (values: { accountName: string; isDebt: boolean; isRetirement: boolean }) => {
     try {
-      await createAccount(values.accountName, values.isDebt)
+      await createAccount(values.accountName, values.isDebt, values.isRetirement)
       form.reset()
     } catch (error) {
       form.setError('accountName', {
@@ -52,7 +54,7 @@ const NewAccountForm = () => {
                 <FormItem>
                   <Label>Account Name</Label>
                   <FormControl>
-                    <Input placeholder="Enter account name" {...field} />
+                    <Input placeholder="Enter account name" {...field} autoComplete="off" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -69,6 +71,23 @@ const NewAccountForm = () => {
                   <div className="space-y-1 leading-none">
                     <FormLabel>Account is a Liability (e.g., Credit Card)</FormLabel>
                     <FormDescription>Check this box if the account represents a debt or liability</FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="isRetirement"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Account is a Retirement Account</FormLabel>
+                    <FormDescription>
+                      Check this box if the account is a retirement account (e.g., 401k, IRA)
+                    </FormDescription>
                   </div>
                 </FormItem>
               )}

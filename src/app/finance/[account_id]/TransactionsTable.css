@@ -13,9 +13,10 @@
 .dateCol {
   text-align: left;
   font-family: 'Atkinson Hyperlegible', monospace;
-  width: 100px;
+  width: 150px;
   padding-right: 10px;
   padding-left: 10px;
+  white-space: nowrap;
 }
 
 .descriptionCol {
