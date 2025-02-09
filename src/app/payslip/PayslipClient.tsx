@@ -98,7 +98,7 @@ export default function PayslipClient({ year }: PayslipClientProps): React.React
       setRawData(res)
       setLoading(false)
     })
-  }, [])
+  }, [year])
 
   const editRow = async (row: fin_payslip) => {
     try {

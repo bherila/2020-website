@@ -49,7 +49,7 @@ const DroppableTextArea: FC<DroppableTextAreaProps> = ({ data, setData }) => {
         setData(text)
       })
     }
-  }, [file])
+  }, [file, setData])
 
   return (
     <form>

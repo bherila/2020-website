@@ -50,7 +50,7 @@ function SetDocumentInline(props: SetDocumentProps) {
   useEffect(() => {
     const data = parseDelimitedText(text, delimiter === 'Tab' ? '\t' : ',')
     props.setDocFn(data)
-  }, [delimiter, text])
+  }, [delimiter, text, props.setDocFn])
   return (
     <Container fluid>
       <DelimiterSelectionRow {...{ delimiter, setDelimiter }} />
@@ -76,3 +76,5 @@ function DelimiterSelectionRow({ delimiter, setDelimiter }: { delimiter: string;
     </div>
   )
 }
+
+export { SetDocumentButton }

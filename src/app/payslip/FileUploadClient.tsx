@@ -32,7 +32,7 @@ export default function FileUploadClient(props: Props) {
         onJsonPreview(jsons.map((json) => parseEntities(json)))
       })
     }
-  }, [jsonFiles])
+  }, [jsonFiles, onJsonPreview])
 
   const handleFileUpload = async (file: File, endpoint: string) => {
     try {
