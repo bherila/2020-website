@@ -152,9 +152,9 @@ model FinAccountLineItems {
   t_from          String?                      @db.VarChar(10)
   t_to            String?                      @db.VarChar(10)
   t_interest_rate String?                      @db.VarChar(20)
-  parent_t_id     Int?
   t_cusip         String?                      @db.VarChar(20)
   t_harvested_amount Decimal?                  @db.Decimal(13, 4)
+  parent_t_id     Int?
   when_added      DateTime?                    @db.DateTime(0)
   when_deleted    DateTime?                    @db.DateTime(0)
 
@@ -162,32 +162,15 @@ model FinAccountLineItems {
   @@map("fin_account_line_items")
 }
 
-model FinAccountSpending {
-  spend_id          Int       @id @default(autoincrement())
-  account_id        Int
-  spend_date        DateTime? @db.Date
-  spend_category    String?   @db.VarChar(40)
-  spend_description String?   @db.VarChar(100)
-  spend_amount      String?   @db.VarChar(20)
-  is_business       Int       @default(0) @db.TinyInt
-  transaction_type  String?   @db.VarChar(20)
-  notes             String?   @db.VarChar(50)
-  when_added        DateTime  @default(now()) @db.DateTime(0)
-  when_deleted      DateTime? @db.DateTime(0)
-  t_schc_category   String?
-
-  @@map("fin_account_spending")
-}
-
 model FinAccounts {
   acct_id                Int                @id @default(autoincrement())
   acct_owner             String             @db.VarChar(50)
   acct_name              String             @db.VarChar(50)
-  acct_type              accounts_acct_type @default(general)
-  when_deleted           DateTime?          @db.DateTime(0)
   acct_last_balance      String             @default("0") @db.VarChar(20)
   acct_last_balance_date DateTime?          @db.DateTime(0)
+  acct_is_debt           Boolean            @default(false) @db.Bit(1)
   acct_sort_order        Int                @default(0)
+  when_deleted           DateTime?          @db.DateTime(0)
 
   @@unique([acct_owner, acct_name], map: "acct_owner")
   @@map("fin_accounts")
@@ -411,11 +394,6 @@ model VXCVLinks {
 
   @@index([url(length: 15)], map: "url")
   @@map("vxcv_links")
-}
-
-enum accounts_acct_type {
-  general
-  brokerage
 }
 
 enum graduated_tax_type {
