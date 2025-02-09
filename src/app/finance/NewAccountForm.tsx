@@ -7,11 +7,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormMessage, FormDescription, FormLabel } from '@/components/ui/form'
+import { Checkbox } from '@/components/ui/checkbox'
 import { createAccount } from './finAccount.create.action'
 
 const formSchema = z.object({
   accountName: z.string().min(1, 'Account name is required'),
+  isDebt: z.boolean().optional().default(false),
 })
 
 const NewAccountForm = () => {
@@ -19,12 +21,13 @@ const NewAccountForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       accountName: '',
+      isDebt: false,
     },
   })
 
-  const onSubmit = async (values: { accountName: string }) => {
+  const onSubmit = async (values: { accountName: string; isDebt: boolean }) => {
     try {
-      await createAccount(values.accountName)
+      await createAccount(values.accountName, values.isDebt)
       form.reset()
     } catch (error) {
       form.setError('accountName', {
@@ -52,6 +55,21 @@ const NewAccountForm = () => {
                     <Input placeholder="Enter account name" {...field} />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="isDebt"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Account is a Liability (e.g., Credit Card)</FormLabel>
+                    <FormDescription>Check this box if the account represents a debt or liability</FormDescription>
+                  </div>
                 </FormItem>
               )}
             />

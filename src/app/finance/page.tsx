@@ -23,6 +23,10 @@ export default async function Page() {
     orderBy: [{ acct_sort_order: 'asc' }, { acct_name: 'asc' }],
   })
 
+  // Separate accounts into Assets and Liabilities
+  const assetAccounts = accounts.filter((account) => !account.acct_is_debt)
+  const liabilityAccounts = accounts.filter((account) => account.acct_is_debt)
+
   // Get balance history for all accounts
   const balanceHistory = await prisma.finAccountBalanceSnapshot.findMany({
     where: {
@@ -76,35 +80,69 @@ export default async function Page() {
         <StackedBalanceChart data={chartDataArray} labels={accounts.map((a) => a.acct_name)} />
       </div>
       <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:space-x-4 space-y-4 sm:space-y-0">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Account Name</TableHead>
-              <TableHead className="text-right" style={{ textAlign: 'right', width: '200px' }}>
-                Last Balance
-              </TableHead>
-              <TableHead className="text-right whitespace-nowrap w-0">Last update</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {accounts.map((account) => (
-              <tr key={account.acct_id}>
-                <td className="px-2">
-                  <Link href={`/finance/${account.acct_id}`}>{account.acct_name}</Link>
-                </td>
-                <td className="flex items-end justify-end">
-                  <EditBalanceDisplay
-                    acct_id={account.acct_id}
-                    defaultBalance={currency(account.acct_last_balance).toString()}
-                  />
-                </td>
-                <td className="px-2" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                  {formatDistance(new Date(), account.acct_last_balance_date ?? new Date())}
-                </td>
-              </tr>
-            ))}
-          </TableBody>
-        </Table>
+        <div className="w-full space-y-4">
+          <h2 className="text-xl font-semibold">Assets</h2>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Account Name</TableHead>
+                <TableHead className="text-right" style={{ textAlign: 'right', width: '200px' }}>
+                  Last Balance
+                </TableHead>
+                <TableHead className="text-right whitespace-nowrap w-0">Last update</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {assetAccounts.map((account) => (
+                <tr key={account.acct_id}>
+                  <td className="px-2">
+                    <Link href={`/finance/${account.acct_id}`}>{account.acct_name}</Link>
+                  </td>
+                  <td className="flex items-end justify-end">
+                    <EditBalanceDisplay
+                      acct_id={account.acct_id}
+                      defaultBalance={currency(account.acct_last_balance).toString()}
+                    />
+                  </td>
+                  <td className="px-2" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                    {formatDistance(new Date(), account.acct_last_balance_date ?? new Date())}
+                  </td>
+                </tr>
+              ))}
+            </TableBody>
+          </Table>
+
+          <h2 className="text-xl font-semibold mt-8">Liabilities</h2>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Account Name</TableHead>
+                <TableHead className="text-right" style={{ textAlign: 'right', width: '200px' }}>
+                  Last Balance
+                </TableHead>
+                <TableHead className="text-right whitespace-nowrap w-0">Last update</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {liabilityAccounts.map((account) => (
+                <tr key={account.acct_id}>
+                  <td className="px-2">
+                    <Link href={`/finance/${account.acct_id}`}>{account.acct_name}</Link>
+                  </td>
+                  <td className="flex items-end justify-end">
+                    <EditBalanceDisplay
+                      acct_id={account.acct_id}
+                      defaultBalance={currency(account.acct_last_balance).toString()}
+                    />
+                  </td>
+                  <td className="px-2" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                    {formatDistance(new Date(), account.acct_last_balance_date ?? new Date())}
+                  </td>
+                </tr>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
         <NewAccountForm />
       </div>
     </Container>
