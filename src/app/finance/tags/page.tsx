@@ -8,7 +8,6 @@ import Container from '@/components/container'
 import MainTitle from '@/components/main-title'
 import requireSession from '@/server_lib/requireSession'
 import { createTag, deleteTag } from './actions'
-import { revalidatePath } from 'next/cache'
 import { TAG_COLORS } from './tagColors'
 import {
   Breadcrumb,
@@ -19,6 +18,8 @@ import {
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb'
 import { Badge } from '@/components/ui/badge'
+import DeleteButton from './DeleteButton'
+import { revalidatePath } from 'next/cache'
 
 export default async function TagsPage() {
   const { uid } = await requireSession()
@@ -46,15 +47,15 @@ export default async function TagsPage() {
     },
   })
 
-  async function handleCreateTag(formData: FormData) {
+  const createTagVoid = async (fd: FormData) => {
     'use server'
-    const result = await createTag(formData)
+    await createTag(fd)
+    revalidatePath('/finance/tags')
+  }
 
-    if (result.error) {
-      // TODO: Add error handling
-      console.error(result.error)
-    }
-
+  const deleteFn = async (fd: FormData) => {
+    'use server'
+    await deleteTag(fd)
     revalidatePath('/finance/tags')
   }
 
@@ -72,69 +73,68 @@ export default async function TagsPage() {
       <div className="flex items-center justify-between mb-8">
         <MainTitle>Manage Tags</MainTitle>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Label</TableHead>
-            <TableHead>Color</TableHead>
-            <TableHead>Transactions</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {existingTags.map((tag) => (
-            <TableRow key={tag.tag_id}>
-              <TableCell>{tag.tag_label}</TableCell>
+      <form className="form" action={createTagVoid}>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Label</TableHead>
+              <TableHead>Color</TableHead>
+              <TableHead>Transactions</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {existingTags.map((tag) => (
+              <TableRow key={tag.tag_id}>
+                <TableCell>{tag.tag_label}</TableCell>
+                <TableCell>
+                  <div className={`bg-${tag.tag_color}-200 text-white p-1 rounded`}>{tag.tag_color}</div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={tag._count.FinAccountLineItemTagMap > 0 ? 'default' : 'secondary'}>
+                    {tag._count.FinAccountLineItemTagMap}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <DeleteButton
+                    tagId={tag.tag_id.toString()}
+                    disabled={tag._count.FinAccountLineItemTagMap > 0}
+                    deleteAction={deleteFn}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
               <TableCell>
-                <div className={`bg-${tag.tag_color}-200 text-white p-1 rounded`}>{tag.tag_color}</div>
+                <Input placeholder="Enter tag label" name="tag_label" maxLength={50} required />
               </TableCell>
               <TableCell>
-                <Badge variant={tag._count.FinAccountLineItemTagMap > 0 ? 'default' : 'secondary'}>
-                  {tag._count.FinAccountLineItemTagMap}
-                </Badge>
+                <Select name="tag_color" defaultValue="gray" required>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a color" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TAG_COLORS.map((color) => (
+                      <SelectItem key={color} value={color}>
+                        <div className="flex items-left">
+                          <div className={`w-4 h-4 rounded-full bg-${color}-400 mr-2`} title={color} />
+                          {color}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </TableCell>
+              <TableCell>&nbsp;</TableCell>
               <TableCell>
-                <form action={deleteTag}>
-                  <input type="hidden" name="tag_id" value={tag.tag_id} />
-                  <Button type="submit" variant="destructive" size="sm" disabled={tag._count.FinAccountLineItemTagMap > 0}>
-                    Delete
-                  </Button>
-                </form>
+                <Button type="submit">Create Tag</Button>
               </TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell>
-              <Input placeholder="Enter tag label" name="tag_label" maxLength={50} required />
-            </TableCell>
-            <TableCell>
-              <Select name="tag_color" required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a color" />
-                </SelectTrigger>
-                <SelectContent>
-                  {TAG_COLORS.map((color) => (
-                    <SelectItem key={color} value={color}>
-                      <div className="flex items-left">
-                        <div className={`w-4 h-4 rounded-full bg-${color}-400 mr-2`} title={color} />
-                        {color}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </TableCell>
-            <TableCell>{/* Placeholder for alignment */}</TableCell>
-            <TableCell>
-              <form action={handleCreateTag}>
-                <Button type="submit">Create Tag</Button>
-              </form>
-            </TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
+          </TableFooter>
+        </Table>
+      </form>
     </Container>
   )
 }

@@ -4,15 +4,10 @@ import { z } from 'zod'
 import { prisma } from '@/server_lib/prisma'
 import requireSession from '@/server_lib/requireSession'
 import { TAG_COLORS } from './tagColors'
-import { revalidatePath } from 'next/cache'
 
 const TagSchema = z.object({
   tag_label: z.string().min(1, 'Label is required').max(50, 'Label must be 50 characters or less'),
-  tag_color: z.enum(TAG_COLORS),
-})
-
-const DeleteTagSchema = z.object({
-  tag_id: z.number().int().positive('Invalid tag ID'),
+  tag_color: z.enum(TAG_COLORS).default('gray'),
 })
 
 export async function createTag(formData: FormData) {
@@ -20,14 +15,51 @@ export async function createTag(formData: FormData) {
 
   const result = TagSchema.safeParse({
     tag_label: formData.get('tag_label'),
-    tag_color: formData.get('tag_color'),
+    tag_color: formData.get('tag_color') || 'gray',
   })
 
   if (!result.success) {
-    return { error: result.error.errors[0].message }
+    return {
+      error: result.error.errors[0].message,
+      success: false,
+    }
   }
 
   try {
+    // Check for existing tag, including soft-deleted tags
+    const existingTag = await prisma.finAccountTag.findFirst({
+      where: {
+        tag_label: result.data.tag_label,
+        tag_userid: uid,
+      },
+    })
+
+    if (existingTag) {
+      // If tag exists and is soft-deleted, reactivate it
+      if (existingTag.when_deleted) {
+        await prisma.finAccountTag.update({
+          where: { tag_id: existingTag.tag_id },
+          data: {
+            when_deleted: null,
+            tag_color: result.data.tag_color, // Update color if needed
+          },
+        })
+
+        return {
+          success: true,
+          tag: existingTag,
+          message: 'Reactivated previously deleted tag',
+        }
+      }
+
+      // If tag already exists and is active
+      return {
+        error: 'A tag with this label already exists',
+        success: false,
+      }
+    }
+
+    // Create new tag if no existing tag found
     const newTag = await prisma.finAccountTag.create({
       data: {
         tag_userid: uid,
@@ -36,30 +68,34 @@ export async function createTag(formData: FormData) {
       },
     })
 
-    return { success: true, tag: newTag }
-  } catch (error) {
-    // Check for unique constraint violation
-    if (error instanceof Error && error.message.includes('Unique constraint')) {
-      return { error: 'A tag with this label already exists' }
+    return {
+      success: true,
+      tag: newTag,
     }
-    return { error: 'Failed to create tag' }
+  } catch (error) {
+    console.error('Tag creation error:', error)
+    return {
+      error: 'Failed to create tag',
+      success: false,
+    }
   }
 }
 
-export async function deleteTag(formData: FormData) {
+export async function deleteTag(formData: FormData): Promise<{ error?: string; success: boolean }> {
   const { uid } = await requireSession()
 
-  const result = DeleteTagSchema.safeParse({
-    tag_id: Number(formData.get('tag_id')),
-  })
+  const tagId = Number(formData.get('tag_id'))
 
-  if (!result.success) {
-    return { error: result.error.errors[0].message }
+  if (isNaN(tagId)) {
+    return {
+      error: 'Invalid tag ID',
+      success: false,
+    }
   }
 
   // Check if the tag has any associated transactions
   const tagWithTransactions = await prisma.finAccountTag.findUnique({
-    where: { tag_id: result.data.tag_id },
+    where: { tag_id: tagId },
     include: {
       _count: {
         select: {
@@ -75,19 +111,19 @@ export async function deleteTag(formData: FormData) {
   })
 
   if (!tagWithTransactions) {
-    return { error: 'Tag not found' }
+    return { error: 'Tag not found', success: false }
   }
 
   // Prevent deletion if tag has active transactions
   if (tagWithTransactions._count.FinAccountLineItemTagMap > 0) {
-    return { error: 'Cannot delete a tag with active transactions' }
+    return { error: 'Cannot delete a tag with active transactions', success: false }
   }
 
   try {
     // Soft delete by setting when_deleted timestamp
     await prisma.finAccountTag.updateMany({
       where: {
-        tag_id: result.data.tag_id,
+        tag_id: tagId,
         tag_userid: uid,
       },
       data: {
@@ -95,10 +131,9 @@ export async function deleteTag(formData: FormData) {
       },
     })
 
-    revalidatePath('/finance/tags')
     return { success: true }
   } catch (error) {
     console.error('Failed to delete tag:', error)
-    return { error: 'Failed to delete tag' }
+    return { error: 'Failed to delete tag', success: false }
   }
 }

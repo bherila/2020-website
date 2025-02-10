@@ -5,6 +5,8 @@ import { AccountLineItem } from '@/lib/AccountLineItem'
 import { getUserTags, applyTagToTransactions } from './tag-actions'
 import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 import './TransactionsTable.css'
 import { Table } from '@/components/ui/table'
@@ -579,16 +581,23 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
             {isLoadingTags ? (
               <Spinner size="small" />
             ) : (
-              availableTags.map((tag) => (
-                <TagApplyButton
-                  key={tag.tag_id}
-                  tagId={tag.tag_id}
-                  tagLabel={tag.tag_label}
-                  tagColor={tag.tag_color}
-                  disabled={sortedData.length === 0}
-                  onApplyTag={handleApplyTag}
-                />
-              ))
+              <>
+                {availableTags.map((tag) => (
+                  <TagApplyButton
+                    key={tag.tag_id}
+                    tagId={tag.tag_id}
+                    tagLabel={tag.tag_label}
+                    tagColor={tag.tag_color}
+                    disabled={sortedData.length === 0}
+                    onApplyTag={handleApplyTag}
+                  />
+                ))}
+                <Link href="/finance/tags" className="ml-auto">
+                  <Button variant="outline" size="sm">
+                    Manage Tags
+                  </Button>
+                </Link>
+              </>
             )}
           </div>
         </div>

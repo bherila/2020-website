@@ -42,6 +42,30 @@
 - Keep using `className` props on React Bootstrap components even if React 19 shows ref warnings
 - Use shadcn Button component as base for all buttons
 
+## Form Validation Best Practices
+
+### Zod Form Validation Patterns
+- Use Zod schemas for form validation
+- Provide default values for optional fields
+- Example validation pattern:
+```ts
+const formSchema = z.object({
+  fieldName: z.string().min(1, 'Error message'),
+  optionalField: z.string().optional().default('defaultValue')
+})
+const form = useForm({
+  resolver: zodResolver(formSchema),
+  defaultValues: {
+    fieldName: '',
+    optionalField: 'defaultValue'
+  }
+})
+```
+
+- For server actions, use `.default()` in Zod schema to provide fallback values
+- Always handle potential parsing errors with `.safeParse()`
+- Provide clear, user-friendly error messages
+
 ## Best Practices
 
 - Use react-hook-form with zod for form validation and type safety
@@ -96,3 +120,30 @@ const form = useForm({
 - Filter out soft-deleted records in queries by checking `when_deleted` is null
 - Allows for potential record recovery and maintains data integrity
 - Useful for maintaining referential relationships and audit trails
+
+### Handling Soft-Deleted Records
+- When recreating a soft-deleted record, consider these strategies:
+  1. Reactivate the existing record by setting `when_deleted` to null
+  2. Update the record with new information while clearing the deletion timestamp
+  3. Provide clear user feedback about record reactivation
+- Example pattern for tag/record reactivation:
+```typescript
+const existingRecord = await prisma.model.findFirst({
+  where: {
+    label: inputLabel,
+    userId: currentUserId,
+  },
+})
+
+if (existingRecord && existingRecord.when_deleted) {
+  // Reactivate soft-deleted record
+  await prisma.model.update({
+    where: { id: existingRecord.id },
+    data: {
+      when_deleted: null,
+      // Optionally update other fields
+      updatedField: newValue,
+    },
+  })
+}
+```
