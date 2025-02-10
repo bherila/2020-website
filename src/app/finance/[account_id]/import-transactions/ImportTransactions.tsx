@@ -53,6 +53,10 @@ export default function ImportTransactions(props: { onImportClick: (data: Accoun
   }, [])
 
   const { data, parseError } = useMemo((): { data: AccountLineItem[] | null; parseError: string | null } => {
+    // If text is empty, return null data and no parse error
+    if (!text.trim()) {
+      return { data: null, parseError: null }
+    }
     return parseData(text)
   }, [text])
 
@@ -79,23 +83,26 @@ export default function ImportTransactions(props: { onImportClick: (data: Accoun
         style={{ width: '100%' }}
       />
 
-      <div className="my-2">
-        <Button
-          className="mx-1"
-          disabled={!data?.length}
-          onClick={(e) => {
-            e.preventDefault()
-            data && props.onImportClick(data)
-          }}
-        >
-          Import {data?.length ?? 'nothing'}
-        </Button>
-        <Button className="mx-1" onClick={() => setText('')} disabled={!text.length}>
-          Clear
-        </Button>
-      </div>
+      {data && data.length > 0 && (
+        <>
+          <div className="my-2">
+            <Button
+              className="mx-1"
+              onClick={(e) => {
+                e.preventDefault()
+                data && props.onImportClick(data)
+              }}
+            >
+              Import {data.length}
+            </Button>
+            <Button className="mx-1" onClick={() => setText('')}>
+              Clear
+            </Button>
+          </div>
 
-      {data && <TransactionsTable data={data} />}
+          <TransactionsTable data={data} />
+        </>
+      )}
     </div>
   )
 }
@@ -184,7 +191,7 @@ function parseData(text: string): { data: AccountLineItem[] | null; parseError: 
     parseError = e instanceof ZodError ? e.message : (e?.toString() ?? null)
   }
   return {
-    data,
+    data: data.length > 0 ? data : null,
     parseError,
   }
 }

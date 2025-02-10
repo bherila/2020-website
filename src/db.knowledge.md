@@ -19,4 +19,9 @@
 - Use zod-prisma-types generator to create Zod schemas from Prisma models
 - Generate types with `yarn prisma generate`
 - Import schemas from `@/prisma/generated/zod`
-=======
+
+## Foreign Key Constraints
+- Always specify `onDelete` and `onUpdate` behaviors for foreign key relations
+- Use `Cascade` when child records should be deleted/updated with parent
+- Helps maintain referential integrity
+- Prevents foreign key constraint errors during schema migrations

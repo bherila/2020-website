@@ -4,14 +4,24 @@ import { fetchWrapper } from '@/lib/fetchWrapper'
 import TransactionsTable from './TransactionsTable'
 import { AccountLineItem } from '@/lib/AccountLineItem'
 import { Spinner } from '@/components/ui/spinner'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 export default function AccountClient({ id }: { id: number }) {
-  const [data, setData] = useState<AccountLineItem[]>([])
+  const [data, setData] = useState<AccountLineItem[] | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchWrapper.get(`/api/finance/${id}/line_items/`)
-      setData(data.filter(Boolean))
+      try {
+        const fetchedData = await fetchWrapper.get(`/api/finance/${id}/line_items/`)
+        setData(fetchedData.filter(Boolean))
+        setIsLoading(false)
+      } catch (error) {
+        console.error('Error fetching transactions:', error)
+        setData([])
+        setIsLoading(false)
+      }
     }
     fetchData()
   }, [id])
@@ -33,11 +43,25 @@ export default function AccountClient({ id }: { id: number }) {
     }
   }
 
-  return data === null || data.length === 0 ? (
-    <div className="d-flex justify-content-center">
-      <Spinner />
-    </div>
-  ) : (
-    <TransactionsTable data={data} onDeleteTransaction={handleDeleteTransaction} />
-  )
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center">
+        <Spinner />
+      </div>
+    )
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="text-center p-8 bg-muted rounded-lg">
+        <h2 className="text-xl font-semibold mb-4">No Transactions Found</h2>
+        <p className="mb-6">This account doesn't have any transactions yet.</p>
+        <Link href={`/finance/${id}/import-transactions`}>
+          <Button>Import Transactions</Button>
+        </Link>
+      </div>
+    )
+  }
+
+  return <TransactionsTable data={data} onDeleteTransaction={handleDeleteTransaction} />
 }

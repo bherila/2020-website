@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { AccountLineItem, AccountLineItemSchema } from '@/lib/AccountLineItem'
+import { AccountLineItem, AccountLineItemSchema, AccountLineItemTagSchema } from '@/lib/AccountLineItem'
 import { z } from 'zod'
 import { prisma } from '@/server_lib/prisma'
 import requireSession from '@/server_lib/requireSession'
@@ -38,6 +38,13 @@ export async function GET(request: NextRequest, context: { params: Promise<{ acc
         t_account: accountId,
         when_deleted: includeDeleted ? { not: null } : null,
       },
+      include: {
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+      },
       orderBy: {
         t_date: 'desc',
       },
@@ -52,6 +59,12 @@ export async function GET(request: NextRequest, context: { params: Promise<{ acc
         t_commission: item.t_commission?.toString(),
         opt_strike: item.opt_strike?.toString(),
         t_harvested_amount: !item.t_harvested_amount ? undefined : item.t_harvested_amount.toString(),
+        tags: item.tags.map((tagMap) => ({
+          tag_id: tagMap.tag.tag_id,
+          tag_userid: tagMap.tag.tag_userid,
+          tag_color: tagMap.tag.tag_color,
+          tag_label: tagMap.tag.tag_label,
+        })),
       } as any
       delete r.when_added
       delete r.when_deleted
@@ -71,6 +84,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ acc
 export async function POST(request: NextRequest, context: { params: Promise<{ account_id: string }> }) {
   try {
     const accountId = z.coerce.number().parse((await context.params).account_id)
+    const { uid } = await requireSession()
     await validateAccess(accountId)
 
     function enrich(item: z.infer<typeof AccountLineItemSchema>) {
@@ -93,9 +107,47 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ac
     const body = await request.json()
     if (Array.isArray(body)) {
       const items = z.array(AccountLineItemSchema).parse(body).map(enrich)
-      await prisma.finAccountLineItems.createMany({
+
+      // Create transactions
+      const createdItems = await prisma.finAccountLineItems.createMany({
         data: items,
       })
+
+      // Handle tags if present
+      for (const item of items) {
+        if (item.tags && item.tags.length > 0) {
+          // Create or find tags
+          const tagOperations = item.tags.map(async (tag) => {
+            // Upsert tag
+            const createdTag = await prisma.finAccountTag.upsert({
+              where: {
+                unique_tag_per_user: {
+                  tag_userid: uid,
+                  tag_label: tag.tag_label,
+                },
+              },
+              update: {
+                tag_color: tag.tag_color,
+              },
+              create: {
+                tag_userid: uid,
+                tag_color: tag.tag_color,
+                tag_label: tag.tag_label,
+              },
+            })
+
+            // Map tag to transaction
+            await prisma.finAccountLineItemTagMap.create({
+              data: {
+                t_id: item.t_id!, // Assuming t_id is auto-generated
+                tag_id: createdTag.tag_id,
+              },
+            })
+          })
+
+          await Promise.all(tagOperations)
+        }
+      }
     } else {
       const item = AccountLineItemSchema.parse(body)
       await prisma.finAccountLineItems.createMany({

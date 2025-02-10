@@ -128,53 +128,54 @@ model ProductKey {
   @@map("product_keys")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model FinAccountLineItems {
-  t_id            Int                          @id @default(autoincrement())
-  t_account       Int?
-  t_date          String                       @db.VarChar(10)
-  t_type          String?
-  t_schc_category String?
-  t_amt           Decimal?                     @db.Decimal(13, 4)
-  t_symbol        String?                      @db.VarChar(20)
-  t_qty           Float                        @default(0) @db.Float
-  t_price         Decimal?                     @db.Decimal(13, 4)
-  t_commission    Decimal?                     @db.Decimal(13, 4)
-  t_fee           Decimal?                     @db.Decimal(13, 4)
-  t_method        String?                      @db.VarChar(20)
-  t_source        String?                      @db.VarChar(20)
-  t_origin        String?                      @db.VarChar(20)
-  opt_expiration  String?                      @db.VarChar(10)
-  opt_type        account_line_items_opt_type?
-  opt_strike      Decimal?                     @db.Decimal(13, 4)
-  t_description   String?                      @db.VarChar(255)
-  t_comment       String?                      @db.VarChar(255)
-  t_from          String?                      @db.VarChar(10)
-  t_to            String?                      @db.VarChar(10)
-  t_interest_rate String?                      @db.VarChar(20)
-  t_cusip         String?                      @db.VarChar(20)
-  t_harvested_amount Decimal?                  @db.Decimal(13, 4)
-  parent_t_id     Int?
-  when_added      DateTime?                    @db.DateTime(0)
-  when_deleted    DateTime?                    @db.DateTime(0)
-
-  @@index([t_account], map: "accounting_accounts_acct_id_fk")
-  @@map("fin_account_line_items")
-}
-
 model FinAccounts {
-  acct_id                Int                @id @default(autoincrement())
-  acct_owner             String             @db.VarChar(50)
-  acct_name              String             @db.VarChar(50)
-  acct_last_balance      String             @default("0") @db.VarChar(20)
-  acct_last_balance_date DateTime?          @db.DateTime(0)
-  acct_is_debt           Boolean            @default(false) @db.Bit(1)
-  acct_is_retirement     Boolean            @default(false) @db.Bit(1)
-  acct_sort_order        Int                @default(0)
-  when_deleted           DateTime?          @db.DateTime(0)
+  acct_id                Int       @id @default(autoincrement())
+  acct_owner             String    @db.VarChar(50)
+  acct_name              String    @db.VarChar(50)
+  acct_last_balance      String    @default("0") @db.VarChar(20)
+  acct_last_balance_date DateTime? @db.DateTime(0)
+  acct_is_debt           Boolean   @default(false) @db.Bit(1)
+  acct_is_retirement     Boolean   @default(false) @db.Bit(1)
+  acct_sort_order        Int       @default(0)
+  when_deleted           DateTime? @db.DateTime(0)
 
   @@unique([acct_owner, acct_name], map: "acct_owner")
   @@map("fin_accounts")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model FinAccountLineItems {
+  t_id               Int                          @id @default(autoincrement())
+  t_account          Int?
+  t_date             String                       @db.VarChar(10)
+  t_type             String?
+  t_schc_category    String?
+  t_amt              Decimal?                     @db.Decimal(13, 4)
+  t_symbol           String?                      @db.VarChar(20)
+  t_qty              Float                        @default(0) @db.Float
+  t_price            Decimal?                     @db.Decimal(13, 4)
+  t_commission       Decimal?                     @db.Decimal(13, 4)
+  t_fee              Decimal?                     @db.Decimal(13, 4)
+  t_method           String?                      @db.VarChar(20)
+  t_source           String?                      @db.VarChar(20)
+  t_origin           String?                      @db.VarChar(20)
+  opt_expiration     String?                      @db.VarChar(10)
+  opt_type           account_line_items_opt_type?
+  opt_strike         Decimal?                     @db.Decimal(13, 4)
+  t_description      String?                      @db.VarChar(255)
+  t_comment          String?                      @db.VarChar(255)
+  t_from             String?                      @db.VarChar(10)
+  t_to               String?                      @db.VarChar(10)
+  t_interest_rate    String?                      @db.VarChar(20)
+  t_cusip            String?                      @db.VarChar(20)
+  t_harvested_amount Decimal?                     @db.Decimal(13, 4)
+  parent_t_id        Int?
+  when_added         DateTime?                    @db.DateTime(0)
+  when_deleted       DateTime?                    @db.DateTime(0)
+  tags               FinAccountLineItemTagMap[]
+
+  @@index([t_account], map: "accounting_accounts_acct_id_fk")
+  @@map("fin_account_line_items")
 }
 
 model FinAccountBalanceSnapshot {
@@ -407,4 +408,41 @@ enum graduated_tax_type {
 enum account_line_items_opt_type {
   call
   put
+}
+
+model AccountLineItemTag {
+  tag_id      Int     @id @default(autoincrement())
+  tag_userid  String
+  tag_color   String
+  tag_label   String
+  
+  @@unique([tag_userid, tag_label])
+}
+
+model FinAccountTag {
+  tag_id                   Int                        @id @default(autoincrement())
+  tag_userid               String                     @db.VarChar(50)
+  tag_color                String                     @db.VarChar(20)
+  tag_label                String                     @db.VarChar(50)
+  when_added               DateTime                   @default(now()) @db.DateTime(0)
+  when_deleted             DateTime?                  @db.DateTime(0)
+  FinAccountLineItemTagMap FinAccountLineItemTagMap[]
+
+  @@unique([tag_userid, tag_label], map: "unique_tag_per_user")
+  @@map("fin_account_tag")
+}
+
+model FinAccountLineItemTagMap {
+  id           Int       @id @default(autoincrement())
+  when_added   DateTime  @default(now()) @db.DateTime(0)
+  when_deleted DateTime? @db.DateTime(0)
+
+  t_id   Int
+  tag_id Int
+
+  transaction FinAccountLineItems @relation(fields: [t_id], references: [t_id], onDelete: Cascade, onUpdate: Cascade)
+  tag         FinAccountTag       @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([t_id, tag_id], map: "unique_tag_per_transaction")
+  @@map("fin_account_line_item_tag_map")
 }

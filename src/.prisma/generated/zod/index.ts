@@ -127,6 +127,18 @@ export const ProductKeyScalarFieldEnumSchema = z.enum([
   'keyRetrievalNote',
 ])
 
+export const FinAccountsScalarFieldEnumSchema = z.enum([
+  'acct_id',
+  'acct_owner',
+  'acct_name',
+  'acct_last_balance',
+  'acct_last_balance_date',
+  'acct_is_debt',
+  'acct_is_retirement',
+  'acct_sort_order',
+  'when_deleted',
+])
+
 export const FinAccountLineItemsScalarFieldEnumSchema = z.enum([
   't_id',
   't_account',
@@ -154,18 +166,6 @@ export const FinAccountLineItemsScalarFieldEnumSchema = z.enum([
   't_harvested_amount',
   'parent_t_id',
   'when_added',
-  'when_deleted',
-])
-
-export const FinAccountsScalarFieldEnumSchema = z.enum([
-  'acct_id',
-  'acct_owner',
-  'acct_name',
-  'acct_last_balance',
-  'acct_last_balance_date',
-  'acct_is_debt',
-  'acct_is_retirement',
-  'acct_sort_order',
   'when_deleted',
 ])
 
@@ -291,6 +291,19 @@ export const VXCVFilesScalarFieldEnumSchema = z.enum([
 
 export const VXCVLinksScalarFieldEnumSchema = z.enum(['uniqueid', 'url'])
 
+export const AccountLineItemTagScalarFieldEnumSchema = z.enum(['tag_id', 'tag_userid', 'tag_color', 'tag_label'])
+
+export const FinAccountTagScalarFieldEnumSchema = z.enum([
+  'tag_id',
+  'tag_userid',
+  'tag_color',
+  'tag_label',
+  'when_added',
+  'when_deleted',
+])
+
+export const FinAccountLineItemTagMapScalarFieldEnumSchema = z.enum(['id', 'when_added', 'when_deleted', 't_id', 'tag_id'])
+
 export const SortOrderSchema = z.enum(['asc', 'desc'])
 
 export const NullsOrderSchema = z.enum(['first', 'last'])
@@ -344,6 +357,8 @@ export const ProductKeyOrderByRelevanceFieldEnumSchema = z.enum([
   'keyRetrievalNote',
 ])
 
+export const FinAccountsOrderByRelevanceFieldEnumSchema = z.enum(['acct_owner', 'acct_name', 'acct_last_balance'])
+
 export const FinAccountLineItemsOrderByRelevanceFieldEnumSchema = z.enum([
   't_date',
   't_type',
@@ -360,8 +375,6 @@ export const FinAccountLineItemsOrderByRelevanceFieldEnumSchema = z.enum([
   't_interest_rate',
   't_cusip',
 ])
-
-export const FinAccountsOrderByRelevanceFieldEnumSchema = z.enum(['acct_owner', 'acct_name', 'acct_last_balance'])
 
 export const FinAccountBalanceSnapshotOrderByRelevanceFieldEnumSchema = z.enum(['balance'])
 
@@ -405,6 +418,10 @@ export const UsersLegacyOrderByRelevanceFieldEnumSchema = z.enum([
 export const VXCVFilesOrderByRelevanceFieldEnumSchema = z.enum(['filename', 'mime'])
 
 export const VXCVLinksOrderByRelevanceFieldEnumSchema = z.enum(['uniqueid', 'url'])
+
+export const AccountLineItemTagOrderByRelevanceFieldEnumSchema = z.enum(['tag_userid', 'tag_color', 'tag_label'])
+
+export const FinAccountTagOrderByRelevanceFieldEnumSchema = z.enum(['tag_userid', 'tag_color', 'tag_label'])
 
 export const graduated_tax_typeSchema = z.enum(['s', 'mfj', 'mfs', 'hoh'])
 
@@ -556,6 +573,24 @@ export const ProductKeySchema = z.object({
 export type ProductKey = z.infer<typeof ProductKeySchema>
 
 /////////////////////////////////////////
+// FIN ACCOUNTS SCHEMA
+/////////////////////////////////////////
+
+export const FinAccountsSchema = z.object({
+  acct_id: z.number().int(),
+  acct_owner: z.string(),
+  acct_name: z.string(),
+  acct_last_balance: z.string(),
+  acct_last_balance_date: z.coerce.date().nullable(),
+  acct_is_debt: z.boolean(),
+  acct_is_retirement: z.boolean(),
+  acct_sort_order: z.number().int(),
+  when_deleted: z.coerce.date().nullable(),
+})
+
+export type FinAccounts = z.infer<typeof FinAccountsSchema>
+
+/////////////////////////////////////////
 // FIN ACCOUNT LINE ITEMS SCHEMA
 /////////////////////////////////////////
 
@@ -613,24 +648,6 @@ export const FinAccountLineItemsSchema = z.object({
 })
 
 export type FinAccountLineItems = z.infer<typeof FinAccountLineItemsSchema>
-
-/////////////////////////////////////////
-// FIN ACCOUNTS SCHEMA
-/////////////////////////////////////////
-
-export const FinAccountsSchema = z.object({
-  acct_id: z.number().int(),
-  acct_owner: z.string(),
-  acct_name: z.string(),
-  acct_last_balance: z.string(),
-  acct_last_balance_date: z.coerce.date().nullable(),
-  acct_is_debt: z.boolean(),
-  acct_is_retirement: z.boolean(),
-  acct_sort_order: z.number().int(),
-  when_deleted: z.coerce.date().nullable(),
-})
-
-export type FinAccounts = z.infer<typeof FinAccountsSchema>
 
 /////////////////////////////////////////
 // FIN ACCOUNT BALANCE SNAPSHOT SCHEMA
@@ -983,6 +1000,48 @@ export const VXCVLinksSchema = z.object({
 export type VXCVLinks = z.infer<typeof VXCVLinksSchema>
 
 /////////////////////////////////////////
+// ACCOUNT LINE ITEM TAG SCHEMA
+/////////////////////////////////////////
+
+export const AccountLineItemTagSchema = z.object({
+  tag_id: z.number().int(),
+  tag_userid: z.string(),
+  tag_color: z.string(),
+  tag_label: z.string(),
+})
+
+export type AccountLineItemTag = z.infer<typeof AccountLineItemTagSchema>
+
+/////////////////////////////////////////
+// FIN ACCOUNT TAG SCHEMA
+/////////////////////////////////////////
+
+export const FinAccountTagSchema = z.object({
+  tag_id: z.number().int(),
+  tag_userid: z.string(),
+  tag_color: z.string(),
+  tag_label: z.string(),
+  when_added: z.coerce.date(),
+  when_deleted: z.coerce.date().nullable(),
+})
+
+export type FinAccountTag = z.infer<typeof FinAccountTagSchema>
+
+/////////////////////////////////////////
+// FIN ACCOUNT LINE ITEM TAG MAP SCHEMA
+/////////////////////////////////////////
+
+export const FinAccountLineItemTagMapSchema = z.object({
+  id: z.number().int(),
+  when_added: z.coerce.date(),
+  when_deleted: z.coerce.date().nullable(),
+  t_id: z.number().int(),
+  tag_id: z.number().int(),
+})
+
+export type FinAccountLineItemTagMap = z.infer<typeof FinAccountLineItemTagMapSchema>
+
+/////////////////////////////////////////
 // SELECT & INCLUDE
 /////////////////////////////////////////
 
@@ -1188,8 +1247,52 @@ export const ProductKeySelectSchema: z.ZodType<Prisma.ProductKeySelect> = z
   })
   .strict()
 
+// FIN ACCOUNTS
+//------------------------------------------------------
+
+export const FinAccountsSelectSchema: z.ZodType<Prisma.FinAccountsSelect> = z
+  .object({
+    acct_id: z.boolean().optional(),
+    acct_owner: z.boolean().optional(),
+    acct_name: z.boolean().optional(),
+    acct_last_balance: z.boolean().optional(),
+    acct_last_balance_date: z.boolean().optional(),
+    acct_is_debt: z.boolean().optional(),
+    acct_is_retirement: z.boolean().optional(),
+    acct_sort_order: z.boolean().optional(),
+    when_deleted: z.boolean().optional(),
+  })
+  .strict()
+
 // FIN ACCOUNT LINE ITEMS
 //------------------------------------------------------
+
+export const FinAccountLineItemsIncludeSchema: z.ZodType<Prisma.FinAccountLineItemsInclude> = z
+  .object({
+    tags: z.union([z.boolean(), z.lazy(() => FinAccountLineItemTagMapFindManyArgsSchema)]).optional(),
+    _count: z.union([z.boolean(), z.lazy(() => FinAccountLineItemsCountOutputTypeArgsSchema)]).optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemsArgsSchema: z.ZodType<Prisma.FinAccountLineItemsDefaultArgs> = z
+  .object({
+    select: z.lazy(() => FinAccountLineItemsSelectSchema).optional(),
+    include: z.lazy(() => FinAccountLineItemsIncludeSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemsCountOutputTypeArgsSchema: z.ZodType<Prisma.FinAccountLineItemsCountOutputTypeDefaultArgs> =
+  z
+    .object({
+      select: z.lazy(() => FinAccountLineItemsCountOutputTypeSelectSchema).nullish(),
+    })
+    .strict()
+
+export const FinAccountLineItemsCountOutputTypeSelectSchema: z.ZodType<Prisma.FinAccountLineItemsCountOutputTypeSelect> = z
+  .object({
+    tags: z.boolean().optional(),
+  })
+  .strict()
 
 export const FinAccountLineItemsSelectSchema: z.ZodType<Prisma.FinAccountLineItemsSelect> = z
   .object({
@@ -1220,23 +1323,8 @@ export const FinAccountLineItemsSelectSchema: z.ZodType<Prisma.FinAccountLineIte
     parent_t_id: z.boolean().optional(),
     when_added: z.boolean().optional(),
     when_deleted: z.boolean().optional(),
-  })
-  .strict()
-
-// FIN ACCOUNTS
-//------------------------------------------------------
-
-export const FinAccountsSelectSchema: z.ZodType<Prisma.FinAccountsSelect> = z
-  .object({
-    acct_id: z.boolean().optional(),
-    acct_owner: z.boolean().optional(),
-    acct_name: z.boolean().optional(),
-    acct_last_balance: z.boolean().optional(),
-    acct_last_balance_date: z.boolean().optional(),
-    acct_is_debt: z.boolean().optional(),
-    acct_is_retirement: z.boolean().optional(),
-    acct_sort_order: z.boolean().optional(),
-    when_deleted: z.boolean().optional(),
+    tags: z.union([z.boolean(), z.lazy(() => FinAccountLineItemTagMapFindManyArgsSchema)]).optional(),
+    _count: z.union([z.boolean(), z.lazy(() => FinAccountLineItemsCountOutputTypeArgsSchema)]).optional(),
   })
   .strict()
 
@@ -1544,6 +1632,89 @@ export const VXCVLinksSelectSchema: z.ZodType<Prisma.VXCVLinksSelect> = z
   .object({
     uniqueid: z.boolean().optional(),
     url: z.boolean().optional(),
+  })
+  .strict()
+
+// ACCOUNT LINE ITEM TAG
+//------------------------------------------------------
+
+export const AccountLineItemTagSelectSchema: z.ZodType<Prisma.AccountLineItemTagSelect> = z
+  .object({
+    tag_id: z.boolean().optional(),
+    tag_userid: z.boolean().optional(),
+    tag_color: z.boolean().optional(),
+    tag_label: z.boolean().optional(),
+  })
+  .strict()
+
+// FIN ACCOUNT TAG
+//------------------------------------------------------
+
+export const FinAccountTagIncludeSchema: z.ZodType<Prisma.FinAccountTagInclude> = z
+  .object({
+    FinAccountLineItemTagMap: z.union([z.boolean(), z.lazy(() => FinAccountLineItemTagMapFindManyArgsSchema)]).optional(),
+    _count: z.union([z.boolean(), z.lazy(() => FinAccountTagCountOutputTypeArgsSchema)]).optional(),
+  })
+  .strict()
+
+export const FinAccountTagArgsSchema: z.ZodType<Prisma.FinAccountTagDefaultArgs> = z
+  .object({
+    select: z.lazy(() => FinAccountTagSelectSchema).optional(),
+    include: z.lazy(() => FinAccountTagIncludeSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountTagCountOutputTypeArgsSchema: z.ZodType<Prisma.FinAccountTagCountOutputTypeDefaultArgs> = z
+  .object({
+    select: z.lazy(() => FinAccountTagCountOutputTypeSelectSchema).nullish(),
+  })
+  .strict()
+
+export const FinAccountTagCountOutputTypeSelectSchema: z.ZodType<Prisma.FinAccountTagCountOutputTypeSelect> = z
+  .object({
+    FinAccountLineItemTagMap: z.boolean().optional(),
+  })
+  .strict()
+
+export const FinAccountTagSelectSchema: z.ZodType<Prisma.FinAccountTagSelect> = z
+  .object({
+    tag_id: z.boolean().optional(),
+    tag_userid: z.boolean().optional(),
+    tag_color: z.boolean().optional(),
+    tag_label: z.boolean().optional(),
+    when_added: z.boolean().optional(),
+    when_deleted: z.boolean().optional(),
+    FinAccountLineItemTagMap: z.union([z.boolean(), z.lazy(() => FinAccountLineItemTagMapFindManyArgsSchema)]).optional(),
+    _count: z.union([z.boolean(), z.lazy(() => FinAccountTagCountOutputTypeArgsSchema)]).optional(),
+  })
+  .strict()
+
+// FIN ACCOUNT LINE ITEM TAG MAP
+//------------------------------------------------------
+
+export const FinAccountLineItemTagMapIncludeSchema: z.ZodType<Prisma.FinAccountLineItemTagMapInclude> = z
+  .object({
+    transaction: z.union([z.boolean(), z.lazy(() => FinAccountLineItemsArgsSchema)]).optional(),
+    tag: z.union([z.boolean(), z.lazy(() => FinAccountTagArgsSchema)]).optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapDefaultArgs> = z
+  .object({
+    select: z.lazy(() => FinAccountLineItemTagMapSelectSchema).optional(),
+    include: z.lazy(() => FinAccountLineItemTagMapIncludeSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapSelectSchema: z.ZodType<Prisma.FinAccountLineItemTagMapSelect> = z
+  .object({
+    id: z.boolean().optional(),
+    when_added: z.boolean().optional(),
+    when_deleted: z.boolean().optional(),
+    t_id: z.boolean().optional(),
+    tag_id: z.boolean().optional(),
+    transaction: z.union([z.boolean(), z.lazy(() => FinAccountLineItemsArgsSchema)]).optional(),
+    tag: z.union([z.boolean(), z.lazy(() => FinAccountTagArgsSchema)]).optional(),
   })
   .strict()
 
@@ -2831,6 +3002,149 @@ export const ProductKeyScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Pr
   })
   .strict()
 
+export const FinAccountsWhereInputSchema: z.ZodType<Prisma.FinAccountsWhereInput> = z
+  .object({
+    AND: z.union([z.lazy(() => FinAccountsWhereInputSchema), z.lazy(() => FinAccountsWhereInputSchema).array()]).optional(),
+    OR: z
+      .lazy(() => FinAccountsWhereInputSchema)
+      .array()
+      .optional(),
+    NOT: z.union([z.lazy(() => FinAccountsWhereInputSchema), z.lazy(() => FinAccountsWhereInputSchema).array()]).optional(),
+    acct_id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    acct_owner: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    acct_name: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    acct_last_balance: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    acct_last_balance_date: z
+      .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
+      .optional()
+      .nullable(),
+    acct_is_debt: z.union([z.lazy(() => BoolFilterSchema), z.boolean()]).optional(),
+    acct_is_retirement: z.union([z.lazy(() => BoolFilterSchema), z.boolean()]).optional(),
+    acct_sort_order: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    when_deleted: z
+      .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
+      .optional()
+      .nullable(),
+  })
+  .strict()
+
+export const FinAccountsOrderByWithRelationInputSchema: z.ZodType<Prisma.FinAccountsOrderByWithRelationInput> = z
+  .object({
+    acct_id: z.lazy(() => SortOrderSchema).optional(),
+    acct_owner: z.lazy(() => SortOrderSchema).optional(),
+    acct_name: z.lazy(() => SortOrderSchema).optional(),
+    acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
+    acct_last_balance_date: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
+    acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
+    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
+    acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
+    when_deleted: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
+    _relevance: z.lazy(() => FinAccountsOrderByRelevanceInputSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountsWhereUniqueInputSchema: z.ZodType<Prisma.FinAccountsWhereUniqueInput> = z
+  .union([
+    z.object({
+      acct_id: z.number().int(),
+      acct_owner_acct_name: z.lazy(() => FinAccountsAcct_ownerAcct_nameCompoundUniqueInputSchema),
+    }),
+    z.object({
+      acct_id: z.number().int(),
+    }),
+    z.object({
+      acct_owner_acct_name: z.lazy(() => FinAccountsAcct_ownerAcct_nameCompoundUniqueInputSchema),
+    }),
+  ])
+  .and(
+    z
+      .object({
+        acct_id: z.number().int().optional(),
+        acct_owner_acct_name: z.lazy(() => FinAccountsAcct_ownerAcct_nameCompoundUniqueInputSchema).optional(),
+        AND: z
+          .union([z.lazy(() => FinAccountsWhereInputSchema), z.lazy(() => FinAccountsWhereInputSchema).array()])
+          .optional(),
+        OR: z
+          .lazy(() => FinAccountsWhereInputSchema)
+          .array()
+          .optional(),
+        NOT: z
+          .union([z.lazy(() => FinAccountsWhereInputSchema), z.lazy(() => FinAccountsWhereInputSchema).array()])
+          .optional(),
+        acct_owner: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+        acct_name: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+        acct_last_balance: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+        acct_last_balance_date: z
+          .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
+          .optional()
+          .nullable(),
+        acct_is_debt: z.union([z.lazy(() => BoolFilterSchema), z.boolean()]).optional(),
+        acct_is_retirement: z.union([z.lazy(() => BoolFilterSchema), z.boolean()]).optional(),
+        acct_sort_order: z.union([z.lazy(() => IntFilterSchema), z.number().int()]).optional(),
+        when_deleted: z
+          .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
+          .optional()
+          .nullable(),
+      })
+      .strict(),
+  )
+
+export const FinAccountsOrderByWithAggregationInputSchema: z.ZodType<Prisma.FinAccountsOrderByWithAggregationInput> = z
+  .object({
+    acct_id: z.lazy(() => SortOrderSchema).optional(),
+    acct_owner: z.lazy(() => SortOrderSchema).optional(),
+    acct_name: z.lazy(() => SortOrderSchema).optional(),
+    acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
+    acct_last_balance_date: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
+    acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
+    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
+    acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
+    when_deleted: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
+    _count: z.lazy(() => FinAccountsCountOrderByAggregateInputSchema).optional(),
+    _avg: z.lazy(() => FinAccountsAvgOrderByAggregateInputSchema).optional(),
+    _max: z.lazy(() => FinAccountsMaxOrderByAggregateInputSchema).optional(),
+    _min: z.lazy(() => FinAccountsMinOrderByAggregateInputSchema).optional(),
+    _sum: z.lazy(() => FinAccountsSumOrderByAggregateInputSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountsScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.FinAccountsScalarWhereWithAggregatesInput> =
+  z
+    .object({
+      AND: z
+        .union([
+          z.lazy(() => FinAccountsScalarWhereWithAggregatesInputSchema),
+          z.lazy(() => FinAccountsScalarWhereWithAggregatesInputSchema).array(),
+        ])
+        .optional(),
+      OR: z
+        .lazy(() => FinAccountsScalarWhereWithAggregatesInputSchema)
+        .array()
+        .optional(),
+      NOT: z
+        .union([
+          z.lazy(() => FinAccountsScalarWhereWithAggregatesInputSchema),
+          z.lazy(() => FinAccountsScalarWhereWithAggregatesInputSchema).array(),
+        ])
+        .optional(),
+      acct_id: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
+      acct_owner: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+      acct_name: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+      acct_last_balance: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+      acct_last_balance_date: z
+        .union([z.lazy(() => DateTimeNullableWithAggregatesFilterSchema), z.coerce.date()])
+        .optional()
+        .nullable(),
+      acct_is_debt: z.union([z.lazy(() => BoolWithAggregatesFilterSchema), z.boolean()]).optional(),
+      acct_is_retirement: z.union([z.lazy(() => BoolWithAggregatesFilterSchema), z.boolean()]).optional(),
+      acct_sort_order: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
+      when_deleted: z
+        .union([z.lazy(() => DateTimeNullableWithAggregatesFilterSchema), z.coerce.date()])
+        .optional()
+        .nullable(),
+    })
+    .strict()
+
 export const FinAccountLineItemsWhereInputSchema: z.ZodType<Prisma.FinAccountLineItemsWhereInput> = z
   .object({
     AND: z
@@ -2975,6 +3289,7 @@ export const FinAccountLineItemsWhereInputSchema: z.ZodType<Prisma.FinAccountLin
       .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
       .optional()
       .nullable(),
+    tags: z.lazy(() => FinAccountLineItemTagMapListRelationFilterSchema).optional(),
   })
   .strict()
 
@@ -3008,6 +3323,7 @@ export const FinAccountLineItemsOrderByWithRelationInputSchema: z.ZodType<Prisma
       parent_t_id: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       when_added: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
       when_deleted: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
+      tags: z.lazy(() => FinAccountLineItemTagMapOrderByRelationAggregateInputSchema).optional(),
       _relevance: z.lazy(() => FinAccountLineItemsOrderByRelevanceInputSchema).optional(),
     })
     .strict()
@@ -3167,6 +3483,7 @@ export const FinAccountLineItemsWhereUniqueInputSchema: z.ZodType<Prisma.FinAcco
           .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
           .optional()
           .nullable(),
+        tags: z.lazy(() => FinAccountLineItemTagMapListRelationFilterSchema).optional(),
       })
       .strict(),
   )
@@ -3356,149 +3673,6 @@ export const FinAccountLineItemsScalarWhereWithAggregatesInputSchema: z.ZodType<
         .union([z.lazy(() => DateTimeNullableWithAggregatesFilterSchema), z.coerce.date()])
         .optional()
         .nullable(),
-      when_deleted: z
-        .union([z.lazy(() => DateTimeNullableWithAggregatesFilterSchema), z.coerce.date()])
-        .optional()
-        .nullable(),
-    })
-    .strict()
-
-export const FinAccountsWhereInputSchema: z.ZodType<Prisma.FinAccountsWhereInput> = z
-  .object({
-    AND: z.union([z.lazy(() => FinAccountsWhereInputSchema), z.lazy(() => FinAccountsWhereInputSchema).array()]).optional(),
-    OR: z
-      .lazy(() => FinAccountsWhereInputSchema)
-      .array()
-      .optional(),
-    NOT: z.union([z.lazy(() => FinAccountsWhereInputSchema), z.lazy(() => FinAccountsWhereInputSchema).array()]).optional(),
-    acct_id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
-    acct_owner: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
-    acct_name: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
-    acct_last_balance: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
-    acct_last_balance_date: z
-      .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
-      .optional()
-      .nullable(),
-    acct_is_debt: z.union([z.lazy(() => BoolFilterSchema), z.boolean()]).optional(),
-    acct_is_retirement: z.union([z.lazy(() => BoolFilterSchema), z.boolean()]).optional(),
-    acct_sort_order: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
-    when_deleted: z
-      .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
-      .optional()
-      .nullable(),
-  })
-  .strict()
-
-export const FinAccountsOrderByWithRelationInputSchema: z.ZodType<Prisma.FinAccountsOrderByWithRelationInput> = z
-  .object({
-    acct_id: z.lazy(() => SortOrderSchema).optional(),
-    acct_owner: z.lazy(() => SortOrderSchema).optional(),
-    acct_name: z.lazy(() => SortOrderSchema).optional(),
-    acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
-    acct_last_balance_date: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
-    acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
-    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
-    acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
-    when_deleted: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
-    _relevance: z.lazy(() => FinAccountsOrderByRelevanceInputSchema).optional(),
-  })
-  .strict()
-
-export const FinAccountsWhereUniqueInputSchema: z.ZodType<Prisma.FinAccountsWhereUniqueInput> = z
-  .union([
-    z.object({
-      acct_id: z.number().int(),
-      acct_owner_acct_name: z.lazy(() => FinAccountsAcct_ownerAcct_nameCompoundUniqueInputSchema),
-    }),
-    z.object({
-      acct_id: z.number().int(),
-    }),
-    z.object({
-      acct_owner_acct_name: z.lazy(() => FinAccountsAcct_ownerAcct_nameCompoundUniqueInputSchema),
-    }),
-  ])
-  .and(
-    z
-      .object({
-        acct_id: z.number().int().optional(),
-        acct_owner_acct_name: z.lazy(() => FinAccountsAcct_ownerAcct_nameCompoundUniqueInputSchema).optional(),
-        AND: z
-          .union([z.lazy(() => FinAccountsWhereInputSchema), z.lazy(() => FinAccountsWhereInputSchema).array()])
-          .optional(),
-        OR: z
-          .lazy(() => FinAccountsWhereInputSchema)
-          .array()
-          .optional(),
-        NOT: z
-          .union([z.lazy(() => FinAccountsWhereInputSchema), z.lazy(() => FinAccountsWhereInputSchema).array()])
-          .optional(),
-        acct_owner: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
-        acct_name: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
-        acct_last_balance: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
-        acct_last_balance_date: z
-          .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
-          .optional()
-          .nullable(),
-        acct_is_debt: z.union([z.lazy(() => BoolFilterSchema), z.boolean()]).optional(),
-        acct_is_retirement: z.union([z.lazy(() => BoolFilterSchema), z.boolean()]).optional(),
-        acct_sort_order: z.union([z.lazy(() => IntFilterSchema), z.number().int()]).optional(),
-        when_deleted: z
-          .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
-          .optional()
-          .nullable(),
-      })
-      .strict(),
-  )
-
-export const FinAccountsOrderByWithAggregationInputSchema: z.ZodType<Prisma.FinAccountsOrderByWithAggregationInput> = z
-  .object({
-    acct_id: z.lazy(() => SortOrderSchema).optional(),
-    acct_owner: z.lazy(() => SortOrderSchema).optional(),
-    acct_name: z.lazy(() => SortOrderSchema).optional(),
-    acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
-    acct_last_balance_date: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
-    acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
-    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
-    acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
-    when_deleted: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
-    _count: z.lazy(() => FinAccountsCountOrderByAggregateInputSchema).optional(),
-    _avg: z.lazy(() => FinAccountsAvgOrderByAggregateInputSchema).optional(),
-    _max: z.lazy(() => FinAccountsMaxOrderByAggregateInputSchema).optional(),
-    _min: z.lazy(() => FinAccountsMinOrderByAggregateInputSchema).optional(),
-    _sum: z.lazy(() => FinAccountsSumOrderByAggregateInputSchema).optional(),
-  })
-  .strict()
-
-export const FinAccountsScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.FinAccountsScalarWhereWithAggregatesInput> =
-  z
-    .object({
-      AND: z
-        .union([
-          z.lazy(() => FinAccountsScalarWhereWithAggregatesInputSchema),
-          z.lazy(() => FinAccountsScalarWhereWithAggregatesInputSchema).array(),
-        ])
-        .optional(),
-      OR: z
-        .lazy(() => FinAccountsScalarWhereWithAggregatesInputSchema)
-        .array()
-        .optional(),
-      NOT: z
-        .union([
-          z.lazy(() => FinAccountsScalarWhereWithAggregatesInputSchema),
-          z.lazy(() => FinAccountsScalarWhereWithAggregatesInputSchema).array(),
-        ])
-        .optional(),
-      acct_id: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
-      acct_owner: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
-      acct_name: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
-      acct_last_balance: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
-      acct_last_balance_date: z
-        .union([z.lazy(() => DateTimeNullableWithAggregatesFilterSchema), z.coerce.date()])
-        .optional()
-        .nullable(),
-      acct_is_debt: z.union([z.lazy(() => BoolWithAggregatesFilterSchema), z.boolean()]).optional(),
-      acct_is_retirement: z.union([z.lazy(() => BoolWithAggregatesFilterSchema), z.boolean()]).optional(),
-      acct_sort_order: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
       when_deleted: z
         .union([z.lazy(() => DateTimeNullableWithAggregatesFilterSchema), z.coerce.date()])
         .optional()
@@ -6339,6 +6513,395 @@ export const VXCVLinksScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.VXC
   })
   .strict()
 
+export const AccountLineItemTagWhereInputSchema: z.ZodType<Prisma.AccountLineItemTagWhereInput> = z
+  .object({
+    AND: z
+      .union([z.lazy(() => AccountLineItemTagWhereInputSchema), z.lazy(() => AccountLineItemTagWhereInputSchema).array()])
+      .optional(),
+    OR: z
+      .lazy(() => AccountLineItemTagWhereInputSchema)
+      .array()
+      .optional(),
+    NOT: z
+      .union([z.lazy(() => AccountLineItemTagWhereInputSchema), z.lazy(() => AccountLineItemTagWhereInputSchema).array()])
+      .optional(),
+    tag_id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    tag_userid: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    tag_color: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    tag_label: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+  })
+  .strict()
+
+export const AccountLineItemTagOrderByWithRelationInputSchema: z.ZodType<Prisma.AccountLineItemTagOrderByWithRelationInput> =
+  z
+    .object({
+      tag_id: z.lazy(() => SortOrderSchema).optional(),
+      tag_userid: z.lazy(() => SortOrderSchema).optional(),
+      tag_color: z.lazy(() => SortOrderSchema).optional(),
+      tag_label: z.lazy(() => SortOrderSchema).optional(),
+      _relevance: z.lazy(() => AccountLineItemTagOrderByRelevanceInputSchema).optional(),
+    })
+    .strict()
+
+export const AccountLineItemTagWhereUniqueInputSchema: z.ZodType<Prisma.AccountLineItemTagWhereUniqueInput> = z
+  .union([
+    z.object({
+      tag_id: z.number().int(),
+      tag_userid_tag_label: z.lazy(() => AccountLineItemTagTag_useridTag_labelCompoundUniqueInputSchema),
+    }),
+    z.object({
+      tag_id: z.number().int(),
+    }),
+    z.object({
+      tag_userid_tag_label: z.lazy(() => AccountLineItemTagTag_useridTag_labelCompoundUniqueInputSchema),
+    }),
+  ])
+  .and(
+    z
+      .object({
+        tag_id: z.number().int().optional(),
+        tag_userid_tag_label: z.lazy(() => AccountLineItemTagTag_useridTag_labelCompoundUniqueInputSchema).optional(),
+        AND: z
+          .union([
+            z.lazy(() => AccountLineItemTagWhereInputSchema),
+            z.lazy(() => AccountLineItemTagWhereInputSchema).array(),
+          ])
+          .optional(),
+        OR: z
+          .lazy(() => AccountLineItemTagWhereInputSchema)
+          .array()
+          .optional(),
+        NOT: z
+          .union([
+            z.lazy(() => AccountLineItemTagWhereInputSchema),
+            z.lazy(() => AccountLineItemTagWhereInputSchema).array(),
+          ])
+          .optional(),
+        tag_userid: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+        tag_color: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+        tag_label: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+      })
+      .strict(),
+  )
+
+export const AccountLineItemTagOrderByWithAggregationInputSchema: z.ZodType<Prisma.AccountLineItemTagOrderByWithAggregationInput> =
+  z
+    .object({
+      tag_id: z.lazy(() => SortOrderSchema).optional(),
+      tag_userid: z.lazy(() => SortOrderSchema).optional(),
+      tag_color: z.lazy(() => SortOrderSchema).optional(),
+      tag_label: z.lazy(() => SortOrderSchema).optional(),
+      _count: z.lazy(() => AccountLineItemTagCountOrderByAggregateInputSchema).optional(),
+      _avg: z.lazy(() => AccountLineItemTagAvgOrderByAggregateInputSchema).optional(),
+      _max: z.lazy(() => AccountLineItemTagMaxOrderByAggregateInputSchema).optional(),
+      _min: z.lazy(() => AccountLineItemTagMinOrderByAggregateInputSchema).optional(),
+      _sum: z.lazy(() => AccountLineItemTagSumOrderByAggregateInputSchema).optional(),
+    })
+    .strict()
+
+export const AccountLineItemTagScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.AccountLineItemTagScalarWhereWithAggregatesInput> =
+  z
+    .object({
+      AND: z
+        .union([
+          z.lazy(() => AccountLineItemTagScalarWhereWithAggregatesInputSchema),
+          z.lazy(() => AccountLineItemTagScalarWhereWithAggregatesInputSchema).array(),
+        ])
+        .optional(),
+      OR: z
+        .lazy(() => AccountLineItemTagScalarWhereWithAggregatesInputSchema)
+        .array()
+        .optional(),
+      NOT: z
+        .union([
+          z.lazy(() => AccountLineItemTagScalarWhereWithAggregatesInputSchema),
+          z.lazy(() => AccountLineItemTagScalarWhereWithAggregatesInputSchema).array(),
+        ])
+        .optional(),
+      tag_id: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
+      tag_userid: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+      tag_color: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+      tag_label: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+    })
+    .strict()
+
+export const FinAccountTagWhereInputSchema: z.ZodType<Prisma.FinAccountTagWhereInput> = z
+  .object({
+    AND: z
+      .union([z.lazy(() => FinAccountTagWhereInputSchema), z.lazy(() => FinAccountTagWhereInputSchema).array()])
+      .optional(),
+    OR: z
+      .lazy(() => FinAccountTagWhereInputSchema)
+      .array()
+      .optional(),
+    NOT: z
+      .union([z.lazy(() => FinAccountTagWhereInputSchema), z.lazy(() => FinAccountTagWhereInputSchema).array()])
+      .optional(),
+    tag_id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    tag_userid: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    tag_color: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    tag_label: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    when_added: z.union([z.lazy(() => DateTimeFilterSchema), z.coerce.date()]).optional(),
+    when_deleted: z
+      .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
+      .optional()
+      .nullable(),
+    FinAccountLineItemTagMap: z.lazy(() => FinAccountLineItemTagMapListRelationFilterSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountTagOrderByWithRelationInputSchema: z.ZodType<Prisma.FinAccountTagOrderByWithRelationInput> = z
+  .object({
+    tag_id: z.lazy(() => SortOrderSchema).optional(),
+    tag_userid: z.lazy(() => SortOrderSchema).optional(),
+    tag_color: z.lazy(() => SortOrderSchema).optional(),
+    tag_label: z.lazy(() => SortOrderSchema).optional(),
+    when_added: z.lazy(() => SortOrderSchema).optional(),
+    when_deleted: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
+    FinAccountLineItemTagMap: z.lazy(() => FinAccountLineItemTagMapOrderByRelationAggregateInputSchema).optional(),
+    _relevance: z.lazy(() => FinAccountTagOrderByRelevanceInputSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountTagWhereUniqueInputSchema: z.ZodType<Prisma.FinAccountTagWhereUniqueInput> = z
+  .union([
+    z.object({
+      tag_id: z.number().int(),
+      tag_userid_tag_label: z.lazy(() => FinAccountTagTag_useridTag_labelCompoundUniqueInputSchema),
+    }),
+    z.object({
+      tag_id: z.number().int(),
+    }),
+    z.object({
+      tag_userid_tag_label: z.lazy(() => FinAccountTagTag_useridTag_labelCompoundUniqueInputSchema),
+    }),
+  ])
+  .and(
+    z
+      .object({
+        tag_id: z.number().int().optional(),
+        tag_userid_tag_label: z.lazy(() => FinAccountTagTag_useridTag_labelCompoundUniqueInputSchema).optional(),
+        AND: z
+          .union([z.lazy(() => FinAccountTagWhereInputSchema), z.lazy(() => FinAccountTagWhereInputSchema).array()])
+          .optional(),
+        OR: z
+          .lazy(() => FinAccountTagWhereInputSchema)
+          .array()
+          .optional(),
+        NOT: z
+          .union([z.lazy(() => FinAccountTagWhereInputSchema), z.lazy(() => FinAccountTagWhereInputSchema).array()])
+          .optional(),
+        tag_userid: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+        tag_color: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+        tag_label: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+        when_added: z.union([z.lazy(() => DateTimeFilterSchema), z.coerce.date()]).optional(),
+        when_deleted: z
+          .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
+          .optional()
+          .nullable(),
+        FinAccountLineItemTagMap: z.lazy(() => FinAccountLineItemTagMapListRelationFilterSchema).optional(),
+      })
+      .strict(),
+  )
+
+export const FinAccountTagOrderByWithAggregationInputSchema: z.ZodType<Prisma.FinAccountTagOrderByWithAggregationInput> = z
+  .object({
+    tag_id: z.lazy(() => SortOrderSchema).optional(),
+    tag_userid: z.lazy(() => SortOrderSchema).optional(),
+    tag_color: z.lazy(() => SortOrderSchema).optional(),
+    tag_label: z.lazy(() => SortOrderSchema).optional(),
+    when_added: z.lazy(() => SortOrderSchema).optional(),
+    when_deleted: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
+    _count: z.lazy(() => FinAccountTagCountOrderByAggregateInputSchema).optional(),
+    _avg: z.lazy(() => FinAccountTagAvgOrderByAggregateInputSchema).optional(),
+    _max: z.lazy(() => FinAccountTagMaxOrderByAggregateInputSchema).optional(),
+    _min: z.lazy(() => FinAccountTagMinOrderByAggregateInputSchema).optional(),
+    _sum: z.lazy(() => FinAccountTagSumOrderByAggregateInputSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountTagScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.FinAccountTagScalarWhereWithAggregatesInput> =
+  z
+    .object({
+      AND: z
+        .union([
+          z.lazy(() => FinAccountTagScalarWhereWithAggregatesInputSchema),
+          z.lazy(() => FinAccountTagScalarWhereWithAggregatesInputSchema).array(),
+        ])
+        .optional(),
+      OR: z
+        .lazy(() => FinAccountTagScalarWhereWithAggregatesInputSchema)
+        .array()
+        .optional(),
+      NOT: z
+        .union([
+          z.lazy(() => FinAccountTagScalarWhereWithAggregatesInputSchema),
+          z.lazy(() => FinAccountTagScalarWhereWithAggregatesInputSchema).array(),
+        ])
+        .optional(),
+      tag_id: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
+      tag_userid: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+      tag_color: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+      tag_label: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+      when_added: z.union([z.lazy(() => DateTimeWithAggregatesFilterSchema), z.coerce.date()]).optional(),
+      when_deleted: z
+        .union([z.lazy(() => DateTimeNullableWithAggregatesFilterSchema), z.coerce.date()])
+        .optional()
+        .nullable(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapWhereInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapWhereInput> = z
+  .object({
+    AND: z
+      .union([
+        z.lazy(() => FinAccountLineItemTagMapWhereInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapWhereInputSchema).array(),
+      ])
+      .optional(),
+    OR: z
+      .lazy(() => FinAccountLineItemTagMapWhereInputSchema)
+      .array()
+      .optional(),
+    NOT: z
+      .union([
+        z.lazy(() => FinAccountLineItemTagMapWhereInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapWhereInputSchema).array(),
+      ])
+      .optional(),
+    id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    when_added: z.union([z.lazy(() => DateTimeFilterSchema), z.coerce.date()]).optional(),
+    when_deleted: z
+      .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
+      .optional()
+      .nullable(),
+    t_id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    tag_id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    transaction: z
+      .union([
+        z.lazy(() => FinAccountLineItemsScalarRelationFilterSchema),
+        z.lazy(() => FinAccountLineItemsWhereInputSchema),
+      ])
+      .optional(),
+    tag: z
+      .union([z.lazy(() => FinAccountTagScalarRelationFilterSchema), z.lazy(() => FinAccountTagWhereInputSchema)])
+      .optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapOrderByWithRelationInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapOrderByWithRelationInput> =
+  z
+    .object({
+      id: z.lazy(() => SortOrderSchema).optional(),
+      when_added: z.lazy(() => SortOrderSchema).optional(),
+      when_deleted: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
+      t_id: z.lazy(() => SortOrderSchema).optional(),
+      tag_id: z.lazy(() => SortOrderSchema).optional(),
+      transaction: z.lazy(() => FinAccountLineItemsOrderByWithRelationInputSchema).optional(),
+      tag: z.lazy(() => FinAccountTagOrderByWithRelationInputSchema).optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapWhereUniqueInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapWhereUniqueInput> = z
+  .union([
+    z.object({
+      id: z.number().int(),
+      t_id_tag_id: z.lazy(() => FinAccountLineItemTagMapT_idTag_idCompoundUniqueInputSchema),
+    }),
+    z.object({
+      id: z.number().int(),
+    }),
+    z.object({
+      t_id_tag_id: z.lazy(() => FinAccountLineItemTagMapT_idTag_idCompoundUniqueInputSchema),
+    }),
+  ])
+  .and(
+    z
+      .object({
+        id: z.number().int().optional(),
+        t_id_tag_id: z.lazy(() => FinAccountLineItemTagMapT_idTag_idCompoundUniqueInputSchema).optional(),
+        AND: z
+          .union([
+            z.lazy(() => FinAccountLineItemTagMapWhereInputSchema),
+            z.lazy(() => FinAccountLineItemTagMapWhereInputSchema).array(),
+          ])
+          .optional(),
+        OR: z
+          .lazy(() => FinAccountLineItemTagMapWhereInputSchema)
+          .array()
+          .optional(),
+        NOT: z
+          .union([
+            z.lazy(() => FinAccountLineItemTagMapWhereInputSchema),
+            z.lazy(() => FinAccountLineItemTagMapWhereInputSchema).array(),
+          ])
+          .optional(),
+        when_added: z.union([z.lazy(() => DateTimeFilterSchema), z.coerce.date()]).optional(),
+        when_deleted: z
+          .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
+          .optional()
+          .nullable(),
+        t_id: z.union([z.lazy(() => IntFilterSchema), z.number().int()]).optional(),
+        tag_id: z.union([z.lazy(() => IntFilterSchema), z.number().int()]).optional(),
+        transaction: z
+          .union([
+            z.lazy(() => FinAccountLineItemsScalarRelationFilterSchema),
+            z.lazy(() => FinAccountLineItemsWhereInputSchema),
+          ])
+          .optional(),
+        tag: z
+          .union([z.lazy(() => FinAccountTagScalarRelationFilterSchema), z.lazy(() => FinAccountTagWhereInputSchema)])
+          .optional(),
+      })
+      .strict(),
+  )
+
+export const FinAccountLineItemTagMapOrderByWithAggregationInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapOrderByWithAggregationInput> =
+  z
+    .object({
+      id: z.lazy(() => SortOrderSchema).optional(),
+      when_added: z.lazy(() => SortOrderSchema).optional(),
+      when_deleted: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
+      t_id: z.lazy(() => SortOrderSchema).optional(),
+      tag_id: z.lazy(() => SortOrderSchema).optional(),
+      _count: z.lazy(() => FinAccountLineItemTagMapCountOrderByAggregateInputSchema).optional(),
+      _avg: z.lazy(() => FinAccountLineItemTagMapAvgOrderByAggregateInputSchema).optional(),
+      _max: z.lazy(() => FinAccountLineItemTagMapMaxOrderByAggregateInputSchema).optional(),
+      _min: z.lazy(() => FinAccountLineItemTagMapMinOrderByAggregateInputSchema).optional(),
+      _sum: z.lazy(() => FinAccountLineItemTagMapSumOrderByAggregateInputSchema).optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapScalarWhereWithAggregatesInput> =
+  z
+    .object({
+      AND: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapScalarWhereWithAggregatesInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapScalarWhereWithAggregatesInputSchema).array(),
+        ])
+        .optional(),
+      OR: z
+        .lazy(() => FinAccountLineItemTagMapScalarWhereWithAggregatesInputSchema)
+        .array()
+        .optional(),
+      NOT: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapScalarWhereWithAggregatesInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapScalarWhereWithAggregatesInputSchema).array(),
+        ])
+        .optional(),
+      id: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
+      when_added: z.union([z.lazy(() => DateTimeWithAggregatesFilterSchema), z.coerce.date()]).optional(),
+      when_deleted: z
+        .union([z.lazy(() => DateTimeNullableWithAggregatesFilterSchema), z.coerce.date()])
+        .optional()
+        .nullable(),
+      t_id: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
+      tag_id: z.union([z.lazy(() => IntWithAggregatesFilterSchema), z.number()]).optional(),
+    })
+    .strict()
+
 export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z
   .object({
     id: z.string(),
@@ -7645,6 +8208,125 @@ export const ProductKeyUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ProductK
   })
   .strict()
 
+export const FinAccountsCreateInputSchema: z.ZodType<Prisma.FinAccountsCreateInput> = z
+  .object({
+    acct_owner: z.string(),
+    acct_name: z.string(),
+    acct_last_balance: z.string().optional(),
+    acct_last_balance_date: z.coerce.date().optional().nullable(),
+    acct_is_debt: z.boolean().optional(),
+    acct_is_retirement: z.boolean().optional(),
+    acct_sort_order: z.number().int().optional(),
+    when_deleted: z.coerce.date().optional().nullable(),
+  })
+  .strict()
+
+export const FinAccountsUncheckedCreateInputSchema: z.ZodType<Prisma.FinAccountsUncheckedCreateInput> = z
+  .object({
+    acct_id: z.number().int().optional(),
+    acct_owner: z.string(),
+    acct_name: z.string(),
+    acct_last_balance: z.string().optional(),
+    acct_last_balance_date: z.coerce.date().optional().nullable(),
+    acct_is_debt: z.boolean().optional(),
+    acct_is_retirement: z.boolean().optional(),
+    acct_sort_order: z.number().int().optional(),
+    when_deleted: z.coerce.date().optional().nullable(),
+  })
+  .strict()
+
+export const FinAccountsUpdateInputSchema: z.ZodType<Prisma.FinAccountsUpdateInput> = z
+  .object({
+    acct_owner: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    acct_name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    acct_last_balance: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    acct_last_balance_date: z
+      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+      .optional()
+      .nullable(),
+    acct_is_debt: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
+    acct_is_retirement: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
+    acct_sort_order: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    when_deleted: z
+      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+      .optional()
+      .nullable(),
+  })
+  .strict()
+
+export const FinAccountsUncheckedUpdateInputSchema: z.ZodType<Prisma.FinAccountsUncheckedUpdateInput> = z
+  .object({
+    acct_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    acct_owner: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    acct_name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    acct_last_balance: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    acct_last_balance_date: z
+      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+      .optional()
+      .nullable(),
+    acct_is_debt: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
+    acct_is_retirement: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
+    acct_sort_order: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    when_deleted: z
+      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+      .optional()
+      .nullable(),
+  })
+  .strict()
+
+export const FinAccountsCreateManyInputSchema: z.ZodType<Prisma.FinAccountsCreateManyInput> = z
+  .object({
+    acct_id: z.number().int().optional(),
+    acct_owner: z.string(),
+    acct_name: z.string(),
+    acct_last_balance: z.string().optional(),
+    acct_last_balance_date: z.coerce.date().optional().nullable(),
+    acct_is_debt: z.boolean().optional(),
+    acct_is_retirement: z.boolean().optional(),
+    acct_sort_order: z.number().int().optional(),
+    when_deleted: z.coerce.date().optional().nullable(),
+  })
+  .strict()
+
+export const FinAccountsUpdateManyMutationInputSchema: z.ZodType<Prisma.FinAccountsUpdateManyMutationInput> = z
+  .object({
+    acct_owner: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    acct_name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    acct_last_balance: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    acct_last_balance_date: z
+      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+      .optional()
+      .nullable(),
+    acct_is_debt: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
+    acct_is_retirement: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
+    acct_sort_order: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    when_deleted: z
+      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+      .optional()
+      .nullable(),
+  })
+  .strict()
+
+export const FinAccountsUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FinAccountsUncheckedUpdateManyInput> = z
+  .object({
+    acct_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    acct_owner: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    acct_name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    acct_last_balance: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    acct_last_balance_date: z
+      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+      .optional()
+      .nullable(),
+    acct_is_debt: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
+    acct_is_retirement: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
+    acct_sort_order: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    when_deleted: z
+      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+      .optional()
+      .nullable(),
+  })
+  .strict()
+
 export const FinAccountLineItemsCreateInputSchema: z.ZodType<Prisma.FinAccountLineItemsCreateInput> = z
   .object({
     t_account: z.number().int().optional().nullable(),
@@ -7700,6 +8382,7 @@ export const FinAccountLineItemsCreateInputSchema: z.ZodType<Prisma.FinAccountLi
     parent_t_id: z.number().int().optional().nullable(),
     when_added: z.coerce.date().optional().nullable(),
     when_deleted: z.coerce.date().optional().nullable(),
+    tags: z.lazy(() => FinAccountLineItemTagMapCreateNestedManyWithoutTransactionInputSchema).optional(),
   })
   .strict()
 
@@ -7759,6 +8442,7 @@ export const FinAccountLineItemsUncheckedCreateInputSchema: z.ZodType<Prisma.Fin
     parent_t_id: z.number().int().optional().nullable(),
     when_added: z.coerce.date().optional().nullable(),
     when_deleted: z.coerce.date().optional().nullable(),
+    tags: z.lazy(() => FinAccountLineItemTagMapUncheckedCreateNestedManyWithoutTransactionInputSchema).optional(),
   })
   .strict()
 
@@ -7895,6 +8579,7 @@ export const FinAccountLineItemsUpdateInputSchema: z.ZodType<Prisma.FinAccountLi
       .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
       .optional()
       .nullable(),
+    tags: z.lazy(() => FinAccountLineItemTagMapUpdateManyWithoutTransactionNestedInputSchema).optional(),
   })
   .strict()
 
@@ -8032,6 +8717,7 @@ export const FinAccountLineItemsUncheckedUpdateInputSchema: z.ZodType<Prisma.Fin
       .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
       .optional()
       .nullable(),
+    tags: z.lazy(() => FinAccountLineItemTagMapUncheckedUpdateManyWithoutTransactionNestedInputSchema).optional(),
   })
   .strict()
 
@@ -8368,125 +9054,6 @@ export const FinAccountLineItemsUncheckedUpdateManyInputSchema: z.ZodType<Prisma
         .nullable(),
     })
     .strict()
-
-export const FinAccountsCreateInputSchema: z.ZodType<Prisma.FinAccountsCreateInput> = z
-  .object({
-    acct_owner: z.string(),
-    acct_name: z.string(),
-    acct_last_balance: z.string().optional(),
-    acct_last_balance_date: z.coerce.date().optional().nullable(),
-    acct_is_debt: z.boolean().optional(),
-    acct_is_retirement: z.boolean().optional(),
-    acct_sort_order: z.number().int().optional(),
-    when_deleted: z.coerce.date().optional().nullable(),
-  })
-  .strict()
-
-export const FinAccountsUncheckedCreateInputSchema: z.ZodType<Prisma.FinAccountsUncheckedCreateInput> = z
-  .object({
-    acct_id: z.number().int().optional(),
-    acct_owner: z.string(),
-    acct_name: z.string(),
-    acct_last_balance: z.string().optional(),
-    acct_last_balance_date: z.coerce.date().optional().nullable(),
-    acct_is_debt: z.boolean().optional(),
-    acct_is_retirement: z.boolean().optional(),
-    acct_sort_order: z.number().int().optional(),
-    when_deleted: z.coerce.date().optional().nullable(),
-  })
-  .strict()
-
-export const FinAccountsUpdateInputSchema: z.ZodType<Prisma.FinAccountsUpdateInput> = z
-  .object({
-    acct_owner: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    acct_name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    acct_last_balance: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    acct_last_balance_date: z
-      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
-      .optional()
-      .nullable(),
-    acct_is_debt: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-    acct_is_retirement: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-    acct_sort_order: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-    when_deleted: z
-      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
-      .optional()
-      .nullable(),
-  })
-  .strict()
-
-export const FinAccountsUncheckedUpdateInputSchema: z.ZodType<Prisma.FinAccountsUncheckedUpdateInput> = z
-  .object({
-    acct_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-    acct_owner: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    acct_name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    acct_last_balance: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    acct_last_balance_date: z
-      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
-      .optional()
-      .nullable(),
-    acct_is_debt: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-    acct_is_retirement: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-    acct_sort_order: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-    when_deleted: z
-      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
-      .optional()
-      .nullable(),
-  })
-  .strict()
-
-export const FinAccountsCreateManyInputSchema: z.ZodType<Prisma.FinAccountsCreateManyInput> = z
-  .object({
-    acct_id: z.number().int().optional(),
-    acct_owner: z.string(),
-    acct_name: z.string(),
-    acct_last_balance: z.string().optional(),
-    acct_last_balance_date: z.coerce.date().optional().nullable(),
-    acct_is_debt: z.boolean().optional(),
-    acct_is_retirement: z.boolean().optional(),
-    acct_sort_order: z.number().int().optional(),
-    when_deleted: z.coerce.date().optional().nullable(),
-  })
-  .strict()
-
-export const FinAccountsUpdateManyMutationInputSchema: z.ZodType<Prisma.FinAccountsUpdateManyMutationInput> = z
-  .object({
-    acct_owner: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    acct_name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    acct_last_balance: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    acct_last_balance_date: z
-      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
-      .optional()
-      .nullable(),
-    acct_is_debt: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-    acct_is_retirement: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-    acct_sort_order: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-    when_deleted: z
-      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
-      .optional()
-      .nullable(),
-  })
-  .strict()
-
-export const FinAccountsUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FinAccountsUncheckedUpdateManyInput> = z
-  .object({
-    acct_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-    acct_owner: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    acct_name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    acct_last_balance: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    acct_last_balance_date: z
-      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
-      .optional()
-      .nullable(),
-    acct_is_debt: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-    acct_is_retirement: z.union([z.boolean(), z.lazy(() => BoolFieldUpdateOperationsInputSchema)]).optional(),
-    acct_sort_order: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
-    when_deleted: z
-      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
-      .optional()
-      .nullable(),
-  })
-  .strict()
 
 export const FinAccountBalanceSnapshotCreateInputSchema: z.ZodType<Prisma.FinAccountBalanceSnapshotCreateInput> = z
   .object({
@@ -11627,6 +12194,243 @@ export const VXCVLinksUncheckedUpdateManyInputSchema: z.ZodType<Prisma.VXCVLinks
   })
   .strict()
 
+export const AccountLineItemTagCreateInputSchema: z.ZodType<Prisma.AccountLineItemTagCreateInput> = z
+  .object({
+    tag_userid: z.string(),
+    tag_color: z.string(),
+    tag_label: z.string(),
+  })
+  .strict()
+
+export const AccountLineItemTagUncheckedCreateInputSchema: z.ZodType<Prisma.AccountLineItemTagUncheckedCreateInput> = z
+  .object({
+    tag_id: z.number().int().optional(),
+    tag_userid: z.string(),
+    tag_color: z.string(),
+    tag_label: z.string(),
+  })
+  .strict()
+
+export const AccountLineItemTagUpdateInputSchema: z.ZodType<Prisma.AccountLineItemTagUpdateInput> = z
+  .object({
+    tag_userid: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    tag_color: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    tag_label: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  })
+  .strict()
+
+export const AccountLineItemTagUncheckedUpdateInputSchema: z.ZodType<Prisma.AccountLineItemTagUncheckedUpdateInput> = z
+  .object({
+    tag_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    tag_userid: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    tag_color: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    tag_label: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+  })
+  .strict()
+
+export const AccountLineItemTagCreateManyInputSchema: z.ZodType<Prisma.AccountLineItemTagCreateManyInput> = z
+  .object({
+    tag_id: z.number().int().optional(),
+    tag_userid: z.string(),
+    tag_color: z.string(),
+    tag_label: z.string(),
+  })
+  .strict()
+
+export const AccountLineItemTagUpdateManyMutationInputSchema: z.ZodType<Prisma.AccountLineItemTagUpdateManyMutationInput> =
+  z
+    .object({
+      tag_userid: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+      tag_color: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+      tag_label: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    })
+    .strict()
+
+export const AccountLineItemTagUncheckedUpdateManyInputSchema: z.ZodType<Prisma.AccountLineItemTagUncheckedUpdateManyInput> =
+  z
+    .object({
+      tag_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+      tag_userid: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+      tag_color: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+      tag_label: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    })
+    .strict()
+
+export const FinAccountTagCreateInputSchema: z.ZodType<Prisma.FinAccountTagCreateInput> = z
+  .object({
+    tag_userid: z.string(),
+    tag_color: z.string(),
+    tag_label: z.string(),
+    when_added: z.coerce.date().optional(),
+    when_deleted: z.coerce.date().optional().nullable(),
+    FinAccountLineItemTagMap: z.lazy(() => FinAccountLineItemTagMapCreateNestedManyWithoutTagInputSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountTagUncheckedCreateInputSchema: z.ZodType<Prisma.FinAccountTagUncheckedCreateInput> = z
+  .object({
+    tag_id: z.number().int().optional(),
+    tag_userid: z.string(),
+    tag_color: z.string(),
+    tag_label: z.string(),
+    when_added: z.coerce.date().optional(),
+    when_deleted: z.coerce.date().optional().nullable(),
+    FinAccountLineItemTagMap: z
+      .lazy(() => FinAccountLineItemTagMapUncheckedCreateNestedManyWithoutTagInputSchema)
+      .optional(),
+  })
+  .strict()
+
+export const FinAccountTagUpdateInputSchema: z.ZodType<Prisma.FinAccountTagUpdateInput> = z
+  .object({
+    tag_userid: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    tag_color: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    tag_label: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+    when_deleted: z
+      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+      .optional()
+      .nullable(),
+    FinAccountLineItemTagMap: z.lazy(() => FinAccountLineItemTagMapUpdateManyWithoutTagNestedInputSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountTagUncheckedUpdateInputSchema: z.ZodType<Prisma.FinAccountTagUncheckedUpdateInput> = z
+  .object({
+    tag_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    tag_userid: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    tag_color: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    tag_label: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+    when_deleted: z
+      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+      .optional()
+      .nullable(),
+    FinAccountLineItemTagMap: z
+      .lazy(() => FinAccountLineItemTagMapUncheckedUpdateManyWithoutTagNestedInputSchema)
+      .optional(),
+  })
+  .strict()
+
+export const FinAccountTagCreateManyInputSchema: z.ZodType<Prisma.FinAccountTagCreateManyInput> = z
+  .object({
+    tag_id: z.number().int().optional(),
+    tag_userid: z.string(),
+    tag_color: z.string(),
+    tag_label: z.string(),
+    when_added: z.coerce.date().optional(),
+    when_deleted: z.coerce.date().optional().nullable(),
+  })
+  .strict()
+
+export const FinAccountTagUpdateManyMutationInputSchema: z.ZodType<Prisma.FinAccountTagUpdateManyMutationInput> = z
+  .object({
+    tag_userid: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    tag_color: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    tag_label: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+    when_deleted: z
+      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+      .optional()
+      .nullable(),
+  })
+  .strict()
+
+export const FinAccountTagUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FinAccountTagUncheckedUpdateManyInput> = z
+  .object({
+    tag_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    tag_userid: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    tag_color: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    tag_label: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+    when_deleted: z
+      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+      .optional()
+      .nullable(),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapCreateInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCreateInput> = z
+  .object({
+    when_added: z.coerce.date().optional(),
+    when_deleted: z.coerce.date().optional().nullable(),
+    transaction: z.lazy(() => FinAccountLineItemsCreateNestedOneWithoutTagsInputSchema),
+    tag: z.lazy(() => FinAccountTagCreateNestedOneWithoutFinAccountLineItemTagMapInputSchema),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapUncheckedCreateInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUncheckedCreateInput> =
+  z
+    .object({
+      id: z.number().int().optional(),
+      when_added: z.coerce.date().optional(),
+      when_deleted: z.coerce.date().optional().nullable(),
+      t_id: z.number().int(),
+      tag_id: z.number().int(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUpdateInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpdateInput> = z
+  .object({
+    when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+    when_deleted: z
+      .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+      .optional()
+      .nullable(),
+    transaction: z.lazy(() => FinAccountLineItemsUpdateOneRequiredWithoutTagsNestedInputSchema).optional(),
+    tag: z.lazy(() => FinAccountTagUpdateOneRequiredWithoutFinAccountLineItemTagMapNestedInputSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapUncheckedUpdateInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUncheckedUpdateInput> =
+  z
+    .object({
+      id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+      when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+      when_deleted: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+      tag_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapCreateManyInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCreateManyInput> = z
+  .object({
+    id: z.number().int().optional(),
+    when_added: z.coerce.date().optional(),
+    when_deleted: z.coerce.date().optional().nullable(),
+    t_id: z.number().int(),
+    tag_id: z.number().int(),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapUpdateManyMutationInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpdateManyMutationInput> =
+  z
+    .object({
+      when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+      when_deleted: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUncheckedUpdateManyInput> =
+  z
+    .object({
+      id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+      when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+      when_deleted: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+      tag_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    })
+    .strict()
+
 export const StringFilterSchema: z.ZodType<Prisma.StringFilter> = z
   .object({
     equals: z.string().optional(),
@@ -12445,6 +13249,81 @@ export const ProductKeySumOrderByAggregateInputSchema: z.ZodType<Prisma.ProductK
   })
   .strict()
 
+export const FinAccountsOrderByRelevanceInputSchema: z.ZodType<Prisma.FinAccountsOrderByRelevanceInput> = z
+  .object({
+    fields: z.union([
+      z.lazy(() => FinAccountsOrderByRelevanceFieldEnumSchema),
+      z.lazy(() => FinAccountsOrderByRelevanceFieldEnumSchema).array(),
+    ]),
+    sort: z.lazy(() => SortOrderSchema),
+    search: z.string(),
+  })
+  .strict()
+
+export const FinAccountsAcct_ownerAcct_nameCompoundUniqueInputSchema: z.ZodType<Prisma.FinAccountsAcct_ownerAcct_nameCompoundUniqueInput> =
+  z
+    .object({
+      acct_owner: z.string(),
+      acct_name: z.string(),
+    })
+    .strict()
+
+export const FinAccountsCountOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountsCountOrderByAggregateInput> = z
+  .object({
+    acct_id: z.lazy(() => SortOrderSchema).optional(),
+    acct_owner: z.lazy(() => SortOrderSchema).optional(),
+    acct_name: z.lazy(() => SortOrderSchema).optional(),
+    acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
+    acct_last_balance_date: z.lazy(() => SortOrderSchema).optional(),
+    acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
+    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
+    acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
+    when_deleted: z.lazy(() => SortOrderSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountsAvgOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountsAvgOrderByAggregateInput> = z
+  .object({
+    acct_id: z.lazy(() => SortOrderSchema).optional(),
+    acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountsMaxOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountsMaxOrderByAggregateInput> = z
+  .object({
+    acct_id: z.lazy(() => SortOrderSchema).optional(),
+    acct_owner: z.lazy(() => SortOrderSchema).optional(),
+    acct_name: z.lazy(() => SortOrderSchema).optional(),
+    acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
+    acct_last_balance_date: z.lazy(() => SortOrderSchema).optional(),
+    acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
+    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
+    acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
+    when_deleted: z.lazy(() => SortOrderSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountsMinOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountsMinOrderByAggregateInput> = z
+  .object({
+    acct_id: z.lazy(() => SortOrderSchema).optional(),
+    acct_owner: z.lazy(() => SortOrderSchema).optional(),
+    acct_name: z.lazy(() => SortOrderSchema).optional(),
+    acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
+    acct_last_balance_date: z.lazy(() => SortOrderSchema).optional(),
+    acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
+    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
+    acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
+    when_deleted: z.lazy(() => SortOrderSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountsSumOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountsSumOrderByAggregateInput> = z
+  .object({
+    acct_id: z.lazy(() => SortOrderSchema).optional(),
+    acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
+  })
+  .strict()
+
 export const IntNullableFilterSchema: z.ZodType<Prisma.IntNullableFilter> = z
   .object({
     equals: z.number().optional().nullable(),
@@ -12498,6 +13377,22 @@ export const Enumaccount_line_items_opt_typeNullableFilterSchema: z.ZodType<Pris
         ])
         .optional()
         .nullable(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapListRelationFilterSchema: z.ZodType<Prisma.FinAccountLineItemTagMapListRelationFilter> =
+  z
+    .object({
+      every: z.lazy(() => FinAccountLineItemTagMapWhereInputSchema).optional(),
+      some: z.lazy(() => FinAccountLineItemTagMapWhereInputSchema).optional(),
+      none: z.lazy(() => FinAccountLineItemTagMapWhereInputSchema).optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapOrderByRelationAggregateInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapOrderByRelationAggregateInput> =
+  z
+    .object({
+      _count: z.lazy(() => SortOrderSchema).optional(),
     })
     .strict()
 
@@ -12711,81 +13606,6 @@ export const Enumaccount_line_items_opt_typeNullableWithAggregatesFilterSchema: 
       _max: z.lazy(() => NestedEnumaccount_line_items_opt_typeNullableFilterSchema).optional(),
     })
     .strict()
-
-export const FinAccountsOrderByRelevanceInputSchema: z.ZodType<Prisma.FinAccountsOrderByRelevanceInput> = z
-  .object({
-    fields: z.union([
-      z.lazy(() => FinAccountsOrderByRelevanceFieldEnumSchema),
-      z.lazy(() => FinAccountsOrderByRelevanceFieldEnumSchema).array(),
-    ]),
-    sort: z.lazy(() => SortOrderSchema),
-    search: z.string(),
-  })
-  .strict()
-
-export const FinAccountsAcct_ownerAcct_nameCompoundUniqueInputSchema: z.ZodType<Prisma.FinAccountsAcct_ownerAcct_nameCompoundUniqueInput> =
-  z
-    .object({
-      acct_owner: z.string(),
-      acct_name: z.string(),
-    })
-    .strict()
-
-export const FinAccountsCountOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountsCountOrderByAggregateInput> = z
-  .object({
-    acct_id: z.lazy(() => SortOrderSchema).optional(),
-    acct_owner: z.lazy(() => SortOrderSchema).optional(),
-    acct_name: z.lazy(() => SortOrderSchema).optional(),
-    acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
-    acct_last_balance_date: z.lazy(() => SortOrderSchema).optional(),
-    acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
-    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
-    acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
-    when_deleted: z.lazy(() => SortOrderSchema).optional(),
-  })
-  .strict()
-
-export const FinAccountsAvgOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountsAvgOrderByAggregateInput> = z
-  .object({
-    acct_id: z.lazy(() => SortOrderSchema).optional(),
-    acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
-  })
-  .strict()
-
-export const FinAccountsMaxOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountsMaxOrderByAggregateInput> = z
-  .object({
-    acct_id: z.lazy(() => SortOrderSchema).optional(),
-    acct_owner: z.lazy(() => SortOrderSchema).optional(),
-    acct_name: z.lazy(() => SortOrderSchema).optional(),
-    acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
-    acct_last_balance_date: z.lazy(() => SortOrderSchema).optional(),
-    acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
-    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
-    acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
-    when_deleted: z.lazy(() => SortOrderSchema).optional(),
-  })
-  .strict()
-
-export const FinAccountsMinOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountsMinOrderByAggregateInput> = z
-  .object({
-    acct_id: z.lazy(() => SortOrderSchema).optional(),
-    acct_owner: z.lazy(() => SortOrderSchema).optional(),
-    acct_name: z.lazy(() => SortOrderSchema).optional(),
-    acct_last_balance: z.lazy(() => SortOrderSchema).optional(),
-    acct_last_balance_date: z.lazy(() => SortOrderSchema).optional(),
-    acct_is_debt: z.lazy(() => SortOrderSchema).optional(),
-    acct_is_retirement: z.lazy(() => SortOrderSchema).optional(),
-    acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
-    when_deleted: z.lazy(() => SortOrderSchema).optional(),
-  })
-  .strict()
-
-export const FinAccountsSumOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountsSumOrderByAggregateInput> = z
-  .object({
-    acct_id: z.lazy(() => SortOrderSchema).optional(),
-    acct_sort_order: z.lazy(() => SortOrderSchema).optional(),
-  })
-  .strict()
 
 export const FinAccountBalanceSnapshotOrderByRelevanceInputSchema: z.ZodType<Prisma.FinAccountBalanceSnapshotOrderByRelevanceInput> =
   z
@@ -14122,6 +14942,206 @@ export const VXCVLinksMinOrderByAggregateInputSchema: z.ZodType<Prisma.VXCVLinks
   })
   .strict()
 
+export const AccountLineItemTagOrderByRelevanceInputSchema: z.ZodType<Prisma.AccountLineItemTagOrderByRelevanceInput> = z
+  .object({
+    fields: z.union([
+      z.lazy(() => AccountLineItemTagOrderByRelevanceFieldEnumSchema),
+      z.lazy(() => AccountLineItemTagOrderByRelevanceFieldEnumSchema).array(),
+    ]),
+    sort: z.lazy(() => SortOrderSchema),
+    search: z.string(),
+  })
+  .strict()
+
+export const AccountLineItemTagTag_useridTag_labelCompoundUniqueInputSchema: z.ZodType<Prisma.AccountLineItemTagTag_useridTag_labelCompoundUniqueInput> =
+  z
+    .object({
+      tag_userid: z.string(),
+      tag_label: z.string(),
+    })
+    .strict()
+
+export const AccountLineItemTagCountOrderByAggregateInputSchema: z.ZodType<Prisma.AccountLineItemTagCountOrderByAggregateInput> =
+  z
+    .object({
+      tag_id: z.lazy(() => SortOrderSchema).optional(),
+      tag_userid: z.lazy(() => SortOrderSchema).optional(),
+      tag_color: z.lazy(() => SortOrderSchema).optional(),
+      tag_label: z.lazy(() => SortOrderSchema).optional(),
+    })
+    .strict()
+
+export const AccountLineItemTagAvgOrderByAggregateInputSchema: z.ZodType<Prisma.AccountLineItemTagAvgOrderByAggregateInput> =
+  z
+    .object({
+      tag_id: z.lazy(() => SortOrderSchema).optional(),
+    })
+    .strict()
+
+export const AccountLineItemTagMaxOrderByAggregateInputSchema: z.ZodType<Prisma.AccountLineItemTagMaxOrderByAggregateInput> =
+  z
+    .object({
+      tag_id: z.lazy(() => SortOrderSchema).optional(),
+      tag_userid: z.lazy(() => SortOrderSchema).optional(),
+      tag_color: z.lazy(() => SortOrderSchema).optional(),
+      tag_label: z.lazy(() => SortOrderSchema).optional(),
+    })
+    .strict()
+
+export const AccountLineItemTagMinOrderByAggregateInputSchema: z.ZodType<Prisma.AccountLineItemTagMinOrderByAggregateInput> =
+  z
+    .object({
+      tag_id: z.lazy(() => SortOrderSchema).optional(),
+      tag_userid: z.lazy(() => SortOrderSchema).optional(),
+      tag_color: z.lazy(() => SortOrderSchema).optional(),
+      tag_label: z.lazy(() => SortOrderSchema).optional(),
+    })
+    .strict()
+
+export const AccountLineItemTagSumOrderByAggregateInputSchema: z.ZodType<Prisma.AccountLineItemTagSumOrderByAggregateInput> =
+  z
+    .object({
+      tag_id: z.lazy(() => SortOrderSchema).optional(),
+    })
+    .strict()
+
+export const FinAccountTagOrderByRelevanceInputSchema: z.ZodType<Prisma.FinAccountTagOrderByRelevanceInput> = z
+  .object({
+    fields: z.union([
+      z.lazy(() => FinAccountTagOrderByRelevanceFieldEnumSchema),
+      z.lazy(() => FinAccountTagOrderByRelevanceFieldEnumSchema).array(),
+    ]),
+    sort: z.lazy(() => SortOrderSchema),
+    search: z.string(),
+  })
+  .strict()
+
+export const FinAccountTagTag_useridTag_labelCompoundUniqueInputSchema: z.ZodType<Prisma.FinAccountTagTag_useridTag_labelCompoundUniqueInput> =
+  z
+    .object({
+      tag_userid: z.string(),
+      tag_label: z.string(),
+    })
+    .strict()
+
+export const FinAccountTagCountOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountTagCountOrderByAggregateInput> = z
+  .object({
+    tag_id: z.lazy(() => SortOrderSchema).optional(),
+    tag_userid: z.lazy(() => SortOrderSchema).optional(),
+    tag_color: z.lazy(() => SortOrderSchema).optional(),
+    tag_label: z.lazy(() => SortOrderSchema).optional(),
+    when_added: z.lazy(() => SortOrderSchema).optional(),
+    when_deleted: z.lazy(() => SortOrderSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountTagAvgOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountTagAvgOrderByAggregateInput> = z
+  .object({
+    tag_id: z.lazy(() => SortOrderSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountTagMaxOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountTagMaxOrderByAggregateInput> = z
+  .object({
+    tag_id: z.lazy(() => SortOrderSchema).optional(),
+    tag_userid: z.lazy(() => SortOrderSchema).optional(),
+    tag_color: z.lazy(() => SortOrderSchema).optional(),
+    tag_label: z.lazy(() => SortOrderSchema).optional(),
+    when_added: z.lazy(() => SortOrderSchema).optional(),
+    when_deleted: z.lazy(() => SortOrderSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountTagMinOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountTagMinOrderByAggregateInput> = z
+  .object({
+    tag_id: z.lazy(() => SortOrderSchema).optional(),
+    tag_userid: z.lazy(() => SortOrderSchema).optional(),
+    tag_color: z.lazy(() => SortOrderSchema).optional(),
+    tag_label: z.lazy(() => SortOrderSchema).optional(),
+    when_added: z.lazy(() => SortOrderSchema).optional(),
+    when_deleted: z.lazy(() => SortOrderSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountTagSumOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountTagSumOrderByAggregateInput> = z
+  .object({
+    tag_id: z.lazy(() => SortOrderSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemsScalarRelationFilterSchema: z.ZodType<Prisma.FinAccountLineItemsScalarRelationFilter> = z
+  .object({
+    is: z.lazy(() => FinAccountLineItemsWhereInputSchema).optional(),
+    isNot: z.lazy(() => FinAccountLineItemsWhereInputSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountTagScalarRelationFilterSchema: z.ZodType<Prisma.FinAccountTagScalarRelationFilter> = z
+  .object({
+    is: z.lazy(() => FinAccountTagWhereInputSchema).optional(),
+    isNot: z.lazy(() => FinAccountTagWhereInputSchema).optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapT_idTag_idCompoundUniqueInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapT_idTag_idCompoundUniqueInput> =
+  z
+    .object({
+      t_id: z.number(),
+      tag_id: z.number(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapCountOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCountOrderByAggregateInput> =
+  z
+    .object({
+      id: z.lazy(() => SortOrderSchema).optional(),
+      when_added: z.lazy(() => SortOrderSchema).optional(),
+      when_deleted: z.lazy(() => SortOrderSchema).optional(),
+      t_id: z.lazy(() => SortOrderSchema).optional(),
+      tag_id: z.lazy(() => SortOrderSchema).optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapAvgOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapAvgOrderByAggregateInput> =
+  z
+    .object({
+      id: z.lazy(() => SortOrderSchema).optional(),
+      t_id: z.lazy(() => SortOrderSchema).optional(),
+      tag_id: z.lazy(() => SortOrderSchema).optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapMaxOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapMaxOrderByAggregateInput> =
+  z
+    .object({
+      id: z.lazy(() => SortOrderSchema).optional(),
+      when_added: z.lazy(() => SortOrderSchema).optional(),
+      when_deleted: z.lazy(() => SortOrderSchema).optional(),
+      t_id: z.lazy(() => SortOrderSchema).optional(),
+      tag_id: z.lazy(() => SortOrderSchema).optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapMinOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapMinOrderByAggregateInput> =
+  z
+    .object({
+      id: z.lazy(() => SortOrderSchema).optional(),
+      when_added: z.lazy(() => SortOrderSchema).optional(),
+      when_deleted: z.lazy(() => SortOrderSchema).optional(),
+      t_id: z.lazy(() => SortOrderSchema).optional(),
+      tag_id: z.lazy(() => SortOrderSchema).optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapSumOrderByAggregateInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapSumOrderByAggregateInput> =
+  z
+    .object({
+      id: z.lazy(() => SortOrderSchema).optional(),
+      t_id: z.lazy(() => SortOrderSchema).optional(),
+      tag_id: z.lazy(() => SortOrderSchema).optional(),
+    })
+    .strict()
+
 export const AccountCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.AccountCreateNestedManyWithoutUserInput> = z
   .object({
     create: z
@@ -14766,6 +15786,60 @@ export const IntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.IntFieldUpdat
   })
   .strict()
 
+export const FinAccountLineItemTagMapCreateNestedManyWithoutTransactionInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCreateNestedManyWithoutTransactionInput> =
+  z
+    .object({
+      create: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTransactionInputSchema).array(),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTransactionInputSchema).array(),
+        ])
+        .optional(),
+      connectOrCreate: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTransactionInputSchema).array(),
+        ])
+        .optional(),
+      createMany: z.lazy(() => FinAccountLineItemTagMapCreateManyTransactionInputEnvelopeSchema).optional(),
+      connect: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUncheckedCreateNestedManyWithoutTransactionInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUncheckedCreateNestedManyWithoutTransactionInput> =
+  z
+    .object({
+      create: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTransactionInputSchema).array(),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTransactionInputSchema).array(),
+        ])
+        .optional(),
+      connectOrCreate: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTransactionInputSchema).array(),
+        ])
+        .optional(),
+      createMany: z.lazy(() => FinAccountLineItemTagMapCreateManyTransactionInputEnvelopeSchema).optional(),
+      connect: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+    })
+    .strict()
+
 export const NullableIntFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableIntFieldUpdateOperationsInput> = z
   .object({
     set: z.number().optional().nullable(),
@@ -14793,6 +15867,144 @@ export const NullableEnumaccount_line_items_opt_typeFieldUpdateOperationsInputSc
         .lazy(() => account_line_items_opt_typeSchema)
         .optional()
         .nullable(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUpdateManyWithoutTransactionNestedInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpdateManyWithoutTransactionNestedInput> =
+  z
+    .object({
+      create: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTransactionInputSchema).array(),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTransactionInputSchema).array(),
+        ])
+        .optional(),
+      connectOrCreate: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTransactionInputSchema).array(),
+        ])
+        .optional(),
+      upsert: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapUpsertWithWhereUniqueWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUpsertWithWhereUniqueWithoutTransactionInputSchema).array(),
+        ])
+        .optional(),
+      createMany: z.lazy(() => FinAccountLineItemTagMapCreateManyTransactionInputEnvelopeSchema).optional(),
+      set: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      disconnect: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      delete: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      connect: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      update: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapUpdateWithWhereUniqueWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUpdateWithWhereUniqueWithoutTransactionInputSchema).array(),
+        ])
+        .optional(),
+      updateMany: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapUpdateManyWithWhereWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUpdateManyWithWhereWithoutTransactionInputSchema).array(),
+        ])
+        .optional(),
+      deleteMany: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema).array(),
+        ])
+        .optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUncheckedUpdateManyWithoutTransactionNestedInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUncheckedUpdateManyWithoutTransactionNestedInput> =
+  z
+    .object({
+      create: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTransactionInputSchema).array(),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTransactionInputSchema).array(),
+        ])
+        .optional(),
+      connectOrCreate: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTransactionInputSchema).array(),
+        ])
+        .optional(),
+      upsert: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapUpsertWithWhereUniqueWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUpsertWithWhereUniqueWithoutTransactionInputSchema).array(),
+        ])
+        .optional(),
+      createMany: z.lazy(() => FinAccountLineItemTagMapCreateManyTransactionInputEnvelopeSchema).optional(),
+      set: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      disconnect: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      delete: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      connect: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      update: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapUpdateWithWhereUniqueWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUpdateWithWhereUniqueWithoutTransactionInputSchema).array(),
+        ])
+        .optional(),
+      updateMany: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapUpdateManyWithWhereWithoutTransactionInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUpdateManyWithWhereWithoutTransactionInputSchema).array(),
+        ])
+        .optional(),
+      deleteMany: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema).array(),
+        ])
+        .optional(),
     })
     .strict()
 
@@ -15299,6 +16511,270 @@ export const BytesFieldUpdateOperationsInputSchema: z.ZodType<Prisma.BytesFieldU
     set: z.instanceof(Buffer).optional(),
   })
   .strict()
+
+export const FinAccountLineItemTagMapCreateNestedManyWithoutTagInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCreateNestedManyWithoutTagInput> =
+  z
+    .object({
+      create: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTagInputSchema).array(),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTagInputSchema).array(),
+        ])
+        .optional(),
+      connectOrCreate: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTagInputSchema).array(),
+        ])
+        .optional(),
+      createMany: z.lazy(() => FinAccountLineItemTagMapCreateManyTagInputEnvelopeSchema).optional(),
+      connect: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUncheckedCreateNestedManyWithoutTagInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUncheckedCreateNestedManyWithoutTagInput> =
+  z
+    .object({
+      create: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTagInputSchema).array(),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTagInputSchema).array(),
+        ])
+        .optional(),
+      connectOrCreate: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTagInputSchema).array(),
+        ])
+        .optional(),
+      createMany: z.lazy(() => FinAccountLineItemTagMapCreateManyTagInputEnvelopeSchema).optional(),
+      connect: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUpdateManyWithoutTagNestedInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpdateManyWithoutTagNestedInput> =
+  z
+    .object({
+      create: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTagInputSchema).array(),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTagInputSchema).array(),
+        ])
+        .optional(),
+      connectOrCreate: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTagInputSchema).array(),
+        ])
+        .optional(),
+      upsert: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapUpsertWithWhereUniqueWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUpsertWithWhereUniqueWithoutTagInputSchema).array(),
+        ])
+        .optional(),
+      createMany: z.lazy(() => FinAccountLineItemTagMapCreateManyTagInputEnvelopeSchema).optional(),
+      set: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      disconnect: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      delete: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      connect: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      update: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapUpdateWithWhereUniqueWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUpdateWithWhereUniqueWithoutTagInputSchema).array(),
+        ])
+        .optional(),
+      updateMany: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapUpdateManyWithWhereWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUpdateManyWithWhereWithoutTagInputSchema).array(),
+        ])
+        .optional(),
+      deleteMany: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema).array(),
+        ])
+        .optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUncheckedUpdateManyWithoutTagNestedInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUncheckedUpdateManyWithoutTagNestedInput> =
+  z
+    .object({
+      create: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateWithoutTagInputSchema).array(),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTagInputSchema).array(),
+        ])
+        .optional(),
+      connectOrCreate: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapCreateOrConnectWithoutTagInputSchema).array(),
+        ])
+        .optional(),
+      upsert: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapUpsertWithWhereUniqueWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUpsertWithWhereUniqueWithoutTagInputSchema).array(),
+        ])
+        .optional(),
+      createMany: z.lazy(() => FinAccountLineItemTagMapCreateManyTagInputEnvelopeSchema).optional(),
+      set: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      disconnect: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      delete: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      connect: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema).array(),
+        ])
+        .optional(),
+      update: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapUpdateWithWhereUniqueWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUpdateWithWhereUniqueWithoutTagInputSchema).array(),
+        ])
+        .optional(),
+      updateMany: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapUpdateManyWithWhereWithoutTagInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapUpdateManyWithWhereWithoutTagInputSchema).array(),
+        ])
+        .optional(),
+      deleteMany: z
+        .union([
+          z.lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema),
+          z.lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema).array(),
+        ])
+        .optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemsCreateNestedOneWithoutTagsInputSchema: z.ZodType<Prisma.FinAccountLineItemsCreateNestedOneWithoutTagsInput> =
+  z
+    .object({
+      create: z
+        .union([
+          z.lazy(() => FinAccountLineItemsCreateWithoutTagsInputSchema),
+          z.lazy(() => FinAccountLineItemsUncheckedCreateWithoutTagsInputSchema),
+        ])
+        .optional(),
+      connectOrCreate: z.lazy(() => FinAccountLineItemsCreateOrConnectWithoutTagsInputSchema).optional(),
+      connect: z.lazy(() => FinAccountLineItemsWhereUniqueInputSchema).optional(),
+    })
+    .strict()
+
+export const FinAccountTagCreateNestedOneWithoutFinAccountLineItemTagMapInputSchema: z.ZodType<Prisma.FinAccountTagCreateNestedOneWithoutFinAccountLineItemTagMapInput> =
+  z
+    .object({
+      create: z
+        .union([
+          z.lazy(() => FinAccountTagCreateWithoutFinAccountLineItemTagMapInputSchema),
+          z.lazy(() => FinAccountTagUncheckedCreateWithoutFinAccountLineItemTagMapInputSchema),
+        ])
+        .optional(),
+      connectOrCreate: z.lazy(() => FinAccountTagCreateOrConnectWithoutFinAccountLineItemTagMapInputSchema).optional(),
+      connect: z.lazy(() => FinAccountTagWhereUniqueInputSchema).optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemsUpdateOneRequiredWithoutTagsNestedInputSchema: z.ZodType<Prisma.FinAccountLineItemsUpdateOneRequiredWithoutTagsNestedInput> =
+  z
+    .object({
+      create: z
+        .union([
+          z.lazy(() => FinAccountLineItemsCreateWithoutTagsInputSchema),
+          z.lazy(() => FinAccountLineItemsUncheckedCreateWithoutTagsInputSchema),
+        ])
+        .optional(),
+      connectOrCreate: z.lazy(() => FinAccountLineItemsCreateOrConnectWithoutTagsInputSchema).optional(),
+      upsert: z.lazy(() => FinAccountLineItemsUpsertWithoutTagsInputSchema).optional(),
+      connect: z.lazy(() => FinAccountLineItemsWhereUniqueInputSchema).optional(),
+      update: z
+        .union([
+          z.lazy(() => FinAccountLineItemsUpdateToOneWithWhereWithoutTagsInputSchema),
+          z.lazy(() => FinAccountLineItemsUpdateWithoutTagsInputSchema),
+          z.lazy(() => FinAccountLineItemsUncheckedUpdateWithoutTagsInputSchema),
+        ])
+        .optional(),
+    })
+    .strict()
+
+export const FinAccountTagUpdateOneRequiredWithoutFinAccountLineItemTagMapNestedInputSchema: z.ZodType<Prisma.FinAccountTagUpdateOneRequiredWithoutFinAccountLineItemTagMapNestedInput> =
+  z
+    .object({
+      create: z
+        .union([
+          z.lazy(() => FinAccountTagCreateWithoutFinAccountLineItemTagMapInputSchema),
+          z.lazy(() => FinAccountTagUncheckedCreateWithoutFinAccountLineItemTagMapInputSchema),
+        ])
+        .optional(),
+      connectOrCreate: z.lazy(() => FinAccountTagCreateOrConnectWithoutFinAccountLineItemTagMapInputSchema).optional(),
+      upsert: z.lazy(() => FinAccountTagUpsertWithoutFinAccountLineItemTagMapInputSchema).optional(),
+      connect: z.lazy(() => FinAccountTagWhereUniqueInputSchema).optional(),
+      update: z
+        .union([
+          z.lazy(() => FinAccountTagUpdateToOneWithWhereWithoutFinAccountLineItemTagMapInputSchema),
+          z.lazy(() => FinAccountTagUpdateWithoutFinAccountLineItemTagMapInputSchema),
+          z.lazy(() => FinAccountTagUncheckedUpdateWithoutFinAccountLineItemTagMapInputSchema),
+        ])
+        .optional(),
+    })
+    .strict()
 
 export const NestedStringFilterSchema: z.ZodType<Prisma.NestedStringFilter> = z
   .object({
@@ -16717,6 +18193,113 @@ export const UserUncheckedUpdateWithoutTwofactorsInputSchema: z.ZodType<Prisma.U
     })
     .strict()
 
+export const FinAccountLineItemTagMapCreateWithoutTransactionInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCreateWithoutTransactionInput> =
+  z
+    .object({
+      when_added: z.coerce.date().optional(),
+      when_deleted: z.coerce.date().optional().nullable(),
+      tag: z.lazy(() => FinAccountTagCreateNestedOneWithoutFinAccountLineItemTagMapInputSchema),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUncheckedCreateWithoutTransactionInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUncheckedCreateWithoutTransactionInput> =
+  z
+    .object({
+      id: z.number().int().optional(),
+      when_added: z.coerce.date().optional(),
+      when_deleted: z.coerce.date().optional().nullable(),
+      tag_id: z.number().int(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapCreateOrConnectWithoutTransactionInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCreateOrConnectWithoutTransactionInput> =
+  z
+    .object({
+      where: z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+      create: z.union([
+        z.lazy(() => FinAccountLineItemTagMapCreateWithoutTransactionInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTransactionInputSchema),
+      ]),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapCreateManyTransactionInputEnvelopeSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCreateManyTransactionInputEnvelope> =
+  z
+    .object({
+      data: z.union([
+        z.lazy(() => FinAccountLineItemTagMapCreateManyTransactionInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapCreateManyTransactionInputSchema).array(),
+      ]),
+      skipDuplicates: z.boolean().optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUpsertWithWhereUniqueWithoutTransactionInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpsertWithWhereUniqueWithoutTransactionInput> =
+  z
+    .object({
+      where: z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+      update: z.union([
+        z.lazy(() => FinAccountLineItemTagMapUpdateWithoutTransactionInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapUncheckedUpdateWithoutTransactionInputSchema),
+      ]),
+      create: z.union([
+        z.lazy(() => FinAccountLineItemTagMapCreateWithoutTransactionInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTransactionInputSchema),
+      ]),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUpdateWithWhereUniqueWithoutTransactionInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpdateWithWhereUniqueWithoutTransactionInput> =
+  z
+    .object({
+      where: z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+      data: z.union([
+        z.lazy(() => FinAccountLineItemTagMapUpdateWithoutTransactionInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapUncheckedUpdateWithoutTransactionInputSchema),
+      ]),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUpdateManyWithWhereWithoutTransactionInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpdateManyWithWhereWithoutTransactionInput> =
+  z
+    .object({
+      where: z.lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema),
+      data: z.union([
+        z.lazy(() => FinAccountLineItemTagMapUpdateManyMutationInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapUncheckedUpdateManyWithoutTransactionInputSchema),
+      ]),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapScalarWhereInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapScalarWhereInput> = z
+  .object({
+    AND: z
+      .union([
+        z.lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema).array(),
+      ])
+      .optional(),
+    OR: z
+      .lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema)
+      .array()
+      .optional(),
+    NOT: z
+      .union([
+        z.lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema).array(),
+      ])
+      .optional(),
+    id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    when_added: z.union([z.lazy(() => DateTimeFilterSchema), z.coerce.date()]).optional(),
+    when_deleted: z
+      .union([z.lazy(() => DateTimeNullableFilterSchema), z.coerce.date()])
+      .optional()
+      .nullable(),
+    t_id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+    tag_id: z.union([z.lazy(() => IntFilterSchema), z.number()]).optional(),
+  })
+  .strict()
+
 export const TimeSeriesSeriesCreateWithoutTimeseries_datapointInputSchema: z.ZodType<Prisma.TimeSeriesSeriesCreateWithoutTimeseries_datapointInput> =
   z
     .object({
@@ -17076,6 +18659,604 @@ export const TimeSeriesDocumentUncheckedUpdateWithoutTimeseries_seriesInputSchem
     })
     .strict()
 
+export const FinAccountLineItemTagMapCreateWithoutTagInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCreateWithoutTagInput> =
+  z
+    .object({
+      when_added: z.coerce.date().optional(),
+      when_deleted: z.coerce.date().optional().nullable(),
+      transaction: z.lazy(() => FinAccountLineItemsCreateNestedOneWithoutTagsInputSchema),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUncheckedCreateWithoutTagInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUncheckedCreateWithoutTagInput> =
+  z
+    .object({
+      id: z.number().int().optional(),
+      when_added: z.coerce.date().optional(),
+      when_deleted: z.coerce.date().optional().nullable(),
+      t_id: z.number().int(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapCreateOrConnectWithoutTagInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCreateOrConnectWithoutTagInput> =
+  z
+    .object({
+      where: z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+      create: z.union([
+        z.lazy(() => FinAccountLineItemTagMapCreateWithoutTagInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTagInputSchema),
+      ]),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapCreateManyTagInputEnvelopeSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCreateManyTagInputEnvelope> =
+  z
+    .object({
+      data: z.union([
+        z.lazy(() => FinAccountLineItemTagMapCreateManyTagInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapCreateManyTagInputSchema).array(),
+      ]),
+      skipDuplicates: z.boolean().optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUpsertWithWhereUniqueWithoutTagInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpsertWithWhereUniqueWithoutTagInput> =
+  z
+    .object({
+      where: z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+      update: z.union([
+        z.lazy(() => FinAccountLineItemTagMapUpdateWithoutTagInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapUncheckedUpdateWithoutTagInputSchema),
+      ]),
+      create: z.union([
+        z.lazy(() => FinAccountLineItemTagMapCreateWithoutTagInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapUncheckedCreateWithoutTagInputSchema),
+      ]),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUpdateWithWhereUniqueWithoutTagInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpdateWithWhereUniqueWithoutTagInput> =
+  z
+    .object({
+      where: z.lazy(() => FinAccountLineItemTagMapWhereUniqueInputSchema),
+      data: z.union([
+        z.lazy(() => FinAccountLineItemTagMapUpdateWithoutTagInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapUncheckedUpdateWithoutTagInputSchema),
+      ]),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUpdateManyWithWhereWithoutTagInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpdateManyWithWhereWithoutTagInput> =
+  z
+    .object({
+      where: z.lazy(() => FinAccountLineItemTagMapScalarWhereInputSchema),
+      data: z.union([
+        z.lazy(() => FinAccountLineItemTagMapUpdateManyMutationInputSchema),
+        z.lazy(() => FinAccountLineItemTagMapUncheckedUpdateManyWithoutTagInputSchema),
+      ]),
+    })
+    .strict()
+
+export const FinAccountLineItemsCreateWithoutTagsInputSchema: z.ZodType<Prisma.FinAccountLineItemsCreateWithoutTagsInput> =
+  z
+    .object({
+      t_account: z.number().int().optional().nullable(),
+      t_date: z.string(),
+      t_type: z.string().optional().nullable(),
+      t_schc_category: z.string().optional().nullable(),
+      t_amt: z
+        .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+        .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+        .optional()
+        .nullable(),
+      t_symbol: z.string().optional().nullable(),
+      t_qty: z.number().optional(),
+      t_price: z
+        .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+        .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+        .optional()
+        .nullable(),
+      t_commission: z
+        .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+        .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+        .optional()
+        .nullable(),
+      t_fee: z
+        .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+        .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+        .optional()
+        .nullable(),
+      t_method: z.string().optional().nullable(),
+      t_source: z.string().optional().nullable(),
+      t_origin: z.string().optional().nullable(),
+      opt_expiration: z.string().optional().nullable(),
+      opt_type: z
+        .lazy(() => account_line_items_opt_typeSchema)
+        .optional()
+        .nullable(),
+      opt_strike: z
+        .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+        .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+        .optional()
+        .nullable(),
+      t_description: z.string().optional().nullable(),
+      t_comment: z.string().optional().nullable(),
+      t_from: z.string().optional().nullable(),
+      t_to: z.string().optional().nullable(),
+      t_interest_rate: z.string().optional().nullable(),
+      t_cusip: z.string().optional().nullable(),
+      t_harvested_amount: z
+        .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+        .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+        .optional()
+        .nullable(),
+      parent_t_id: z.number().int().optional().nullable(),
+      when_added: z.coerce.date().optional().nullable(),
+      when_deleted: z.coerce.date().optional().nullable(),
+    })
+    .strict()
+
+export const FinAccountLineItemsUncheckedCreateWithoutTagsInputSchema: z.ZodType<Prisma.FinAccountLineItemsUncheckedCreateWithoutTagsInput> =
+  z
+    .object({
+      t_id: z.number().int().optional(),
+      t_account: z.number().int().optional().nullable(),
+      t_date: z.string(),
+      t_type: z.string().optional().nullable(),
+      t_schc_category: z.string().optional().nullable(),
+      t_amt: z
+        .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+        .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+        .optional()
+        .nullable(),
+      t_symbol: z.string().optional().nullable(),
+      t_qty: z.number().optional(),
+      t_price: z
+        .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+        .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+        .optional()
+        .nullable(),
+      t_commission: z
+        .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+        .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+        .optional()
+        .nullable(),
+      t_fee: z
+        .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+        .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+        .optional()
+        .nullable(),
+      t_method: z.string().optional().nullable(),
+      t_source: z.string().optional().nullable(),
+      t_origin: z.string().optional().nullable(),
+      opt_expiration: z.string().optional().nullable(),
+      opt_type: z
+        .lazy(() => account_line_items_opt_typeSchema)
+        .optional()
+        .nullable(),
+      opt_strike: z
+        .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+        .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+        .optional()
+        .nullable(),
+      t_description: z.string().optional().nullable(),
+      t_comment: z.string().optional().nullable(),
+      t_from: z.string().optional().nullable(),
+      t_to: z.string().optional().nullable(),
+      t_interest_rate: z.string().optional().nullable(),
+      t_cusip: z.string().optional().nullable(),
+      t_harvested_amount: z
+        .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+        .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' })
+        .optional()
+        .nullable(),
+      parent_t_id: z.number().int().optional().nullable(),
+      when_added: z.coerce.date().optional().nullable(),
+      when_deleted: z.coerce.date().optional().nullable(),
+    })
+    .strict()
+
+export const FinAccountLineItemsCreateOrConnectWithoutTagsInputSchema: z.ZodType<Prisma.FinAccountLineItemsCreateOrConnectWithoutTagsInput> =
+  z
+    .object({
+      where: z.lazy(() => FinAccountLineItemsWhereUniqueInputSchema),
+      create: z.union([
+        z.lazy(() => FinAccountLineItemsCreateWithoutTagsInputSchema),
+        z.lazy(() => FinAccountLineItemsUncheckedCreateWithoutTagsInputSchema),
+      ]),
+    })
+    .strict()
+
+export const FinAccountTagCreateWithoutFinAccountLineItemTagMapInputSchema: z.ZodType<Prisma.FinAccountTagCreateWithoutFinAccountLineItemTagMapInput> =
+  z
+    .object({
+      tag_userid: z.string(),
+      tag_color: z.string(),
+      tag_label: z.string(),
+      when_added: z.coerce.date().optional(),
+      when_deleted: z.coerce.date().optional().nullable(),
+    })
+    .strict()
+
+export const FinAccountTagUncheckedCreateWithoutFinAccountLineItemTagMapInputSchema: z.ZodType<Prisma.FinAccountTagUncheckedCreateWithoutFinAccountLineItemTagMapInput> =
+  z
+    .object({
+      tag_id: z.number().int().optional(),
+      tag_userid: z.string(),
+      tag_color: z.string(),
+      tag_label: z.string(),
+      when_added: z.coerce.date().optional(),
+      when_deleted: z.coerce.date().optional().nullable(),
+    })
+    .strict()
+
+export const FinAccountTagCreateOrConnectWithoutFinAccountLineItemTagMapInputSchema: z.ZodType<Prisma.FinAccountTagCreateOrConnectWithoutFinAccountLineItemTagMapInput> =
+  z
+    .object({
+      where: z.lazy(() => FinAccountTagWhereUniqueInputSchema),
+      create: z.union([
+        z.lazy(() => FinAccountTagCreateWithoutFinAccountLineItemTagMapInputSchema),
+        z.lazy(() => FinAccountTagUncheckedCreateWithoutFinAccountLineItemTagMapInputSchema),
+      ]),
+    })
+    .strict()
+
+export const FinAccountLineItemsUpsertWithoutTagsInputSchema: z.ZodType<Prisma.FinAccountLineItemsUpsertWithoutTagsInput> =
+  z
+    .object({
+      update: z.union([
+        z.lazy(() => FinAccountLineItemsUpdateWithoutTagsInputSchema),
+        z.lazy(() => FinAccountLineItemsUncheckedUpdateWithoutTagsInputSchema),
+      ]),
+      create: z.union([
+        z.lazy(() => FinAccountLineItemsCreateWithoutTagsInputSchema),
+        z.lazy(() => FinAccountLineItemsUncheckedCreateWithoutTagsInputSchema),
+      ]),
+      where: z.lazy(() => FinAccountLineItemsWhereInputSchema).optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemsUpdateToOneWithWhereWithoutTagsInputSchema: z.ZodType<Prisma.FinAccountLineItemsUpdateToOneWithWhereWithoutTagsInput> =
+  z
+    .object({
+      where: z.lazy(() => FinAccountLineItemsWhereInputSchema).optional(),
+      data: z.union([
+        z.lazy(() => FinAccountLineItemsUpdateWithoutTagsInputSchema),
+        z.lazy(() => FinAccountLineItemsUncheckedUpdateWithoutTagsInputSchema),
+      ]),
+    })
+    .strict()
+
+export const FinAccountLineItemsUpdateWithoutTagsInputSchema: z.ZodType<Prisma.FinAccountLineItemsUpdateWithoutTagsInput> =
+  z
+    .object({
+      t_account: z
+        .union([z.number().int(), z.lazy(() => NullableIntFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_date: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+      t_type: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_schc_category: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_amt: z
+        .union([
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      t_symbol: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_qty: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+      t_price: z
+        .union([
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      t_commission: z
+        .union([
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      t_fee: z
+        .union([
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      t_method: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_source: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_origin: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      opt_expiration: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      opt_type: z
+        .union([
+          z.lazy(() => account_line_items_opt_typeSchema),
+          z.lazy(() => NullableEnumaccount_line_items_opt_typeFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      opt_strike: z
+        .union([
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      t_description: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_comment: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_from: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_to: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_interest_rate: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_cusip: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_harvested_amount: z
+        .union([
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      parent_t_id: z
+        .union([z.number().int(), z.lazy(() => NullableIntFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      when_added: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      when_deleted: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+    })
+    .strict()
+
+export const FinAccountLineItemsUncheckedUpdateWithoutTagsInputSchema: z.ZodType<Prisma.FinAccountLineItemsUncheckedUpdateWithoutTagsInput> =
+  z
+    .object({
+      t_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+      t_account: z
+        .union([z.number().int(), z.lazy(() => NullableIntFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_date: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+      t_type: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_schc_category: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_amt: z
+        .union([
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      t_symbol: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_qty: z.union([z.number(), z.lazy(() => FloatFieldUpdateOperationsInputSchema)]).optional(),
+      t_price: z
+        .union([
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      t_commission: z
+        .union([
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      t_fee: z
+        .union([
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      t_method: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_source: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_origin: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      opt_expiration: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      opt_type: z
+        .union([
+          z.lazy(() => account_line_items_opt_typeSchema),
+          z.lazy(() => NullableEnumaccount_line_items_opt_typeFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      opt_strike: z
+        .union([
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      t_description: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_comment: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_from: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_to: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_interest_rate: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_cusip: z
+        .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_harvested_amount: z
+        .union([
+          z
+            .union([z.number(), z.string(), z.instanceof(Decimal), z.instanceof(Prisma.Decimal), DecimalJsLikeSchema])
+            .refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),
+          z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema),
+        ])
+        .optional()
+        .nullable(),
+      parent_t_id: z
+        .union([z.number().int(), z.lazy(() => NullableIntFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      when_added: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      when_deleted: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+    })
+    .strict()
+
+export const FinAccountTagUpsertWithoutFinAccountLineItemTagMapInputSchema: z.ZodType<Prisma.FinAccountTagUpsertWithoutFinAccountLineItemTagMapInput> =
+  z
+    .object({
+      update: z.union([
+        z.lazy(() => FinAccountTagUpdateWithoutFinAccountLineItemTagMapInputSchema),
+        z.lazy(() => FinAccountTagUncheckedUpdateWithoutFinAccountLineItemTagMapInputSchema),
+      ]),
+      create: z.union([
+        z.lazy(() => FinAccountTagCreateWithoutFinAccountLineItemTagMapInputSchema),
+        z.lazy(() => FinAccountTagUncheckedCreateWithoutFinAccountLineItemTagMapInputSchema),
+      ]),
+      where: z.lazy(() => FinAccountTagWhereInputSchema).optional(),
+    })
+    .strict()
+
+export const FinAccountTagUpdateToOneWithWhereWithoutFinAccountLineItemTagMapInputSchema: z.ZodType<Prisma.FinAccountTagUpdateToOneWithWhereWithoutFinAccountLineItemTagMapInput> =
+  z
+    .object({
+      where: z.lazy(() => FinAccountTagWhereInputSchema).optional(),
+      data: z.union([
+        z.lazy(() => FinAccountTagUpdateWithoutFinAccountLineItemTagMapInputSchema),
+        z.lazy(() => FinAccountTagUncheckedUpdateWithoutFinAccountLineItemTagMapInputSchema),
+      ]),
+    })
+    .strict()
+
+export const FinAccountTagUpdateWithoutFinAccountLineItemTagMapInputSchema: z.ZodType<Prisma.FinAccountTagUpdateWithoutFinAccountLineItemTagMapInput> =
+  z
+    .object({
+      tag_userid: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+      tag_color: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+      tag_label: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+      when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+      when_deleted: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+    })
+    .strict()
+
+export const FinAccountTagUncheckedUpdateWithoutFinAccountLineItemTagMapInputSchema: z.ZodType<Prisma.FinAccountTagUncheckedUpdateWithoutFinAccountLineItemTagMapInput> =
+  z
+    .object({
+      tag_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+      tag_userid: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+      tag_color: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+      tag_label: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+      when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+      when_deleted: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+    })
+    .strict()
+
 export const AccountCreateManyUserInputSchema: z.ZodType<Prisma.AccountCreateManyUserInput> = z
   .object({
     id: z.string(),
@@ -17308,6 +19489,54 @@ export const TwoFactorUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prism
     })
     .strict()
 
+export const FinAccountLineItemTagMapCreateManyTransactionInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCreateManyTransactionInput> =
+  z
+    .object({
+      id: z.number().int().optional(),
+      when_added: z.coerce.date().optional(),
+      when_deleted: z.coerce.date().optional().nullable(),
+      tag_id: z.number().int(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUpdateWithoutTransactionInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpdateWithoutTransactionInput> =
+  z
+    .object({
+      when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+      when_deleted: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      tag: z.lazy(() => FinAccountTagUpdateOneRequiredWithoutFinAccountLineItemTagMapNestedInputSchema).optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUncheckedUpdateWithoutTransactionInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUncheckedUpdateWithoutTransactionInput> =
+  z
+    .object({
+      id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+      when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+      when_deleted: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      tag_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUncheckedUpdateManyWithoutTransactionInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUncheckedUpdateManyWithoutTransactionInput> =
+  z
+    .object({
+      id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+      when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+      when_deleted: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      tag_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    })
+    .strict()
+
 export const TimeSeriesSeriesCreateManyTimeseries_documentsInputSchema: z.ZodType<Prisma.TimeSeriesSeriesCreateManyTimeseries_documentsInput> =
   z
     .object({
@@ -17406,6 +19635,54 @@ export const TimeSeriesDatapointUncheckedUpdateManyWithoutTimeseries_seriesInput
         .union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)])
         .optional()
         .nullable(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapCreateManyTagInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCreateManyTagInput> =
+  z
+    .object({
+      id: z.number().int().optional(),
+      when_added: z.coerce.date().optional(),
+      when_deleted: z.coerce.date().optional().nullable(),
+      t_id: z.number().int(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUpdateWithoutTagInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpdateWithoutTagInput> =
+  z
+    .object({
+      when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+      when_deleted: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      transaction: z.lazy(() => FinAccountLineItemsUpdateOneRequiredWithoutTagsNestedInputSchema).optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUncheckedUpdateWithoutTagInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUncheckedUpdateWithoutTagInput> =
+  z
+    .object({
+      id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+      when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+      when_deleted: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapUncheckedUpdateManyWithoutTagInputSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUncheckedUpdateManyWithoutTagInput> =
+  z
+    .object({
+      id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
+      when_added: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
+      when_deleted: z
+        .union([z.coerce.date(), z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema)])
+        .optional()
+        .nullable(),
+      t_id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputSchema)]).optional(),
     })
     .strict()
 
@@ -17966,96 +20243,6 @@ export const ProductKeyFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.ProductKeyF
   })
   .strict()
 
-export const FinAccountLineItemsFindFirstArgsSchema: z.ZodType<Prisma.FinAccountLineItemsFindFirstArgs> = z
-  .object({
-    select: FinAccountLineItemsSelectSchema.optional(),
-    where: FinAccountLineItemsWhereInputSchema.optional(),
-    orderBy: z
-      .union([FinAccountLineItemsOrderByWithRelationInputSchema.array(), FinAccountLineItemsOrderByWithRelationInputSchema])
-      .optional(),
-    cursor: FinAccountLineItemsWhereUniqueInputSchema.optional(),
-    take: z.number().optional(),
-    skip: z.number().optional(),
-    distinct: z
-      .union([FinAccountLineItemsScalarFieldEnumSchema, FinAccountLineItemsScalarFieldEnumSchema.array()])
-      .optional(),
-  })
-  .strict()
-
-export const FinAccountLineItemsFindFirstOrThrowArgsSchema: z.ZodType<Prisma.FinAccountLineItemsFindFirstOrThrowArgs> = z
-  .object({
-    select: FinAccountLineItemsSelectSchema.optional(),
-    where: FinAccountLineItemsWhereInputSchema.optional(),
-    orderBy: z
-      .union([FinAccountLineItemsOrderByWithRelationInputSchema.array(), FinAccountLineItemsOrderByWithRelationInputSchema])
-      .optional(),
-    cursor: FinAccountLineItemsWhereUniqueInputSchema.optional(),
-    take: z.number().optional(),
-    skip: z.number().optional(),
-    distinct: z
-      .union([FinAccountLineItemsScalarFieldEnumSchema, FinAccountLineItemsScalarFieldEnumSchema.array()])
-      .optional(),
-  })
-  .strict()
-
-export const FinAccountLineItemsFindManyArgsSchema: z.ZodType<Prisma.FinAccountLineItemsFindManyArgs> = z
-  .object({
-    select: FinAccountLineItemsSelectSchema.optional(),
-    where: FinAccountLineItemsWhereInputSchema.optional(),
-    orderBy: z
-      .union([FinAccountLineItemsOrderByWithRelationInputSchema.array(), FinAccountLineItemsOrderByWithRelationInputSchema])
-      .optional(),
-    cursor: FinAccountLineItemsWhereUniqueInputSchema.optional(),
-    take: z.number().optional(),
-    skip: z.number().optional(),
-    distinct: z
-      .union([FinAccountLineItemsScalarFieldEnumSchema, FinAccountLineItemsScalarFieldEnumSchema.array()])
-      .optional(),
-  })
-  .strict()
-
-export const FinAccountLineItemsAggregateArgsSchema: z.ZodType<Prisma.FinAccountLineItemsAggregateArgs> = z
-  .object({
-    where: FinAccountLineItemsWhereInputSchema.optional(),
-    orderBy: z
-      .union([FinAccountLineItemsOrderByWithRelationInputSchema.array(), FinAccountLineItemsOrderByWithRelationInputSchema])
-      .optional(),
-    cursor: FinAccountLineItemsWhereUniqueInputSchema.optional(),
-    take: z.number().optional(),
-    skip: z.number().optional(),
-  })
-  .strict()
-
-export const FinAccountLineItemsGroupByArgsSchema: z.ZodType<Prisma.FinAccountLineItemsGroupByArgs> = z
-  .object({
-    where: FinAccountLineItemsWhereInputSchema.optional(),
-    orderBy: z
-      .union([
-        FinAccountLineItemsOrderByWithAggregationInputSchema.array(),
-        FinAccountLineItemsOrderByWithAggregationInputSchema,
-      ])
-      .optional(),
-    by: FinAccountLineItemsScalarFieldEnumSchema.array(),
-    having: FinAccountLineItemsScalarWhereWithAggregatesInputSchema.optional(),
-    take: z.number().optional(),
-    skip: z.number().optional(),
-  })
-  .strict()
-
-export const FinAccountLineItemsFindUniqueArgsSchema: z.ZodType<Prisma.FinAccountLineItemsFindUniqueArgs> = z
-  .object({
-    select: FinAccountLineItemsSelectSchema.optional(),
-    where: FinAccountLineItemsWhereUniqueInputSchema,
-  })
-  .strict()
-
-export const FinAccountLineItemsFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.FinAccountLineItemsFindUniqueOrThrowArgs> = z
-  .object({
-    select: FinAccountLineItemsSelectSchema.optional(),
-    where: FinAccountLineItemsWhereUniqueInputSchema,
-  })
-  .strict()
-
 export const FinAccountsFindFirstArgsSchema: z.ZodType<Prisma.FinAccountsFindFirstArgs> = z
   .object({
     select: FinAccountsSelectSchema.optional(),
@@ -18134,6 +20321,101 @@ export const FinAccountsFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.FinAccount
   .object({
     select: FinAccountsSelectSchema.optional(),
     where: FinAccountsWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const FinAccountLineItemsFindFirstArgsSchema: z.ZodType<Prisma.FinAccountLineItemsFindFirstArgs> = z
+  .object({
+    select: FinAccountLineItemsSelectSchema.optional(),
+    include: FinAccountLineItemsIncludeSchema.optional(),
+    where: FinAccountLineItemsWhereInputSchema.optional(),
+    orderBy: z
+      .union([FinAccountLineItemsOrderByWithRelationInputSchema.array(), FinAccountLineItemsOrderByWithRelationInputSchema])
+      .optional(),
+    cursor: FinAccountLineItemsWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+    distinct: z
+      .union([FinAccountLineItemsScalarFieldEnumSchema, FinAccountLineItemsScalarFieldEnumSchema.array()])
+      .optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemsFindFirstOrThrowArgsSchema: z.ZodType<Prisma.FinAccountLineItemsFindFirstOrThrowArgs> = z
+  .object({
+    select: FinAccountLineItemsSelectSchema.optional(),
+    include: FinAccountLineItemsIncludeSchema.optional(),
+    where: FinAccountLineItemsWhereInputSchema.optional(),
+    orderBy: z
+      .union([FinAccountLineItemsOrderByWithRelationInputSchema.array(), FinAccountLineItemsOrderByWithRelationInputSchema])
+      .optional(),
+    cursor: FinAccountLineItemsWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+    distinct: z
+      .union([FinAccountLineItemsScalarFieldEnumSchema, FinAccountLineItemsScalarFieldEnumSchema.array()])
+      .optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemsFindManyArgsSchema: z.ZodType<Prisma.FinAccountLineItemsFindManyArgs> = z
+  .object({
+    select: FinAccountLineItemsSelectSchema.optional(),
+    include: FinAccountLineItemsIncludeSchema.optional(),
+    where: FinAccountLineItemsWhereInputSchema.optional(),
+    orderBy: z
+      .union([FinAccountLineItemsOrderByWithRelationInputSchema.array(), FinAccountLineItemsOrderByWithRelationInputSchema])
+      .optional(),
+    cursor: FinAccountLineItemsWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+    distinct: z
+      .union([FinAccountLineItemsScalarFieldEnumSchema, FinAccountLineItemsScalarFieldEnumSchema.array()])
+      .optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemsAggregateArgsSchema: z.ZodType<Prisma.FinAccountLineItemsAggregateArgs> = z
+  .object({
+    where: FinAccountLineItemsWhereInputSchema.optional(),
+    orderBy: z
+      .union([FinAccountLineItemsOrderByWithRelationInputSchema.array(), FinAccountLineItemsOrderByWithRelationInputSchema])
+      .optional(),
+    cursor: FinAccountLineItemsWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemsGroupByArgsSchema: z.ZodType<Prisma.FinAccountLineItemsGroupByArgs> = z
+  .object({
+    where: FinAccountLineItemsWhereInputSchema.optional(),
+    orderBy: z
+      .union([
+        FinAccountLineItemsOrderByWithAggregationInputSchema.array(),
+        FinAccountLineItemsOrderByWithAggregationInputSchema,
+      ])
+      .optional(),
+    by: FinAccountLineItemsScalarFieldEnumSchema.array(),
+    having: FinAccountLineItemsScalarWhereWithAggregatesInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemsFindUniqueArgsSchema: z.ZodType<Prisma.FinAccountLineItemsFindUniqueArgs> = z
+  .object({
+    select: FinAccountLineItemsSelectSchema.optional(),
+    include: FinAccountLineItemsIncludeSchema.optional(),
+    where: FinAccountLineItemsWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const FinAccountLineItemsFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.FinAccountLineItemsFindUniqueOrThrowArgs> = z
+  .object({
+    select: FinAccountLineItemsSelectSchema.optional(),
+    include: FinAccountLineItemsIncludeSchema.optional(),
+    where: FinAccountLineItemsWhereUniqueInputSchema,
   })
   .strict()
 
@@ -19398,6 +21680,291 @@ export const VXCVLinksFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.VXCVLinksFin
   })
   .strict()
 
+export const AccountLineItemTagFindFirstArgsSchema: z.ZodType<Prisma.AccountLineItemTagFindFirstArgs> = z
+  .object({
+    select: AccountLineItemTagSelectSchema.optional(),
+    where: AccountLineItemTagWhereInputSchema.optional(),
+    orderBy: z
+      .union([AccountLineItemTagOrderByWithRelationInputSchema.array(), AccountLineItemTagOrderByWithRelationInputSchema])
+      .optional(),
+    cursor: AccountLineItemTagWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+    distinct: z
+      .union([AccountLineItemTagScalarFieldEnumSchema, AccountLineItemTagScalarFieldEnumSchema.array()])
+      .optional(),
+  })
+  .strict()
+
+export const AccountLineItemTagFindFirstOrThrowArgsSchema: z.ZodType<Prisma.AccountLineItemTagFindFirstOrThrowArgs> = z
+  .object({
+    select: AccountLineItemTagSelectSchema.optional(),
+    where: AccountLineItemTagWhereInputSchema.optional(),
+    orderBy: z
+      .union([AccountLineItemTagOrderByWithRelationInputSchema.array(), AccountLineItemTagOrderByWithRelationInputSchema])
+      .optional(),
+    cursor: AccountLineItemTagWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+    distinct: z
+      .union([AccountLineItemTagScalarFieldEnumSchema, AccountLineItemTagScalarFieldEnumSchema.array()])
+      .optional(),
+  })
+  .strict()
+
+export const AccountLineItemTagFindManyArgsSchema: z.ZodType<Prisma.AccountLineItemTagFindManyArgs> = z
+  .object({
+    select: AccountLineItemTagSelectSchema.optional(),
+    where: AccountLineItemTagWhereInputSchema.optional(),
+    orderBy: z
+      .union([AccountLineItemTagOrderByWithRelationInputSchema.array(), AccountLineItemTagOrderByWithRelationInputSchema])
+      .optional(),
+    cursor: AccountLineItemTagWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+    distinct: z
+      .union([AccountLineItemTagScalarFieldEnumSchema, AccountLineItemTagScalarFieldEnumSchema.array()])
+      .optional(),
+  })
+  .strict()
+
+export const AccountLineItemTagAggregateArgsSchema: z.ZodType<Prisma.AccountLineItemTagAggregateArgs> = z
+  .object({
+    where: AccountLineItemTagWhereInputSchema.optional(),
+    orderBy: z
+      .union([AccountLineItemTagOrderByWithRelationInputSchema.array(), AccountLineItemTagOrderByWithRelationInputSchema])
+      .optional(),
+    cursor: AccountLineItemTagWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+  })
+  .strict()
+
+export const AccountLineItemTagGroupByArgsSchema: z.ZodType<Prisma.AccountLineItemTagGroupByArgs> = z
+  .object({
+    where: AccountLineItemTagWhereInputSchema.optional(),
+    orderBy: z
+      .union([
+        AccountLineItemTagOrderByWithAggregationInputSchema.array(),
+        AccountLineItemTagOrderByWithAggregationInputSchema,
+      ])
+      .optional(),
+    by: AccountLineItemTagScalarFieldEnumSchema.array(),
+    having: AccountLineItemTagScalarWhereWithAggregatesInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+  })
+  .strict()
+
+export const AccountLineItemTagFindUniqueArgsSchema: z.ZodType<Prisma.AccountLineItemTagFindUniqueArgs> = z
+  .object({
+    select: AccountLineItemTagSelectSchema.optional(),
+    where: AccountLineItemTagWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const AccountLineItemTagFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.AccountLineItemTagFindUniqueOrThrowArgs> = z
+  .object({
+    select: AccountLineItemTagSelectSchema.optional(),
+    where: AccountLineItemTagWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const FinAccountTagFindFirstArgsSchema: z.ZodType<Prisma.FinAccountTagFindFirstArgs> = z
+  .object({
+    select: FinAccountTagSelectSchema.optional(),
+    include: FinAccountTagIncludeSchema.optional(),
+    where: FinAccountTagWhereInputSchema.optional(),
+    orderBy: z
+      .union([FinAccountTagOrderByWithRelationInputSchema.array(), FinAccountTagOrderByWithRelationInputSchema])
+      .optional(),
+    cursor: FinAccountTagWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+    distinct: z.union([FinAccountTagScalarFieldEnumSchema, FinAccountTagScalarFieldEnumSchema.array()]).optional(),
+  })
+  .strict()
+
+export const FinAccountTagFindFirstOrThrowArgsSchema: z.ZodType<Prisma.FinAccountTagFindFirstOrThrowArgs> = z
+  .object({
+    select: FinAccountTagSelectSchema.optional(),
+    include: FinAccountTagIncludeSchema.optional(),
+    where: FinAccountTagWhereInputSchema.optional(),
+    orderBy: z
+      .union([FinAccountTagOrderByWithRelationInputSchema.array(), FinAccountTagOrderByWithRelationInputSchema])
+      .optional(),
+    cursor: FinAccountTagWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+    distinct: z.union([FinAccountTagScalarFieldEnumSchema, FinAccountTagScalarFieldEnumSchema.array()]).optional(),
+  })
+  .strict()
+
+export const FinAccountTagFindManyArgsSchema: z.ZodType<Prisma.FinAccountTagFindManyArgs> = z
+  .object({
+    select: FinAccountTagSelectSchema.optional(),
+    include: FinAccountTagIncludeSchema.optional(),
+    where: FinAccountTagWhereInputSchema.optional(),
+    orderBy: z
+      .union([FinAccountTagOrderByWithRelationInputSchema.array(), FinAccountTagOrderByWithRelationInputSchema])
+      .optional(),
+    cursor: FinAccountTagWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+    distinct: z.union([FinAccountTagScalarFieldEnumSchema, FinAccountTagScalarFieldEnumSchema.array()]).optional(),
+  })
+  .strict()
+
+export const FinAccountTagAggregateArgsSchema: z.ZodType<Prisma.FinAccountTagAggregateArgs> = z
+  .object({
+    where: FinAccountTagWhereInputSchema.optional(),
+    orderBy: z
+      .union([FinAccountTagOrderByWithRelationInputSchema.array(), FinAccountTagOrderByWithRelationInputSchema])
+      .optional(),
+    cursor: FinAccountTagWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+  })
+  .strict()
+
+export const FinAccountTagGroupByArgsSchema: z.ZodType<Prisma.FinAccountTagGroupByArgs> = z
+  .object({
+    where: FinAccountTagWhereInputSchema.optional(),
+    orderBy: z
+      .union([FinAccountTagOrderByWithAggregationInputSchema.array(), FinAccountTagOrderByWithAggregationInputSchema])
+      .optional(),
+    by: FinAccountTagScalarFieldEnumSchema.array(),
+    having: FinAccountTagScalarWhereWithAggregatesInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+  })
+  .strict()
+
+export const FinAccountTagFindUniqueArgsSchema: z.ZodType<Prisma.FinAccountTagFindUniqueArgs> = z
+  .object({
+    select: FinAccountTagSelectSchema.optional(),
+    include: FinAccountTagIncludeSchema.optional(),
+    where: FinAccountTagWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const FinAccountTagFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.FinAccountTagFindUniqueOrThrowArgs> = z
+  .object({
+    select: FinAccountTagSelectSchema.optional(),
+    include: FinAccountTagIncludeSchema.optional(),
+    where: FinAccountTagWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapFindFirstArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapFindFirstArgs> = z
+  .object({
+    select: FinAccountLineItemTagMapSelectSchema.optional(),
+    include: FinAccountLineItemTagMapIncludeSchema.optional(),
+    where: FinAccountLineItemTagMapWhereInputSchema.optional(),
+    orderBy: z
+      .union([
+        FinAccountLineItemTagMapOrderByWithRelationInputSchema.array(),
+        FinAccountLineItemTagMapOrderByWithRelationInputSchema,
+      ])
+      .optional(),
+    cursor: FinAccountLineItemTagMapWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+    distinct: z
+      .union([FinAccountLineItemTagMapScalarFieldEnumSchema, FinAccountLineItemTagMapScalarFieldEnumSchema.array()])
+      .optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapFindFirstOrThrowArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapFindFirstOrThrowArgs> =
+  z
+    .object({
+      select: FinAccountLineItemTagMapSelectSchema.optional(),
+      include: FinAccountLineItemTagMapIncludeSchema.optional(),
+      where: FinAccountLineItemTagMapWhereInputSchema.optional(),
+      orderBy: z
+        .union([
+          FinAccountLineItemTagMapOrderByWithRelationInputSchema.array(),
+          FinAccountLineItemTagMapOrderByWithRelationInputSchema,
+        ])
+        .optional(),
+      cursor: FinAccountLineItemTagMapWhereUniqueInputSchema.optional(),
+      take: z.number().optional(),
+      skip: z.number().optional(),
+      distinct: z
+        .union([FinAccountLineItemTagMapScalarFieldEnumSchema, FinAccountLineItemTagMapScalarFieldEnumSchema.array()])
+        .optional(),
+    })
+    .strict()
+
+export const FinAccountLineItemTagMapFindManyArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapFindManyArgs> = z
+  .object({
+    select: FinAccountLineItemTagMapSelectSchema.optional(),
+    include: FinAccountLineItemTagMapIncludeSchema.optional(),
+    where: FinAccountLineItemTagMapWhereInputSchema.optional(),
+    orderBy: z
+      .union([
+        FinAccountLineItemTagMapOrderByWithRelationInputSchema.array(),
+        FinAccountLineItemTagMapOrderByWithRelationInputSchema,
+      ])
+      .optional(),
+    cursor: FinAccountLineItemTagMapWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+    distinct: z
+      .union([FinAccountLineItemTagMapScalarFieldEnumSchema, FinAccountLineItemTagMapScalarFieldEnumSchema.array()])
+      .optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapAggregateArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapAggregateArgs> = z
+  .object({
+    where: FinAccountLineItemTagMapWhereInputSchema.optional(),
+    orderBy: z
+      .union([
+        FinAccountLineItemTagMapOrderByWithRelationInputSchema.array(),
+        FinAccountLineItemTagMapOrderByWithRelationInputSchema,
+      ])
+      .optional(),
+    cursor: FinAccountLineItemTagMapWhereUniqueInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapGroupByArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapGroupByArgs> = z
+  .object({
+    where: FinAccountLineItemTagMapWhereInputSchema.optional(),
+    orderBy: z
+      .union([
+        FinAccountLineItemTagMapOrderByWithAggregationInputSchema.array(),
+        FinAccountLineItemTagMapOrderByWithAggregationInputSchema,
+      ])
+      .optional(),
+    by: FinAccountLineItemTagMapScalarFieldEnumSchema.array(),
+    having: FinAccountLineItemTagMapScalarWhereWithAggregatesInputSchema.optional(),
+    take: z.number().optional(),
+    skip: z.number().optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapFindUniqueArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapFindUniqueArgs> = z
+  .object({
+    select: FinAccountLineItemTagMapSelectSchema.optional(),
+    include: FinAccountLineItemTagMapIncludeSchema.optional(),
+    where: FinAccountLineItemTagMapWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapFindUniqueOrThrowArgs> =
+  z
+    .object({
+      select: FinAccountLineItemTagMapSelectSchema.optional(),
+      include: FinAccountLineItemTagMapIncludeSchema.optional(),
+      where: FinAccountLineItemTagMapWhereUniqueInputSchema,
+    })
+    .strict()
+
 export const UserCreateArgsSchema: z.ZodType<Prisma.UserCreateArgs> = z
   .object({
     select: UserSelectSchema.optional(),
@@ -19771,57 +22338,6 @@ export const ProductKeyDeleteManyArgsSchema: z.ZodType<Prisma.ProductKeyDeleteMa
   })
   .strict()
 
-export const FinAccountLineItemsCreateArgsSchema: z.ZodType<Prisma.FinAccountLineItemsCreateArgs> = z
-  .object({
-    select: FinAccountLineItemsSelectSchema.optional(),
-    data: z.union([FinAccountLineItemsCreateInputSchema, FinAccountLineItemsUncheckedCreateInputSchema]),
-  })
-  .strict()
-
-export const FinAccountLineItemsUpsertArgsSchema: z.ZodType<Prisma.FinAccountLineItemsUpsertArgs> = z
-  .object({
-    select: FinAccountLineItemsSelectSchema.optional(),
-    where: FinAccountLineItemsWhereUniqueInputSchema,
-    create: z.union([FinAccountLineItemsCreateInputSchema, FinAccountLineItemsUncheckedCreateInputSchema]),
-    update: z.union([FinAccountLineItemsUpdateInputSchema, FinAccountLineItemsUncheckedUpdateInputSchema]),
-  })
-  .strict()
-
-export const FinAccountLineItemsCreateManyArgsSchema: z.ZodType<Prisma.FinAccountLineItemsCreateManyArgs> = z
-  .object({
-    data: z.union([FinAccountLineItemsCreateManyInputSchema, FinAccountLineItemsCreateManyInputSchema.array()]),
-    skipDuplicates: z.boolean().optional(),
-  })
-  .strict()
-
-export const FinAccountLineItemsDeleteArgsSchema: z.ZodType<Prisma.FinAccountLineItemsDeleteArgs> = z
-  .object({
-    select: FinAccountLineItemsSelectSchema.optional(),
-    where: FinAccountLineItemsWhereUniqueInputSchema,
-  })
-  .strict()
-
-export const FinAccountLineItemsUpdateArgsSchema: z.ZodType<Prisma.FinAccountLineItemsUpdateArgs> = z
-  .object({
-    select: FinAccountLineItemsSelectSchema.optional(),
-    data: z.union([FinAccountLineItemsUpdateInputSchema, FinAccountLineItemsUncheckedUpdateInputSchema]),
-    where: FinAccountLineItemsWhereUniqueInputSchema,
-  })
-  .strict()
-
-export const FinAccountLineItemsUpdateManyArgsSchema: z.ZodType<Prisma.FinAccountLineItemsUpdateManyArgs> = z
-  .object({
-    data: z.union([FinAccountLineItemsUpdateManyMutationInputSchema, FinAccountLineItemsUncheckedUpdateManyInputSchema]),
-    where: FinAccountLineItemsWhereInputSchema.optional(),
-  })
-  .strict()
-
-export const FinAccountLineItemsDeleteManyArgsSchema: z.ZodType<Prisma.FinAccountLineItemsDeleteManyArgs> = z
-  .object({
-    where: FinAccountLineItemsWhereInputSchema.optional(),
-  })
-  .strict()
-
 export const FinAccountsCreateArgsSchema: z.ZodType<Prisma.FinAccountsCreateArgs> = z
   .object({
     select: FinAccountsSelectSchema.optional(),
@@ -19870,6 +22386,61 @@ export const FinAccountsUpdateManyArgsSchema: z.ZodType<Prisma.FinAccountsUpdate
 export const FinAccountsDeleteManyArgsSchema: z.ZodType<Prisma.FinAccountsDeleteManyArgs> = z
   .object({
     where: FinAccountsWhereInputSchema.optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemsCreateArgsSchema: z.ZodType<Prisma.FinAccountLineItemsCreateArgs> = z
+  .object({
+    select: FinAccountLineItemsSelectSchema.optional(),
+    include: FinAccountLineItemsIncludeSchema.optional(),
+    data: z.union([FinAccountLineItemsCreateInputSchema, FinAccountLineItemsUncheckedCreateInputSchema]),
+  })
+  .strict()
+
+export const FinAccountLineItemsUpsertArgsSchema: z.ZodType<Prisma.FinAccountLineItemsUpsertArgs> = z
+  .object({
+    select: FinAccountLineItemsSelectSchema.optional(),
+    include: FinAccountLineItemsIncludeSchema.optional(),
+    where: FinAccountLineItemsWhereUniqueInputSchema,
+    create: z.union([FinAccountLineItemsCreateInputSchema, FinAccountLineItemsUncheckedCreateInputSchema]),
+    update: z.union([FinAccountLineItemsUpdateInputSchema, FinAccountLineItemsUncheckedUpdateInputSchema]),
+  })
+  .strict()
+
+export const FinAccountLineItemsCreateManyArgsSchema: z.ZodType<Prisma.FinAccountLineItemsCreateManyArgs> = z
+  .object({
+    data: z.union([FinAccountLineItemsCreateManyInputSchema, FinAccountLineItemsCreateManyInputSchema.array()]),
+    skipDuplicates: z.boolean().optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemsDeleteArgsSchema: z.ZodType<Prisma.FinAccountLineItemsDeleteArgs> = z
+  .object({
+    select: FinAccountLineItemsSelectSchema.optional(),
+    include: FinAccountLineItemsIncludeSchema.optional(),
+    where: FinAccountLineItemsWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const FinAccountLineItemsUpdateArgsSchema: z.ZodType<Prisma.FinAccountLineItemsUpdateArgs> = z
+  .object({
+    select: FinAccountLineItemsSelectSchema.optional(),
+    include: FinAccountLineItemsIncludeSchema.optional(),
+    data: z.union([FinAccountLineItemsUpdateInputSchema, FinAccountLineItemsUncheckedUpdateInputSchema]),
+    where: FinAccountLineItemsWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const FinAccountLineItemsUpdateManyArgsSchema: z.ZodType<Prisma.FinAccountLineItemsUpdateManyArgs> = z
+  .object({
+    data: z.union([FinAccountLineItemsUpdateManyMutationInputSchema, FinAccountLineItemsUncheckedUpdateManyInputSchema]),
+    where: FinAccountLineItemsWhereInputSchema.optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemsDeleteManyArgsSchema: z.ZodType<Prisma.FinAccountLineItemsDeleteManyArgs> = z
+  .object({
+    where: FinAccountLineItemsWhereInputSchema.optional(),
   })
   .strict()
 
@@ -20650,5 +23221,169 @@ export const VXCVLinksUpdateManyArgsSchema: z.ZodType<Prisma.VXCVLinksUpdateMany
 export const VXCVLinksDeleteManyArgsSchema: z.ZodType<Prisma.VXCVLinksDeleteManyArgs> = z
   .object({
     where: VXCVLinksWhereInputSchema.optional(),
+  })
+  .strict()
+
+export const AccountLineItemTagCreateArgsSchema: z.ZodType<Prisma.AccountLineItemTagCreateArgs> = z
+  .object({
+    select: AccountLineItemTagSelectSchema.optional(),
+    data: z.union([AccountLineItemTagCreateInputSchema, AccountLineItemTagUncheckedCreateInputSchema]),
+  })
+  .strict()
+
+export const AccountLineItemTagUpsertArgsSchema: z.ZodType<Prisma.AccountLineItemTagUpsertArgs> = z
+  .object({
+    select: AccountLineItemTagSelectSchema.optional(),
+    where: AccountLineItemTagWhereUniqueInputSchema,
+    create: z.union([AccountLineItemTagCreateInputSchema, AccountLineItemTagUncheckedCreateInputSchema]),
+    update: z.union([AccountLineItemTagUpdateInputSchema, AccountLineItemTagUncheckedUpdateInputSchema]),
+  })
+  .strict()
+
+export const AccountLineItemTagCreateManyArgsSchema: z.ZodType<Prisma.AccountLineItemTagCreateManyArgs> = z
+  .object({
+    data: z.union([AccountLineItemTagCreateManyInputSchema, AccountLineItemTagCreateManyInputSchema.array()]),
+    skipDuplicates: z.boolean().optional(),
+  })
+  .strict()
+
+export const AccountLineItemTagDeleteArgsSchema: z.ZodType<Prisma.AccountLineItemTagDeleteArgs> = z
+  .object({
+    select: AccountLineItemTagSelectSchema.optional(),
+    where: AccountLineItemTagWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const AccountLineItemTagUpdateArgsSchema: z.ZodType<Prisma.AccountLineItemTagUpdateArgs> = z
+  .object({
+    select: AccountLineItemTagSelectSchema.optional(),
+    data: z.union([AccountLineItemTagUpdateInputSchema, AccountLineItemTagUncheckedUpdateInputSchema]),
+    where: AccountLineItemTagWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const AccountLineItemTagUpdateManyArgsSchema: z.ZodType<Prisma.AccountLineItemTagUpdateManyArgs> = z
+  .object({
+    data: z.union([AccountLineItemTagUpdateManyMutationInputSchema, AccountLineItemTagUncheckedUpdateManyInputSchema]),
+    where: AccountLineItemTagWhereInputSchema.optional(),
+  })
+  .strict()
+
+export const AccountLineItemTagDeleteManyArgsSchema: z.ZodType<Prisma.AccountLineItemTagDeleteManyArgs> = z
+  .object({
+    where: AccountLineItemTagWhereInputSchema.optional(),
+  })
+  .strict()
+
+export const FinAccountTagCreateArgsSchema: z.ZodType<Prisma.FinAccountTagCreateArgs> = z
+  .object({
+    select: FinAccountTagSelectSchema.optional(),
+    include: FinAccountTagIncludeSchema.optional(),
+    data: z.union([FinAccountTagCreateInputSchema, FinAccountTagUncheckedCreateInputSchema]),
+  })
+  .strict()
+
+export const FinAccountTagUpsertArgsSchema: z.ZodType<Prisma.FinAccountTagUpsertArgs> = z
+  .object({
+    select: FinAccountTagSelectSchema.optional(),
+    include: FinAccountTagIncludeSchema.optional(),
+    where: FinAccountTagWhereUniqueInputSchema,
+    create: z.union([FinAccountTagCreateInputSchema, FinAccountTagUncheckedCreateInputSchema]),
+    update: z.union([FinAccountTagUpdateInputSchema, FinAccountTagUncheckedUpdateInputSchema]),
+  })
+  .strict()
+
+export const FinAccountTagCreateManyArgsSchema: z.ZodType<Prisma.FinAccountTagCreateManyArgs> = z
+  .object({
+    data: z.union([FinAccountTagCreateManyInputSchema, FinAccountTagCreateManyInputSchema.array()]),
+    skipDuplicates: z.boolean().optional(),
+  })
+  .strict()
+
+export const FinAccountTagDeleteArgsSchema: z.ZodType<Prisma.FinAccountTagDeleteArgs> = z
+  .object({
+    select: FinAccountTagSelectSchema.optional(),
+    include: FinAccountTagIncludeSchema.optional(),
+    where: FinAccountTagWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const FinAccountTagUpdateArgsSchema: z.ZodType<Prisma.FinAccountTagUpdateArgs> = z
+  .object({
+    select: FinAccountTagSelectSchema.optional(),
+    include: FinAccountTagIncludeSchema.optional(),
+    data: z.union([FinAccountTagUpdateInputSchema, FinAccountTagUncheckedUpdateInputSchema]),
+    where: FinAccountTagWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const FinAccountTagUpdateManyArgsSchema: z.ZodType<Prisma.FinAccountTagUpdateManyArgs> = z
+  .object({
+    data: z.union([FinAccountTagUpdateManyMutationInputSchema, FinAccountTagUncheckedUpdateManyInputSchema]),
+    where: FinAccountTagWhereInputSchema.optional(),
+  })
+  .strict()
+
+export const FinAccountTagDeleteManyArgsSchema: z.ZodType<Prisma.FinAccountTagDeleteManyArgs> = z
+  .object({
+    where: FinAccountTagWhereInputSchema.optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapCreateArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCreateArgs> = z
+  .object({
+    select: FinAccountLineItemTagMapSelectSchema.optional(),
+    include: FinAccountLineItemTagMapIncludeSchema.optional(),
+    data: z.union([FinAccountLineItemTagMapCreateInputSchema, FinAccountLineItemTagMapUncheckedCreateInputSchema]),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapUpsertArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpsertArgs> = z
+  .object({
+    select: FinAccountLineItemTagMapSelectSchema.optional(),
+    include: FinAccountLineItemTagMapIncludeSchema.optional(),
+    where: FinAccountLineItemTagMapWhereUniqueInputSchema,
+    create: z.union([FinAccountLineItemTagMapCreateInputSchema, FinAccountLineItemTagMapUncheckedCreateInputSchema]),
+    update: z.union([FinAccountLineItemTagMapUpdateInputSchema, FinAccountLineItemTagMapUncheckedUpdateInputSchema]),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapCreateManyArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapCreateManyArgs> = z
+  .object({
+    data: z.union([FinAccountLineItemTagMapCreateManyInputSchema, FinAccountLineItemTagMapCreateManyInputSchema.array()]),
+    skipDuplicates: z.boolean().optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapDeleteArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapDeleteArgs> = z
+  .object({
+    select: FinAccountLineItemTagMapSelectSchema.optional(),
+    include: FinAccountLineItemTagMapIncludeSchema.optional(),
+    where: FinAccountLineItemTagMapWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapUpdateArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpdateArgs> = z
+  .object({
+    select: FinAccountLineItemTagMapSelectSchema.optional(),
+    include: FinAccountLineItemTagMapIncludeSchema.optional(),
+    data: z.union([FinAccountLineItemTagMapUpdateInputSchema, FinAccountLineItemTagMapUncheckedUpdateInputSchema]),
+    where: FinAccountLineItemTagMapWhereUniqueInputSchema,
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapUpdateManyArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapUpdateManyArgs> = z
+  .object({
+    data: z.union([
+      FinAccountLineItemTagMapUpdateManyMutationInputSchema,
+      FinAccountLineItemTagMapUncheckedUpdateManyInputSchema,
+    ]),
+    where: FinAccountLineItemTagMapWhereInputSchema.optional(),
+  })
+  .strict()
+
+export const FinAccountLineItemTagMapDeleteManyArgsSchema: z.ZodType<Prisma.FinAccountLineItemTagMapDeleteManyArgs> = z
+  .object({
+    where: FinAccountLineItemTagMapWhereInputSchema.optional(),
   })
   .strict()

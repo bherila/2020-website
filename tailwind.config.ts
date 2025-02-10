@@ -1,5 +1,7 @@
 import type { Config } from "tailwindcss";
 
+import colors from 'tailwindcss/colors';
+
 export default {
     darkMode: ["class"],
     content: [
@@ -10,6 +12,25 @@ export default {
   theme: {
   	extend: {
   		colors: {
+			red: colors.red,
+			orange: colors.orange,
+			amber: colors.amber,
+			yellow: colors.yellow,
+			lime: colors.lime,
+			green: colors.green,
+			emerald: colors.emerald,
+			teal: colors.teal,
+			cyan: colors.cyan,
+			sky: colors.sky,
+			blue: colors.blue,
+			indigo: colors.indigo,
+			violet: colors.violet,
+			purple: colors.purple,
+			fuchsia: colors.fuchsia,
+			pink: colors.pink,
+			rose: colors.rose,
+			slate: colors.slate,
+			gray: colors.gray,
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -49,7 +70,7 @@ export default {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
-  			}
+  			},
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

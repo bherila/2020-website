@@ -10,6 +10,7 @@ import requireSession from '@/server_lib/requireSession'
 import currency from 'currency.js'
 import EditBalanceDisplay from './EditBalanceDisplay'
 import { formatDistance } from 'date-fns'
+import { Button } from '@/components/ui/button'
 
 export default async function Page() {
   const { uid } = await requireSession()
@@ -89,7 +90,12 @@ export default async function Page() {
 
   return (
     <Container>
-      <MainTitle>Accounting</MainTitle>
+      <div className="flex justify-between items-center">
+        <MainTitle>Accounting</MainTitle>
+        <Button asChild>
+          <Link href="/finance/tags">Manage Tags</Link>
+        </Button>
+      </div>
       <div className="mb-8">
         <StackedBalanceChart
           data={chartDataArray}
@@ -105,10 +111,12 @@ export default async function Page() {
             <TableHeader>
               <TableRow>
                 <TableHead>Account Name</TableHead>
-                <TableHead className="text-right" style={{ textAlign: 'right', width: '200px' }}>
+                <TableHead className="text-right" style={{ textAlign: 'right', width: '150px' }}>
                   Last Balance
                 </TableHead>
-                <TableHead className="text-right whitespace-nowrap w-0">Last update</TableHead>
+                <TableHead className="text-right whitespace-nowrap w-0" style={{ width: '150px' }}>
+                  Last update
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -131,8 +139,12 @@ export default async function Page() {
             </TableBody>
             <TableFooter>
               <TableRow>
-                <TableCell><strong>Total Assets</strong></TableCell>
-                <TableCell className="text-right"><strong>{assetTotal.format()}</strong></TableCell>
+                <TableCell>
+                  <strong>Total Assets</strong>
+                </TableCell>
+                <TableCell className="text-right">
+                  <strong>{assetTotal.format()}</strong>
+                </TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableFooter>
@@ -143,10 +155,12 @@ export default async function Page() {
             <TableHeader>
               <TableRow>
                 <TableHead>Account Name</TableHead>
-                <TableHead className="text-right" style={{ textAlign: 'right', width: '200px' }}>
+                <TableHead className="text-right" style={{ textAlign: 'right', width: '150px' }}>
                   Last Balance
                 </TableHead>
-                <TableHead className="text-right whitespace-nowrap w-0">Last update</TableHead>
+                <TableHead className="text-right whitespace-nowrap w-0" style={{ width: '150px' }}>
+                  Last update
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -169,8 +183,12 @@ export default async function Page() {
             </TableBody>
             <TableFooter>
               <TableRow>
-                <TableCell><strong>Total Liabilities</strong></TableCell>
-                <TableCell className="text-right"><strong>{liabilityTotal.format()}</strong></TableCell>
+                <TableCell>
+                  <strong>Total Liabilities</strong>
+                </TableCell>
+                <TableCell className="text-right">
+                  <strong>{liabilityTotal.format()}</strong>
+                </TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableFooter>
@@ -181,10 +199,12 @@ export default async function Page() {
             <TableHeader>
               <TableRow>
                 <TableHead>Account Name</TableHead>
-                <TableHead className="text-right" style={{ textAlign: 'right', width: '200px' }}>
+                <TableHead className="text-right" style={{ textAlign: 'right', width: '150px' }}>
                   Last Balance
                 </TableHead>
-                <TableHead className="text-right whitespace-nowrap w-0">Last update</TableHead>
+                <TableHead className="text-right whitespace-nowrap w-0" style={{ width: '150px' }}>
+                  Last update
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -207,8 +227,12 @@ export default async function Page() {
             </TableBody>
             <TableFooter>
               <TableRow>
-                <TableCell><strong>Total Retirement</strong></TableCell>
-                <TableCell className="text-right"><strong>{retirementTotal.format()}</strong></TableCell>
+                <TableCell>
+                  <strong>Total Retirement</strong>
+                </TableCell>
+                <TableCell className="text-right">
+                  <strong>{retirementTotal.format()}</strong>
+                </TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableFooter>

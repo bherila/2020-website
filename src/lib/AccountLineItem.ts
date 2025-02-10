@@ -3,6 +3,14 @@ import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 dayjs.extend(customParseFormat)
 
+// Schema for a tag
+export const AccountLineItemTagSchema = z.object({
+  tag_id: z.number().optional(),
+  tag_userid: z.string(),
+  tag_color: z.string().max(20),
+  tag_label: z.string().max(50),
+})
+
 // Schema validation for the account_line_items table
 export const AccountLineItemSchema = z.object({
   t_id: z.number().optional(),
@@ -30,6 +38,8 @@ export const AccountLineItemSchema = z.object({
   t_interest_rate: z.string().max(20).nullable().optional(),
   t_harvested_amount: z.string().optional().nullable(),
   parent_t_id: z.number().nullable().optional(),
+  tags: z.array(AccountLineItemTagSchema).optional(),
 })
 
+export type AccountLineItemTag = z.infer<typeof AccountLineItemTagSchema>
 export type AccountLineItem = z.infer<typeof AccountLineItemSchema>
