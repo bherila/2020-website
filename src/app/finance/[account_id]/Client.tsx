@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { fetchWrapper } from '@/lib/fetchWrapper'
 import TransactionsTable from './TransactionsTable'
 import { AccountLineItem } from '@/lib/AccountLineItem'
@@ -10,6 +10,7 @@ import Link from 'next/link'
 export default function AccountClient({ id }: { id: number }) {
   const [data, setData] = useState<AccountLineItem[] | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [fetchKey, setFetchKey] = useState(0)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,7 +25,7 @@ export default function AccountClient({ id }: { id: number }) {
       }
     }
     fetchData()
-  }, [id])
+  }, [id, fetchKey])
 
   const handleDeleteTransaction = async (t_id: string) => {
     try {
@@ -63,5 +64,12 @@ export default function AccountClient({ id }: { id: number }) {
     )
   }
 
-  return <TransactionsTable enableTagging data={data} onDeleteTransaction={handleDeleteTransaction} />
+  return (
+    <TransactionsTable
+      enableTagging
+      data={data}
+      onDeleteTransaction={handleDeleteTransaction}
+      refreshFn={() => setFetchKey(fetchKey + 1)}
+    />
+  )
 }

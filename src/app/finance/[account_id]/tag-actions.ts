@@ -6,7 +6,7 @@ import requireSession from '@/server_lib/requireSession'
 
 // Zod schema for tag application
 const ApplyTagSchema = z.object({
-  tag_id: z.number().int().positive('Invalid tag ID'),
+  tag_id: z.coerce.number().int().positive('Invalid tag ID'),
   transaction_ids: z.string().transform((val) =>
     val
       .split(',')
@@ -36,15 +36,18 @@ export async function applyTagToTransactions(formData: FormData) {
   const { uid } = await requireSession()
 
   const result = ApplyTagSchema.safeParse({
-    tag_id: Number(formData.get('tag_id')),
+    tag_id: formData.get('tag_id'),
     transaction_ids: formData.get('transaction_ids')?.toString() || '',
   })
+  console.info('Applying tag to transactions:', result)
 
   if (!result.success) {
-    return {
+    const res = {
       error: result.error.errors[0].message,
       success: false,
     }
+    console.error(res)
+    return res
   }
 
   try {

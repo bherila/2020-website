@@ -33,3 +33,8 @@
   margin-top: 1px;
   padding-top: 10px;
 }
+
+.tagsCol {
+  text-align: left;
+  width: 125px;
+}

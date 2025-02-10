@@ -3,21 +3,22 @@ import { useState, useMemo, useEffect } from 'react'
 import currency from 'currency.js'
 import { AccountLineItem } from '@/lib/AccountLineItem'
 import { getUserTags, applyTagToTransactions } from './tag-actions'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 
 import './TransactionsTable.css'
 import { Table } from '@/components/ui/table'
 import { ClearFilterButton } from '@/lib/ClearFilterButton'
+import { TagApplyButton } from './TagApplyButton'
 
 interface Props {
   data: AccountLineItem[]
   onDeleteTransaction?: (transactionId: string) => Promise<void>
   enableTagging?: boolean
+  refreshFn?: () => void
 }
 
-export default function TransactionsTable({ data, onDeleteTransaction, enableTagging = false }: Props) {
+export default function TransactionsTable({ data, onDeleteTransaction, enableTagging = false, refreshFn }: Props) {
   const [sortField, setSortField] = useState<keyof AccountLineItem>('t_date')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [descriptionFilter, setDescriptionFilter] = useState('')
@@ -29,6 +30,7 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
   const [optTypeFilter, setOptTypeFilter] = useState('')
   const [dateFilter, setDateFilter] = useState('')
   const [memoFilter, setMemoFilter] = useState('')
+  const [tagFilter, setTagFilter] = useState('')
   const [availableTags, setAvailableTags] = useState<
     {
       tag_id: number
@@ -50,13 +52,16 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
       })
   }, [enableTagging])
 
-  const handleApplyTag = async (tagId: number) => {
-    const transactionIds = sortedData.join(',')
+  const handleApplyTag = async (tagId: number, tagLabel: string) => {
+    const transactionIds = sortedData.map((r) => r.t_id).join(',')
     const formData = new FormData()
     formData.append('tag_id', tagId.toString())
     formData.append('transaction_ids', transactionIds)
     try {
       await applyTagToTransactions(formData)
+      if (typeof refreshFn === 'function') {
+        refreshFn()
+      }
     } catch (error) {
       console.error('Failed to apply tag:', error)
     }
@@ -65,7 +70,19 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
   const renderTransactionTags = (row: AccountLineItem) => (
     <div className="flex gap-1">
       {row.tags?.map((tag) => (
-        <Badge key={tag.tag_id} variant="outline" className={`bg-${tag.tag_color}-200 text-${tag.tag_color}-800`}>
+        <Badge
+          key={tag.tag_id}
+          variant="outline"
+          className={`bg-${tag.tag_color}-200 text-${tag.tag_color}-800 cursor-pointer hover:opacity-80`}
+          onClick={(e) => {
+            e.stopPropagation()
+            if (tagFilter === tag.tag_label) {
+              setTagFilter('')
+            } else {
+              setTagFilter(tag.tag_label)
+            }
+          }}
+        >
           {tag.tag_label}
         </Badge>
       ))}
@@ -129,6 +146,10 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
     return data.every((row) => row.opt_strike == null || Number(row.opt_strike) === 0)
   }, [data])
 
+  const isTagsColumnEmpty = useMemo(() => {
+    return data.every((row) => !row.tags || row.tags.length === 0)
+  }, [data])
+
   const filteredData = data.filter(
     (row) =>
       (!dateFilter || row.t_date?.includes(dateFilter)) &&
@@ -139,7 +160,16 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
       (!cusipFilter || row.t_cusip?.toLowerCase().includes(cusipFilter.toLowerCase())) &&
       (!optExpirationFilter || row.opt_expiration?.includes(optExpirationFilter.toLowerCase())) &&
       (!optTypeFilter || row.opt_type?.toLowerCase().includes(optTypeFilter.toLowerCase())) &&
-      (!memoFilter || (row.t_comment || '-').toLowerCase().includes(memoFilter.toLowerCase())),
+      (!memoFilter || (row.t_comment || '-').toLowerCase().includes(memoFilter.toLowerCase())) &&
+      (!tagFilter ||
+        (row.tags &&
+          row.tags.some((tag) =>
+            tagFilter
+              .toLowerCase()
+              .split(',')
+              .map((t) => t.trim())
+              .some((filterPart) => tag.tag_label.toLowerCase().includes(filterPart)),
+          ))),
   )
 
   const sortedData = [...filteredData].sort((a, b) => {
@@ -169,6 +199,7 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
             <th className="clickable descriptionCol" onClick={() => handleSort('t_description')}>
               Description {sortField === 't_description' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
+            {!isTagsColumnEmpty && <th>Tags</th>}
             {!isQtyColumnEmpty && (
               <th className="clickable" onClick={() => handleSort('t_qty')}>
                 Qty {sortField === 't_qty' && (sortDirection === 'asc' ? '↑' : '↓')}
@@ -263,6 +294,17 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
                 <ClearFilterButton onClick={() => setDescriptionFilter('')} ariaLabel="Clear description filter" />
               )}
             </th>
+            {!isTagsColumnEmpty && (
+              <th className="position-relative">
+                <input
+                  type="text"
+                  placeholder="Filter tags..."
+                  value={tagFilter}
+                  onChange={(e) => setTagFilter(e.target.value)}
+                />
+                {tagFilter && <ClearFilterButton onClick={() => setTagFilter('')} ariaLabel="Clear tag filter" />}
+              </th>
+            )}
             {!isQtyColumnEmpty && <th></th>}
             {!isPriceColumnEmpty && <th></th>}
             {!isCommissionColumnEmpty && <th></th>}
@@ -386,6 +428,7 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
               >
                 {row.t_description}
               </td>
+              {!isTagsColumnEmpty && <td className="tagsCol">{renderTransactionTags(row)}</td>}
               {!isQtyColumnEmpty && <td className={'numericCol'}>{row.t_qty != null ? row.t_qty.toLocaleString() : ''}</td>}
               {!isPriceColumnEmpty && (
                 <td className={'numericCol'}>
@@ -508,6 +551,7 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
             <td className="totalCell">
               <strong>Total</strong>
             </td>
+            <td className="totalCell"></td>
             {!isTypeColumnEmpty && <td className="totalCell"></td>}
             {!isQtyColumnEmpty && <td className="totalCell"></td>}
             {!isPriceColumnEmpty && <td className="totalCell"></td>}
@@ -536,16 +580,14 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
               <Spinner size="small" />
             ) : (
               availableTags.map((tag) => (
-                <Button
+                <TagApplyButton
                   key={tag.tag_id}
-                  variant="outline"
-                  size="sm"
+                  tagId={tag.tag_id}
+                  tagLabel={tag.tag_label}
+                  tagColor={tag.tag_color}
                   disabled={sortedData.length === 0}
-                  onClick={() => handleApplyTag(tag.tag_id)}
-                  className={`bg-${tag.tag_color}-200 text-${tag.tag_color}-800`}
-                >
-                  {tag.tag_label}
-                </Button>
+                  onApplyTag={handleApplyTag}
+                />
               ))
             )}
           </div>
