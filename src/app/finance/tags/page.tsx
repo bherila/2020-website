@@ -12,6 +12,14 @@ import { createTag } from './actions'
 import { revalidatePath } from 'next/cache'
 import { TAG_COLORS } from './tagColors'
 import { Badge } from '@/components/ui/badge'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from '@/components/ui/breadcrumb'
 
 export default async function TagsPage() {
   const { uid } = await requireSession()
@@ -36,6 +44,15 @@ export default async function TagsPage() {
 
   return (
     <Container>
+      <Breadcrumb className="pt-8">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/finance">Financial Accounts</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbPage>Manage Tags</BreadcrumbPage>
+        </BreadcrumbList>
+      </Breadcrumb>
       <div className="flex items-center justify-between mb-8">
         <MainTitle>Manage Tags</MainTitle>
       </div>
