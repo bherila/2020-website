@@ -76,5 +76,3 @@ function DelimiterSelectionRow({ delimiter, setDelimiter }: { delimiter: string;
     </div>
   )
 }
-
-export { SetDocumentButton }

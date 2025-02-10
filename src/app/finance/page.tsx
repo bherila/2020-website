@@ -1,6 +1,6 @@
 import 'server-only'
 import { prisma } from '@/server_lib/prisma'
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table'
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from '@/components/ui/table'
 import StackedBalanceChart from '@/components/charts/StackedBalanceChart'
 import Container from '@/components/container'
 import Link from '@/components/link'
@@ -27,6 +27,17 @@ export default async function Page() {
   const assetAccounts = accounts.filter((account) => !account.acct_is_debt && !account.acct_is_retirement)
   const liabilityAccounts = accounts.filter((account) => account.acct_is_debt)
   const retirementAccounts = accounts.filter((account) => account.acct_is_retirement)
+
+  // Calculate totals for each category
+  const calculateCategoryTotal = (categoryAccounts: typeof accounts) => {
+    return categoryAccounts.reduce((total, account) => {
+      return total.add(currency(account.acct_last_balance || 0))
+    }, currency(0))
+  }
+
+  const assetTotal = calculateCategoryTotal(assetAccounts)
+  const liabilityTotal = calculateCategoryTotal(liabilityAccounts)
+  const retirementTotal = calculateCategoryTotal(retirementAccounts)
 
   // Get balance history for all accounts
   const balanceHistory = await prisma.finAccountBalanceSnapshot.findMany({
@@ -118,6 +129,13 @@ export default async function Page() {
                 </tr>
               ))}
             </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell><strong>Total Assets</strong></TableCell>
+                <TableCell className="text-right"><strong>{assetTotal.format()}</strong></TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableFooter>
           </Table>
 
           <h2 className="text-xl font-semibold mt-8">Liabilities</h2>
@@ -149,6 +167,13 @@ export default async function Page() {
                 </tr>
               ))}
             </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell><strong>Total Liabilities</strong></TableCell>
+                <TableCell className="text-right"><strong>{liabilityTotal.format()}</strong></TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableFooter>
           </Table>
 
           <h2 className="text-xl font-semibold mt-8">Retirement</h2>
@@ -180,6 +205,13 @@ export default async function Page() {
                 </tr>
               ))}
             </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell><strong>Total Retirement</strong></TableCell>
+                <TableCell className="text-right"><strong>{retirementTotal.format()}</strong></TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableFooter>
           </Table>
         </div>
         <NewAccountForm />
