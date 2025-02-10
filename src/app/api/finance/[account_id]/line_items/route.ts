@@ -121,7 +121,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ac
             // Upsert tag
             const createdTag = await prisma.finAccountTag.upsert({
               where: {
-                unique_tag_per_user: {
+                tag_userid_tag_label: {
                   tag_userid: uid,
                   tag_label: tag.tag_label,
                 },

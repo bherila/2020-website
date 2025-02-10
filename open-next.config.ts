@@ -1,26 +1,26 @@
-import type { OpenNextConfig } from "@opennextjs/aws/types/open-next";
-import cache from "@opennextjs/cloudflare/kvCache";
- 
+import type { OpenNextConfig } from '@opennextjs/aws/types/open-next'
+import cache from '@opennextjs/cloudflare/kvCache'
+
 const config: OpenNextConfig = {
   default: {
     override: {
-      wrapper: "cloudflare-node",
-      converter: "edge",
+      wrapper: 'cloudflare-node',
+      converter: 'edge',
       // Set `incrementalCache` to "dummy" to disable KV cache
       incrementalCache: async () => cache,
-      tagCache: "dummy",
-      queue: "dummy",
+      tagCache: 'dummy',
+      queue: 'dummy',
     },
   },
- 
+
   middleware: {
     external: true,
     override: {
-      wrapper: "cloudflare-edge",
-      converter: "edge",
-      proxyExternalRequest: "fetch",
+      wrapper: 'cloudflare-edge',
+      converter: 'edge',
+      proxyExternalRequest: 'fetch',
     },
   },
-};
- 
-export default config;
+}
+
+export default config

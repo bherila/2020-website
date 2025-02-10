@@ -71,7 +71,7 @@ export default async function TagsPage() {
                 <TableRow key={tag.tag_id}>
                   <TableCell>{tag.tag_label}</TableCell>
                   <TableCell>
-                    <Badge className={`bg-${tag.tag_color}-200 text-white`}>{tag.tag_color}</Badge>
+                    <div className={`bg-${tag.tag_color}-200 text-white`}>{tag.tag_color}</div>
                   </TableCell>
                   <TableCell>
                     <Button variant="destructive" size="sm">

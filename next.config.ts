@@ -37,7 +37,8 @@ export default (_phase: string): NextConfig => {
       },
       {
         source: '/primerib25',
-        destination: 'https://bherilanet-my.sharepoint.com/:x:/g/personal/ben_herila_net/Ee3J5a3QS8hJq2w7976yr4YB5A-4oYAd3NqxBNuiwXL1Zg?e=JFVZwc',
+        destination:
+          'https://bherilanet-my.sharepoint.com/:x:/g/personal/ben_herila_net/Ee3J5a3QS8hJq2w7976yr4YB5A-4oYAd3NqxBNuiwXL1Zg?e=JFVZwc',
         permanent: false,
       },
     ],

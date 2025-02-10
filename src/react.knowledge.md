@@ -14,6 +14,8 @@
 - Use Tailwind utility classes for styling
 - Spacing scale matches Bootstrap (1 = 0.25rem)
 - Color names match Bootstrap: primary, secondary, success, danger, warning, info, light, dark
+- Dynamic color classes must be added to safelist in tailwind.config.ts
+- Default Tailwind colors must be spread from modernColors (excluding deprecated colors)
 - Required plugins:
   - @tailwindcss/typography for prose styling
   - tailwindcss-animate for animations
@@ -85,4 +87,3 @@ const form = useForm({
   - Include breadcrumbs for hierarchy
   - Use tabs for related views
   - Keep consistent placement across similar pages
-
