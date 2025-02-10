@@ -6,6 +6,14 @@
 - Auto generated Prisma zod types, are in @/lib/prisma-generated-zod.
 - Also refer to schema.prisma for Prisma model definitions.
 
+## Environment Variable Loading
+- When running Prisma commands, always load environment variables from .env.local first
+- Use this command to ensure proper environment configuration:
+  ```bash
+  dotenv -e .env.local -- yarn prisma generate
+  ```
+- This ensures that database connection strings and other sensitive configurations are correctly loaded
+
 ## Schema Design
 - Primary keys (id) are the preferred way to identify records
 - UTF8MB4 should be the standard character set for text fields

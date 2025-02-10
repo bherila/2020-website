@@ -87,3 +87,12 @@ const form = useForm({
   - Include breadcrumbs for hierarchy
   - Use tabs for related views
   - Keep consistent placement across similar pages
+
+## Data Management Best Practices
+
+### Soft Deletion
+- Prefer soft deletion over hard deletion for most database records
+- Implement soft deletion by adding a `when_deleted` timestamp column
+- Filter out soft-deleted records in queries by checking `when_deleted` is null
+- Allows for potential record recovery and maintains data integrity
+- Useful for maintaining referential relationships and audit trails

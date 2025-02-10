@@ -63,5 +63,5 @@ export default function AccountClient({ id }: { id: number }) {
     )
   }
 
-  return <TransactionsTable data={data} onDeleteTransaction={handleDeleteTransaction} />
+  return <TransactionsTable enableTagging data={data} onDeleteTransaction={handleDeleteTransaction} />
 }
