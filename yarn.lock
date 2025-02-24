@@ -4048,10 +4048,10 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
-better-auth@^1.1.10:
-  version "1.1.14"
-  resolved "https://registry.yarnpkg.com/better-auth/-/better-auth-1.1.14.tgz#0378376706ae8c874ff82ee952fb18f59fca8cfa"
-  integrity sha512-DnGHPxRLIQFGyqvPPXbudiD3sI+04BU0hiNnnoQaXg//JZSxdfBs/YbNx3ccVWz6aFt/XL6WtrxXDyUPCC1qrQ==
+better-auth@^1.1.20:
+  version "1.1.20"
+  resolved "https://registry.yarnpkg.com/better-auth/-/better-auth-1.1.20.tgz#39b6811ae0e90dbffc7656f6a2645127fccfb091"
+  integrity sha512-aAcBGVVQJepGe9FY0/QIPBPqWwXIjahPq8zMgFnWOTyee6/vaE8aCRVV8hOp2DEABhKypHSUSK5CUPEUgL9fdQ==
   dependencies:
     "@better-auth/utils" "0.2.3"
     "@better-fetch/fetch" "1.1.12"
