@@ -25,7 +25,7 @@ export default async function MaintenancePage({ params }: { params: Promise<{ ac
       <AccountNavigation accountId={accountId} activeTab="maintenance" accountName={account.acct_name} />
       <Container>
         <MainTitle>Account Maintenance</MainTitle>
-        <MaintenanceClient accountId={accountId} accountName={account.acct_name} />
+        <MaintenanceClient accountId={accountId} accountName={account.acct_name} whenClosed={account.when_closed} />
         <EditAccountFlags
           accountId={accountId.toString()}
           isDebt={account.acct_is_debt}

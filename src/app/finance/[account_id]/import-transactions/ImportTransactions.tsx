@@ -149,6 +149,7 @@ function parseData(text: string): { data: AccountLineItem[] | null; parseError: 
   try {
     const lines = splitDelimitedText(text)
     let dateColIndex: number | null = null
+    let postDateColIndex: number | null = null
     let timeColIndex: number | null = null
     let descriptionColIndex: number | null = null
     let amountColIndex: number | null = null
@@ -167,6 +168,7 @@ function parseData(text: string): { data: AccountLineItem[] | null; parseError: 
         return null
       }
       dateColIndex = getColumnIndex('Date', 'Transaction Date')
+      postDateColIndex = getColumnIndex('Post Date', 'As of', 'As of Date', 'Settlement Date', 'Date Settled', 'Settled')
       timeColIndex = getColumnIndex('Time')
       descriptionColIndex = getColumnIndex('Description', 'Desc')
       amountColIndex = getColumnIndex('Amount', 'Amt')

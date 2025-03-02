@@ -98,6 +98,15 @@ const form = useForm({
   - Extract reusable filter/sort components to lib/
   - Follow TransactionsTable.tsx as reference implementation
 
+- Maintenance pages should support:
+  - Renaming resources
+  - Changing resource status (e.g., closed/active)
+  - Providing optional metadata like closure dates
+- Use checkboxes for boolean status changes
+- Use calendar/date pickers for optional date fields
+- Provide clear save buttons when changes are pending
+- Reload page or update UI state after successful save
+
 ## Deprecated
 
 - Removed custom ThemeProvider component in favor of next-themes

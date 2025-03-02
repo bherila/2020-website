@@ -11,6 +11,16 @@
 - Deleted records have `when_deleted` timestamp
 - Access deleted records via `includeDeleted` query parameter
 - Never physically delete finance records
+- Accounts can be marked as closed with an optional closure date
+- Closing an account does not delete the account or its transactions
+- Closed accounts can be reopened by clearing the closure date
+- Closure date is stored in the `when_closed` field
+- Accounts with a non-null `when_closed` are considered closed
+- Closed accounts are displayed at the bottom of their respective sections
+- Closed accounts are visually indicated with a "Closed" badge
+- Closed accounts have reduced opacity
+- Closed accounts are excluded from the balance chart
+- Closed accounts remain clickable and can be viewed in detail
 
 ## Account Types
 - Accounts can be categorized with multiple boolean flags:

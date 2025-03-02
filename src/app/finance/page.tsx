@@ -11,6 +11,7 @@ import currency from 'currency.js'
 import EditBalanceDisplay from './EditBalanceDisplay'
 import { formatDistance } from 'date-fns'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 export default async function Page() {
   const { uid } = await requireSession()
@@ -21,30 +22,55 @@ export default async function Page() {
       acct_owner: uid,
       when_deleted: null,
     },
-    orderBy: [{ acct_sort_order: 'asc' }, { acct_name: 'asc' }],
+    orderBy: [
+      { when_closed: 'asc' }, // Closed accounts will be sorted to the bottom
+      { acct_sort_order: 'asc' },
+      { acct_name: 'asc' },
+    ],
   })
 
   // Separate accounts into Assets, Liabilities, and Retirement
-  const assetAccounts = accounts.filter((account) => !account.acct_is_debt && !account.acct_is_retirement)
-  const liabilityAccounts = accounts.filter((account) => account.acct_is_debt)
-  const retirementAccounts = accounts.filter((account) => account.acct_is_retirement)
-
-  // Calculate totals for each category
-  const calculateCategoryTotal = (categoryAccounts: typeof accounts) => {
-    return categoryAccounts.reduce((total, account) => {
-      return total.add(currency(account.acct_last_balance || 0))
-    }, currency(0))
+  const filterAndSortAccounts = (accounts: typeof accounts, isDebt: boolean, isRetirement: boolean) => {
+    return accounts
+      .filter((account) => !account.acct_is_debt === !isDebt && !account.acct_is_retirement === !isRetirement)
+      .reduce(
+        (acc, account) => {
+          const closedAccounts = account.when_closed ? [account] : []
+          const activeAccounts = !account.when_closed ? [account] : []
+          return {
+            active: [...acc.active, ...activeAccounts],
+            closed: [...acc.closed, ...closedAccounts],
+          }
+        },
+        { active: [], closed: [] },
+      )
   }
 
-  const assetTotal = calculateCategoryTotal(assetAccounts)
-  const liabilityTotal = calculateCategoryTotal(liabilityAccounts)
-  const retirementTotal = calculateCategoryTotal(retirementAccounts)
+  const assetAccounts = filterAndSortAccounts(accounts, false, false)
+  const liabilityAccounts = filterAndSortAccounts(accounts, true, false)
+  const retirementAccounts = filterAndSortAccounts(accounts, false, true)
 
-  // Get balance history for all accounts
+  // Calculate totals for each category (only for active accounts)
+  const calculateCategoryTotal = (categoryAccounts: typeof accounts) => {
+    return categoryAccounts
+      .filter((account) => !account.when_closed)
+      .reduce((total, account) => {
+        return total.add(currency(account.acct_last_balance || 0))
+      }, currency(0))
+  }
+
+  const assetTotal = calculateCategoryTotal(accounts.filter((a) => !a.acct_is_debt && !a.acct_is_retirement))
+  const liabilityTotal = calculateCategoryTotal(accounts.filter((a) => a.acct_is_debt))
+  const retirementTotal = calculateCategoryTotal(accounts.filter((a) => a.acct_is_retirement))
+
+  // Prepare chart data (only for active accounts)
+  const activeChartAccounts = accounts.filter((account) => !account.when_closed)
+
+  // Get balance history for active accounts
   const balanceHistory = await prisma.finAccountBalanceSnapshot.findMany({
     where: {
       acct_id: {
-        in: accounts.map((a) => a.acct_id),
+        in: activeChartAccounts.map((a) => a.acct_id),
       },
     },
     orderBy: {
@@ -79,7 +105,7 @@ export default async function Page() {
 
     return [
       quarter,
-      ...accounts.map((account) => {
+      ...activeChartAccounts.map((account) => {
         // Use current balance if available, otherwise use previous quarter's balance, or '0' if no previous
         const balance = currentBalances[account.acct_id] || previousBalances[account.acct_id] || '0'
         // Negate balance for liability accounts
@@ -87,6 +113,76 @@ export default async function Page() {
       }),
     ]
   })
+
+  const renderAccountTable = (title: string, accounts: { active: typeof accounts; closed: typeof accounts }) => (
+    <>
+      <h2 className="text-xl font-semibold mt-8">{title}</h2>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Account Name</TableHead>
+            <TableHead className="text-right" style={{ textAlign: 'right', width: '150px' }}>
+              Last Balance
+            </TableHead>
+            <TableHead className="text-right whitespace-nowrap w-0" style={{ width: '150px' }}>
+              Last update
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {accounts.active.map((account) => (
+            <tr key={account.acct_id}>
+              <td className="px-2">
+                <Link href={`/finance/${account.acct_id}`}>{account.acct_name}</Link>
+              </td>
+              <td className="flex items-end justify-end">
+                <EditBalanceDisplay
+                  acct_id={account.acct_id}
+                  defaultBalance={currency(account.acct_last_balance).toString()}
+                />
+              </td>
+              <td className="px-2" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                {formatDistance(new Date(), account.acct_last_balance_date ?? new Date())}
+              </td>
+            </tr>
+          ))}
+          {accounts.closed.map((account) => (
+            <tr key={account.acct_id} className="opacity-50">
+              <td className="px-2">
+                <Link href={`/finance/${account.acct_id}`} className="flex items-center">
+                  {account.acct_name}
+                  <Badge variant="secondary" className="ml-2">
+                    Closed
+                  </Badge>
+                </Link>
+              </td>
+              <td className="flex items-end justify-end">
+                <EditBalanceDisplay
+                  acct_id={account.acct_id}
+                  defaultBalance={currency(account.acct_last_balance).toString()}
+                  disabled
+                />
+              </td>
+              <td className="px-2" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                {formatDistance(new Date(), account.acct_last_balance_date ?? new Date())}
+              </td>
+            </tr>
+          ))}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell>
+              <strong>Total {title}</strong>
+            </TableCell>
+            <TableCell className="text-right">
+              <strong>{calculateCategoryTotal(accounts.active.concat(accounts.closed)).format()}</strong>
+            </TableCell>
+            <TableCell></TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </>
+  )
 
   return (
     <Container>
@@ -99,144 +195,16 @@ export default async function Page() {
       <div className="mb-8">
         <StackedBalanceChart
           data={chartDataArray}
-          labels={accounts.map((a) => a.acct_name)}
-          isNegative={accounts.map((a) => a.acct_is_debt)}
-          isRetirement={accounts.map((a) => a.acct_is_retirement || false)}
+          labels={activeChartAccounts.map((a) => a.acct_name)}
+          isNegative={activeChartAccounts.map((a) => a.acct_is_debt)}
+          isRetirement={activeChartAccounts.map((a) => a.acct_is_retirement || false)}
         />
       </div>
       <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:space-x-4 space-y-4 sm:space-y-0">
         <div className="w-full space-y-4">
-          <h2 className="text-xl font-semibold">Assets</h2>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Account Name</TableHead>
-                <TableHead className="text-right" style={{ textAlign: 'right', width: '150px' }}>
-                  Last Balance
-                </TableHead>
-                <TableHead className="text-right whitespace-nowrap w-0" style={{ width: '150px' }}>
-                  Last update
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {assetAccounts.map((account) => (
-                <tr key={account.acct_id}>
-                  <td className="px-2">
-                    <Link href={`/finance/${account.acct_id}`}>{account.acct_name}</Link>
-                  </td>
-                  <td className="flex items-end justify-end">
-                    <EditBalanceDisplay
-                      acct_id={account.acct_id}
-                      defaultBalance={currency(account.acct_last_balance).toString()}
-                    />
-                  </td>
-                  <td className="px-2" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                    {formatDistance(new Date(), account.acct_last_balance_date ?? new Date())}
-                  </td>
-                </tr>
-              ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell>
-                  <strong>Total Assets</strong>
-                </TableCell>
-                <TableCell className="text-right">
-                  <strong>{assetTotal.format()}</strong>
-                </TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
-
-          <h2 className="text-xl font-semibold mt-8">Liabilities</h2>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Account Name</TableHead>
-                <TableHead className="text-right" style={{ textAlign: 'right', width: '150px' }}>
-                  Last Balance
-                </TableHead>
-                <TableHead className="text-right whitespace-nowrap w-0" style={{ width: '150px' }}>
-                  Last update
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {liabilityAccounts.map((account) => (
-                <tr key={account.acct_id}>
-                  <td className="px-2">
-                    <Link href={`/finance/${account.acct_id}`}>{account.acct_name}</Link>
-                  </td>
-                  <td className="flex items-end justify-end">
-                    <EditBalanceDisplay
-                      acct_id={account.acct_id}
-                      defaultBalance={currency(account.acct_last_balance).toString()}
-                    />
-                  </td>
-                  <td className="px-2" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                    {formatDistance(new Date(), account.acct_last_balance_date ?? new Date())}
-                  </td>
-                </tr>
-              ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell>
-                  <strong>Total Liabilities</strong>
-                </TableCell>
-                <TableCell className="text-right">
-                  <strong>{liabilityTotal.format()}</strong>
-                </TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
-
-          <h2 className="text-xl font-semibold mt-8">Retirement</h2>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Account Name</TableHead>
-                <TableHead className="text-right" style={{ textAlign: 'right', width: '150px' }}>
-                  Last Balance
-                </TableHead>
-                <TableHead className="text-right whitespace-nowrap w-0" style={{ width: '150px' }}>
-                  Last update
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {retirementAccounts.map((account) => (
-                <tr key={account.acct_id}>
-                  <td className="px-2">
-                    <Link href={`/finance/${account.acct_id}`}>{account.acct_name}</Link>
-                  </td>
-                  <td className="flex items-end justify-end">
-                    <EditBalanceDisplay
-                      acct_id={account.acct_id}
-                      defaultBalance={currency(account.acct_last_balance).toString()}
-                    />
-                  </td>
-                  <td className="px-2" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                    {formatDistance(new Date(), account.acct_last_balance_date ?? new Date())}
-                  </td>
-                </tr>
-              ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell>
-                  <strong>Total Retirement</strong>
-                </TableCell>
-                <TableCell className="text-right">
-                  <strong>{retirementTotal.format()}</strong>
-                </TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
+          {renderAccountTable('Assets', assetAccounts)}
+          {renderAccountTable('Liabilities', liabilityAccounts)}
+          {renderAccountTable('Retirement', retirementAccounts)}
         </div>
         <NewAccountForm />
       </div>
