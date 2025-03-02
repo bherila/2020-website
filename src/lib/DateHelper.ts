@@ -1,4 +1,10 @@
 import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.tz.setDefault('Etc/GMT')
 
 export class DateContainer {
   constructor(value: Date) {
@@ -47,7 +53,7 @@ export function parseDate(str: string | undefined | null | Date): DateContainer 
   } else if (str.match(/\d{2}\/\d{2}\/\d{4}/)) {
     date = dayjs(str, 'MM/DD/YYYY')
   } else if (str.match(/^\d{1,2}\/\d{1,2}\/\d{2}$/)) {
-    date = dayjs(str, 'MM/DD/YY')
+    date = dayjs(str, 'M/D/YY')
   } else if (str.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}$/)) {
     date = dayjs(str, 'YYYY-MM-DD HH:mm:ss.SSS')
   }

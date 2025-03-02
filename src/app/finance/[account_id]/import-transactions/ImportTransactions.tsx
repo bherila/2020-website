@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { splitDelimitedText } from '@/lib/splitDelimitedText'
 import { parseWealthfrontHAR } from './parseWealthfrontHAR'
 import { parseFidelityCsv } from './parseFidelityCsv'
+import { DateContainer, parseDate } from '@/lib/DateHelper'
 
 export default function ImportTransactions(props: { onImportClick: (data: AccountLineItem[]) => void }) {
   const [text, setText] = useState<string>('')
@@ -79,7 +80,7 @@ export default function ImportTransactions(props: { onImportClick: (data: Accoun
       <textarea
         value={text}
         onChange={handleTextareaChange}
-        placeholder="date, description, amount, [comment, type, category]"
+        placeholder="date, [time], [settlement date|post date|as of[ date]], [description | desc], amount, [comment | memo, type, category]"
         rows={5}
         style={{ width: '100%' }}
       />
@@ -186,12 +187,13 @@ function parseData(text: string): { data: AccountLineItem[] | null; parseError: 
       throw new Error('Amount column not found')
     }
     for (const row of lines) {
-      if (row[dateColIndex] === 'Date') {
+      if (row[dateColIndex] === 'Date' || row[dateColIndex] === 'Transaction Date') {
         continue
       }
       data.push(
         AccountLineItemSchema.parse({
-          t_date: row[dateColIndex],
+          t_date: parseDate(row[dateColIndex])?.formatYMD() ?? row[dateColIndex],
+          t_date_posted: postDateColIndex ? parseDate(row[postDateColIndex])?.formatYMD() : null,
           t_description: row[descriptionColIndex],
           t_amt: row[amountColIndex], // Pass raw string for t_amt, letting Zod handle the parsing
           t_comment: commentColIndex ? row[commentColIndex] : null,

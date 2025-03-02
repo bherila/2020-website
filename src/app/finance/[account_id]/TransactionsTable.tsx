@@ -45,6 +45,7 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
   const [isLoadingTags, setIsLoadingTags] = useState(false)
   const [selectedTransactions, setSelectedTransactions] = useState<string[]>([])
   const [selectedTransaction, setSelectedTransaction] = useState<AccountLineItem | null>(null)
+  const [postDateFilter, setPostDateFilter] = useState('')
 
   useEffect(() => {
     if (!enableTagging) return
@@ -119,6 +120,7 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
   const isOptionTypeColumnEmpty = useMemo(() => data.every((row) => !row.opt_type), [data])
   const isStrikeColumnEmpty = useMemo(() => data.every((row) => !row.opt_strike || Number(row.opt_strike) === 0), [data])
   const isTagsColumnEmpty = useMemo(() => data.every((row) => !row.tags || row.tags.length === 0), [data])
+  const isPostDateColumnEmpty = useMemo(() => data.every((row) => !row.t_date_posted), [data])
 
   const filteredData = data.filter(
     (row) =>
@@ -143,7 +145,8 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
       (!amountFilter ||
         currency(row.t_amt || 0)
           .value.toString()
-          .includes(amountFilter)),
+          .includes(amountFilter)) &&
+      (!postDateFilter || row.t_date_posted?.includes(postDateFilter)),
   )
 
   const sortedData = [...filteredData].sort((a, b) => {
@@ -155,7 +158,17 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
     return aVal < bVal ? -direction : direction
   })
 
-  const totalAmount = sortedData.reduce((sum, row) => sum.add(currency(row.t_amt || 0)), currency(0))
+  const [totalAmount, totalPositives, totalNegatives] = sortedData.reduce(
+    ([total, positives, negatives], row) => {
+      const amount = currency(row.t_amt || '0')
+      return [
+        total.add(amount),
+        amount.value > 0 ? positives.add(amount) : positives,
+        amount.value < 0 ? negatives.add(amount) : negatives,
+      ]
+    },
+    [currency('0'), currency('0'), currency('0')],
+  )
 
   const handleUpdateTransactionComment = async (comment: string) => {
     console.log('Updating transaction comment', comment)
@@ -172,6 +185,11 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
             <th className="clickable dateCol" onClick={() => handleSort('t_date')}>
               Date {sortField === 't_date' && (sortDirection === 'asc' ? '↑' : '↓')}
             </th>
+            {!isPostDateColumnEmpty && (
+              <th className="clickable dateCol" onClick={() => handleSort('t_date_posted')}>
+                Post Date {sortField === 't_date_posted' && (sortDirection === 'asc' ? '↑' : '↓')}
+              </th>
+            )}
             {!isTypeColumnEmpty && (
               <th className="clickable" onClick={() => handleSort('t_type')}>
                 Type {sortField === 't_type' && (sortDirection === 'asc' ? '↑' : '↓')}
@@ -252,16 +270,18 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
               />
               {dateFilter && <ClearFilterButton onClick={() => setDateFilter('')} ariaLabel="Clear date filter" />}
             </th>
-            {!isTypeColumnEmpty && (
-              <th className="position-relative typeCol" style={{ width: '100px' }}>
+            {!isPostDateColumnEmpty && (
+              <th className="position-relative dateCol">
                 <input
                   className="w-full"
                   type="text"
-                  placeholder="Filter type..."
-                  value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value)}
+                  placeholder="Filter post date..."
+                  value={postDateFilter}
+                  onChange={(e) => setPostDateFilter(e.target.value)}
                 />
-                {typeFilter && <ClearFilterButton onClick={() => setTypeFilter('')} ariaLabel="Clear type filter" />}
+                {postDateFilter && (
+                  <ClearFilterButton onClick={() => setPostDateFilter('')} ariaLabel="Clear post date filter" />
+                )}
               </th>
             )}
             <th className="position-relative descriptionCol">
@@ -391,6 +411,21 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
               >
                 {row.t_date}
               </td>
+              {!isPostDateColumnEmpty && (
+                <td
+                  className="dateCol"
+                  onClick={() => {
+                    const formattedPostDate = row.t_date_posted
+                    if (postDateFilter === formattedPostDate) {
+                      setPostDateFilter('')
+                    } else {
+                      setPostDateFilter(formattedPostDate || '')
+                    }
+                  }}
+                >
+                  {row.t_date_posted}
+                </td>
+              )}
               {!isTypeColumnEmpty && (
                 <td
                   onClick={() => {
@@ -550,7 +585,7 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
         <tfoot>
           <tr>
             <TotalCell />
-            <TotalCell label={'Total'} />
+            {!isPostDateColumnEmpty && <TotalCell />}
             <TotalCell />
             {!isTypeColumnEmpty && <TotalCell />}
             {!isQtyColumnEmpty && <TotalCell />}
@@ -558,7 +593,10 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
             {!isCommissionColumnEmpty && <TotalCell />}
             {!isFeeColumnEmpty && <TotalCell />}
             <td className="totalCell numericCol">
-              <strong>{totalAmount.format()}</strong>
+              <strong>
+                {totalPositives.format()} (Credits) <br />
+                {totalNegatives.format()} (Debits) <br />= {totalAmount.format()} (Net)
+              </strong>
             </td>
             {!isCategoryColumnEmpty && <TotalCell />}
             {!isCusipColumnEmpty && <TotalCell />}

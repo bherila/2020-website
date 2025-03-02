@@ -184,6 +184,7 @@ export function parseWealthfrontHAR(data: string): AccountLineItem[] {
           const accountLineItem: z.infer<typeof AccountLineItemSchema> = {
             t_amt: currency(transaction.netAmount).toString(),
             t_date: transaction.postedAt,
+            t_date_posted: transaction.postedAt,
             t_description: transaction.header,
             t_comment: transaction.details,
             t_type: transaction.type,
@@ -211,6 +212,7 @@ function convertCompletedTransfer(
         t_amt: currency(dividend.amount).toString(),
         t_comment: transfer.id.toString(),
         t_date: parseDate(transfer.created_at)?.formatYMD()!,
+        t_date_posted: parseDate(transfer.created_at)?.formatYMD()!,
         t_description: 'Ex. date ' + (parseDate(dividend.ex_date)?.formatYMD() ?? dividend.ex_date),
         t_symbol: dividend.symbol,
         t_type: 'Dividend',
@@ -229,6 +231,7 @@ function convertCompletedTransfer(
           .toString(),
         t_comment: transfer.id.toString(),
         t_date: parseDate(trade.date)?.formatYMD()!,
+        t_date_posted: parseDate(trade.date)?.formatYMD()!,
         t_description: transfer.type,
         t_harvested_amount: currency(transfer.harvested_amount || '0').toString(),
         t_price: currency(trade.share_price || '0').toString(),
@@ -244,6 +247,7 @@ function convertCompletedTransfer(
   if (transfer.type == 'Advisory Fee') {
     const accountLineItem: z.infer<typeof AccountLineItemSchema> = {
       t_date: parseDate(transfer.created_at)?.formatYMD()!,
+      t_date_posted: parseDate(transfer.created_at)?.formatYMD()!,
       t_type: transfer.type,
       t_amt: currency(transfer.amount!).multiply(-1).toString(),
       t_comment: transfer.id.toString(),
@@ -252,6 +256,7 @@ function convertCompletedTransfer(
   } else if (transfer.type == 'Transfer' || transfer.type == 'Deposit') {
     const accountLineItem: z.infer<typeof AccountLineItemSchema> = {
       t_date: parseDate(transfer.created_at)?.formatYMD()!,
+      t_date_posted: parseDate(transfer.created_at)?.formatYMD()!,
       t_type: transfer.type,
       t_amt: currency(transfer.amount!).toString(),
       t_comment: transfer.long_description,

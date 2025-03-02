@@ -32,6 +32,7 @@ function parseFidelityCsvInternal(csv: string[][]): AccountLineItem[] {
     const [action, item] = splitActionAndItem(row[1])
     const parsedRow: AccountLineItem = {
       t_date: parseDate(row[0])?.formatYMD() ?? '',
+      t_date_posted: parseDate(row[0])?.formatYMD() ?? '', // Use the same date as t_date
       t_description: item || undefined,
       t_type: action || undefined,
       t_symbol: row[2] || undefined,
