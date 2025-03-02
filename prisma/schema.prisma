@@ -137,6 +137,7 @@ model FinAccounts {
   acct_is_debt           Boolean   @default(false) @db.Bit(1)
   acct_is_retirement     Boolean   @default(false) @db.Bit(1)
   acct_sort_order        Int       @default(0)
+  when_closed            DateTime? @db.DateTime(0)
   when_deleted           DateTime? @db.DateTime(0)
 
   @@unique([acct_owner, acct_name], map: "acct_owner")
