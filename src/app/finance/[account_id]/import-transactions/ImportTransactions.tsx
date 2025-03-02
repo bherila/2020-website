@@ -157,8 +157,9 @@ function parseData(text: string): { data: AccountLineItem[] | null; parseError: 
     let categoryColIndex: number | null = null
     if (lines.length > 0) {
       const getColumnIndex = (...headers: string[]) => {
+        const firstLine = lines[0].map((cell) => cell.trim())
         for (const header of headers) {
-          const index = lines[0].indexOf(header)
+          const index = firstLine.indexOf(header.trim())
           if (index !== -1) {
             return index
           }
@@ -169,7 +170,7 @@ function parseData(text: string): { data: AccountLineItem[] | null; parseError: 
       timeColIndex = getColumnIndex('Time')
       descriptionColIndex = getColumnIndex('Description', 'Desc')
       amountColIndex = getColumnIndex('Amount', 'Amt')
-      commentColIndex = getColumnIndex('Comment')
+      commentColIndex = getColumnIndex('Comment', 'Memo')
       typeColIndex = getColumnIndex('Type')
       categoryColIndex = getColumnIndex('Category')
     }

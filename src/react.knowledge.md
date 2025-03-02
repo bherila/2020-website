@@ -152,3 +152,10 @@ if (existingRecord && existingRecord.when_deleted) {
 - When encountering unexpected scrollbars in Safari, first check for `overflow-auto` on parent containers
 - Remove unnecessary overflow properties that might trigger scrollbars
 - Test across different browsers and screen sizes
+
+## Modal Patterns
+- Use shadcn Dialog component for modals
+- Implement save/cancel buttons with clear state management
+- Handle loading states with disabled buttons and loading indicators
+- Provide optional callback props for flexibility
+- Use server actions for data mutations in modals

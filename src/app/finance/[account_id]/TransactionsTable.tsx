@@ -1,5 +1,5 @@
 'use client'
-import { useState, useMemo, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import currency from 'currency.js'
 import { AccountLineItem } from '@/lib/AccountLineItem'
 import { getUserTags, applyTagToTransactions } from './tag-actions'
@@ -12,6 +12,7 @@ import './TransactionsTable.css'
 import { Table } from '@/components/ui/table'
 import { ClearFilterButton } from '@/lib/ClearFilterButton'
 import { TagApplyButton } from './TagApplyButton'
+import TransactionDetailsModal from './TransactionDetailsModal'
 
 interface Props {
   data: AccountLineItem[]
@@ -43,6 +44,7 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
   >([])
   const [isLoadingTags, setIsLoadingTags] = useState(false)
   const [selectedTransactions, setSelectedTransactions] = useState<string[]>([])
+  const [selectedTransaction, setSelectedTransaction] = useState<AccountLineItem | null>(null)
 
   useEffect(() => {
     if (!enableTagging) return
@@ -101,57 +103,19 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
     }
   }
 
-  const isCategoryColumnEmpty = useMemo(() => {
-    return data.every((row) => !row.t_schc_category)
-  }, [data])
-
-  const isQtyColumnEmpty = useMemo(() => {
-    return data.every((row) => row.t_qty == null || Number(row.t_qty) === 0)
-  }, [data])
-
-  const isPriceColumnEmpty = useMemo(() => {
-    return data.every((row) => row.t_price == null || Number(row.t_price) === 0)
-  }, [data])
-
-  const isCommissionColumnEmpty = useMemo(() => {
-    return data.every((row) => row.t_commission == null || Number(row.t_commission) === 0)
-  }, [data])
-
-  const isFeeColumnEmpty = useMemo(() => {
-    return data.every((row) => row.t_fee == null || Number(row.t_fee) === 0)
-  }, [data])
-
-  const isTypeColumnEmpty = useMemo(() => {
-    return data.every((row) => !row.t_type)
-  }, [data])
-
-  const isMemoColumnEmpty = useMemo(() => {
-    return data.every((row) => !row.t_comment)
-  }, [data])
-
-  const isCusipColumnEmpty = useMemo(() => {
-    return data.every((row) => !row.t_cusip)
-  }, [data])
-
-  const isSymbolColumnEmpty = useMemo(() => {
-    return data.every((row) => !row.t_symbol)
-  }, [data])
-
-  const isOptionExpiryColumnEmpty = useMemo(() => {
-    return data.every((row) => !row.opt_expiration)
-  }, [data])
-
-  const isOptionTypeColumnEmpty = useMemo(() => {
-    return data.every((row) => !row.opt_type)
-  }, [data])
-
-  const isStrikeColumnEmpty = useMemo(() => {
-    return data.every((row) => row.opt_strike == null || Number(row.opt_strike) === 0)
-  }, [data])
-
-  const isTagsColumnEmpty = useMemo(() => {
-    return data.every((row) => !row.tags || row.tags.length === 0)
-  }, [data])
+  const isCategoryColumnEmpty = useMemo(() => data.every((row) => !row.t_schc_category), [data])
+  const isQtyColumnEmpty = useMemo(() => data.every((row) => !row.t_qty || Number(row.t_qty) === 0), [data])
+  const isPriceColumnEmpty = useMemo(() => data.every((row) => !row.t_price || Number(row.t_price) === 0), [data])
+  const isCommissionColumnEmpty = useMemo(() => data.every((row) => !row.t_commission || Number(row.t_commission) === 0), [data])
+  const isFeeColumnEmpty = useMemo(() => data.every((row) => !row.t_fee || Number(row.t_fee) === 0), [data])
+  const isTypeColumnEmpty = useMemo(() => data.every((row) => !row.t_type), [data])
+  const isMemoColumnEmpty = useMemo(() => data.every((row) => !row.t_comment), [data])
+  const isCusipColumnEmpty = useMemo(() => data.every((row) => !row.t_cusip), [data])
+  const isSymbolColumnEmpty = useMemo(() => data.every((row) => !row.t_symbol), [data])
+  const isOptionExpiryColumnEmpty = useMemo(() => data.every((row) => !row.opt_expiration), [data])
+  const isOptionTypeColumnEmpty = useMemo(() => data.every((row) => !row.opt_type), [data])
+  const isStrikeColumnEmpty = useMemo(() => data.every((row) => !row.opt_strike || Number(row.opt_strike) === 0), [data])
+  const isTagsColumnEmpty = useMemo(() => data.every((row) => !row.tags || row.tags.length === 0), [data])
 
   const filteredData = data.filter(
     (row) =>
@@ -189,6 +153,13 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
   })
 
   const totalAmount = sortedData.reduce((sum, row) => sum.add(currency(row.t_amt || 0)), currency(0))
+
+  const handleUpdateTransactionComment = async (comment: string) => {
+    console.log('Updating transaction comment', comment)
+    if (typeof refreshFn === 'function') {
+      refreshFn()
+    }
+  }
 
   return (
     <>
@@ -565,6 +536,11 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
                   </button>
                 </td>
               )}
+              <td>
+                <Button variant="outline" size="sm" onClick={() => setSelectedTransaction(row)}>
+                  Details
+                </Button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -622,6 +598,15 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
             )}
           </div>
         </div>
+      )}
+
+      {selectedTransaction && (
+        <TransactionDetailsModal
+          transaction={selectedTransaction}
+          isOpen={!!selectedTransaction}
+          onClose={() => setSelectedTransaction(null)}
+          onSave={handleUpdateTransactionComment}
+        />
       )}
     </>
   )
