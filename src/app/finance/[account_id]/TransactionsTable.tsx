@@ -33,6 +33,7 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
   const [dateFilter, setDateFilter] = useState('')
   const [memoFilter, setMemoFilter] = useState('')
   const [tagFilter, setTagFilter] = useState('')
+  const [amountFilter, setAmountFilter] = useState('')
   const [availableTags, setAvailableTags] = useState<
     {
       tag_id: number
@@ -171,7 +172,11 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
               .split(',')
               .map((t) => t.trim())
               .some((filterPart) => tag.tag_label.toLowerCase().includes(filterPart)),
-          ))),
+          ))) &&
+      (!amountFilter ||
+        currency(row.t_amt || 0)
+          .value.toString()
+          .includes(amountFilter)),
   )
 
   const sortedData = [...filteredData].sort((a, b) => {
@@ -311,7 +316,15 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
             {!isPriceColumnEmpty && <th></th>}
             {!isCommissionColumnEmpty && <th></th>}
             {!isFeeColumnEmpty && <th></th>}
-            <th></th>
+            <th className="position-relative">
+              <input
+                type="text"
+                placeholder="Filter amount..."
+                value={amountFilter}
+                onChange={(e) => setAmountFilter(e.target.value)}
+              />
+              {amountFilter && <ClearFilterButton onClick={() => setAmountFilter('')} ariaLabel="Clear amount filter" />}
+            </th>
             {!isCategoryColumnEmpty && (
               <th className="position-relative" style={{ width: '140px' }}>
                 <input
@@ -448,10 +461,18 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
                 </td>
               )}
               <td
-                className={'numericCol'}
+                className={'numericCol clickable'}
                 style={{
                   color: Number(row.t_amt) >= 0 ? 'green' : 'red',
                   whiteSpace: 'nowrap',
+                }}
+                onClick={() => {
+                  const amt = currency(row.t_amt || 0, { symbol: '' }).format()
+                  if (amountFilter === amt) {
+                    setAmountFilter('')
+                  } else {
+                    setAmountFilter(amt)
+                  }
                 }}
               >
                 {currency(row.t_amt || 0, { symbol: '' }).format()}
@@ -576,12 +597,12 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
 
       {enableTagging && (
         <div className="mt-4 p-4 border rounded">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <span>Apply tag to {sortedData.length} selected transactions:</span>
             {isLoadingTags ? (
               <Spinner size="small" />
             ) : (
-              <>
+              <div className="flex flex-wrap gap-2">
                 {availableTags.map((tag) => (
                   <TagApplyButton
                     key={tag.tag_id}
@@ -593,11 +614,11 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
                   />
                 ))}
                 <Link href="/finance/tags" className="ml-auto">
-                  <Button variant="outline" size="sm">
+                  <Button variant="secondary" size="sm">
                     Manage Tags
                   </Button>
                 </Link>
-              </>
+              </div>
             )}
           </div>
         </div>

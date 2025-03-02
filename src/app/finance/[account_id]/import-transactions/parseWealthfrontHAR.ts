@@ -161,6 +161,40 @@ export function parseWealthfrontHAR(data: string): AccountLineItem[] {
     console.log('All types: ' + Array.from(allTypes).join(', '))
   }
 
+  const wealthfrontCashAccountData = entries
+    .filter((entry: any) => entry.request?.url.includes('all-cash-account-transactions'))
+    .map((entry: any) => entry.response?.content?.text as string)
+    .filter(Boolean)
+    .map((jsonString: string): any => {
+      try {
+        const wealthfrontCashTransaction = z.object({
+          header: z.string(),
+          netAmount: z.number(),
+          postedAt: z.string(),
+          details: z.string(),
+          type: z.string(),
+        })
+        const data = JSON.parse(jsonString)
+        const transactionList = z
+          .object({
+            transactions: z.array(wealthfrontCashTransaction),
+          })
+          .parse(data)?.transactions
+        for (const transaction of transactionList) {
+          const accountLineItem: z.infer<typeof AccountLineItemSchema> = {
+            t_amt: currency(transaction.netAmount).toString(),
+            t_date: transaction.postedAt,
+            t_description: transaction.header,
+            t_comment: transaction.details,
+            t_type: transaction.type,
+          }
+          result.push(accountLineItem)
+        }
+      } catch (err) {
+        console.error('Failed to parse Wealthfront Cash Account data', err)
+      }
+    })
+
   return result
 }
 

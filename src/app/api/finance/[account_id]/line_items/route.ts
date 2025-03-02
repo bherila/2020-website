@@ -157,8 +157,8 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ac
 
     // Return updated list
     return GET(request, context)
-  } catch (e) {
-    console.error(e, e instanceof Error ? (e as Error).stack : undefined)
+  } catch (e: any) {
+    console.error(e?.stack)
     return NextResponse.json({ error: e?.toString() }, { status: 400 })
   }
 }

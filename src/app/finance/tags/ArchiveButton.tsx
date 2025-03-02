@@ -25,7 +25,7 @@ export default function DeleteButton({
       size="sm"
       disabled={disabled}
     >
-      Delete
+      Archive
     </Button>
   )
 }

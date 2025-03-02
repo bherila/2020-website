@@ -8,6 +8,7 @@ import { parseQuickenQFX } from './parseQuickenQFX'
 import { Button } from '@/components/ui/button'
 import { splitDelimitedText } from '@/lib/splitDelimitedText'
 import { parseWealthfrontHAR } from './parseWealthfrontHAR'
+import { parseFidelityCsv } from './parseFidelityCsv'
 
 export default function ImportTransactions(props: { onImportClick: (data: AccountLineItem[]) => void }) {
   const [text, setText] = useState<string>('')
@@ -130,6 +131,15 @@ function parseData(text: string): { data: AccountLineItem[] | null; parseError: 
   if (Wealthfront.length > 0) {
     return {
       data: Wealthfront,
+      parseError: null,
+    }
+  }
+
+  // Try parsing as Fidelity
+  const Fidelity = parseFidelityCsv(text)
+  if (Fidelity.length > 0) {
+    return {
+      data: Fidelity,
       parseError: null,
     }
   }

@@ -147,3 +147,8 @@ if (existingRecord && existingRecord.when_deleted) {
   })
 }
 ```
+
+## Safari-specific UI Fixes
+- When encountering unexpected scrollbars in Safari, first check for `overflow-auto` on parent containers
+- Remove unnecessary overflow properties that might trigger scrollbars
+- Test across different browsers and screen sizes

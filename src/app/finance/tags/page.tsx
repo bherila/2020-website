@@ -18,7 +18,7 @@ import {
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb'
 import { Badge } from '@/components/ui/badge'
-import DeleteButton from './DeleteButton'
+import ArchiveButton from './ArchiveButton'
 import { revalidatePath } from 'next/cache'
 
 export default async function TagsPage() {
@@ -96,7 +96,7 @@ export default async function TagsPage() {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <DeleteButton
+                  <ArchiveButton
                     tagId={tag.tag_id.toString()}
                     disabled={tag._count.FinAccountLineItemTagMap > 0}
                     deleteAction={deleteFn}
