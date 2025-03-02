@@ -148,6 +148,7 @@ model FinAccountLineItems {
   t_id               Int                          @id @default(autoincrement())
   t_account          Int?
   t_date             String                       @db.VarChar(10)
+  t_date_posted      String?                      @db.VarChar(10)
   t_type             String?
   t_schc_category    String?
   t_amt              Decimal?                     @db.Decimal(13, 4)

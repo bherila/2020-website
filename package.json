@@ -12,6 +12,8 @@
     "type-check": "tsc --pretty --noEmit",
     "pages:build": "yarn next-on-pages",
     "preview": "yarn pages:build && wrangler pages dev",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "dotenv -e .env.local -- prisma db push",
     "deploy": "yarn pages:build && wrangler pages deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts",
     "test": "jest",

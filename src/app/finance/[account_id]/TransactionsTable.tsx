@@ -106,7 +106,10 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
   const isCategoryColumnEmpty = useMemo(() => data.every((row) => !row.t_schc_category), [data])
   const isQtyColumnEmpty = useMemo(() => data.every((row) => !row.t_qty || Number(row.t_qty) === 0), [data])
   const isPriceColumnEmpty = useMemo(() => data.every((row) => !row.t_price || Number(row.t_price) === 0), [data])
-  const isCommissionColumnEmpty = useMemo(() => data.every((row) => !row.t_commission || Number(row.t_commission) === 0), [data])
+  const isCommissionColumnEmpty = useMemo(
+    () => data.every((row) => !row.t_commission || Number(row.t_commission) === 0),
+    [data],
+  )
   const isFeeColumnEmpty = useMemo(() => data.every((row) => !row.t_fee || Number(row.t_fee) === 0), [data])
   const isTypeColumnEmpty = useMemo(() => data.every((row) => !row.t_type), [data])
   const isMemoColumnEmpty = useMemo(() => data.every((row) => !row.t_comment), [data])
@@ -546,27 +549,25 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
         </tbody>
         <tfoot>
           <tr>
-            <td className="totalCell"></td>
-            <td className="totalCell">
-              <strong>Total</strong>
-            </td>
-            <td className="totalCell"></td>
-            {!isTypeColumnEmpty && <td className="totalCell"></td>}
-            {!isQtyColumnEmpty && <td className="totalCell"></td>}
-            {!isPriceColumnEmpty && <td className="totalCell"></td>}
-            {!isCommissionColumnEmpty && <td className="totalCell"></td>}
-            {!isFeeColumnEmpty && <td className="totalCell"></td>}
+            <TotalCell />
+            <TotalCell label={'Total'} />
+            <TotalCell />
+            {!isTypeColumnEmpty && <TotalCell />}
+            {!isQtyColumnEmpty && <TotalCell />}
+            {!isPriceColumnEmpty && <TotalCell />}
+            {!isCommissionColumnEmpty && <TotalCell />}
+            {!isFeeColumnEmpty && <TotalCell />}
             <td className="totalCell numericCol">
               <strong>{totalAmount.format()}</strong>
             </td>
-            {!isCategoryColumnEmpty && <td className="totalCell"></td>}
-            {!isCusipColumnEmpty && <td className="totalCell"></td>}
-            {!isSymbolColumnEmpty && <td className="totalCell"></td>}
-            {!isOptionExpiryColumnEmpty && <td className="totalCell"></td>}
-            {!isOptionTypeColumnEmpty && <td className="totalCell"></td>}
-            {!isStrikeColumnEmpty && <td className="totalCell"></td>}
-            {!isMemoColumnEmpty && <td className="totalCell"></td>}
-            {onDeleteTransaction && <td className="totalCell"></td>}
+            {!isCategoryColumnEmpty && <TotalCell />}
+            {!isCusipColumnEmpty && <TotalCell />}
+            {!isSymbolColumnEmpty && <TotalCell />}
+            {!isOptionExpiryColumnEmpty && <TotalCell />}
+            {!isOptionTypeColumnEmpty && <TotalCell />}
+            {!isStrikeColumnEmpty && <TotalCell />}
+            {!isMemoColumnEmpty && <TotalCell />}
+            {onDeleteTransaction && <TotalCell />}
           </tr>
         </tfoot>
       </Table>
@@ -611,3 +612,10 @@ export default function TransactionsTable({ data, onDeleteTransaction, enableTag
     </>
   )
 }
+
+const TotalCell = ({ children, label }: { children?: any; label?: string }) => (
+  <td className="totalCell">
+    {children}
+    {label ? <strong>{label}</strong> : null}
+  </td>
+)
