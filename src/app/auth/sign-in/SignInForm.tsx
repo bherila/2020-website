@@ -16,6 +16,7 @@ export default function SignIn(props: { nextUrl?: string }) {
 
   return (
     <form action={action}>
+      {props.nextUrl && <input type="hidden" name="next" value={props.nextUrl} />}
       <Card className="max-w-md mx-auto">
         <CardHeader>
           <CardTitle className="text-lg md:text-xl">Sign In</CardTitle>
@@ -37,6 +38,7 @@ export default function SignIn(props: { nextUrl?: string }) {
                 type="email"
                 placeholder="m@example.com"
                 required
+                autoComplete="email"
                 defaultValue={state.email}
                 autoFocus={!state.email} // Autofocus email if it's empty
               />
