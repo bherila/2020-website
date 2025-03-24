@@ -118,7 +118,7 @@ export const EarningsQuarterlyOrderByRelevanceFieldEnumSchema = z.enum(['symbol'
 
 export const FinEquityAwardsOrderByRelevanceFieldEnumSchema = z.enum(['award_id','grant_date','vest_date','symbol','uid']);
 
-export const FinPayslipsOrderByRelevanceFieldEnumSchema = z.enum(['uid','ps_payslip_file_hash','ps_comment','other']);
+export const FinPayslipsOrderByRelevanceFieldEnumSchema = z.enum(['uid','period_start','period_end','pay_date','ps_payslip_file_hash','ps_comment','other']);
 
 export const FinPayslipUploadsOrderByRelevanceFieldEnumSchema = z.enum(['file_name','file_hash','parsed_json']);
 
@@ -413,9 +413,9 @@ export type FinEquityAwards = z.infer<typeof FinEquityAwardsSchema>
 export const FinPayslipsSchema = z.object({
   payslip_id: z.number().int(),
   uid: z.string().nullable(),
-  period_start: z.coerce.date().nullable(),
-  period_end: z.coerce.date().nullable(),
-  pay_date: z.coerce.date().nullable(),
+  period_start: z.string().nullable(),
+  period_end: z.string().nullable(),
+  pay_date: z.string().nullable(),
   earnings_gross: z.instanceof(Prisma.Decimal, { message: "Field 'earnings_gross' must be a Decimal. Location: ['Models', 'FinPayslips']"}).nullable(),
   earnings_bonus: z.instanceof(Prisma.Decimal, { message: "Field 'earnings_bonus' must be a Decimal. Location: ['Models', 'FinPayslips']"}).nullable(),
   earnings_net_pay: z.instanceof(Prisma.Decimal, { message: "Field 'earnings_net_pay' must be a Decimal. Location: ['Models', 'FinPayslips']"}),
@@ -2370,9 +2370,9 @@ export const FinPayslipsWhereInputSchema: z.ZodType<Prisma.FinPayslipsWhereInput
   NOT: z.union([ z.lazy(() => FinPayslipsWhereInputSchema),z.lazy(() => FinPayslipsWhereInputSchema).array() ]).optional(),
   payslip_id: z.union([ z.lazy(() => IntFilterSchema),z.number() ]).optional(),
   uid: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
-  period_start: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
-  period_end: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
-  pay_date: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
+  period_start: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  period_end: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  pay_date: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   earnings_gross: z.union([ z.lazy(() => DecimalNullableFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional().nullable(),
   earnings_bonus: z.union([ z.lazy(() => DecimalNullableFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional().nullable(),
   earnings_net_pay: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
@@ -2461,9 +2461,9 @@ export const FinPayslipsWhereUniqueInputSchema: z.ZodType<Prisma.FinPayslipsWher
   OR: z.lazy(() => FinPayslipsWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => FinPayslipsWhereInputSchema),z.lazy(() => FinPayslipsWhereInputSchema).array() ]).optional(),
   uid: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
-  period_start: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
-  period_end: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
-  pay_date: z.union([ z.lazy(() => DateTimeNullableFilterSchema),z.coerce.date() ]).optional().nullable(),
+  period_start: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  period_end: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
+  pay_date: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   earnings_gross: z.union([ z.lazy(() => DecimalNullableFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional().nullable(),
   earnings_bonus: z.union([ z.lazy(() => DecimalNullableFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional().nullable(),
   earnings_net_pay: z.union([ z.lazy(() => DecimalFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
@@ -2543,9 +2543,9 @@ export const FinPayslipsScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.F
   NOT: z.union([ z.lazy(() => FinPayslipsScalarWhereWithAggregatesInputSchema),z.lazy(() => FinPayslipsScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   payslip_id: z.union([ z.lazy(() => IntWithAggregatesFilterSchema),z.number() ]).optional(),
   uid: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
-  period_start: z.union([ z.lazy(() => DateTimeNullableWithAggregatesFilterSchema),z.coerce.date() ]).optional().nullable(),
-  period_end: z.union([ z.lazy(() => DateTimeNullableWithAggregatesFilterSchema),z.coerce.date() ]).optional().nullable(),
-  pay_date: z.union([ z.lazy(() => DateTimeNullableWithAggregatesFilterSchema),z.coerce.date() ]).optional().nullable(),
+  period_start: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  period_end: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  pay_date: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   earnings_gross: z.union([ z.lazy(() => DecimalNullableWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional().nullable(),
   earnings_bonus: z.union([ z.lazy(() => DecimalNullableWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional().nullable(),
   earnings_net_pay: z.union([ z.lazy(() => DecimalWithAggregatesFilterSchema),z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }) ]).optional(),
@@ -4615,9 +4615,9 @@ export const FinEquityAwardsUncheckedUpdateManyInputSchema: z.ZodType<Prisma.Fin
 
 export const FinPayslipsCreateInputSchema: z.ZodType<Prisma.FinPayslipsCreateInput> = z.object({
   uid: z.string().optional().nullable(),
-  period_start: z.coerce.date().optional().nullable(),
-  period_end: z.coerce.date().optional().nullable(),
-  pay_date: z.coerce.date().optional().nullable(),
+  period_start: z.string().optional().nullable(),
+  period_end: z.string().optional().nullable(),
+  pay_date: z.string().optional().nullable(),
   earnings_gross: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional().nullable(),
   earnings_bonus: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional().nullable(),
   earnings_net_pay: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
@@ -4652,9 +4652,9 @@ export const FinPayslipsCreateInputSchema: z.ZodType<Prisma.FinPayslipsCreateInp
 export const FinPayslipsUncheckedCreateInputSchema: z.ZodType<Prisma.FinPayslipsUncheckedCreateInput> = z.object({
   payslip_id: z.number().int().optional(),
   uid: z.string().optional().nullable(),
-  period_start: z.coerce.date().optional().nullable(),
-  period_end: z.coerce.date().optional().nullable(),
-  pay_date: z.coerce.date().optional().nullable(),
+  period_start: z.string().optional().nullable(),
+  period_end: z.string().optional().nullable(),
+  pay_date: z.string().optional().nullable(),
   earnings_gross: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional().nullable(),
   earnings_bonus: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional().nullable(),
   earnings_net_pay: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
@@ -4688,9 +4688,9 @@ export const FinPayslipsUncheckedCreateInputSchema: z.ZodType<Prisma.FinPayslips
 
 export const FinPayslipsUpdateInputSchema: z.ZodType<Prisma.FinPayslipsUpdateInput> = z.object({
   uid: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  period_start: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  period_end: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  pay_date: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  period_start: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  period_end: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  pay_date: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   earnings_gross: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   earnings_bonus: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   earnings_net_pay: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4725,9 +4725,9 @@ export const FinPayslipsUpdateInputSchema: z.ZodType<Prisma.FinPayslipsUpdateInp
 export const FinPayslipsUncheckedUpdateInputSchema: z.ZodType<Prisma.FinPayslipsUncheckedUpdateInput> = z.object({
   payslip_id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   uid: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  period_start: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  period_end: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  pay_date: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  period_start: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  period_end: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  pay_date: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   earnings_gross: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   earnings_bonus: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   earnings_net_pay: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4762,9 +4762,9 @@ export const FinPayslipsUncheckedUpdateInputSchema: z.ZodType<Prisma.FinPayslips
 export const FinPayslipsCreateManyInputSchema: z.ZodType<Prisma.FinPayslipsCreateManyInput> = z.object({
   payslip_id: z.number().int().optional(),
   uid: z.string().optional().nullable(),
-  period_start: z.coerce.date().optional().nullable(),
-  period_end: z.coerce.date().optional().nullable(),
-  pay_date: z.coerce.date().optional().nullable(),
+  period_start: z.string().optional().nullable(),
+  period_end: z.string().optional().nullable(),
+  pay_date: z.string().optional().nullable(),
   earnings_gross: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional().nullable(),
   earnings_bonus: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional().nullable(),
   earnings_net_pay: z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }).optional(),
@@ -4798,9 +4798,9 @@ export const FinPayslipsCreateManyInputSchema: z.ZodType<Prisma.FinPayslipsCreat
 
 export const FinPayslipsUpdateManyMutationInputSchema: z.ZodType<Prisma.FinPayslipsUpdateManyMutationInput> = z.object({
   uid: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  period_start: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  period_end: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  pay_date: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  period_start: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  period_end: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  pay_date: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   earnings_gross: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   earnings_bonus: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   earnings_net_pay: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -4835,9 +4835,9 @@ export const FinPayslipsUpdateManyMutationInputSchema: z.ZodType<Prisma.FinPaysl
 export const FinPayslipsUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FinPayslipsUncheckedUpdateManyInput> = z.object({
   payslip_id: z.union([ z.number().int(),z.lazy(() => IntFieldUpdateOperationsInputSchema) ]).optional(),
   uid: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  period_start: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  period_end: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  pay_date: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  period_start: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  period_end: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  pay_date: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   earnings_gross: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   earnings_bonus: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => NullableDecimalFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   earnings_net_pay: z.union([ z.union([z.number(),z.string(),z.instanceof(Decimal),z.instanceof(Prisma.Decimal),DecimalJsLikeSchema,]).refine((v) => isValidDecimalInput(v), { message: 'Must be a Decimal' }),z.lazy(() => DecimalFieldUpdateOperationsInputSchema) ]).optional(),
@@ -6687,9 +6687,9 @@ export const FinPayslipsOrderByRelevanceInputSchema: z.ZodType<Prisma.FinPayslip
 
 export const FinPayslipsUidPeriod_startPeriod_endPay_dateCompoundUniqueInputSchema: z.ZodType<Prisma.FinPayslipsUidPeriod_startPeriod_endPay_dateCompoundUniqueInput> = z.object({
   uid: z.string(),
-  period_start: z.coerce.date(),
-  period_end: z.coerce.date(),
-  pay_date: z.coerce.date()
+  period_start: z.string(),
+  period_end: z.string(),
+  pay_date: z.string()
 }).strict();
 
 export const FinPayslipsCountOrderByAggregateInputSchema: z.ZodType<Prisma.FinPayslipsCountOrderByAggregateInput> = z.object({

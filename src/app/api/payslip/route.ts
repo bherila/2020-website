@@ -67,9 +67,9 @@ export async function POST(req: NextRequest) {
             where: {
               uid_period_start_period_end_pay_date: {
                 uid,
-                period_start: new Date(row.period_start!),
-                period_end: new Date(row.period_end!),
-                pay_date: new Date(row.pay_date!),
+                period_start: row.period_start!,
+                period_end: row.period_end!,
+                pay_date: row.pay_date!,
               },
             },
             create: { uid, ...row },

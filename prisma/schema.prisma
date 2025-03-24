@@ -229,9 +229,9 @@ model FinEquityAwards {
 model FinPayslips {
   payslip_id           Int       @id @default(autoincrement())
   uid                  String?   @db.VarChar(50)
-  period_start         DateTime? @db.Date
-  period_end           DateTime? @db.Date
-  pay_date             DateTime? @db.Date
+  period_start         String?   @db.Char(10)
+  period_end           String?   @db.Char(10)
+  pay_date             String?   @db.Char(10)
   earnings_gross       Decimal?  @db.Decimal(10, 4)
   earnings_bonus       Decimal?  @db.Decimal(10, 4)
   earnings_net_pay     Decimal   @default(0.0000) @db.Decimal(10, 4)
