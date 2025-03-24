@@ -1,10 +1,8 @@
 import 'server-only'
-import { betterAuth, boolean } from 'better-auth'
+import { betterAuth } from 'better-auth'
 import { nextCookies } from 'better-auth/next-js'
-import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { prisma } from './prisma'
-
-const boolType = { type: 'boolean', required: false, defaultValue: false, input: false }
+import { prismaAdapter } from 'better-auth/adapters/prisma'
 
 const auth = betterAuth({
   plugins: [nextCookies()],
