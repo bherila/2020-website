@@ -1,18 +1,21 @@
 import 'server-only'
 import PayslipClient from './PayslipClient'
 import requireSession from '@/server_lib/requireSession'
-import Container from '@/components/container'
+import { fetchPayslipYears, fetchPayslips } from './entry/actions'
 
-export default async function PayslipPage() {
+export default async function PayslipPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
   await requireSession('/payslip')
+  const currentYear = ((await searchParams)['year'] ?? new Date().getFullYear()).toString()
+  const initialYears = await fetchPayslipYears()
+  const initialData = await fetchPayslips(currentYear)
+
   return (
-    <main>
-      <Container>
-        <div className="container my-2">
-          Tax period: <b>2024-01-01 through 2024-12-31</b>
-        </div>
-      </Container>
-      <PayslipClient year={new Date().getFullYear().toString()} />
+    <main className="mx-4">
+      <PayslipClient selectedYear={currentYear} initialData={initialData} initialYears={initialYears} />
     </main>
   )
 }

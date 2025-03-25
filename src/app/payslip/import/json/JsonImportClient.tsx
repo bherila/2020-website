@@ -1,62 +1,118 @@
 'use client'
-import { useState } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { fin_payslip_schema } from '@/app/payslip/payslipDbCols'
 import { Button } from '@/components/ui/button'
 import { PayslipTable } from '@/app/payslip/PayslipTable'
 import { parseEntities } from '@/app/payslip/payslipSchemaReducer'
 import { useRouter } from 'next/navigation'
+import FileUploadClient from '@/app/payslip/FileUploadClient'
+import { Loader2 } from 'lucide-react'
+
 import styles from '../../dropzone.module.css'
 
 export default function JsonImportClient() {
   const [jsonContent, setJsonContent] = useState('')
   const [previewData, setPreviewData] = useState<any[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
+  const parseAndValidateJson = useCallback(
+    (content: string) => {
+      try {
+        const parsed = parseEntities(content)
+        // Validate against schema
+        fin_payslip_schema.parse(parsed || content)
+        setPreviewData([parsed])
+        setError(null)
+        console.log('updated preview data', parsed)
+      } catch (error) {
+        console.error('Failed to parse or validate JSON:', error)
+        setPreviewData([])
+        setError(error instanceof Error ? error.message : 'Invalid JSON format')
+      }
+    },
+    [jsonContent, setPreviewData, setError],
+  )
+
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setJsonContent(e.target.value)
-    try {
-      const parsed = parseEntities(e.target.value)
-      // Validate against schema
-      fin_payslip_schema.parse(parsed)
-      setPreviewData([parsed])
-    } catch (error) {
-      console.error('Failed to parse or validate JSON:', error)
-      setPreviewData([])
-    }
+    const content = e.target.value
+    setJsonContent(content)
+    parseAndValidateJson(content)
   }
 
-  const handleDrop = (e: React.DragEvent<HTMLTextAreaElement>) => {
-    e.preventDefault()
-    const file = e.dataTransfer.files[0]
-    if (file && file.type === 'application/json') {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const content = e.target?.result as string
-        setJsonContent(content)
-        try {
-          const parsed = parseEntities(content)
-          // Validate against schema
-          fin_payslip_schema.parse(parsed)
-          setPreviewData([parsed])
-        } catch (error) {
-          console.error('Failed to parse or validate JSON:', error)
-          setPreviewData([])
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLTextAreaElement>) => {
+      e.preventDefault()
+      const file = e.dataTransfer.files[0]
+      if (file && file.type === 'application/json') {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const content = e.target?.result as string
+          setJsonContent(content)
+          parseAndValidateJson(content)
         }
+        reader.readAsText(file)
       }
-      reader.readAsText(file)
-    }
-  }
+    },
+    [parseAndValidateJson],
+  )
 
   const handleSubmit = async () => {
-    const fd = new FormData()
-    fd.append('parsed_json', JSON.stringify(previewData))
-    await fetch('/api/payslip/', {
-      method: 'POST',
-      body: fd,
-      credentials: 'include',
-    })
-    router.push('/payslip')
+    if (previewData.length === 0) {
+      setError('No valid data to import')
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const fd = new FormData()
+      fd.append('parsed_json', JSON.stringify(previewData))
+      const response = await fetch('/api/payslip/', {
+        method: 'POST',
+        body: fd,
+        credentials: 'include',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to import payslips')
+      }
+
+      router.push('/payslip')
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'An unexpected error occurred')
+    } finally {
+      setIsLoading(false)
+    }
   }
+
+  const updateJsonPreview = useCallback(
+    (rows: any[]) => {
+      try {
+        const parsedRows = rows.map(parseEntities)
+        // Validate against schema
+        parsedRows.forEach((row) => fin_payslip_schema.parse(row))
+        setPreviewData(parsedRows)
+        setError(null)
+      } catch (error) {
+        console.error('Failed to parse or validate JSON:', error)
+        setPreviewData([])
+        setError(error instanceof Error ? error.message : 'Invalid JSON format')
+      }
+    },
+    [setPreviewData, setError],
+  )
+
+  const previewColumns = useMemo(
+    () => [
+      { field: 'period_start', title: 'Period Start', hide: false },
+      { field: 'period_end', title: 'Period End', hide: false },
+      { field: 'pay_date', title: 'Pay Date', hide: false },
+      { field: 'earnings_gross', title: 'Gross', hide: false },
+      { field: 'earnings_net_pay', title: 'Net', hide: false },
+    ],
+    [],
+  )
 
   return (
     <div className="d-flex gap-4">
@@ -70,7 +126,29 @@ export default function JsonImportClient() {
           onDragOver={(e) => e.preventDefault()}
           placeholder="Paste JSON here or drop a JSON file"
         />
+        {error && <div className="text-danger mb-3">{error}</div>}
+        <FileUploadClient onJsonPreview={updateJsonPreview} acceptTypes={['application/json']} />
       </div>
+      {previewData.length > 0 && (
+        <div>
+          <h4>Preview</h4>
+          <PayslipTable
+            data={previewData}
+            // @ts-ignore
+            cols={previewColumns}
+          />
+          <Button onClick={handleSubmit} className="mt-3" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Importing...
+              </>
+            ) : (
+              'Import'
+            )}
+          </Button>
+        </div>
+      )}
       <div style={{ flex: 1 }}>
         <h5>Example JSON</h5>
         <pre style={{ fontSize: '0.8rem', whiteSpace: 'pre-wrap' }}>
@@ -179,24 +257,6 @@ export default function JsonImportClient() {
           </li>
         </ul>
       </div>
-      {previewData.length > 0 && (
-        <div>
-          <h4>Preview</h4>
-          <PayslipTable
-            data={previewData}
-            cols={[
-              { field: 'period_start', title: 'Period Start', hide: false },
-              { field: 'period_end', title: 'Period End', hide: false },
-              { field: 'pay_date', title: 'Pay Date', hide: false },
-              { field: 'earnings_gross', title: 'Gross', hide: false },
-              { field: 'earnings_net_pay', title: 'Net', hide: false },
-            ]}
-          />
-          <Button onClick={handleSubmit} className="mt-3">
-            Import
-          </Button>
-        </div>
-      )}
     </div>
   )
 }

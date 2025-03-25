@@ -9,7 +9,6 @@ export default function Container(props: {
   return (
     <main
       className={cn(
-        'mt-16',
         {
           'container mx-auto px-4': !props.fluid,
           'w-full': props.fluid,

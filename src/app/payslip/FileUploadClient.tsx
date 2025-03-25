@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { parseEntities } from '@/app/payslip/payslipSchemaReducer'
 import styles from './dropzone.module.css'
 
@@ -12,17 +12,20 @@ export default function FileUploadClient(props: Props) {
   const [jsonFiles, setJsonFiles] = useState<File[]>([])
   const [pdfFiles, setPdfFiles] = useState<File[]>([])
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    const droppedFiles = Array.from(e.dataTransfer.files)
-    const acceptedFiles = props.acceptTypes
-      ? droppedFiles.filter((file) => props.acceptTypes?.includes(file.type))
-      : droppedFiles
-    const newJsonFiles = acceptedFiles.filter((file) => file.type === 'application/json')
-    const newPdfFiles = acceptedFiles.filter((file) => file.type === 'application/pdf')
-    setJsonFiles(newJsonFiles)
-    setPdfFiles(newPdfFiles)
-  }
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault()
+      const droppedFiles = Array.from(e.dataTransfer.files)
+      const acceptedFiles = props.acceptTypes
+        ? droppedFiles.filter((file) => props.acceptTypes?.includes(file.type))
+        : droppedFiles
+      const newJsonFiles = acceptedFiles.filter((file) => file.type === 'application/json')
+      const newPdfFiles = acceptedFiles.filter((file) => file.type === 'application/pdf')
+      setJsonFiles(newJsonFiles)
+      setPdfFiles(newPdfFiles)
+    },
+    [props.acceptTypes, setJsonFiles, setPdfFiles],
+  )
 
   const { onJsonPreview } = props
   useEffect(() => {

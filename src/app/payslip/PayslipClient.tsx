@@ -1,164 +1,86 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { fetchWrapper } from '@/lib/fetchWrapper'
 import { fin_payslip } from '@/app/payslip/payslipDbCols'
 import { genBrackets } from '@/lib/taxBracket'
-import { Loader2 } from 'lucide-react'
-import { payslip_table_col, PayslipTable } from '@/app/payslip/PayslipTable'
+import { PlusCircle, FileSpreadsheet } from 'lucide-react'
+import { PayslipTable } from '@/app/payslip/PayslipTable'
 import { sum } from '@/components/matcher'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { useCallback, useEffect, useState } from 'react'
+import { cols } from '@/app/payslip/config/payslipColumnsConfig'
 import Container from '@/components/container'
 import currency from 'currency.js'
-import FileUploadClient from '@/app/payslip/FileUploadClient'
-import styles from './dropzone.module.css'
+import Link from 'next/link'
+import { savePayslip } from './entry/actions'
 
 interface PayslipClientProps {
-  year: string
+  selectedYear: string
+  initialData: fin_payslip[]
+  initialYears: string[]
 }
 
-export default function PayslipClient({ year }: PayslipClientProps): React.ReactElement {
-  const cols: payslip_table_col[] = [
-    { field: 'period_start', title: 'Period Start', hide: false },
-    { field: 'period_end', title: 'Period End', hide: false },
-    { field: 'pay_date', title: 'Pay Date', hide: false },
-    { field: 'ps_comment', title: 'Comment', hide: false },
-    {
-      field: [
-        { field: 'ps_salary', title: '' },
-        { field: 'earnings_bonus', title: 'Bonus' },
-        { field: 'earnings_rsu', title: 'RSU' },
-      ],
-      title: 'Wages',
-      hide: false,
-    },
-    {
-      field: [
-        { field: 'imp_ltd', title: 'LTD' },
-        { field: 'imp_legal', title: 'Legal' },
-        { field: 'imp_fitness', title: 'Gym' },
-        { field: 'ps_vacation_payout', title: 'Vacation Payout' },
-        { field: 'imp_other', title: 'Misc' },
-      ],
-      title: 'Supplemental Wages',
-      hide: false,
-    },
-    { field: 'ps_oasdi', title: 'OASDI', hide: false },
-    { field: 'ps_medicare', title: 'Medicare', hide: false },
-    {
-      field: [
-        { field: 'ps_fed_tax', title: '', hide: false },
-        { field: 'ps_fed_tax_addl', title: '+', hide: false },
-        { field: 'ps_fed_tax_refunded', title: 'Refund', hide: false },
-      ],
-      title: 'Fed Income Tax',
-    },
-    {
-      field: [
-        { field: 'ps_state_tax', title: '', hide: false },
-        { field: 'ps_state_tax_addl', title: '+', hide: false },
-      ],
-      title: 'State Tax',
-    },
-    { field: 'ps_state_disability', title: 'SDI', hide: false },
-    {
-      field: [
-        { field: 'ps_401k_pretax', title: '', hide: false },
-        { field: 'ps_401k_employer', title: '+', hide: false },
-      ],
-      title: '401k Pre-Tax',
-    },
-    { field: 'ps_401k_aftertax', title: '401k After-Tax', hide: false },
-    {
-      field: [
-        { field: 'ps_pretax_medical', title: 'M' },
-        { field: 'ps_pretax_dental', title: 'D' },
-        { field: 'ps_pretax_vision', title: 'V' },
-      ],
-      title: 'Benefits',
-    },
-    { field: 'ps_payslip_file_hash', title: 'Payslip File Hash', hide: true },
-    {
-      field: 'ps_is_estimated',
-      title: 'Is Estimated',
-      hide: false,
-      render: (value: any, row: fin_payslip) => (
-        <input type="checkbox" checked={value} onChange={() => editRow({ ...row, ps_is_estimated: !value })} />
-      ),
-    },
-    { field: 'earnings_net_pay', title: 'Net Pay' },
-    { field: 'other', title: 'Other', hide: false },
-  ]
-
-  const [rawData, setRawData] = useState<any[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  useEffect(() => {
-    fetchWrapper.get(`/api/payslip/?year=${year}`).then((res) => {
-      setRawData(res)
-      setLoading(false)
-    })
-  }, [year])
-
+export default function PayslipClient({ selectedYear, initialData, initialYears }: PayslipClientProps): React.ReactElement {
   const editRow = async (row: fin_payslip) => {
-    try {
-      setLoading(true)
-      const fd = new FormData()
-      fd.append('parsed_json', JSON.stringify([row]))
-      const response = await fetch('/api/payslip/', {
-        method: 'POST',
-        body: fd,
-        credentials: 'include', // Include cookies
-      })
-      setRawData(await response.json())
-    } finally {
-      setLoading(false)
-    }
+    await savePayslip(row)
   }
 
-  const doImport = async () => {
-    try {
-      setLoading(true)
-      const fd = new FormData()
-      fd.append('parsed_json', JSON.stringify(previewData))
-      const response = await fetch('/api/payslip/', {
-        method: 'POST',
-        body: fd,
-        credentials: 'include', // Include cookies
-      })
-      setRawData(await response.json())
-    } finally {
-      setLoading(false)
-    }
-  }
+  const data = initialData.filter(
+    (r: fin_payslip) => r.pay_date! > `${selectedYear}-01-01` && r.pay_date! < `${selectedYear}-12-31`,
+  )
 
-  const [previewData, setPreviewData] = useState<any[]>([])
-  const updateJsonPreview = useCallback((e: any[]) => setPreviewData(e), [])
-
-  // Filter by date
-  const data = rawData.filter((r: fin_payslip) => r.pay_date! > '2024-01-01' && r.pay_date! < '2025-01-01')
+  const EmptyState = () => (
+    <div className="flex flex-col items-center justify-center space-y-4 py-16 text-center">
+      <div className="text-muted-foreground">No payslips found for the selected year</div>
+      <Button asChild>
+        <Link href="/payslip/entry">
+          <PlusCircle className="mr-2" /> Add Payslip
+        </Link>
+      </Button>
+    </div>
+  )
 
   return (
     <Container fluid>
-      <PayslipTable data={data} cols={cols} onRowEdited={editRow} />
-      {loading && (
-        <div className={styles.center}>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      <div className="w-full my-2">
+        <div className="flex justify-between items-center px-4">
+          <div className="flex gap-2 items-center">
+            <span>Tax Year:</span>
+            {initialYears.map((year) => (
+              <Button asChild key={year} variant={year === selectedYear ? 'default' : 'outline'}>
+                <Link href={`?year=${year}`}>{year}</Link>
+              </Button>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <Button asChild variant="outline">
+              <Link href="/payslip/entry">
+                <PlusCircle className="mr-2" /> Add Payslip
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/payslip/import/json">Import JSON</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/payslip/import/tsv">
+                <FileSpreadsheet className="mr-2" /> Import TSV
+              </Link>
+            </Button>
+          </div>
         </div>
-      )}
-      <TotalsTable data={data} />
-      <FileUploadClient onJsonPreview={updateJsonPreview} />
-      {Array.isArray(previewData) && previewData.length > 0 && (
+
+        <div className="px-4 mt-2">
+          Tax period:{' '}
+          <b>
+            {selectedYear}-01-01 through {selectedYear}-12-31
+          </b>
+        </div>
+      </div>
+
+      {data.length === 0 ? (
+        <EmptyState />
+      ) : (
         <>
-          <h3>Upload data preview</h3>
-          <PayslipTable data={previewData} cols={cols} />
-          <Button
-            onClick={(e) => {
-              e.preventDefault()
-              doImport()
-            }}
-          >
-            Import
-          </Button>
+          <PayslipTable data={data} cols={cols} onRowEdited={editRow} />
+          <TotalsTable data={data} />
         </>
       )}
     </Container>

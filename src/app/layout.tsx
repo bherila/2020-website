@@ -16,7 +16,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" suppressHydrationWarning>
       <head></head>
-      <body className="min-h-screen bg-background text-foreground flex flex-col">
+      <body className="min-h-screen bg-background text-foreground flex flex-col pt-16">
         <NextThemesProvider attribute="class" defaultTheme="system" enableSystem>
           <Header session={session} />
           <main className="flex-grow">{children}</main>
