@@ -1,12 +1,17 @@
 'use client'
 import { useState } from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts'
 import currency from 'currency.js'
 import { format } from 'date-fns'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
+import { formatFriendlyAmount } from '@/lib/formatCurrency'
 
 const colors = [
+  // Blues
+  '#0D47A1',
+  '#1976D2',
+  '#1565C0',
   // Reds
   '#D32F2F',
   '#C62828',
@@ -23,10 +28,6 @@ const colors = [
   '#388E3C',
   '#2E7D32',
   '#1B5E20',
-  // Blues
-  '#1976D2',
-  '#1565C0',
-  '#0D47A1',
   // Purples
   '#7B1FA2',
   '#6A1B9A',
@@ -55,12 +56,15 @@ interface StackedBalanceChartProps {
 export default function StackedBalanceChart({ data, labels, isNegative, isRetirement }: StackedBalanceChartProps) {
   const [includeLiabilities, setIncludeLiabilities] = useState(true)
   const [includeRetirement, setIncludeRetirement] = useState(true)
+  const [groupByAccount, setGroupByAccount] = useState(true)
 
   // Transform the data into the format recharts expects
   const chartData = data.map(([date, ...balances]) => {
     const dataPoint: { [key: string]: any } = {
       date: date,
     }
+
+    let totalBalance = 0
 
     balances.forEach((balance, index) => {
       const label = labels?.[index] || `balance${index + 1}`
@@ -78,18 +82,26 @@ export default function StackedBalanceChart({ data, labels, isNegative, isRetire
           ? currency(balance.replace(/^-/, '')).value * (balance.startsWith('-') ? -1 : 1)
           : balance
 
-      dataPoint[label] = isNegativeAccount ? -Math.abs(numericBalance) : numericBalance
+      totalBalance += numericBalance
+      if (groupByAccount) {
+        dataPoint[label] = isNegativeAccount ? -Math.abs(numericBalance) : numericBalance
+      }
     })
+
+    // Always calculate total net worth
+    dataPoint['Net Worth'] = totalBalance
 
     return dataPoint
   })
 
   // Generate the balance keys (excluding the date column)
-  const balanceKeys = labels
-    ? labels.filter(
-        (_, index) => (!isNegative?.[index] || includeLiabilities) && (!isRetirement?.[index] || includeRetirement),
-      )
-    : Array.from({ length: data[0].length - 1 }, (_, i) => `balance${i + 1}`)
+  const balanceKeys = groupByAccount
+    ? labels
+      ? labels.filter(
+          (_, index) => (!isNegative?.[index] || includeLiabilities) && (!isRetirement?.[index] || includeRetirement),
+        )
+      : Array.from({ length: data[0].length - 1 }, (_, i) => `balance${i + 1}`)
+    : ['Net Worth']
 
   return (
     <div>
@@ -114,7 +126,7 @@ export default function StackedBalanceChart({ data, labels, isNegative, isRetire
               return format(new Date(date), "MMM 'yy")
             }}
           />
-          <YAxis />
+          <YAxis tickFormatter={(value) => formatFriendlyAmount(value)} />
           <Tooltip
             contentStyle={{
               backgroundColor: '#222222',
@@ -133,7 +145,7 @@ export default function StackedBalanceChart({ data, labels, isNegative, isRetire
           />
           {balanceKeys.map((key, index) => {
             const originalIndex = labels?.indexOf(key) ?? index
-            const color = colors[originalIndex % colors.length]
+            const color = groupByAccount ? colors[originalIndex % colors.length] : colors[0]
             const isNegativeAccount = isNegative?.[originalIndex] || false
             const isRetirementAccount = isRetirement?.[originalIndex] || false
 
@@ -141,17 +153,34 @@ export default function StackedBalanceChart({ data, labels, isNegative, isRetire
               <Bar
                 key={key}
                 dataKey={key}
-                stackId="a"
+                stackId={groupByAccount ? 'a' : undefined}
                 fill={color}
                 // Invert the bar for negative accounts
                 {...(isNegativeAccount ? { fillOpacity: 0.5 } : {})}
                 {...(isRetirementAccount ? { fillOpacity: 0.7, strokeDasharray: '5 5' } : {})}
-              />
+              >
+                {index === balanceKeys.length - 1 ? (
+                  <LabelList
+                    dataKey="Net Worth"
+                    position="top"
+                    formatter={(value: number) => formatFriendlyAmount(value)}
+                    className="text-xs font-bold"
+                  />
+                ) : null}
+              </Bar>
             )
           })}
         </BarChart>
       </ResponsiveContainer>
       <div className="flex justify-center space-x-8 mt-4">
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="groupByAccount"
+            checked={groupByAccount}
+            onCheckedChange={(checked) => setGroupByAccount(!!checked)}
+          />
+          <Label htmlFor="groupByAccount">Group by account</Label>
+        </div>
         <div className="flex items-center space-x-2">
           <Checkbox
             id="includeLiabilities"
