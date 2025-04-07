@@ -29,7 +29,7 @@ export default async function Page({
   return (
     <Container>
       <MainTitle>{initialPayslip ? 'Edit Payslip' : 'Add Payslip'}</MainTitle>
-      {initialPayslip && <PayslipDetailClient initialPayslip={initialPayslip} />}
+      <PayslipDetailClient initialPayslip={initialPayslip} />
     </Container>
   )
 }

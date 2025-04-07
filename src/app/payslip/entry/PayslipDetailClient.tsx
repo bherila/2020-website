@@ -25,6 +25,39 @@ import { useRouter } from 'next/navigation'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { parseDate } from '@/lib/DateHelper'
 
+const PayslipFormSection = ({ title, fields, control }: { title: string; fields: string[]; control: any }) => (
+  <div className="border p-4 rounded-md">
+    <h3 className="text-lg font-semibold mb-4">{title}</h3>
+    <div className="grid grid-cols-3 gap-4">
+      {fields.map((field) => (
+        <FormField
+          key={field}
+          control={control}
+          name={field as keyof fin_payslip}
+          render={({ field: inputField }) => (
+            <FormItem>
+              <FormLabel>{field}</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  step="0.01"
+                  {...inputField}
+                  onChange={(e) => inputField.onChange(e.target.valueAsNumber)}
+                  onBlur={(e) => {
+                    const value = parseFloat(e.target.value)
+                    inputField.onChange(isNaN(value) ? 0 : value)
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      ))}
+    </div>
+  </div>
+)
+
 interface PayslipDetailClientProps {
   initialPayslip?: fin_payslip
 }
@@ -34,6 +67,7 @@ export default function PayrollForm({ initialPayslip }: PayslipDetailClientProps
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [saveMode, setSaveMode] = useState<'edit' | 'new'>('edit')
+  const [apiError, setApiError] = useState<string | null>(null)
 
   const form = useForm<fin_payslip>({
     resolver: zodResolver(fin_payslip_schema),
@@ -50,6 +84,7 @@ export default function PayrollForm({ initialPayslip }: PayslipDetailClientProps
 
   const onSubmit = async (data: fin_payslip) => {
     setIsSubmitting(true)
+    setApiError(null)
     try {
       const payslipToSave =
         saveMode === 'edit' && initialPayslip
@@ -70,7 +105,7 @@ export default function PayrollForm({ initialPayslip }: PayslipDetailClientProps
       router.push('/payslip')
     } catch (error) {
       console.error('Failed to save payslip:', error)
-      // TODO: Add user-friendly error handling
+      setApiError(error instanceof Error ? error.message : 'An unexpected error occurred while saving the payslip.')
     } finally {
       setIsSubmitting(false)
     }
@@ -83,6 +118,7 @@ export default function PayrollForm({ initialPayslip }: PayslipDetailClientProps
     }
 
     setIsDeleting(true)
+    setApiError(null)
     try {
       await deletePayslip({
         period_start: initialPayslip.period_start,
@@ -91,14 +127,31 @@ export default function PayrollForm({ initialPayslip }: PayslipDetailClientProps
       })
     } catch (error) {
       console.error('Failed to delete payslip:', error)
-      // TODO: Add user-friendly error handling
-    } finally {
+      setApiError(error instanceof Error ? error.message : 'An unexpected error occurred while deleting the payslip.')
       setIsDeleting(false)
     }
   }
 
+  const clearApiError = () => {
+    setApiError(null)
+  }
+
   return (
     <div className="container">
+      {apiError && (
+        <AlertDialog open={!!apiError} onOpenChange={clearApiError}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Error</AlertDialogTitle>
+              <AlertDialogDescription>{apiError}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction onClick={clearApiError}>OK</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid grid-cols-4 gap-4 border p-4 rounded-md">
@@ -157,198 +210,43 @@ export default function PayrollForm({ initialPayslip }: PayslipDetailClientProps
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="border p-4 rounded-md">
-              <h3 className="text-lg font-semibold mb-4">Earnings</h3>
-              <div className="grid grid-cols-3 gap-4">
-                {[
-                  'ps_salary',
-                  'earnings_gross',
-                  'earnings_bonus',
-                  'earnings_rsu',
-                  'earnings_net_pay',
-                  'ps_vacation_payout',
-                ].map((field) => (
-                  <FormField
-                    key={field}
-                    control={form.control}
-                    name={field as keyof fin_payslip}
-                    render={({ field: inputField }) => (
-                      <FormItem>
-                        <FormLabel>{field}</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            {...inputField}
-                            onChange={(e) => inputField.onChange(e.target.valueAsNumber)}
-                            onBlur={(e) => {
-                              const value = parseFloat(e.target.value)
-                              inputField.onChange(isNaN(value) ? 0 : value)
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="border p-4 rounded-md">
-              <h3 className="text-lg font-semibold mb-4">Imputed Income</h3>
-              <div className="grid grid-cols-3 gap-4">
-                {['imp_legal', 'imp_fitness', 'imp_ltd', 'imp_other'].map((field) => (
-                  <FormField
-                    key={field}
-                    control={form.control}
-                    name={field as keyof fin_payslip}
-                    render={({ field: inputField }) => (
-                      <FormItem>
-                        <FormLabel>{field}</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            {...inputField}
-                            onChange={(e) => inputField.onChange(e.target.valueAsNumber)}
-                            onBlur={(e) => {
-                              const value = parseFloat(e.target.value)
-                              inputField.onChange(isNaN(value) ? 0 : value)
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="border p-4 rounded-md">
-              <h3 className="text-lg font-semibold mb-4">Federal Taxes Paid</h3>
-              <div className="grid grid-cols-3 gap-4">
-                {['ps_oasdi', 'ps_medicare', 'ps_fed_tax', 'ps_fed_tax_addl', 'ps_fed_tax_refunded'].map((field) => (
-                  <FormField
-                    key={field}
-                    control={form.control}
-                    name={field as keyof fin_payslip}
-                    render={({ field: inputField }) => (
-                      <FormItem>
-                        <FormLabel>{field}</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            {...inputField}
-                            onChange={(e) => inputField.onChange(e.target.valueAsNumber)}
-                            onBlur={(e) => {
-                              const value = parseFloat(e.target.value)
-                              inputField.onChange(isNaN(value) ? 0 : value)
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="border p-4 rounded-md">
-              <h3 className="text-lg font-semibold mb-4">State Taxes</h3>
-              <div className="grid grid-cols-3 gap-4">
-                {['ps_state_tax', 'ps_state_disability', 'ps_state_tax_addl'].map((field) => (
-                  <FormField
-                    key={field}
-                    control={form.control}
-                    name={field as keyof fin_payslip}
-                    render={({ field: inputField }) => (
-                      <FormItem>
-                        <FormLabel>{field}</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            {...inputField}
-                            onChange={(e) => inputField.onChange(e.target.valueAsNumber)}
-                            onBlur={(e) => {
-                              const value = parseFloat(e.target.value)
-                              inputField.onChange(isNaN(value) ? 0 : value)
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="border p-4 rounded-md">
-              <h3 className="text-lg font-semibold mb-4">Retirement Savings</h3>
-              <div className="grid grid-cols-3 gap-4">
-                {['ps_401k_pretax', 'ps_401k_aftertax', 'ps_401k_employer'].map((field) => (
-                  <FormField
-                    key={field}
-                    control={form.control}
-                    name={field as keyof fin_payslip}
-                    render={({ field: inputField }) => (
-                      <FormItem>
-                        <FormLabel>{field}</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            {...inputField}
-                            onChange={(e) => inputField.onChange(e.target.valueAsNumber)}
-                            onBlur={(e) => {
-                              const value = parseFloat(e.target.value)
-                              inputField.onChange(isNaN(value) ? 0 : value)
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="border p-4 rounded-md">
-              <h3 className="text-lg font-semibold mb-4">Pretax Deductions</h3>
-              <div className="grid grid-cols-3 gap-4">
-                {['ps_pretax_medical', 'ps_pretax_fsa', 'ps_pretax_vision', 'ps_pretax_dental'].map((field) => (
-                  <FormField
-                    key={field}
-                    control={form.control}
-                    name={field as keyof fin_payslip}
-                    render={({ field: inputField }) => (
-                      <FormItem>
-                        <FormLabel>{field}</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            {...inputField}
-                            onChange={(e) => inputField.onChange(e.target.valueAsNumber)}
-                            onBlur={(e) => {
-                              const value = parseFloat(e.target.value)
-                              inputField.onChange(isNaN(value) ? 0 : value)
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ))}
-              </div>
-            </div>
+            <PayslipFormSection
+              title="Earnings"
+              fields={[
+                'ps_salary',
+                'earnings_gross',
+                'earnings_bonus',
+                'earnings_rsu',
+                'earnings_net_pay',
+                'ps_vacation_payout',
+              ]}
+              control={form.control}
+            />
+            <PayslipFormSection
+              title="Imputed Income"
+              fields={['imp_legal', 'imp_fitness', 'imp_ltd', 'imp_other']}
+              control={form.control}
+            />
+            <PayslipFormSection
+              title="Federal Taxes Paid"
+              fields={['ps_oasdi', 'ps_medicare', 'ps_fed_tax', 'ps_fed_tax_addl', 'ps_fed_tax_refunded']}
+              control={form.control}
+            />
+            <PayslipFormSection
+              title="State Taxes"
+              fields={['ps_state_tax', 'ps_state_disability', 'ps_state_tax_addl']}
+              control={form.control}
+            />
+            <PayslipFormSection
+              title="Retirement Savings"
+              fields={['ps_401k_pretax', 'ps_401k_aftertax', 'ps_401k_employer']}
+              control={form.control}
+            />
+            <PayslipFormSection
+              title="Pretax Deductions"
+              fields={['ps_pretax_medical', 'ps_pretax_fsa', 'ps_pretax_vision', 'ps_pretax_dental']}
+              control={form.control}
+            />
           </div>
 
           {hasYearChanged && (

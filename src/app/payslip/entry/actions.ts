@@ -6,6 +6,7 @@ import { prisma } from '@/server_lib/prisma'
 import { getSession } from '@/server_lib/session'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { ZodError } from 'zod'
 
 export async function savePayslip(
   formData: z.infer<typeof fin_payslip_schema> & {
@@ -56,6 +57,11 @@ export async function savePayslip(
       },
     })
   } catch (error) {
+    if (error instanceof ZodError) {
+      // Collect all validation errors
+      const errorMessages = error.errors.map((err) => `${err.path.join('.')}: ${err.message}`).join('; ')
+      throw new Error(`Validation failed: ${errorMessages}`)
+    }
     console.error('Error saving payslip:', error)
     throw error
   }

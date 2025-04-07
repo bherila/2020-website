@@ -1,16 +1,16 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { fin_payslip } from '@/app/payslip/payslipDbCols'
-import { genBrackets } from '@/lib/taxBracket'
 import { PlusCircle, FileSpreadsheet } from 'lucide-react'
 import { PayslipTable } from '@/app/payslip/PayslipTable'
-import { sum } from '@/components/matcher'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { cols } from '@/app/payslip/config/payslipColumnsConfig'
 import Container from '@/components/container'
 import currency from 'currency.js'
 import Link from 'next/link'
 import { savePayslip } from './entry/actions'
+import { calculateTax } from '@/lib/taxBracket'
+import { Badge } from '@/components/ui/badge'
 
 interface PayslipClientProps {
   selectedYear: string
@@ -25,6 +25,18 @@ export default function PayslipClient({ selectedYear, initialData, initialYears 
 
   const data = initialData.filter(
     (r: fin_payslip) => r.pay_date! > `${selectedYear}-01-01` && r.pay_date! < `${selectedYear}-12-31`,
+  )
+
+  const dataThroughQ1 = initialData.filter(
+    (r: fin_payslip) => r.pay_date! > `${selectedYear}-01-01` && r.pay_date! < `${selectedYear}-04-01`,
+  )
+
+  const dataThroughQ2 = initialData.filter(
+    (r: fin_payslip) => r.pay_date! > `${selectedYear}-01-01` && r.pay_date! < `${selectedYear}-07-01`,
+  )
+
+  const dataThroughQ3 = initialData.filter(
+    (r: fin_payslip) => r.pay_date! > `${selectedYear}-01-01` && r.pay_date! < `${selectedYear}-10-01`,
   )
 
   const EmptyState = () => (
@@ -80,7 +92,18 @@ export default function PayslipClient({ selectedYear, initialData, initialYears 
       ) : (
         <>
           <PayslipTable data={data} cols={cols} onRowEdited={editRow} />
-          <TotalsTable data={data} />
+          <div className="mt-4">
+            <TotalsTable
+              series={
+                [
+                  ['Q1', dataThroughQ1],
+                  dataThroughQ2.length > dataThroughQ1.length ? ['Q2', dataThroughQ2] : undefined,
+                  dataThroughQ3.length > dataThroughQ2.length ? ['Q3', dataThroughQ3] : undefined,
+                  data.length > dataThroughQ3.length ? ['Q4 (Full Year)', data] : undefined,
+                ].filter(Boolean) as [string, fin_payslip[]][]
+              }
+            />
+          </div>
         </>
       )}
     </Container>
@@ -101,17 +124,6 @@ function totalTaxableIncomeBeforeSubtractions(data: fin_payslip[]) {
   return tot
 }
 
-function totalSubtractions(data: fin_payslip[]) {
-  let tot = currency(0)
-  for (const row of data) {
-    tot = tot
-      .add(row.ps_401k_pretax ?? 0)
-      .add(row.ps_pretax_medical ?? 0)
-      .add(row.ps_pretax_fsa ?? 0)
-  }
-  return tot
-}
-
 function totalFedWH(data: fin_payslip[]) {
   let tot = currency(0)
   for (const row of data) {
@@ -123,84 +135,128 @@ function totalFedWH(data: fin_payslip[]) {
   return tot
 }
 
-function totalStateWH(data: fin_payslip[]) {
-  let tot = currency(0)
-  for (const row of data) {
-    tot = tot
-      .add(row.ps_state_disability ?? 0)
-      .add(row.ps_state_tax ?? 0)
-      .subtract(row.ps_state_tax_addl ?? 0)
+function TotalsTable({
+  series,
+  taxConfig = {
+    year: '2025',
+    state: '',
+    filingStatus: 'Single',
+    standardDeduction: 13850,
+  },
+}: {
+  series: [string, fin_payslip[]][]
+  taxConfig?: {
+    year: string
+    state: string
+    filingStatus: 'Single' | 'Married' | 'Married Filing Separately' | 'Head of Household'
+    standardDeduction: number
   }
-  return tot
-}
+}) {
+  const calculateTotals = (data: fin_payslip[]) => {
+    const income = totalTaxableIncomeBeforeSubtractions(data)
+    const fedWH = totalFedWH(data)
+    const estTaxIncome = income.subtract(taxConfig.standardDeduction)
+    const { taxes, totalTax } = calculateTax(taxConfig.year, taxConfig.state, estTaxIncome, taxConfig.filingStatus)
 
-function TotalsTable(props: { data: fin_payslip[] }) {
-  const income = totalTaxableIncomeBeforeSubtractions(props.data)
-  const fedWH = totalFedWH(props.data)
-  const pretax = totalSubtractions(props.data)
-  const estTaxIncome = income.subtract(pretax).subtract(13850)
-  const fedBrackets = genBrackets('2023', estTaxIncome)
-  const totalTax = sum(fedBrackets.map((r) => r.tax))
-  const refund = totalTax.subtract(fedWH)
+    return { income, fedWH, estTaxIncome, taxes, totalTax }
+  }
+  const rows = [
+    {
+      description: 'Estimated Income',
+      getValue: (totals: ReturnType<typeof calculateTotals>) => totals.income.value.toFixed(2),
+    },
+    {
+      description: 'Standard Deduction',
+      getValue: () => taxConfig.standardDeduction.toFixed(2),
+    },
+    {
+      description: 'Estimated Taxable Income',
+      getValue: (totals: ReturnType<typeof calculateTotals>) => totals.estTaxIncome.value.toFixed(2),
+    },
+    {
+      description: 'Tax Breakdown',
+      getValue: (totals: ReturnType<typeof calculateTotals>) => (
+        <Table>
+          <TableBody>
+            {totals.taxes.map((m) => (
+              <TableRow key={m.bracket.toString()}>
+                <TableCell>
+                  ${m.amt.value} @ {m.bracket.toString()}
+                </TableCell>
+                <TableCell>{m.tax.toString()}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      ),
+    },
+    {
+      description: 'Total Tax',
+      getValue: (totals: ReturnType<typeof calculateTotals>) => totals.totalTax.value.toFixed(2),
+    },
+    {
+      description: 'Effective Tax Rate',
+      getValue: (totals: ReturnType<typeof calculateTotals>) =>
+        totals.estTaxIncome.value > 0
+          ? `${totals.totalTax.divide(totals.estTaxIncome).multiply(100).value.toFixed(2)}%`
+          : 'N/A',
+    },
+    {
+      description: 'Taxes Withheld',
+      getValue: (totals: ReturnType<typeof calculateTotals>) =>
+        `${totals.fedWH.value.toFixed(2)} (${totals.fedWH.divide(totals.income).multiply(100).value.toFixed(1)}%)`,
+    },
+    {
+      description: 'Est Tax Due/Refund',
+      getValue: (totals: ReturnType<typeof calculateTotals>) => {
+        const taxDueOrRefund = totals.totalTax.subtract(totals.fedWH)
+        const absValue = Math.abs(taxDueOrRefund.value)
+
+        if (taxDueOrRefund.value < 0) {
+          return (
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary">{absValue.toFixed(2)}</Badge>
+              <Badge variant="outline" className="text-green-600">
+                Refund
+              </Badge>
+            </div>
+          )
+        } else if (taxDueOrRefund.value > 0) {
+          return (
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary">{absValue.toFixed(2)}</Badge>
+              <Badge variant="outline" className="text-red-600">
+                Due
+              </Badge>
+            </div>
+          )
+        } else {
+          return '0.00'
+        }
+      },
+    },
+  ]
   return (
-    <div style={{ alignContent: 'center', flexDirection: 'column' }}>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Description</TableHead>
-            <TableHead>Amount</TableHead>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Description</TableHead>
+          {series.map(([label]) => (
+            <TableHead key={label}>{label}</TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.map((row, index) => (
+          <TableRow key={index}>
+            <TableCell>{row.description}</TableCell>
+            {series.map(([label, data], seriesIndex) => {
+              const t = calculateTotals(data)
+              return <TableCell key={label}>{row.getValue(t)}</TableCell>
+            })}
           </TableRow>
-        </TableHeader>
-        <TableBody>
-          <TableRow>
-            <TableCell>Estimated W-2 Income</TableCell>
-            <TableCell>{income.value.toFixed(2)}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Pre-tax W-2 Subtractions</TableCell>
-            <TableCell>{pretax.value.toFixed(2)}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Standard Deduction</TableCell>
-            <TableCell>13850.00{/*  //TODO: Standard deduction */}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Estimated taxable income</TableCell>
-            <TableCell>{estTaxIncome.value.toFixed(2)}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Federal Tax Estimation</TableCell>
-            <TableCell>
-              <Table>
-                <TableBody>
-                  {fedBrackets.map((m) => (
-                    <TableRow key={m.bracket.value}>
-                      <TableCell>
-                        ${m.amt.value} @ {m.bracket.value}
-                      </TableCell>
-                      <TableCell>{m.tax.value}</TableCell>
-                    </TableRow>
-                  ))}
-                  <TableRow>
-                    <TableCell>Total:</TableCell>
-                    <TableCell>{totalTax.value}</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Federal Taxes Paid</TableCell>
-            <TableCell>
-              {fedWH.value.toFixed(2)} ({fedWH.divide(income).multiply(100).value.toFixed(1)}%)
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Est Federal Tax Due</TableCell>
-            <TableCell>{refund.value.toFixed(2)}</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </div>
+        ))}
+      </TableBody>
+    </Table>
   )
 }
