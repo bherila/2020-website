@@ -1,7 +1,7 @@
 'use client'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 
 const tabs = [
   {
@@ -29,12 +29,18 @@ const tabs = [
 
 export default function PayslipNavigation() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const yearParam = searchParams.get('year')
+
+  const getTabHref = (href: string) => {
+    return yearParam ? `${href}?year=${yearParam}` : href
+  }
 
   return (
     <Tabs defaultValue={tabs.find((tab) => tab.active(pathname))?.href} className="mb-3 mt-4 w-full">
       <TabsList className="w-full">
         {tabs.map((tab) => (
-          <Link href={tab.href} key={tab.href} passHref legacyBehavior>
+          <Link href={getTabHref(tab.href)} key={tab.href} passHref legacyBehavior>
             <TabsTrigger value={tab.href} data-state={tab.active(pathname) ? 'active' : 'inactive'}>
               {tab.name}
             </TabsTrigger>

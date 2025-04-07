@@ -46,19 +46,16 @@ const PayslipFormSection = ({
           name={field as keyof fin_payslip}
           render={({ field: inputField }) => (
             <FormItem>
-              <FormLabel>{field}</FormLabel>
+              <FormLabel>{field.replace(/_/g, ' ')}</FormLabel>
               <FormControl>
                 <Input
                   type="number"
                   step="0.01"
-                  value={initialValues?.[field as keyof fin_payslip] ?? inputField.value}
+                  {...inputField}
+                  value={inputField.value ?? ''}
                   onChange={(e) => {
-                    const value = e.target.valueAsNumber
-                    inputField.onChange(isNaN(value) ? 0 : value)
-                  }}
-                  onBlur={(e) => {
-                    const value = parseFloat(e.target.value)
-                    inputField.onChange(isNaN(value) ? 0 : value)
+                    const value = e.target.value === '' ? null : parseFloat(e.target.value)
+                    inputField.onChange(isNaN(value!) ? null : value)
                   }}
                 />
               </FormControl>
@@ -143,7 +140,9 @@ export default function PayrollForm({ initialPayslip }: PayslipDetailClientProps
             }
 
       await savePayslip(payslipToSave)
-      router.push('/payslip')
+
+      const payYear = parseDate(data.pay_date)?.formatYMD()?.slice(0, 4) ?? new Date().getFullYear().toString()
+      router.push(`/payslip?year=${payYear}`)
     } catch (error) {
       console.error('Failed to save payslip:', error)
       setApiError(error instanceof Error ? error.message : 'An unexpected error occurred while saving the payslip.')
@@ -166,6 +165,9 @@ export default function PayrollForm({ initialPayslip }: PayslipDetailClientProps
         period_end: initialPayslip.period_end,
         pay_date: initialPayslip.pay_date,
       })
+
+      const payYear = parseDate(initialPayslip.pay_date)?.formatYMD()?.slice(0, 4) ?? new Date().getFullYear().toString()
+      router.push(`/payslip?year=${payYear}`)
     } catch (error) {
       console.error('Failed to delete payslip:', error)
       setApiError(error instanceof Error ? error.message : 'An unexpected error occurred while deleting the payslip.')

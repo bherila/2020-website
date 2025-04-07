@@ -21,7 +21,7 @@ export default function PayslipClient({ selectedYear, initialData, initialYears 
   }
 
   const data = initialData.filter(
-    (r: fin_payslip) => r.pay_date! > `${selectedYear}-01-01` && r.pay_date! < `${selectedYear}-12-31`,
+    (r: fin_payslip) => r.pay_date! > `${selectedYear}-01-01` && r.pay_date! < `${selectedYear + 1}-01-01`,
   )
   const dataThroughQ1 = initialData.filter(
     (r: fin_payslip) => r.pay_date! > `${selectedYear}-01-01` && r.pay_date! < `${selectedYear}-04-01`,
@@ -43,7 +43,7 @@ export default function PayslipClient({ selectedYear, initialData, initialYears 
     <div className="flex flex-col items-center justify-center space-y-4 py-16 text-center">
       <div className="text-muted-foreground">No payslips found for the selected year</div>
       <Button asChild>
-        <Link href="/payslip/entry">
+        <Link href={`/payslip/entry?year=${selectedYear}`}>
           <PlusCircle className="mr-2" /> Add Payslip
         </Link>
       </Button>
@@ -64,7 +64,7 @@ export default function PayslipClient({ selectedYear, initialData, initialYears 
           </div>
           <div className="flex gap-2">
             <Button asChild variant="outline">
-              <Link href="/payslip/entry">
+              <Link href={`/payslip/entry?year=${selectedYear}`}>
                 <PlusCircle className="mr-2" /> Add Payslip
               </Link>
             </Button>

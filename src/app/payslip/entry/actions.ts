@@ -141,7 +141,7 @@ export async function fetchPayslips(year?: string) {
       uid: session.uid,
       pay_date: {
         gte: start,
-        lt: end,
+        lte: end,
       },
     },
     orderBy: {
