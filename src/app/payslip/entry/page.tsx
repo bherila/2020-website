@@ -17,13 +17,11 @@ export default async function Page({
 
   // If all three parameters are provided, try to fetch the payslip
   if (params.period_start && params.period_end && params.pay_date) {
-    try {
-      initialPayslip = await fetchPayslipByDetails({
-        period_start: params.period_start,
-        period_end: params.period_end,
-        pay_date: params.pay_date,
-      })
-    } catch (error) {}
+    initialPayslip = await fetchPayslipByDetails({
+      period_start: params.period_start,
+      period_end: params.period_end,
+      pay_date: params.pay_date,
+    })
   }
 
   return (

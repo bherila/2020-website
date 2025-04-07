@@ -189,7 +189,7 @@ export async function fetchPayslipByDetails(payslipDetails: {
     other: typeof payslip.other === 'string' ? JSON.parse(payslip.other) : payslip.other,
   }
 
-  return z.object(fin_payslip_schema.shape).parse(parsedPayslip)
+  return fin_payslip_schema.parse(parsedPayslip)
 }
 
 export async function updatePayslipEstimatedStatus(payslipDetails: {
