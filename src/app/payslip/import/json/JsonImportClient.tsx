@@ -32,7 +32,7 @@ export default function JsonImportClient() {
         setError(error instanceof Error ? error.message : 'Invalid JSON format')
       }
     },
-    [jsonContent, setPreviewData, setError],
+    [setPreviewData, setError],
   )
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

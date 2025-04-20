@@ -41,6 +41,26 @@ export default (_phase: string): NextConfig => {
           'https://bherilanet-my.sharepoint.com/:x:/g/personal/ben_herila_net/Ee3J5a3QS8hJq2w7976yr4YB5A-4oYAd3NqxBNuiwXL1Zg?e=JFVZwc',
         permanent: false,
       },
+      {
+        source: '/ucplugin',
+        destination: 'https://uc-plugin.vercel.app/',
+        permanent: false,
+      },
+      {
+        source: '/ucplugin/:path*',
+        destination: 'https://uc-plugin.vercel.app/:path*',
+        permanent: false,
+      },
+      {
+        source: '/ucadmin-prod/:path*',
+        destination: 'https://uc-plugin.vercel.app/:path*',
+        permanent: false,
+      },
+      {
+        source: '/ucadmin-dev/:path*',
+        destination: 'https://uc-plugin-benh-ben-herilas-projects.vercel.app/:path*',
+        permanent: false,
+      },
     ],
   }
 }

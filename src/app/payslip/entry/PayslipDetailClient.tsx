@@ -110,10 +110,10 @@ export default function PayrollForm({ initialPayslip }: PayslipDetailClientProps
   useEffect(() => {
     if (initialPayslip) {
       Object.keys(prepareInitialValues).forEach((key) => {
-        form.setValue(key as keyof fin_payslip, prepareInitialValues[key as keyof fin_payslip])
+        form.setValue(key as keyof fin_payslip, (prepareInitialValues as any)[key])
       })
     }
-  }, [initialPayslip, form.setValue, prepareInitialValues])
+  }, [initialPayslip, form, prepareInitialValues])
 
   const hasYearChanged =
     initialPayslip &&
