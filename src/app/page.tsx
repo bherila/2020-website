@@ -19,6 +19,7 @@ export default async function HomePage() {
 
         <Line>
           {Im} currently:
+        </Line>
           <ul className="list-disc list-inside pl-4">
             <li>
               a Software Engineer at Meta. {Im} currently working on{' '}
@@ -39,7 +40,6 @@ export default async function HomePage() {
               startups.
             </li>
           </ul>
-        </Line>
 
         <Line>
           Before Meta, I worked at Airbnb on the i18n team. We expanded Airbnb.com to 32 new countries, added support for
