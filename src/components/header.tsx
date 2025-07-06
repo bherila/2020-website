@@ -81,7 +81,7 @@ export default function Header({ session }: HeaderProps) {
     !session?.uid ? (
       <div className="flex gap-4">
         <Button variant="ghost" asChild>
-          <Link href={`/auth/sign-in?next=${encodeURIComponent(pathname ?? '')}`}>Sign in</Link>
+          <Link href="/sign-in-chooser">Sign in</Link>
         </Button>
         <Button asChild>
           <Link href="/auth/sign-up">Sign up</Link>
