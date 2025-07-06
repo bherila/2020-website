@@ -18,11 +18,27 @@ export default async function HomePage() {
         <MainTitle>Hi, {Im} Ben</MainTitle>
 
         <Line>
-          {Im} a Software Engineer at Meta. {Im} currently working on{' '}
-          <CustomLink href="https://horizon.meta.com" rel="noopener">
-            Horizon Worlds
-          </CustomLink>
-          .
+          {Im} currently:
+          <ul className="list-disc list-inside pl-4">
+            <li>
+              a Software Engineer at Meta. {Im} currently working on{' '}
+              <CustomLink href="https://horizon.meta.com" rel="noopener">
+                Horizon Worlds
+              </CustomLink>
+              .
+            </li>
+            <li>
+              a venture partner in{' '}
+              <CustomLink href="https://www.pioneerfund.vc/team" rel="noopener">
+                Pioneer Fund
+              </CustomLink>
+              , a pre-seed fund that invests in early-stage{' '}
+              <CustomLink href="https://www.ycombinator.com" rel="noopener">
+                YC
+              </CustomLink>{' '}
+              startups.
+            </li>
+          </ul>
         </Line>
 
         <Line>
@@ -44,19 +60,18 @@ export default async function HomePage() {
         </Line>
 
         <Line>
-          I began my professional career at Microsoft, briefly on the Office Graphics platform, and then for nearly four
-          years on{' '}
+          I began my professional career at Microsoft, briefly on the Office Graphics platform in 2009, and then{' '}
           <CustomLink
             href="https://web.archive.org/web/20240806233349/https://servercore.net/2013/07/meet-the-new-server-core-program-manager/"
             rel="noopener"
           >
-            making Windows Server smaller
-          </CustomLink>
-          .
+            made Windows Server smaller
+          </CustomLink>{' '}
+          through my work on MinWin.
         </Line>
 
         <Line>
-          Before then, I worked on numerous personal projects and business ventures, and built the online presence for
+          Before Microsoft, I worked on numerous personal projects and business ventures, and built the online presence for
           companies including{' '}
           <CustomLink href="/projects/roessner/" rel="noopener">
             Roessner &amp; Co.

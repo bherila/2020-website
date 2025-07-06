@@ -1,15 +1,31 @@
 import Link from 'next/link'
-import { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
+import { ExternalLink } from 'lucide-react'
 
-export default function CustomLink(props: { rel?: string; href: string; children: ReactNode; className?: string }) {
+export default function CustomLink({ className, children, target, href, ...rest }: React.ComponentProps<typeof Link>) {
+  const isExternal = typeof href === 'string' && href.indexOf('https') === 0
   return (
     <Link
-      href={props.href}
-      rel={props.rel}
-      className={cn('underline underline-offset-4 hover:text-blue-400 transition-colors', props.className)}
+      className={cn('underline underline-offset-4 hover:text-blue-400 transition-colors', className)}
+      target={target}
+      href={href}
+      {...(isExternal ? { rel: 'noopener' } : {})}
+      {...rest}
     >
-      {props.children}
+      {children}
+      {(target === '_blank' || isExternal) && (
+        <ExternalLink
+          style={{
+            display: 'inline',
+            marginLeft: '0.25em',
+            verticalAlign: 'middle',
+            opacity: 0.9,
+            width: '0.8em',
+            height: '0.8em',
+          }}
+          aria-label="Opens in a new window"
+        />
+      )}
     </Link>
   )
 }

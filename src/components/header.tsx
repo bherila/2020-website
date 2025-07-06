@@ -4,6 +4,7 @@ import { ThemeToggle } from './ThemeToggle'
 import { Button } from '@/components/ui/button'
 import { Menu } from 'lucide-react'
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -75,12 +76,12 @@ export default function Header({ session }: HeaderProps) {
       ))}
     </>
   )
-
+  const pathname = usePathname()
   const AuthButtons = () =>
     !session?.uid ? (
       <div className="flex gap-4">
         <Button variant="ghost" asChild>
-          <Link href="/auth/sign-in">Sign in</Link>
+          <Link href={`/auth/sign-in?next=${encodeURIComponent(pathname ?? '')}`}>Sign in</Link>
         </Button>
         <Button asChild>
           <Link href="/auth/sign-up">Sign up</Link>

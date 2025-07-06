@@ -16,11 +16,7 @@ const auth = betterAuth({
     enabled: true,
   },
   trustedOrigins: Array.from(
-    new Set([
-      'http://localhost:3000',
-      'https://www.bherila.net',
-      process.env.NEXT_PUBLIC_APP_URL!,
-    ]),
+    new Set(['http://localhost:3000', 'https://www.bherila.net', process.env.NEXT_PUBLIC_APP_URL!]),
   ).filter(Boolean),
 })
 
