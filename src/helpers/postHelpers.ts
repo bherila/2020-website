@@ -12,6 +12,7 @@ export function getListOfRecipes() {
       return {
         slug: filename.replace('.md', ''),
         title: content.data.title,
+        categories: content.data.categories || [],
       }
     })
     .sort((a, b) => a.title.localeCompare(b.title))
@@ -22,4 +23,13 @@ export function getRecipeContent(slug: string): matter.GrayMatterFile<string> {
   const file = path.join(process.cwd(), 'posts/recipes', slug) + '.md'
   const content = fs.readFileSync(file, 'utf8')
   return matter(content)
+}
+
+export function getAllCategories() {
+  const recipes = getListOfRecipes()
+  const categories = new Set<string>()
+  recipes.forEach((recipe) => {
+    recipe.categories.forEach((category: string) => categories.add(category))
+  })
+  return Array.from(categories).sort()
 }

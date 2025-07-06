@@ -87,7 +87,7 @@ export default async function HomePage() {
           </CustomLink>
           , and <CustomLink href="/projects/">more</CustomLink>.
         </Line>
-                <CTAs />
+        <CTAs />
       </div>
     </Container>
   )

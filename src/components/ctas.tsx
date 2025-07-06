@@ -51,9 +51,7 @@ export function CTAs() {
                 <CardTitle>{button.title}</CardTitle>
                 <CardDescription>{button.subtitle}</CardDescription>
               </CardHeader>
-              <CardContent>
-                {/* Content can be added here if needed, but for now it's just a clickable card */}
-              </CardContent>
+              <CardContent>{/* Content can be added here if needed, but for now it's just a clickable card */}</CardContent>
             </Card>
           </Link>
         ))}

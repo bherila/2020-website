@@ -14,9 +14,7 @@ export function SignOutAlert() {
         <Alert variant="success">
           <Terminal className="h-4 w-4" />
           <AlertTitle>Signed Out</AlertTitle>
-          <AlertDescription>
-            You have been signed out successfully.
-          </AlertDescription>
+          <AlertDescription>You have been signed out successfully.</AlertDescription>
         </Alert>
       </div>
     )

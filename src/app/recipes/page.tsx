@@ -1,6 +1,6 @@
 import MainTitle from '@/components/main-title'
 import Container from '@/components/container'
-import { getListOfRecipes } from '@/helpers/postHelpers'
+import { getListOfRecipes, getAllCategories } from '@/helpers/postHelpers'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,9 +9,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
+import { RecipeListClient } from '@/components/recipe-list-client'
 
 export default function RecipesPage() {
   const recipes = getListOfRecipes()
+  const categories = getAllCategories()
+
   return (
     <Container>
       <div className="py-4">
@@ -27,16 +30,9 @@ export default function RecipesPage() {
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <MainTitle>Recipes</MainTitle>
-      <ul className="list-disc pl-5 space-y-2">
-        {recipes.map((recipe) => (
-          <li key={recipe.slug}>
-            <a href={recipe.slug} className="hover:underline">
-              {recipe.title}
-            </a>
-          </li>
-        ))}
-      </ul>
+      <div className="max-w-2xl mx-auto">
+        <RecipeListClient recipes={recipes} categories={categories} />
+      </div>
     </Container>
   )
 }
