@@ -25,8 +25,8 @@ export default function ProjectsPage() {
         >
           <p className="py-2">
             I like to cook, a lot. Lately, I&apos;ve focused mostly on Asian cuisine. However, I also love european cuisine,
-            especially my own heritage, Italian, cooking, and French. Since friends have asked, I&apos;m posting some recipes
-            and cooking tips online.
+            especially my own heritage, Italian, cooking, and French. Since friends have asked, I&apos;m posting some
+            recipes and cooking tips online.
           </p>
         </ImageAndText>
         <ImageAndText
@@ -36,10 +36,10 @@ export default function ProjectsPage() {
           title="Underground Cellar"
         >
           <p className="py-2">
-            As co-founder and CTO at Underground Cellar, I grew the engineering team and own the internal products used by the
-            company, spanning frontend, backend, administrative interface, and mobile apps for iOS and Android platforms. I
-            also work with the CEO and major investors to design and implement financial models and reports. As a board
-            director, I worked with investors and shape the governance of the company.
+            As co-founder and CTO at Underground Cellar, I grew the engineering team and own the internal products used by
+            the company, spanning frontend, backend, administrative interface, and mobile apps for iOS and Android
+            platforms. I also work with the CEO and major investors to design and implement financial models and reports. As
+            a board director, I worked with investors and shape the governance of the company.
           </p>
           <ul className="list-disc pl-5 space-y-2">
             <li>Custom e-commerce backend</li>
@@ -60,8 +60,8 @@ export default function ProjectsPage() {
           date="Winter 2019"
         >
           <p className="py-2">
-            Design-first website for a modern media company. Featuring landing pages with custom Salesforce integration. Runs
-            on Webflow.
+            Design-first website for a modern media company. Featuring landing pages with custom Salesforce integration.
+            Runs on Webflow.
           </p>
         </ImageAndText>
         <ImageAndText

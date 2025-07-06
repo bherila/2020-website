@@ -15,13 +15,7 @@ export function ModalImage({ imageUrl, alt, title }: ModalImageProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <img
-          width="100%"
-          src={imageUrl}
-          alt={alt}
-          className="cursor-pointer"
-          onClick={() => setIsOpen(true)}
-        />
+        <img width="100%" src={imageUrl} alt={alt} className="cursor-pointer" onClick={() => setIsOpen(true)} />
       </DialogTrigger>
       <DialogContent className="max-w-screen-lg max-h-screen-lg overflow-hidden p-0">
         {title && (
