@@ -1,6 +1,5 @@
-import Link from 'next/link'
 import cn from 'classnames'
-import { Button } from '@/components/ui/button'
+import CustomLink from './link'
 
 export default function ImageAndText({ children, imageUrl, alt, ctaText, ctaLink, extraClass }: ImageAndTextProps) {
   return (
@@ -11,9 +10,9 @@ export default function ImageAndText({ children, imageUrl, alt, ctaText, ctaLink
       <div className="sm:w-2/3 md:w-2/3 lg:w-3/4 pl-6">
         {children}
         {ctaText && ctaLink ? (
-          <Button asChild className="mt-3 px-0 text-blue-400" variant="link">
-            <Link href={ctaLink}>{ctaText}</Link>
-          </Button>
+          <CustomLink href={ctaLink} className="mt-3 block">
+            {ctaText}
+          </CustomLink>
         ) : null}
       </div>
     </div>
