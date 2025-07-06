@@ -3,6 +3,8 @@ import { ReactNode } from 'react'
 import Container from '@/components/container'
 import MainTitle from '@/components/main-title'
 import CustomLink from '@/components/link'
+import { SignOutAlert } from '@/components/sign-out-alert'
+import { CTAs } from '@/components/ctas'
 
 export const metadata: Metadata = {
   title: 'Ben Herila',
@@ -15,6 +17,7 @@ export default async function HomePage() {
   return (
     <Container>
       <div className="max-w-2xl mx-auto">
+        <SignOutAlert />
         <MainTitle>Hi, {Im} Ben</MainTitle>
 
         <Line>{Im} currently:</Line>
@@ -84,6 +87,7 @@ export default async function HomePage() {
           </CustomLink>
           , and <CustomLink href="/projects/">more</CustomLink>.
         </Line>
+                <CTAs />
       </div>
     </Container>
   )

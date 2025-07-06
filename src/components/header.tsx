@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/navigation-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import CustomLink from './link'
+import authClient from '@/lib/auth-client'
 
 interface HeaderProps {
   session: any
@@ -110,7 +111,15 @@ export default function Header({ session }: HeaderProps) {
           </CustomLink>
         </Button>
         <Button variant="ghost" asChild>
-          <CustomLink href="/api/sign-out" noUnderline>
+          <CustomLink
+            href="/"
+            noUnderline
+            onClick={async (e) => {
+              e.preventDefault()
+              await authClient.signOut()
+              window.location.href = '/?signedOut=true'
+            }}
+          >
             Sign out
           </CustomLink>
         </Button>
