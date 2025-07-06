@@ -17,29 +17,27 @@ export default async function HomePage() {
       <div className="max-w-2xl mx-auto">
         <MainTitle>Hi, {Im} Ben</MainTitle>
 
-        <Line>
-          {Im} currently:
-        </Line>
-          <ul className="list-disc list-inside pl-4">
-            <li>
-              a Software Engineer at Meta. {Im} currently working on{' '}
-              <CustomLink href="https://horizon.meta.com" rel="noopener">
-                Horizon Worlds
-              </CustomLink>
-              .
-            </li>
-            <li>
-              a venture partner in{' '}
-              <CustomLink href="https://www.pioneerfund.vc/team" rel="noopener">
-                Pioneer Fund
-              </CustomLink>
-              , a pre-seed fund that invests in early-stage{' '}
-              <CustomLink href="https://www.ycombinator.com" rel="noopener">
-                YC
-              </CustomLink>{' '}
-              startups.
-            </li>
-          </ul>
+        <Line>{Im} currently:</Line>
+        <ul className="list-disc list-inside pl-4">
+          <li>
+            a Software Engineer at Meta. {Im} currently working on{' '}
+            <CustomLink href="https://horizon.meta.com" rel="noopener">
+              Horizon Worlds
+            </CustomLink>
+            .
+          </li>
+          <li>
+            a venture partner in{' '}
+            <CustomLink href="https://www.pioneerfund.vc/team" rel="noopener">
+              Pioneer Fund
+            </CustomLink>
+            , a pre-seed fund that invests in early-stage{' '}
+            <CustomLink href="https://www.ycombinator.com" rel="noopener">
+              YC
+            </CustomLink>{' '}
+            startups.
+          </li>
+        </ul>
 
         <Line>
           Before Meta, I worked at Airbnb on the i18n team. We expanded Airbnb.com to 32 new countries, added support for

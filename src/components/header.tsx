@@ -57,6 +57,7 @@ export default function Header({ session }: HeaderProps) {
                       (!subItem.condition || session?.[subItem.condition]) && (
                         <NavigationMenuLink asChild key={subItem.label}>
                           <CustomLink
+                            noUnderline
                             href={subItem.href}
                             className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                           >
@@ -69,7 +70,11 @@ export default function Header({ session }: HeaderProps) {
               </NavigationMenuContent>
             </>
           ) : (
-            <CustomLink href={item.href} className="text-sm font-medium text-muted-foreground hover:text-primary px-4 py-2">
+            <CustomLink
+              noUnderline
+              href={item.href}
+              className="text-sm font-medium text-muted-foreground hover:text-primary px-4 py-2"
+            >
               {item.label}
             </CustomLink>
           )}
@@ -82,22 +87,32 @@ export default function Header({ session }: HeaderProps) {
     !session?.uid ? (
       <div className="flex gap-4">
         <Button variant="ghost" asChild>
-          <CustomLink href="/sign-in-chooser">Sign in</CustomLink>
+          <CustomLink href="/sign-in-chooser" noUnderline>
+            Sign in
+          </CustomLink>
         </Button>
         <Button asChild>
-          <CustomLink href="/auth/sign-up">Sign up</CustomLink>
+          <CustomLink href="/auth/sign-up" noUnderline>
+            Sign up
+          </CustomLink>
         </Button>
       </div>
     ) : (
       <div className="flex gap-4">
         <Button variant="ghost" asChild>
-          <CustomLink href="https://ac.bherila.net" target="_blank">ActiveCollab</CustomLink>
+          <CustomLink href="https://ac.bherila.net" target="_blank" noUnderline>
+            ActiveCollab
+          </CustomLink>
         </Button>
         <Button variant="ghost" asChild>
-          <CustomLink href="/my-account">My Account</CustomLink>
+          <CustomLink href="/my-account" noUnderline>
+            My Account
+          </CustomLink>
         </Button>
         <Button variant="ghost" asChild>
-          <CustomLink href="/api/sign-out">Sign out</CustomLink>
+          <CustomLink href="/api/sign-out" noUnderline>
+            Sign out
+          </CustomLink>
         </Button>
       </div>
     )
@@ -109,7 +124,7 @@ export default function Header({ session }: HeaderProps) {
     >
       <div className="container flex h-16 items-center justify-between px-4 mx-auto">
         <div className="flex items-center gap-6">
-          <CustomLink href="/" className="text-lg font-semibold hover:text-primary">
+          <CustomLink noUnderline href="/" className="text-lg font-semibold hover:text-primary">
             Ben Herila
           </CustomLink>
 

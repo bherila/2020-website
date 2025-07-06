@@ -2,11 +2,18 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { ExternalLink } from 'lucide-react'
 
-export default function CustomLink({ className, children, target, href, ...rest }: React.ComponentProps<typeof Link>) {
+interface CustomLinkProps extends React.ComponentProps<typeof Link> {
+  noUnderline?: boolean
+}
+
+export default function CustomLink({ className, children, target, href, noUnderline, ...rest }: CustomLinkProps) {
   const isExternal = typeof href === 'string' && href.indexOf('https') === 0
+
+  const underlineClass = noUnderline ? '' : 'underline underline-offset-4'
+
   return (
     <Link
-      className={cn('underline underline-offset-4 hover:text-blue-400 transition-colors', className)}
+      className={cn(underlineClass, 'hover:text-blue-400 transition-colors', className)}
       target={target}
       href={href}
       {...(isExternal ? { rel: 'noopener' } : {})}
