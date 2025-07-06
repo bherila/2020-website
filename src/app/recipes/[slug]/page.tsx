@@ -10,6 +10,7 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
 import MainTitle from '@/components/main-title'
+import { ModalImage } from '@/components/modal-image'
 import { CTAs } from '@/components/ctas'
 import { RecipeDisplayItem } from '@/components/recipe-display-item'
 
@@ -64,6 +65,13 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
           <div className="md:w-2/3 p-2">
             <h2 className="text-2xl font-bold mb-4">Instructions</h2>
             <ReactMarkdown>{content}</ReactMarkdown>
+            {data.images && data.images.length > 0 && (
+              <div className="mt-4">
+                <ModalImage 
+                 title={data.title}
+                 imageUrl={'/images/recipe/' + data.images[0]} alt={data.title} />
+              </div>
+            )}
           </div>
         </div>
 

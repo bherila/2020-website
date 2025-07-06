@@ -13,6 +13,7 @@ export function getListOfRecipes() {
         slug: filename.replace('.md', ''),
         title: content.data.title,
         categories: content.data.categories || [],
+        images: content.data.images || [],
       }
     })
     .sort((a, b) => a.title.localeCompare(b.title))

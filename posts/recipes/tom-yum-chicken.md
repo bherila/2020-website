@@ -2,7 +2,6 @@
 title: Tom Yum Chicken
 categories:
   - Meat
-image: null
 ingredients:
   - Chicken thigh, boneless and skinless
   - Avocado oil (or other neutral oil)

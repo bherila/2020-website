@@ -2,7 +2,8 @@
 title: Prime Rib
 categories:
   - Meat
-image: null
+images: 
+  - PrimeRibBeef.jpg
 ingredients:
   - Beef ribeye roast, bone in or boneless, doesn't matter.
   - Kosher Salt

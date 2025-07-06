@@ -3,7 +3,6 @@ title: Bean Sprout Salad
 categories:
   - Vegetables
   - Salad
-image: null
 ingredients:
   - 2 tsp oyster sauce
   - 2 tbsp soy sauce

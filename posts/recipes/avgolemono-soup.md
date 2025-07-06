@@ -3,7 +3,6 @@ title: Avgolemono Soup
 categories:
   - Vegetables
   - Soups
-image: null
 ingredients:
   - Chicken stock
   - Celery and onion

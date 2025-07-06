@@ -3,7 +3,6 @@ title: French Onion Soup (The Quick Way)
 categories:
   - Vegetables
   - Soups
-image: null
 ingredients:
   - Yellow or Vidalia onion
   - Butter
