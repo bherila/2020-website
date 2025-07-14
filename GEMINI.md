@@ -1,1 +1,5 @@
 - Use yarn instead of npm.
+- Do not run 'yarn build' or 'npm run build' to validate code changes because it will break the development server.
+- Do not run 'yarn prisma:push' , ask the user to push changes to the db schema manually.
+- You can run 'prisma:generate' if making changes to the prisma schema.
+- Prisma should be imported from @/server_lib/prisma, not @/lib/prisma.
