@@ -88,7 +88,7 @@ async function getRows(uid: string) {
         grantPrice = null
       }
       return { ...award, vest_price: vestPrice, grant_price: grantPrice }
-    })
+    }),
   )
   return awardsWithPrice
 }

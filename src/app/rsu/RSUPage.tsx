@@ -56,7 +56,7 @@ export default function RSUPage() {
     <Container>
       <RsuSubNav />
       <div className="mb-8">
-        <Tabs defaultValue={chartMode} onValueChange={v => setChartMode(v as 'shares' | 'value')} className="mb-2">
+        <Tabs defaultValue={chartMode} onValueChange={(v) => setChartMode(v as 'shares' | 'value')} className="mb-2">
           <TabsList>
             <TabsTrigger value="shares">Share count</TabsTrigger>
             <TabsTrigger value="value">Value</TabsTrigger>
@@ -105,7 +105,9 @@ export default function RSUPage() {
                         <TableCell>{shares}</TableCell>
                         <TableCell>{grantPrice != null ? currency(grantPrice).format() : ''}</TableCell>
                         <TableCell>{grantValue ? grantValue.format() : ''}</TableCell>
-                        <TableCell style={{ borderLeft: '2px solid #e5e7eb' }}>{price != null ? currency(price).format() : ''}</TableCell>
+                        <TableCell style={{ borderLeft: '2px solid #e5e7eb' }}>
+                          {price != null ? currency(price).format() : ''}
+                        </TableCell>
                         <TableCell>{total ? total.format() : ''}</TableCell>
                         <TableCell>{r.award_id}</TableCell>
                       </TableRow>

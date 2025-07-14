@@ -35,10 +35,10 @@ export function RsuByVestDate(props: { rsu: IAward[] }) {
             return sum.add(shares && c.grant_price ? currency(shares).multiply(c.grant_price) : currency(0))
           }, currency(0))
           // If all have vest_price, show average price
-          const avgPrice = lRSU.every(c => c.vest_price != null && c.share_count != null)
+          const avgPrice = lRSU.every((c) => c.vest_price != null && c.share_count != null)
             ? totalValue.divide(totalShares.value).format()
             : ''
-          const avgGrantPrice = lRSU.every(c => c.grant_price != null && c.share_count != null)
+          const avgGrantPrice = lRSU.every((c) => c.grant_price != null && c.share_count != null)
             ? totalGrantValue.divide(totalShares.value).format()
             : ''
           return (

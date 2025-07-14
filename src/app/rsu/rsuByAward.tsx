@@ -63,7 +63,8 @@ export function RsuByAward(props: { rsu: IAward[] }) {
             }
           }
           const avgPrice = weightedShares > 0 ? currency(weightedSum.value / weightedShares).format() : ''
-          const avgGrantPrice = weightedGrantShares > 0 ? currency(weightedGrantSum.value / weightedGrantShares).format() : ''
+          const avgGrantPrice =
+            weightedGrantShares > 0 ? currency(weightedGrantSum.value / weightedGrantShares).format() : ''
           return (
             <TableRow key={i}>
               <TableCell>
