@@ -35,10 +35,62 @@ export async function POST(req: NextRequest) {
 }
 
 async function getRows(uid: string) {
-  return await prisma.finEquityAwards.findMany({
+  // Get all awards for the user
+  const awards = await prisma.finEquityAwards.findMany({
     where: { uid },
     orderBy: [{ vest_date: 'asc' }, { grant_date: 'asc' }],
   })
+
+  // For each award, fetch the vest price
+  const awardsWithPrice = await Promise.all(
+    awards.map(async (award) => {
+      let vestPrice = null
+      let grantPrice = null
+      try {
+        // Vest price (already present)
+        const stockPrice = await prisma.stockQuotesDaily.findFirst({
+          where: {
+            c_symb: award.symbol,
+            c_date: {
+              lte: new Date(award.vest_date),
+            },
+          },
+          orderBy: {
+            c_date: 'desc',
+          },
+          select: {
+            c_close: true,
+          },
+        })
+        if (stockPrice) {
+          vestPrice = parseFloat(stockPrice.c_close.toString())
+        }
+        // Grant price (new)
+        const grantStockPrice = await prisma.stockQuotesDaily.findFirst({
+          where: {
+            c_symb: award.symbol,
+            c_date: {
+              lte: new Date(award.grant_date),
+            },
+          },
+          orderBy: {
+            c_date: 'desc',
+          },
+          select: {
+            c_close: true,
+          },
+        })
+        if (grantStockPrice) {
+          grantPrice = parseFloat(grantStockPrice.c_close.toString())
+        }
+      } catch (e) {
+        vestPrice = null
+        grantPrice = null
+      }
+      return { ...award, vest_price: vestPrice, grant_price: grantPrice }
+    })
+  )
+  return awardsWithPrice
 }
 
 export async function GET(req: NextRequest) {
