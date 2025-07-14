@@ -67,9 +67,7 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
             <ReactMarkdown>{content}</ReactMarkdown>
             {data.images && data.images.length > 0 && (
               <div className="mt-4">
-                <ModalImage 
-                 title={data.title}
-                 imageUrl={'/images/recipe/' + data.images[0]} alt={data.title} />
+                <ModalImage title={data.title} imageUrl={'/images/recipe/' + data.images[0]} alt={data.title} />
               </div>
             )}
           </div>
