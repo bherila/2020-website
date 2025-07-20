@@ -1,5 +1,5 @@
 import currency from 'currency.js'
-import { splitDelimitedText } from './splitDelimitedText'
+import { splitDelimitedText } from '../splitDelimitedText'
 
 interface TaxTableRow {
   state: string

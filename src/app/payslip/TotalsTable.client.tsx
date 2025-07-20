@@ -1,7 +1,7 @@
 'use client'
 import { Table, TableBody, TableRow, TableCell, TableHeader, TableHead } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { calculateTax } from '@/lib/taxBracket'
+import { calculateTax } from '@/lib/tax/taxBracket'
 import currency from 'currency.js'
 import { fin_payslip } from './payslipDbCols'
 

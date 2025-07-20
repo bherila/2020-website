@@ -1,0 +1,93 @@
+Form 172 (12-2024)
+Net Operating Losses (NOLs)
+Department of the Treasury - Internal Revenue Service
+
+For Individuals, Estates, and Trusts.
+Go to www.irs.gov/Form172 for instructions and the latest information.
+OMB No. 1545-0074
+
+For calendar year {{calendar_year}}, or other tax year beginning {{tax_year_start}} and ending {{tax_year_end}}
+Name(s) shown on return: {{name}}
+Social security or employer identification number: {{ssn_or_ein}}
+Spouse’s social security number (SSN): {{spouse_ssn}}
+Address (number and street): {{address}}
+Apt. or suite no.: {{apt_suite}}
+City, town, or post office: {{city}}
+State: {{state}}
+ZIP code: {{zip}}
+Daytime phone number: {{phone}}
+Foreign country name: {{foreign_country}}
+Foreign province/county: {{foreign_province}}
+Foreign postal code: {{foreign_postal_code}}
+
+Part I - NOL
+1. For individuals, subtract your standard deduction or itemized deductions from your adjusted gross income (AGI) and enter it here. For estates and trusts, enter taxable income increased by the total of the charitable deduction, income distribution deduction, and exemption amount: {{1}}
+2. Nonbusiness capital losses before limitation (positive number): {{2}}
+3. Nonbusiness capital gains (without regard to any section 1202 exclusion): {{3}}
+4. If line 2 is more than line 3, enter the difference. Otherwise, enter -0-: {{4}}
+5. If line 3 is more than line 2, enter the difference. Otherwise, enter -0-: {{5}}
+6. Nonbusiness deductions (positive number): {{6}}
+7. Nonbusiness income other than capital gains: {{7}}
+8. Add lines 5 and 7: {{8}}
+9. If line 6 is more than line 8, enter the difference. Otherwise, enter -0-: {{9}}
+10. If line 8 is more than line 6, enter the difference. Otherwise, enter -0- (But don’t enter more than line 5): {{10}}
+11. Business capital losses before limitation (positive number): {{11}}
+12. Business capital gains (without regard to any section 1202 exclusion): {{12}}
+13. Add lines 10 and 12: {{13}}
+14. Subtract line 13 from line 11. If zero or less, enter -0-: {{14}}
+15. Add lines 4 and 14: {{15}}
+16. Enter, if any, the combined net short-term and long-term capital loss from your Schedule D (Form 1040). Estates and trusts, enter total net short-term and long-term loss from Schedule D (Form 1041). (positive number): {{16}}
+17. Section 1202 exclusion (positive number): {{17}}
+18. Subtract line 17 from line 16. If zero or less, enter -0-: {{18}}
+19. If line 16 is a loss, enter the smaller of: the loss on line 16; or $3,000 ($1,500 if married filing separately): {{19}}
+20. If line 18 is more than line 19, enter the difference. Otherwise, enter -0-: {{20}}
+21. If line 19 is more than line 18, enter the difference. Otherwise, enter -0-: {{21}}
+22. Subtract line 20 from line 15. If zero or less, enter -0-: {{22}}
+23. NOL deduction for losses from other years (positive number): {{23}}
+24. NOL. Combine lines 1, 9, 17, and 21 through 23. If the result is less than zero, enter it here. If the result is zero or more, you don’t have an NOL: {{24}}
+
+Part II - NOL Carryover
+(Complete one column before going to the next column. Start with the earliest carryback year.)
+
+Column: 2nd preceding tax year ended: {{carryover_year_2}}
+Column: 1st preceding tax year ended: {{carryover_year_1}}
+
+1. NOL deduction (positive number): {{carryover_1}}
+2. Taxable income before the current year NOL carryback. For estates and trusts, increase this amount by the sum of the charitable deduction: {{carryover_2}}
+3. Net capital loss deduction: {{carryover_3}}
+4. Section 1202 exclusion (positive number): {{carryover_4}}
+5. Qualified business income deduction: {{carryover_5}}
+6. Adjustment to adjusted gross income (AGI): {{carryover_6}}
+7. Adjustment to itemized deductions from line 33 below: {{carryover_7}}
+8. Estates and trusts, enter exemption amount: {{carryover_8}}
+9. Modified taxable income. Add lines 2 through 8. If zero or less, enter -0-: {{carryover_9}}
+10. NOL carryover to the subsequent year. Subtract line 9 from line 1. Enter the result from the first preceding tax year here and on the net operating loss line of Schedule 1 (Form 1040) or Form 1040-NR or the net operating loss deduction line of Form 1041. If zero or less, enter -0-: {{carryover_10}}
+
+Adjustment to Itemized Deductions (Individuals Only)
+(Complete lines 11 through 33 for the carryback year(s) for which you itemized deductions only if line 3, 4, or 5 above is more than zero.)
+
+11. AGI before the current year NOL carryback: {{adj_11}}
+12. Add lines 3 through 6 above: {{adj_12}}
+13. Modified AGI. Add lines 11 and 12: {{adj_13}}
+14. Medical and dental expenses after AGI limitation from Sch. A (Form 1040), or as previously adjusted: {{adj_14}}
+15. Medical and dental expenses before AGI limitation from Sch. A (Form 1040), or as previously adjusted: {{adj_15}}
+16. Multiply line 13 by 7.5% (0.075): {{adj_16}}
+17. Subtract line 16 from line 15. If zero or less, enter -0-: {{adj_17}}
+18. Subtract line 17 from line 14: {{adj_18}}
+19. Mortgage insurance premiums from Sch. A (Form 1040), for tax years before 2022, or as previously adjusted: {{adj_19}}
+20. Refigured mortgage insurance premiums: {{adj_20}}
+21. Subtract line 20 from line 19: {{adj_21}}
+22. Modified AGI from line 13: {{adj_22}}
+23. NOL carryback from a prior year that was deducted to figure line 11 (positive number): {{adj_23}}
+24. Add lines 22 and 23: {{adj_24}}
+25. Total charitable contributions for Sch. A (Form 1040 or Form 1040-NR), or as previously adjusted: {{adj_25}}
+26. Refigured charitable contributions: {{adj_26}}
+27. Subtract line 26 from line 25: {{adj_27}}
+28. Casualty and theft losses deduction from Form 4684: {{adj_28}}
+29. Casualty and theft losses before AGI limitation from Form 4684: {{adj_29}}
+30. Multiply line 22 by 10% (0.10): {{adj_30}}
+31. Subtract line 30 from line 29. If zero or less, enter -0-: {{adj_31}}
+32. Subtract line 31 from line 28: {{adj_32}}
+33. Combine lines 18, 21, 27, and 32; enter the result here and on line 7: {{adj_33}}
+
+Form 172 (12-2024)

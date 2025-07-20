@@ -3,3 +3,4 @@
 - Do not run 'yarn prisma:push' , ask the user to push changes to the db schema manually.
 - You can run 'prisma:generate' if making changes to the prisma schema.
 - Prisma should be imported from @/server_lib/prisma, not @/lib/prisma.
+- Information about tax laws and forms (in addition to code) can be found in .txt and .tsx files in /src/lib/tax
