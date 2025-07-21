@@ -316,4 +316,109 @@ describe('Form 1040 - U.S. Individual Income Tax Return', () => {
     expect(result.f1040_line11).toBe(65000) // AGI
     expect(result.f1040_line15).toBe(50400) // Taxable income (65k - 14.6k)
   })
+
+  // New tests for Schedule D integration
+  it('should integrate Schedule D capital gains correctly', () => {
+    const result = form1040({
+      wages: 100000,
+      nonBusinessCapGains: 5000, // Personal capital gains
+      businessCapGains: 3000, // Business capital gains
+      businessIncome: -50000,
+      isSingle: true,
+      taxYear: 2024,
+      override_f461_line15: 250000,
+    })
+
+    // Schedule D should combine both types of capital gains
+    expect(result.scheduleD.schD_line1a_gain_loss).toBe(5000) // Personal gains
+    expect(result.scheduleD.schD_line5).toBe(3000) // Business gains
+    expect(result.scheduleD.schD_line7).toBe(8000) // Total short-term gains
+    expect(result.scheduleD.schD_line16).toBe(8000) // Combined gains
+    expect(result.scheduleD.schD_line21).toBe(8000) // No limitation
+
+    // Form 1040 line 7 should use Schedule D limited amount
+    expect(result.f1040_line7).toBe(8000) // Capital gains from Schedule D
+  })
+
+  it('should apply capital loss limitation through Schedule D', () => {
+    const result = form1040({
+      wages: 100000,
+      nonBusinessCapGains: -5000, // Personal capital losses
+      businessCapGains: -3000, // Business capital losses
+      businessIncome: 50000,
+      isSingle: true,
+      taxYear: 2024,
+    })
+
+    // Schedule D should limit the losses
+    expect(result.scheduleD.schD_line1a_gain_loss).toBe(-5000) // Personal losses
+    expect(result.scheduleD.schD_line5).toBe(-3000) // Business losses
+    expect(result.scheduleD.schD_line7).toBe(-8000) // Total short-term losses
+    expect(result.scheduleD.schD_line16).toBe(-8000) // Combined losses
+    expect(result.scheduleD.schD_line21).toBe(-3000) // Limited to -$3,000 for single
+
+    // Form 1040 line 7 should use limited amount
+    expect(result.f1040_line7).toBe(-3000) // Limited capital loss
+    expect(result.f1040_line11).toBe(147000) // AGI: 100k + 50k - 3k
+  })
+
+  it('should handle mixed personal and business capital gains/losses', () => {
+    const result = form1040({
+      wages: 80000,
+      nonBusinessCapGains: 10000, // Personal gains
+      businessCapGains: -15000, // Business losses
+      businessIncome: -100000,
+      isSingle: true,
+      taxYear: 2024,
+      override_f461_line15: 250000,
+    })
+
+    // Schedule D calculations
+    expect(result.scheduleD.schD_line1a_gain_loss).toBe(10000) // Personal gains
+    expect(result.scheduleD.schD_line5).toBe(-15000) // Business losses
+    expect(result.scheduleD.schD_line7).toBe(-5000) // Net short-term: 10k - 15k
+    expect(result.scheduleD.schD_line16).toBe(-5000) // Combined
+    expect(result.scheduleD.schD_line21).toBe(-3000) // Limited to -$3,000
+
+    expect(result.f1040_line7).toBe(-3000) // Limited capital loss
+  })
+
+  it('should handle capital loss limitation for married filing separately', () => {
+    const result = form1040({
+      wages: 50000,
+      nonBusinessCapGains: -4000, // Personal losses
+      businessCapGains: -2000, // Business losses
+      businessIncome: 20000,
+      isSingle: false, // Married filing separately
+      taxYear: 2024,
+    })
+
+    // Schedule D should limit to -$1,500 for MFS
+    expect(result.scheduleD.schD_line16).toBe(-6000) // Total losses
+    expect(result.scheduleD.schD_line21).toBe(-1500) // Limited to -$1,500 for MFS
+
+    expect(result.f1040_line7).toBe(-1500) // Limited capital loss
+    expect(result.f1040_line11).toBe(68500) // AGI: 50k + 20k - 1.5k
+  })
+
+  it('should handle zero capital gains scenarios with Schedule D', () => {
+    const result = form1040({
+      wages: 75000,
+      nonBusinessCapGains: 0,
+      businessCapGains: 0,
+      businessIncome: 25000,
+      isSingle: true,
+      taxYear: 2024,
+    })
+
+    // Schedule D should show all zeros
+    expect(result.scheduleD.schD_line1a_gain_loss).toBe(0)
+    expect(result.scheduleD.schD_line5).toBe(0)
+    expect(result.scheduleD.schD_line7).toBe(0)
+    expect(result.scheduleD.schD_line16).toBe(0)
+    expect(result.scheduleD.schD_line21).toBe(0)
+
+    expect(result.f1040_line7).toBe(0) // No capital gains
+    expect(result.f1040_line11).toBe(100000) // AGI: 75k + 25k
+  })
 })

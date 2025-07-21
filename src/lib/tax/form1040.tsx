@@ -1,6 +1,7 @@
 import React from 'react'
 import { schedule1, Schedule1Data, DialogSchedule1View } from './schedule1'
 import { Form172Data, DialogForm172View, form172, Form172Inputs, Form172View } from './form172'
+import { scheduleD, ScheduleDData, DialogScheduleDView } from './scheduleD'
 import { formatFriendlyAmount } from '@/lib/formatCurrency'
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
@@ -50,6 +51,7 @@ export interface Form1040Data {
   f1040_line38: number
 
   schedule1: Schedule1Data
+  scheduleD: ScheduleDData
   form172output: Form172Data
 }
 
@@ -100,8 +102,15 @@ export function form1040({
   taxYear?: number
   override_f461_line15?: number | null // Optional override for the maximum excess business loss
 }): Form1040Data {
+  // Calculate Schedule D first 
+  const scheduleDData = scheduleD({
+    line1a_gain_loss: nonBusinessCapGains, // Personal capital gains
+    line5: businessCapGains, // Business capital gains
+    isSingle,
+  })
+
   const schedule1Data = schedule1({
-    f1040_line7: nonBusinessCapGains + businessCapGains,
+    f1040_line7: scheduleDData.schD_line21, // Use Schedule D limited amount
     businessIncome,
     otherGains,
     rentalIncome,
@@ -125,7 +134,7 @@ export function form1040({
   const line4b = iraDistributions
   const line5b = pensions
   const line6b = socialSecurity
-  const line7 = nonBusinessCapGains + businessCapGains
+  const line7 = scheduleDData.schD_line21 // Use Schedule D limited amount
   const line8 = schedule1Data.sch1_line10
   const line9 = line1z + line2b + line3b + line4b + line5b + line6b + line7 + line8
 
@@ -212,6 +221,7 @@ export function form1040({
     f1040_line37: line37,
     f1040_line38: line38,
     schedule1: schedule1Data,
+    scheduleD: scheduleDData,
     form172output: form172output,
   }
 }
@@ -285,6 +295,15 @@ export function Form1040View({ data, taxYear }: { data: Form1040Data; taxYear?: 
           trigger={
             <Button variant="outline" size="sm">
               View Schedule 1
+            </Button>
+          }
+        />
+        <DialogScheduleDView
+          data={data.scheduleD}
+          taxYear={taxYear}
+          trigger={
+            <Button variant="outline" size="sm">
+              View Schedule D
             </Button>
           }
         />

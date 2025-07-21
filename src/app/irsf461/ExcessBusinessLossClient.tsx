@@ -32,7 +32,8 @@ export default function ExcessBusinessLossClient() {
     Array.from({ length: TAX_YEARS }, (_, i) => ({
       year: CURRENT_YEAR + i,
       w2: DEFAULT_W2,
-      capGain: DEFAULT_CAP_GAIN,
+      personalCapGain: 0, // Personal capital gains for Schedule D
+      capGain: DEFAULT_CAP_GAIN, // Business capital gains
       businessNetIncome: DEFAULT_BUSINESS_LOSS,
     })),
   )
@@ -41,13 +42,14 @@ export default function ExcessBusinessLossClient() {
   const [inputValues, setInputValues] = useState(() =>
     rows.map((row) => ({
       w2: currency(row.w2).format(),
+      personalCapGain: currency(row.personalCapGain).format(),
       capGain: currency(row.capGain).format(),
       businessNetIncome: currency(row.businessNetIncome).format(),
     })),
   )
 
   // Update local input value as user types
-  const handleInputChange = (idx: number, field: 'w2' | 'capGain' | 'businessNetIncome', value: string) => {
+  const handleInputChange = (idx: number, field: 'w2' | 'personalCapGain' | 'capGain' | 'businessNetIncome', value: string) => {
     setInputValues((prev) => {
       const copy = [...prev]
       copy[idx] = { ...copy[idx], [field]: value }
@@ -56,7 +58,7 @@ export default function ExcessBusinessLossClient() {
   }
 
   // Commit value to main state onBlur
-  const handleInputBlur = (idx: number, field: 'w2' | 'capGain' | 'businessNetIncome') => {
+  const handleInputBlur = (idx: number, field: 'w2' | 'personalCapGain' | 'capGain' | 'businessNetIncome') => {
     setRows((prev) => {
       const copy = [...prev]
       copy[idx] = {
@@ -108,12 +110,13 @@ export default function ExcessBusinessLossClient() {
           <TableRow>
             <TableHead>Year</TableHead>
             <TableHead>W-2 income</TableHead>
+            <TableHead>Personal Cap Gains</TableHead>
             <TableHead>Business Cap Gains</TableHead>
             <TableHead>Business income</TableHead>
             <TableHead>Start NOL</TableHead>
             <TableHead>f461 Limit</TableHead>
             <TableHead>(Loss) Allowed</TableHead>
-            <TableHead>Carry fw</TableHead>
+            <TableHead>NOL Fwd</TableHead>
             <TableHead>AGI</TableHead>
             <TableHead>Schedule 1</TableHead>
           </TableRow>
@@ -144,6 +147,30 @@ export default function ExcessBusinessLossClient() {
                     }
                   }}
                   id={`w2-input-${idx}`}
+                />
+              </TableCell>
+              <TableCell>
+                <Input
+                  type="text"
+                  value={inputValues[idx].personalCapGain}
+                  onChange={(e) => handleInputChange(idx, 'personalCapGain', e.target.value)}
+                  onBlur={() => handleInputBlur(idx, 'personalCapGain')}
+                  onFocus={(e) => {
+                    handleInputChange(idx, 'personalCapGain', String(currency(inputValues[idx].personalCapGain).value))
+                    e.target.select()
+                  }}
+                  className="w-32"
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowDown' && idx < tableRows.length - 1) {
+                      e.preventDefault()
+                      document.getElementById(`personalCapGain-input-${idx + 1}`)?.focus()
+                    }
+                    if (e.key === 'ArrowUp' && idx > 0) {
+                      e.preventDefault()
+                      document.getElementById(`personalCapGain-input-${idx - 1}`)?.focus()
+                    }
+                  }}
+                  id={`personalCapGain-input-${idx}`}
                 />
               </TableCell>
               <TableCell>
@@ -219,6 +246,21 @@ export default function ExcessBusinessLossClient() {
                     const formatted = currency(parseCurrency(val)).format()
                     setInputValues((prev) => prev.map((row) => ({ ...row, w2: formatted })))
                     setRows((prev) => prev.map((row, i) => ({ ...row, w2: parseCurrency(val) })))
+                  }
+                }}
+              />
+            </TableCell>
+            <TableCell>
+              <Input
+                type="text"
+                placeholder="Personal Cap Gains"
+                className="w-32"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const val = e.currentTarget.value
+                    const formatted = currency(parseCurrency(val)).format()
+                    setInputValues((prev) => prev.map((row) => ({ ...row, personalCapGain: formatted })))
+                    setRows((prev) => prev.map((row, i) => ({ ...row, personalCapGain: parseCurrency(val) })))
                   }
                 }}
               />

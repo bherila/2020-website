@@ -9,21 +9,24 @@ describe('ExcessBusinessLossCalculation', () => {
       {
         year: 2024,
         w2: 100000,
-        capGain: 50000,
+        personalCapGain: 50000, // Personal capital gains (non-business)
+        capGain: 0, // No business capital gains
         businessNetIncome: -400000,
         override_f461_line15: 250000,
       },
       {
         year: 2025,
         w2: 120000,
-        capGain: 30000,
+        personalCapGain: 30000, // Personal capital gains (non-business)
+        capGain: 0, // No business capital gains
         businessNetIncome: -100000,
         override_f461_line15: 250000,
       },
       {
         year: 2026,
         w2: 90000,
-        capGain: 10000,
+        personalCapGain: 10000, // Personal capital gains (non-business)
+        capGain: 0, // No business capital gains
         businessNetIncome: 50000,
         override_f461_line15: 250000,
       },
@@ -158,26 +161,22 @@ describe('ExcessBusinessLossCalculation', () => {
 
     const result = calculateExcessBusinessLoss({ rows, isSingle })
 
-    // === Year 1: 2024 (Large capital gains) ===
-    // Income: $50,000 (W-2) + $200,000 (cap gain) = $250,000
-    // Business Loss: -$300,000
-    // Capital gains: +$200,000 (treated as non-business for Form 461 exclusion)
-    // Form 461 line 9: -$300,000 + $200,000 = -$100,000
-    // Form 461 line 10: $200,000 (non-business income excluded)
-    // Form 461 line 14: -$100,000 + (-$200,000) = -$300,000
-    // Form 461 limit: $250,000
-    // Disallowed loss: $300,000 - $250,000 = $50,000
-    // Allowed loss: -$250,000
-    // AGI: $50,000 + $200,000 - $250,000 = $0
-    // Current year NOL: $0
-    // Total NOL carryforward: $50,000
+    // === Year 1: 2024 (Large business capital gains) ===
+    // W-2: $50k, Business capital gains: $200k, Business loss: -$300k
+    // Schedule D: Business cap gains = $200k (line 5), total gains = $200k
+    // Form 1040 line 7: $200k (from Schedule D)
+    // Form 1040 line 8: -$300k (business loss from Schedule 1) 
+    // Form 1040 line 9: $50k + $200k - $300k = -$50k
+    // Form 461 line 9: -$300k + $200k = -$100k (net business)
+    // Since net business loss (-$100k) is under limit ($250k), no disallowed loss
+    // AGI: -$50k (negative, creates NOL)
 
     expect(result[0].limit).toBe(250000)
-    expect(result[0].disallowedLoss).toBe(50000)
-    expect(result[0].allowedLoss).toBe(-50000)
-    expect(result[0].f1040.f1040_line11).toBe(0)
-    expect(result[0].f1040.f1040_line15).toBe(0) // $0 - $14,600 = $0 (can't go negative)
-    expect(result[0].currentYearNOL).toBe(0)
+    expect(result[0].disallowedLoss).toBe(0) // No excess business loss
+    expect(result[0].allowedLoss).toBe(-100000) // Full net business loss allowed
+    expect(result[0].f1040.f1040_line11).toBe(-50000) // Negative AGI
+    expect(result[0].f1040.f1040_line15).toBe(0) // Taxable income can't be negative
+    expect(result[0].currentYearNOL).toBe(50000) // NOL created from negative AGI
   })
 
   it('should handle scenarios where business capital gains completely offset business losses', () => {
@@ -474,11 +473,155 @@ describe('ExcessBusinessLossCalculation', () => {
 
     const result = calculateExcessBusinessLoss({ rows, isSingle })
 
-    // High income with large loss
-    expect(result[0].disallowedLoss).toBe(350000) // 600k loss (net -400k) over 250k limit = 350k excess  
-    expect(result[0].allowedLoss).toBe(-50000) // Net business loss of 400k limited to 250k, offset by other income
-    expect(result[0].f1040.f1040_line11).toBe(450000) // 500k + 200k - 250k
-    expect(result[0].f1040.f1040_line15).toBe(435400) // 450k - 14.6k
+    // High income with large business loss
+    // W-2: $500k, Business capital gains: $200k, Business loss: -$600k
+    // Net business income: -$600k + $200k = -$400k
+    // Form 461 limit: $250k, so disallowed loss = $400k - $250k = $150k
+    // Allowed business loss: -$250k
+    // Schedule D: Business gains $200k go to line 5
+    // Form 1040: $500k W-2 + $200k cap gains - $450k business (after Form 461) = $250k AGI
+    expect(result[0].disallowedLoss).toBe(150000) // 400k net loss - 250k limit = 150k excess
+    expect(result[0].allowedLoss).toBe(-250000) // Limited by Form 461 to 250k
+    expect(result[0].f1040.f1040_line11).toBe(250000) // 500k + 200k - 450k = 250k
+    expect(result[0].f1040.f1040_line15).toBe(235400) // 250k - 14.6k
     expect(result[0].currentYearNOL).toBe(0) // Positive AGI, no NOL
+  })
+
+  // New tests for personal vs business capital gains
+  it('should handle personal and business capital gains separately', () => {
+    const rows = [
+      {
+        year: 2024,
+        w2: 100000,
+        personalCapGain: 20000, // Personal capital gains (Schedule D line 1a)
+        capGain: 15000, // Business capital gains (Schedule D line 5)
+        businessNetIncome: -200000,
+        override_f461_line15: 250000,
+      },
+    ]
+    const isSingle = true
+
+    const result = calculateExcessBusinessLoss({ rows, isSingle })
+
+    // Schedule D should combine both types of capital gains
+    expect(result[0].f1040.scheduleD.schD_line1a_gain_loss).toBe(20000) // Personal gains
+    expect(result[0].f1040.scheduleD.schD_line5).toBe(15000) // Business gains
+    expect(result[0].f1040.scheduleD.schD_line7).toBe(35000) // Total short-term gains
+    expect(result[0].f1040.scheduleD.schD_line16).toBe(35000) // Combined gains
+    expect(result[0].f1040.scheduleD.schD_line21).toBe(35000) // No limitation
+
+    // Form 1040 line 7 should use Schedule D amount
+    expect(result[0].f1040.f1040_line7).toBe(35000) // Capital gains from Schedule D
+
+    // Business loss should be limited by Form 461
+    expect(result[0].disallowedLoss).toBe(0) // 200k loss - 250k limit = no excess
+    expect(result[0].f1040.f1040_line11).toBe(-65000) // 100k + 35k - 200k
+    expect(result[0].currentYearNOL).toBe(65000) // Negative AGI creates NOL
+  })
+
+  it('should apply capital loss limitation with personal and business losses', () => {
+    const rows = [
+      {
+        year: 2024,
+        w2: 100000,
+        personalCapGain: -8000, // Personal capital losses
+        capGain: -5000, // Business capital losses
+        businessNetIncome: 50000,
+        override_f461_line15: 250000,
+      },
+    ]
+    const isSingle = true
+
+    const result = calculateExcessBusinessLoss({ rows, isSingle })
+
+    // Schedule D should limit the losses
+    expect(result[0].f1040.scheduleD.schD_line1a_gain_loss).toBe(-8000) // Personal losses
+    expect(result[0].f1040.scheduleD.schD_line5).toBe(-5000) // Business losses
+    expect(result[0].f1040.scheduleD.schD_line7).toBe(-13000) // Total losses
+    expect(result[0].f1040.scheduleD.schD_line16).toBe(-13000) // Combined losses
+    expect(result[0].f1040.scheduleD.schD_line21).toBe(-3000) // Limited to -$3,000
+
+    // Form 1040 should use limited amount
+    expect(result[0].f1040.f1040_line7).toBe(-3000) // Limited capital loss
+    expect(result[0].f1040.f1040_line11).toBe(147000) // 100k + 50k - 3k
+    expect(result[0].currentYearNOL).toBe(0) // Positive AGI, no NOL
+  })
+
+  it('should handle mixed personal gains and business losses', () => {
+    const rows = [
+      {
+        year: 2024,
+        w2: 80000,
+        personalCapGain: 15000, // Personal gains
+        capGain: -25000, // Business losses
+        businessNetIncome: -100000,
+        override_f461_line15: 250000,
+      },
+    ]
+    const isSingle = true
+
+    const result = calculateExcessBusinessLoss({ rows, isSingle })
+
+    // Schedule D calculations
+    expect(result[0].f1040.scheduleD.schD_line1a_gain_loss).toBe(15000) // Personal gains
+    expect(result[0].f1040.scheduleD.schD_line5).toBe(-25000) // Business losses
+    expect(result[0].f1040.scheduleD.schD_line7).toBe(-10000) // Net: 15k - 25k
+    expect(result[0].f1040.scheduleD.schD_line16).toBe(-10000) // Combined
+    expect(result[0].f1040.scheduleD.schD_line21).toBe(-3000) // Limited to -$3,000
+
+    expect(result[0].f1040.f1040_line7).toBe(-3000) // Limited capital loss
+    expect(result[0].disallowedLoss).toBe(0) // Business loss within limit
+    expect(result[0].f1040.f1040_line11).toBe(-23000) // 80k - 100k - 3k
+    expect(result[0].currentYearNOL).toBe(23000) // Negative AGI creates NOL
+  })
+
+  it('should handle zero personal capital gains with business gains', () => {
+    const rows = [
+      {
+        year: 2024,
+        w2: 90000,
+        personalCapGain: 0, // No personal capital gains
+        capGain: 12000, // Business capital gains
+        businessNetIncome: -80000,
+        override_f461_line15: 250000,
+      },
+    ]
+    const isSingle = true
+
+    const result = calculateExcessBusinessLoss({ rows, isSingle })
+
+    // Schedule D should show only business gains
+    expect(result[0].f1040.scheduleD.schD_line1a_gain_loss).toBe(0) // No personal gains
+    expect(result[0].f1040.scheduleD.schD_line5).toBe(12000) // Business gains
+    expect(result[0].f1040.scheduleD.schD_line7).toBe(12000) // Total short-term gains
+    expect(result[0].f1040.scheduleD.schD_line21).toBe(12000) // No limitation
+
+    expect(result[0].f1040.f1040_line7).toBe(12000) // Capital gains
+    expect(result[0].f1040.f1040_line11).toBe(22000) // 90k + 12k - 80k
+    expect(result[0].currentYearNOL).toBe(0) // Positive AGI
+  })
+
+  it('should handle capital loss limitation for married filing separately scenario', () => {
+    const rows = [
+      {
+        year: 2024,
+        w2: 60000,
+        personalCapGain: -3000, // Personal losses
+        capGain: -4000, // Business losses
+        businessNetIncome: 30000,
+        override_f461_line15: 250000,
+      },
+    ]
+    const isSingle = false // Married filing separately
+
+    const result = calculateExcessBusinessLoss({ rows, isSingle })
+
+    // Schedule D should limit to -$1,500 for MFS
+    expect(result[0].f1040.scheduleD.schD_line16).toBe(-7000) // Total losses
+    expect(result[0].f1040.scheduleD.schD_line21).toBe(-1500) // Limited to -$1,500 for MFS
+
+    expect(result[0].f1040.f1040_line7).toBe(-1500) // Limited capital loss
+    expect(result[0].f1040.f1040_line11).toBe(88500) // 60k + 30k - 1.5k
+    expect(result[0].currentYearNOL).toBe(0) // Positive AGI
   })
 })

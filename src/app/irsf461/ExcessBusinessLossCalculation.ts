@@ -10,6 +10,7 @@ export function calculateExcessBusinessLoss({
   rows: {
     year: number
     w2: number
+    personalCapGain?: number
     capGain: number
     businessNetIncome: number
     override_f461_line15?: number | null
@@ -28,7 +29,7 @@ export function calculateExcessBusinessLoss({
       iraDistributions: 0,
       pensions: 0,
       socialSecurity: 0,
-      nonBusinessCapGains: row.capGain, // Treat as non-business capital gains for Form 461 exclusion
+      nonBusinessCapGains: row.personalCapGain ?? 0, // Personal capital gains for Schedule D
       businessIncome: row.businessNetIncome,
       otherGains: 0,
       rentalIncome: 0,
@@ -41,7 +42,7 @@ export function calculateExcessBusinessLoss({
       isSingle,
       taxYear: Number(row.year),
       override_f461_line15: row.override_f461_line15 ?? override_f461_line15 ?? null,
-      businessCapGains: 0, // No separate business capital gains
+      businessCapGains: row.capGain, // Business capital gains
     })
 
     // Determine how much NOL can actually be used (limited by positive AGI)
@@ -56,7 +57,7 @@ export function calculateExcessBusinessLoss({
       iraDistributions: 0,
       pensions: 0,
       socialSecurity: 0,
-      nonBusinessCapGains: row.capGain, // Treat as non-business capital gains for Form 461 exclusion
+      nonBusinessCapGains: row.personalCapGain ?? 0, // Personal capital gains for Schedule D
       businessIncome: row.businessNetIncome,
       otherGains: 0,
       rentalIncome: 0,
@@ -69,7 +70,7 @@ export function calculateExcessBusinessLoss({
       isSingle,
       taxYear: Number(row.year),
       override_f461_line15: row.override_f461_line15 ?? override_f461_line15 ?? null,
-      businessCapGains: 0, // No separate business capital gains
+      businessCapGains: row.capGain, // Business capital gains
     })
 
     const f461 = f1040.schedule1.form461output ?? undefined
