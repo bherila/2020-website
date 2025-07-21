@@ -8,6 +8,7 @@ import { DialogForm1040View } from '@/lib/tax/form1040'
 import { DialogSchedule1View } from '@/lib/tax/schedule1'
 import { formatFriendlyAmount } from '@/lib/formatCurrency'
 import { calculateExcessBusinessLoss } from './ExcessBusinessLossCalculation'
+import { T } from 'node_modules/better-auth/dist/auth-CLCpBhSV'
 
 const TAX_YEARS = 11
 const CURRENT_YEAR = new Date().getFullYear()
@@ -26,6 +27,7 @@ function parseCurrency(val: string) {
 export default function ExcessBusinessLossClient() {
   const [isSingle, setIsSingle] = useState(true)
   const [costOfLivingAdjustment, setCostOfLivingAdjustment] = useState(1.03)
+  const [f461_line15, setF461Line15] = useState<number | null>(null)
   const [rows, setRows] = useState(
     Array.from({ length: TAX_YEARS }, (_, i) => ({
       year: CURRENT_YEAR + i,
@@ -76,8 +78,7 @@ export default function ExcessBusinessLossClient() {
 
   // Track carryforward NOL and disallowed loss
   let carryforward = 0
-  const tableRows = calculateExcessBusinessLoss({ rows, isSingle })
-
+  const tableRows = calculateExcessBusinessLoss({ rows, isSingle, override_f461_line15: f461_line15 })
   return (
     <>
       <div className="mb-4 flex gap-4 items-center">
@@ -113,7 +114,7 @@ export default function ExcessBusinessLossClient() {
             <TableHead>f461 Limit</TableHead>
             <TableHead>(Loss) Allowed</TableHead>
             <TableHead>Carry fw</TableHead>
-            <TableHead>Taxable Income</TableHead>
+            <TableHead>AGI</TableHead>
             <TableHead>Schedule 1</TableHead>
           </TableRow>
         </TableHeader>
@@ -197,7 +198,7 @@ export default function ExcessBusinessLossClient() {
               <TableCell>{formatFriendlyAmount(row.limit)}</TableCell>
               <TableCell>{formatFriendlyAmount(row.allowedLoss)}</TableCell>
               <TableCell>{formatFriendlyAmount(row.disallowedLoss)}</TableCell>
-              <TableCell>{formatFriendlyAmount(row.taxableIncome)}</TableCell>
+              <TableCell>{formatFriendlyAmount(row.f1040.f1040_line11)}</TableCell>
               <TableCell>
                 <DialogForm1040View data={row.f1040} taxYear={row.year} />
                 <DialogSchedule1View data={row.f1040.schedule1} taxYear={row.year} />
@@ -252,7 +253,25 @@ export default function ExcessBusinessLossClient() {
                 }}
               />
             </TableCell>
-            <TableCell colSpan={6}></TableCell>
+            <TableCell>-</TableCell>
+            <TableCell>
+              <Input
+                type="text"
+                placeholder="f461 Line 15 Override"
+                className="w-32"
+                defaultValue={f461_line15 === null ? '' : currency(f461_line15).format()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const val = parseCurrency(e.currentTarget.value)
+                    setF461Line15(val === 0 ? null : val)
+                  }
+                }}
+              />
+            </TableCell>
+            <TableCell>&nbsp;</TableCell>
+            <TableCell>&nbsp;</TableCell>
+            <TableCell>&nbsp;</TableCell>
+            <TableCell>&nbsp;</TableCell>
           </TableRow>
         </TableBody>
       </Table>

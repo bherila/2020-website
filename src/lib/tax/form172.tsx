@@ -255,31 +255,48 @@ export function form172(inputs: Form172Inputs): Form172Data {
 const part1Lines: { key: keyof Form172Part1Data; label: string }[] = [
   {
     key: 'p1_line1',
-    label: '1. For individuals, AGI minus deductions. For estates/trusts, taxable income plus certain deductions.',
+    label:
+      '1. For individuals, subtract your standard deduction or itemized deductions from your adjusted gross income (AGI) and enter it here. For estates and trusts, enter taxable income increased by the total of the charitable deduction, income distribution deduction, and exemption amount.',
   },
-  { key: 'p1_line2', label: '2. Nonbusiness capital losses before limitation' },
-  { key: 'p1_line3', label: '3. Nonbusiness capital gains' },
-  { key: 'p1_line4', label: '4. Difference if line 2 is more than line 3' },
-  { key: 'p1_line5', label: '5. Difference if line 3 is more than line 2' },
-  { key: 'p1_line6', label: '6. Nonbusiness deductions' },
-  { key: 'p1_line7', label: '7. Nonbusiness income other than capital gains' },
-  { key: 'p1_line8', label: '8. Add lines 5 and 7' },
-  { key: 'p1_line9', label: '9. Difference if line 6 is more than line 8' },
-  { key: 'p1_line10', label: '10. Difference if line 8 is more than line 6 (but not more than line 5)' },
-  { key: 'p1_line11', label: '11. Business capital losses before limitation' },
-  { key: 'p1_line12', label: '12. Business capital gains' },
-  { key: 'p1_line13', label: '13. Add lines 10 and 12' },
-  { key: 'p1_line14', label: '14. Subtract line 13 from line 11' },
-  { key: 'p1_line15', label: '15. Add lines 4 and 14' },
-  { key: 'p1_line16', label: '16. Net capital loss from Schedule D' },
-  { key: 'p1_line17', label: '17. Section 1202 exclusion' },
-  { key: 'p1_line18', label: '18. Subtract line 17 from line 16' },
-  { key: 'p1_line19', label: '19. Smaller of loss on line 16 or $3,000 ($1,500 MFS)' },
-  { key: 'p1_line20', label: '20. Difference if line 18 is more than line 19' },
-  { key: 'p1_line21', label: '21. Difference if line 19 is more than line 18' },
-  { key: 'p1_line22', label: '22. Subtract line 20 from line 15' },
-  { key: 'p1_line23', label: '23. NOL deduction for losses from other years' },
-  { key: 'p1_line24', label: '24. NOL (if less than zero)' },
+  { key: 'p1_line2', label: '2. Nonbusiness capital losses before limitation (positive number).' },
+  { key: 'p1_line3', label: '3. Nonbusiness capital gains (without regard to any section 1202 exclusion).' },
+  { key: 'p1_line4', label: '4. If line 2 is more than line 3, enter the difference. Otherwise, enter -0-.' },
+  { key: 'p1_line5', label: '5. If line 3 is more than line 2, enter the difference. Otherwise, enter -0-.' },
+  { key: 'p1_line6', label: '6. Nonbusiness deductions (positive number).' },
+  { key: 'p1_line7', label: '7. Nonbusiness income other than capital gains.' },
+  { key: 'p1_line8', label: '8. Add lines 5 and 7.' },
+  { key: 'p1_line9', label: '9. If line 6 is more than line 8, enter the difference. Otherwise, enter -0-.' },
+  {
+    key: 'p1_line10',
+    label:
+      '10. If line 8 is more than line 6, enter the difference. Otherwise, enter -0- (But don’t enter more than line 5).',
+  },
+  { key: 'p1_line11', label: '11. Business capital losses before limitation (positive number).' },
+  { key: 'p1_line12', label: '12. Business capital gains (without regard to any section 1202 exclusion).' },
+  { key: 'p1_line13', label: '13. Add lines 10 and 12.' },
+  { key: 'p1_line14', label: '14. Subtract line 13 from line 11. If zero or less, enter -0-.' },
+  { key: 'p1_line15', label: '15. Add lines 4 and 14.' },
+  {
+    key: 'p1_line16',
+    label:
+      '16. Enter, if any, the combined net short-term and long-term capital loss from your Schedule D (Form 1040). Estates and trusts, enter total net short-term and long-term loss from Schedule D (Form 1041). (positive number).',
+  },
+  { key: 'p1_line17', label: '17. Section 1202 exclusion (positive number).' },
+  { key: 'p1_line18', label: '18. Subtract line 17 from line 16. If zero or less, enter -0-.' },
+  {
+    key: 'p1_line19',
+    label:
+      '19. If line 16 is a loss, enter the smaller of: the loss on line 16; or $3,000 ($1,500 if married filing separately).',
+  },
+  { key: 'p1_line20', label: '20. If line 18 is more than line 19, enter the difference. Otherwise, enter -0-.' },
+  { key: 'p1_line21', label: '21. If line 19 is more than line 18, enter the difference. Otherwise, enter -0-.' },
+  { key: 'p1_line22', label: '22. Subtract line 20 from line 15. If zero or less, enter -0-.' },
+  { key: 'p1_line23', label: '23. NOL deduction for losses from other years (positive number).' },
+  {
+    key: 'p1_line24',
+    label:
+      '24. NOL. Combine lines 1, 9, 17, and 21 through 23. If the result is less than zero, enter it here. If the result is zero or more, you don’t have an NOL.',
+  },
 ]
 
 const part2Lines: { key: keyof Form172Part2Data | 'header'; label: string; indent?: boolean }[] = [

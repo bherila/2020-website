@@ -4,6 +4,7 @@ import { form461 } from '@/lib/tax/form461'
 export function calculateExcessBusinessLoss({
   rows,
   isSingle,
+  override_f461_line15 = null,
 }: {
   isSingle: boolean
   rows: {
@@ -11,13 +12,42 @@ export function calculateExcessBusinessLoss({
     w2: number
     capGain: number
     businessNetIncome: number
+    override_f461_line15?: number | null
   }[]
+  override_f461_line15?: number | null // Optional override for the maximum excess business loss
 }) {
   let carryforward = 0
   return rows.map((row, idx) => {
     const startingNOL = carryforward
 
-    // Compute form1040 for this year
+    // First calculate AGI without NOL to determine how much NOL can be used
+    const preliminaryF1040 = form1040({
+      wages: row.w2,
+      interest: 0,
+      dividends: 0,
+      iraDistributions: 0,
+      pensions: 0,
+      socialSecurity: 0,
+      capGain: row.capGain,
+      businessIncome: row.businessNetIncome,
+      otherGains: 0,
+      rentalIncome: 0,
+      farmIncome: 0,
+      nolDeductionFromOtherYears: 0, // No NOL for preliminary calculation
+      selfEmploymentTax: 0,
+      sepSimpleQualifiedPlans: 0,
+      selfEmployedHealthInsurance: 0,
+      earlyWithdrawalPenalty: 0,
+      isSingle,
+      taxYear: Number(row.year),
+      override_f461_line15: row.override_f461_line15 ?? override_f461_line15 ?? null,
+    })
+
+    // Determine how much NOL can actually be used (limited by positive AGI)
+    const agiBeforeNOL = preliminaryF1040.f1040_line11
+    const nolUsed = Math.min(startingNOL, Math.max(0, agiBeforeNOL))
+
+    // Now compute the final form1040 with the correct NOL amount
     const f1040 = form1040({
       wages: row.w2,
       interest: 0,
@@ -30,53 +60,48 @@ export function calculateExcessBusinessLoss({
       otherGains: 0,
       rentalIncome: 0,
       farmIncome: 0,
-      nolDeductionFromOtherYears: startingNOL,
+      nolDeductionFromOtherYears: nolUsed,
       selfEmploymentTax: 0,
       sepSimpleQualifiedPlans: 0,
       selfEmployedHealthInsurance: 0,
       earlyWithdrawalPenalty: 0,
       isSingle,
       taxYear: Number(row.year),
+      override_f461_line15: row.override_f461_line15 ?? override_f461_line15 ?? null,
     })
 
     const f461 = f1040.schedule1.form461output ?? undefined
-    const disallowedBusinessLoss = f461?.f461_line16 ?? 0
-    const allowedBusinessLoss = row.businessNetIncome + disallowedBusinessLoss
-    const grossIncome = row.w2 + row.capGain + allowedBusinessLoss
+    const limit = f461?.f461_line15 ?? (row.override_f461_line15 ?? override_f461_line15 ?? 0)
+    
+    // The excess business loss disallowed by Form 461 automatically becomes NOL carryforward
+    const disallowedLoss = f461?.f461_line16 ?? 0
+    
+    // Calculate the allowed business loss (the portion that's not disallowed)
+    const allowedLoss = row.businessNetIncome < 0 
+      ? row.businessNetIncome + disallowedLoss  // Add back the disallowed portion
+      : row.businessNetIncome
 
-    const disallowedLoss = f1040.schedule1.sch1_line8p ?? 0
-    const allowedLoss = row.businessNetIncome + disallowedLoss
+    // Calculate how much NOL was actually used (this should match what we calculated above)
+    const actualNolUsed = nolUsed
 
-    // NOL used is the amount of carryforward NOL actually used to offset income
-    // It's limited by the current year's taxable income before NOL deduction.
-    // NOL used is the amount of carryforward NOL actually used to offset income.
-    // It's limited by the current year's taxable income before NOL deduction.
-    // NOL used is the amount of carryforward NOL actually used to offset income.
-    // It's limited by the current year's taxable income before NOL deduction.
-    const taxableIncomeBeforeNOL = f1040.f1040_line11
-    const nolUsed = Math.min(startingNOL, Math.max(0, taxableIncomeBeforeNOL))
-
-    // Calculate the portion of the *allowed* loss that could not be used to offset taxable income.
-    // This happens when the AGI (f1040.f1040_line11) is negative after applying the allowed business loss.
-    // The allowedLoss is a negative number, so we take the max of 0 and (allowedLoss + taxableIncomeBeforeNOL)
-    // to get the portion that *couldn't* be used to reduce positive income.
-    const unusedAllowedLoss = Math.max(0, allowedLoss + taxableIncomeBeforeNOL)
+    // Current year NOL: any remaining negative AGI creates new NOL
+    const currentYearNOL = Math.max(0, -f1040.f1040_line11)
 
     // Taxable income from form1040
     const taxableIncome = f1040.f1040_line15
 
     // Update carryforward for next year:
-    // It's the previous NOL not used + current year's disallowed loss (from Form 461)
-    // + any portion of the *allowed* loss that couldn't be used to reduce taxable income.
-    carryforward = startingNOL - nolUsed + disallowedLoss + unusedAllowedLoss
+    // Unused NOL from prior years + current year's excess business loss + current year's NOL
+    carryforward = startingNOL - actualNolUsed + disallowedLoss + currentYearNOL
 
     return {
       ...row,
-      limit: f1040.schedule1.form461output?.f461_line15 ?? 0,
+      limit,
       startingNOL,
       allowedLoss,
       disallowedLoss,
-      nolUsed,
+      nolUsed: actualNolUsed,
+      currentYearNOL,
       taxableIncome,
       f1040,
       sch1: f1040.schedule1,

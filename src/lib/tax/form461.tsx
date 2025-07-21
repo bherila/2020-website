@@ -36,6 +36,7 @@ export function form461({
   f461_line8 = 0,
   f461_line10 = 0,
   f461_line11 = 0,
+  override_f461_line15 = null,
 }: {
   taxYear: number
   isSingle: boolean
@@ -47,8 +48,9 @@ export function form461({
   f461_line8?: number
   f461_line10?: number
   f461_line11?: number
+  override_f461_line15: number | null // Optional override for the maximum excess business loss
 }): Form461Data {
-  const f461_line15 = ExcessBusinessLossLimitation({ taxYear, isSingle })
+  const f461_line15 = override_f461_line15 ?? ExcessBusinessLossLimitation({ taxYear, isSingle })
   // Lines 1 and 7 are reserved for future use (blank)
   const f461_line2 = schedule1_line3
   const f461_line3 = f1040_line7

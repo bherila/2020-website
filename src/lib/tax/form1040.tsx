@@ -74,6 +74,7 @@ export function form1040({
   qbiDeduction = 0,
   isSingle = true,
   taxYear = 2024,
+  override_f461_line15 = null, // Optional override for the maximum excess business loss
 }: {
   wages?: number
   interest?: number
@@ -95,6 +96,7 @@ export function form1040({
   qbiDeduction?: number
   isSingle?: boolean
   taxYear?: number
+  override_f461_line15?: number | null // Optional override for the maximum excess business loss
 }): Form1040Data {
   const schedule1Data = schedule1({
     f1040_line7: capGain,
@@ -109,6 +111,7 @@ export function form1040({
     earlyWithdrawalPenalty,
     taxYear,
     isSingle,
+    override_f461_line15,
   })
 
   // Income lines

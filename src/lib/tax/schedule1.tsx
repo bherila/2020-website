@@ -35,6 +35,7 @@ export function schedule1({
   earlyWithdrawalPenalty = 0,
   taxYear,
   isSingle,
+  override_f461_line15 = null,
 }: {
   f1040_line7?: number // cap gain
   businessIncome?: number
@@ -48,18 +49,20 @@ export function schedule1({
   earlyWithdrawalPenalty?: number
   taxYear: number
   isSingle: boolean
+  override_f461_line15: number | null // Optional override for the maximum excess business loss
 }): Schedule1Data {
   const form461output = form461({
     taxYear,
     isSingle,
     schedule1_line3: businessIncome,
-    f1040_line7,
+    f1040_line7: 0, // Capital gains are generally not business income for Form 461
     schedule1_line4: otherGains,
     schedule1_line5: rentalIncome,
     schedule1_line6: farmIncome,
     f461_line8: 0, // Other trade/business income
     f461_line10: 0, // Not used in this context
     f461_line11: 0, // Not used in this context
+    override_f461_line15,
   })
   // sch1_line8p is calculated from form461 f461_line16
   const res = {
@@ -68,7 +71,7 @@ export function schedule1({
     sch1_line5: rentalIncome, // Rental real estate, royalties, partnerships, S corporations, trusts, etc.
     sch1_line6: farmIncome, // Farm income or (loss)
     sch1_line7: 0, // Unemployment income (not used in this context)
-    sch1_line8a: netOperatingLoss, // Net operating loss deduction
+    sch1_line8a: -netOperatingLoss, // Net operating loss deduction
     sch1_line8p: form461output.f461_line16, // Section 461(l) excess business loss adjustment
     sch1_line9: 0, // Total other income
     sch1_line10: 0, // Additional income total Enter here and on Form 1040, 1040-SR, or 1040-NR, line 8
