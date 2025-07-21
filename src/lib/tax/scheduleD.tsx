@@ -53,6 +53,12 @@ export interface ScheduleDData {
   // Part III - Summary
   schD_line16: number // Combine lines 7 and 15
   schD_line21: number // Limited loss amount for Form 1040 line 7
+  
+  // Additional breakdown for Form 461 calculations
+  totalBusinessCapGains: number // Total business capital gains (line 5 + line 12)
+  totalPersonalCapGains: number // Total personal capital gains (everything else)
+  limitedBusinessCapGains: number // Business portion of the limited amount
+  limitedPersonalCapGains: number // Personal portion of the limited amount
 }
 
 export function scheduleD({
@@ -112,6 +118,35 @@ export function scheduleD({
   // Line 21 - Loss limitation
   const lossLimit = isSingle ? -3000 : -1500
   const line21 = line16 < 0 ? Math.max(line16, lossLimit) : line16
+  
+  // Calculate business vs personal breakdown
+  const totalBusinessCapGains = line5 + line12 // Business gains from line 5 (short-term) and line 12 (long-term)
+  const totalPersonalCapGains = line16 - totalBusinessCapGains // Everything else is personal
+  
+  // Calculate limited breakdown
+  // If line21 equals line16, no limitation was applied
+  // If limitation was applied, we need to proportionally reduce both business and personal
+  let limitedBusinessCapGains: number
+  let limitedPersonalCapGains: number
+  
+  if (line21 === line16) {
+    // No limitation applied
+    limitedBusinessCapGains = totalBusinessCapGains
+    limitedPersonalCapGains = totalPersonalCapGains
+  } else {
+    // Limitation was applied, allocate proportionally
+    if (line16 < 0) {
+      // For losses, allocate the limited amount proportionally
+      const businessRatio = line16 === 0 ? 0 : totalBusinessCapGains / line16
+      const personalRatio = line16 === 0 ? 0 : totalPersonalCapGains / line16
+      limitedBusinessCapGains = line21 * businessRatio
+      limitedPersonalCapGains = line21 * personalRatio
+    } else {
+      // For gains, no limitation
+      limitedBusinessCapGains = totalBusinessCapGains
+      limitedPersonalCapGains = totalPersonalCapGains
+    }
+  }
 
   return {
     // Part I - Short-term (simplified - we only track gain/loss for display)
@@ -162,6 +197,12 @@ export function scheduleD({
     // Part III - Summary
     schD_line16: line16,
     schD_line21: line21,
+    
+    // Additional breakdown for Form 461 calculations
+    totalBusinessCapGains,
+    totalPersonalCapGains,
+    limitedBusinessCapGains,
+    limitedPersonalCapGains,
   }
 }
 

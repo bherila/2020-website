@@ -4,6 +4,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
 import { formatFriendlyAmount } from '@/lib/formatCurrency'
 import { Button } from '@/components/ui/button'
 import { ExcessBusinessLossLimitation } from './ExcessBusinessLossLimitation'
+import { ScheduleDData } from './scheduleD'
 
 export interface Form461Data {
   // Part I
@@ -29,37 +30,67 @@ export function form461({
   taxYear,
   isSingle,
   schedule1_line3 = 0,
-  nonBusinessCapGains = 0,
-  businessCapGains = 0,
+  scheduleDData,
   schedule1_line4 = 0,
   schedule1_line5 = 0,
   schedule1_line6 = 0,
   f461_line8 = 0,
   f461_line11 = 0,
   override_f461_line15 = null,
+  // Legacy parameters for backward compatibility
+  f1040_line7,
+  businessCapGains,
+  nonBusinessCapGains,
 }: {
   taxYear: number
   isSingle: boolean
   schedule1_line3?: number
-  nonBusinessCapGains?: number
-  businessCapGains?: number
+  scheduleDData?: ScheduleDData // Preferred: Schedule D data with business/personal breakdown
   schedule1_line4?: number
   schedule1_line5?: number
   schedule1_line6?: number
   f461_line8?: number
   f461_line11?: number
-  override_f461_line15: number | null // Optional override for the maximum excess business loss
+  override_f461_line15: number | null
+  // Legacy parameters for backward compatibility
+  f1040_line7?: number
+  businessCapGains?: number
+  nonBusinessCapGains?: number
 }): Form461Data {
   const f461_line15 = override_f461_line15 ?? ExcessBusinessLossLimitation({ taxYear, isSingle })
+  
   // Lines 1 and 7 are reserved for future use (blank)
   const f461_line2 = schedule1_line3
-  const f461_line3 = nonBusinessCapGains + businessCapGains
+  
+  // Determine capital gains amounts to use
+  let f461_line3: number
+  let nonBusinessPortionOfCapGains: number
+  
+  if (scheduleDData) {
+    // Use the new Schedule D data (preferred)
+    f461_line3 = scheduleDData.schD_line21 // LIMITED amount from Schedule D
+    nonBusinessPortionOfCapGains = scheduleDData.limitedPersonalCapGains
+  } else if (f1040_line7 !== undefined) {
+    // Use the LIMITED amount from Form 1040 line 7 (legacy)
+    f461_line3 = f1040_line7
+    
+    // Calculate the non-business portion of the capital gains
+    // If f1040_line7 is negative (loss), all of it is non-business since business gains would be positive
+    // If f1040_line7 is positive, we need to separate business from non-business portions
+    nonBusinessPortionOfCapGains = f1040_line7 < 0 ? f1040_line7 : Math.min(f1040_line7, nonBusinessCapGains || 0)
+  } else {
+    // Backward compatibility: use raw amounts
+    f461_line3 = (nonBusinessCapGains || 0) + (businessCapGains || 0)
+    nonBusinessPortionOfCapGains = nonBusinessCapGains || 0
+  }
+  
   const f461_line4 = schedule1_line4
   const f461_line5 = schedule1_line5
   const f461_line6 = schedule1_line6
   // ...existing code...
   const f461_line9 = f461_line2 + f461_line3 + f461_line4 + f461_line5 + f461_line6 + f461_line8
-  const f461_line10 = nonBusinessCapGains // Income/gain reported not attributable to a trade or business
+  
+  const f461_line10 = nonBusinessPortionOfCapGains // Income/gain reported not attributable to a trade or business
   const f461_line12 = f461_line10 - f461_line11
   const f461_line13 = f461_line12 < 0 ? Math.abs(f461_line12) : -Math.abs(f461_line12)
   const f461_line14 = f461_line9 + f461_line13

@@ -110,7 +110,7 @@ export function form1040({
   })
 
   const schedule1Data = schedule1({
-    f1040_line7: scheduleDData.schD_line21, // Use Schedule D limited amount
+    scheduleDData, // Pass the entire Schedule D data object
     businessIncome,
     otherGains,
     rentalIncome,
@@ -123,8 +123,6 @@ export function form1040({
     taxYear,
     isSingle,
     override_f461_line15,
-    businessCapGains,
-    nonBusinessCapGains,
   })
 
   // Income lines

@@ -2,6 +2,7 @@ import React from 'react'
 import { formatFriendlyAmount } from '@/lib/formatCurrency'
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table'
 import { Form461Data, Form461View, form461 } from './form461'
+import { ScheduleDData } from './scheduleD'
 
 export interface Schedule1Data {
   sch1_line3: number
@@ -23,6 +24,7 @@ export interface Schedule1Data {
 }
 
 export function schedule1({
+  scheduleDData,
   businessIncome = 0,
   otherGains = 0,
   rentalIncome = 0,
@@ -32,13 +34,11 @@ export function schedule1({
   sepSimpleQualifiedPlans = 0,
   selfEmployedHealthInsurance = 0,
   earlyWithdrawalPenalty = 0,
-  businessCapGains = 0,
-  nonBusinessCapGains = 0,
   taxYear,
   isSingle,
   override_f461_line15 = null,
 }: {
-  f1040_line7?: number // total cap gains (business + non-business)
+  scheduleDData?: ScheduleDData // Schedule D data with business/personal capital gains breakdown
   businessIncome?: number
   otherGains?: number
   rentalIncome?: number
@@ -48,8 +48,6 @@ export function schedule1({
   sepSimpleQualifiedPlans?: number
   selfEmployedHealthInsurance?: number
   earlyWithdrawalPenalty?: number
-  businessCapGains?: number
-  nonBusinessCapGains?: number
   taxYear: number
   isSingle: boolean
   override_f461_line15: number | null // Optional override for the maximum excess business loss
@@ -62,9 +60,8 @@ export function schedule1({
     schedule1_line5: rentalIncome,
     schedule1_line6: farmIncome,
     f461_line8: 0, // Other trade/business income
-    nonBusinessCapGains, // Non-business capital gains to exclude from business calculation
+    scheduleDData, // Pass the Schedule D data instead of separate variables
     f461_line11: 0, // Not used in this context
-    businessCapGains,
     override_f461_line15,
   })
   // sch1_line8p is calculated from form461 f461_line16
