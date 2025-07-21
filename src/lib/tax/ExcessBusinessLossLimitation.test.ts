@@ -47,4 +47,38 @@ describe('ExcessBusinessLossLimitation', () => {
     expect(ExcessBusinessLossLimitation({ taxYear: 2017, isSingle: true })).toBe(250000)
     expect(ExcessBusinessLossLimitation({ taxYear: 2017, isSingle: false })).toBe(500000)
   })
+
+  it('handles edge case years around P.L. 119-21 effective dates', () => {
+    // Test 2026 (first year after P.L. 119-21 changes for inflation adjustment)
+    const expectedSingle2026 = Math.round((317000 * 1.03) / 1000) * 1000
+    const expectedMarried2026 = Math.round((634000 * 1.03) / 1000) * 1000
+    expect(ExcessBusinessLossLimitation({ taxYear: 2026, isSingle: true })).toBe(expectedSingle2026)
+    expect(ExcessBusinessLossLimitation({ taxYear: 2026, isSingle: false })).toBe(expectedMarried2026)
+    
+    // Test 2027 (first year after P.L. 119-21 limitation period extension)
+    const expectedSingle2027 = Math.round((317000 * Math.pow(1.03, 2)) / 1000) * 1000
+    const expectedMarried2027 = Math.round((634000 * Math.pow(1.03, 2)) / 1000) * 1000
+    expect(ExcessBusinessLossLimitation({ taxYear: 2027, isSingle: true })).toBe(expectedSingle2027)
+    expect(ExcessBusinessLossLimitation({ taxYear: 2027, isSingle: false })).toBe(expectedMarried2027)
+  })
+
+  it('always returns positive values regardless of input parameters', () => {
+    // Test edge cases that might produce negative or zero values
+    expect(ExcessBusinessLossLimitation({ taxYear: 2025, isSingle: true, costOfLivingAdjustment: 0 })).toBeGreaterThan(0)
+    expect(ExcessBusinessLossLimitation({ taxYear: 2025, isSingle: false, costOfLivingAdjustment: 0 })).toBeGreaterThan(0)
+    expect(ExcessBusinessLossLimitation({ taxYear: 2030, isSingle: true, costOfLivingAdjustment: 0.1 })).toBeGreaterThan(0)
+    expect(ExcessBusinessLossLimitation({ taxYear: 2030, isSingle: false, costOfLivingAdjustment: 0.1 })).toBeGreaterThan(0)
+  })
+
+  it('handles very large cost of living adjustments', () => {
+    // Test with high inflation scenario
+    const highInflation = 1.10 // 10% annual inflation
+    const result2030Single = ExcessBusinessLossLimitation({ taxYear: 2030, isSingle: true, costOfLivingAdjustment: highInflation })
+    const result2030Married = ExcessBusinessLossLimitation({ taxYear: 2030, isSingle: false, costOfLivingAdjustment: highInflation })
+    
+    expect(result2030Single).toBeGreaterThan(317000)
+    expect(result2030Married).toBeGreaterThan(634000)
+    expect(result2030Single % 1000).toBe(0) // Should be rounded to nearest $1,000
+    expect(result2030Married % 1000).toBe(0) // Should be rounded to nearest $1,000
+  })
 })

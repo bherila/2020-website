@@ -22,6 +22,8 @@ const KNOWN_LIMITS = [
 /**
  * Returns the maximum excess business loss limitation for a given year.
  * For future years, applies cost-of-living adjustment to the 2025 value.
+ * Note: P.L. 119-21 changes the inflation adjustment base year from 2017 to 2024
+ * for tax years beginning after December 31, 2025.
  * @param options { taxYear, isSingle, costOfLivingAdjustment }
  * @returns {number} Limitation amount (rounded to nearest $1,000)
  */
@@ -35,17 +37,21 @@ export function ExcessBusinessLossLimitation({
   if (known) {
     return isSingle ? known.single_filers : known.married_filing_jointly
   }
+  
   // For future years, use 2025 as base and apply inflation
   const baseYear = 2025
   const baseSingle = 317000
   const baseMarried = 634000
+  
   if (taxYear > baseYear) {
     const yearsSinceBase = taxYear - baseYear
     const multiplier = Math.pow(costOfLivingAdjustment, yearsSinceBase)
     const raw = (isSingle ? baseSingle : baseMarried) * multiplier
-    // Round to nearest $1,000
-    return Math.round(raw / 1000) * 1000
+    // Round to nearest $1,000, but ensure minimum value is $1,000
+    const rounded = Math.round(raw / 1000) * 1000
+    return Math.max(rounded, 1000)
   }
+  
   // For years before 2018, use 2018 value
   return isSingle ? 250000 : 500000
 }

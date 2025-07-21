@@ -305,7 +305,8 @@ export default function ExcessBusinessLossClient() {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     const val = parseCurrency(e.currentTarget.value)
-                    setF461Line15(val === 0 ? null : val)
+                    // Force positive values only, since ExcessBusinessLossLimitation always returns positive
+                    setF461Line15(val <= 0 ? null : Math.abs(val))
                   }
                 }}
               />
