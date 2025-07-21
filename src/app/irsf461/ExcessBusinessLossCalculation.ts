@@ -28,7 +28,7 @@ export function calculateExcessBusinessLoss({
       iraDistributions: 0,
       pensions: 0,
       socialSecurity: 0,
-      capGain: row.capGain,
+      nonBusinessCapGains: row.capGain, // Treat as non-business capital gains for Form 461 exclusion
       businessIncome: row.businessNetIncome,
       otherGains: 0,
       rentalIncome: 0,
@@ -41,6 +41,7 @@ export function calculateExcessBusinessLoss({
       isSingle,
       taxYear: Number(row.year),
       override_f461_line15: row.override_f461_line15 ?? override_f461_line15 ?? null,
+      businessCapGains: 0, // No separate business capital gains
     })
 
     // Determine how much NOL can actually be used (limited by positive AGI)
@@ -55,7 +56,7 @@ export function calculateExcessBusinessLoss({
       iraDistributions: 0,
       pensions: 0,
       socialSecurity: 0,
-      capGain: row.capGain,
+      nonBusinessCapGains: row.capGain, // Treat as non-business capital gains for Form 461 exclusion
       businessIncome: row.businessNetIncome,
       otherGains: 0,
       rentalIncome: 0,
@@ -68,18 +69,22 @@ export function calculateExcessBusinessLoss({
       isSingle,
       taxYear: Number(row.year),
       override_f461_line15: row.override_f461_line15 ?? override_f461_line15 ?? null,
+      businessCapGains: 0, // No separate business capital gains
     })
 
     const f461 = f1040.schedule1.form461output ?? undefined
-    const limit = f461?.f461_line15 ?? (row.override_f461_line15 ?? override_f461_line15 ?? 0)
-    
+    const limit = f461?.f461_line15 ?? row.override_f461_line15 ?? override_f461_line15 ?? 0
+
     // The excess business loss disallowed by Form 461 automatically becomes NOL carryforward
     const disallowedLoss = f461?.f461_line16 ?? 0
-    
+
     // Calculate the allowed business loss (the portion that's not disallowed)
-    const allowedLoss = row.businessNetIncome < 0 
-      ? row.businessNetIncome + disallowedLoss  // Add back the disallowed portion
-      : row.businessNetIncome
+    // This should be the net business income (including capital gains) minus the disallowed portion
+    const netBusinessIncome = f461?.f461_line9 ?? row.businessNetIncome + row.capGain
+    const allowedLoss =
+      netBusinessIncome < 0
+        ? netBusinessIncome + disallowedLoss // Add back the disallowed portion to get the allowed loss
+        : netBusinessIncome
 
     // Calculate how much NOL was actually used (this should match what we calculated above)
     const actualNolUsed = nolUsed

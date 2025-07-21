@@ -9,7 +9,7 @@ describe('Form 1040 - U.S. Individual Income Tax Return', () => {
       iraDistributions: 0,
       pensions: 0,
       socialSecurity: 0,
-      capGain: 50000,
+      nonBusinessCapGains: 50000,
       businessIncome: -400000,
       otherGains: 0,
       rentalIncome: 0,
@@ -19,6 +19,7 @@ describe('Form 1040 - U.S. Individual Income Tax Return', () => {
       sepSimpleQualifiedPlans: 0,
       selfEmployedHealthInsurance: 0,
       earlyWithdrawalPenalty: 0,
+      businessCapGains: 0,
       standardDeduction: 14600,
       qbiDeduction: 0,
       isSingle: true,
@@ -28,19 +29,19 @@ describe('Form 1040 - U.S. Individual Income Tax Return', () => {
 
     // Income section
     expect(result.f1040_line1z).toBe(100000) // Wages
-    expect(result.f1040_line7).toBe(50000)   // Capital gains
+    expect(result.f1040_line7).toBe(50000) // Capital gains
     expect(result.f1040_line8).toBe(-250000) // Additional income from Schedule 1 (business loss adjusted by Form 461)
     expect(result.f1040_line9).toBe(-100000) // Total income
 
     // AGI calculation
-    expect(result.f1040_line10).toBe(0)      // No adjustments to income in this example
+    expect(result.f1040_line10).toBe(0) // No adjustments to income in this example
     expect(result.f1040_line11).toBe(-100000) // AGI
 
     // Taxable income calculation
-    expect(result.f1040_line12).toBe(14600)  // Standard deduction
-    expect(result.f1040_line13).toBe(0)      // QBI deduction
-    expect(result.f1040_line14).toBe(14600)  // Total deductions
-    expect(result.f1040_line15).toBe(0)      // Taxable income (can't be negative)
+    expect(result.f1040_line12).toBe(14600) // Standard deduction
+    expect(result.f1040_line13).toBe(0) // QBI deduction
+    expect(result.f1040_line14).toBe(14600) // Total deductions
+    expect(result.f1040_line15).toBe(0) // Taxable income (can't be negative)
 
     // Schedule 1 should show the excess business loss adjustment
     expect(result.schedule1.sch1_line3).toBe(-400000) // Original business loss
@@ -56,7 +57,7 @@ describe('Form 1040 - U.S. Individual Income Tax Return', () => {
       iraDistributions: 0,
       pensions: 0,
       socialSecurity: 0,
-      capGain: 50000,
+      nonBusinessCapGains: 50000,
       businessIncome: 0,
       otherGains: 0,
       rentalIncome: 0,
@@ -66,6 +67,7 @@ describe('Form 1040 - U.S. Individual Income Tax Return', () => {
       sepSimpleQualifiedPlans: 0,
       selfEmployedHealthInsurance: 0,
       earlyWithdrawalPenalty: 0,
+      businessCapGains: 0,
       standardDeduction: 14600,
       qbiDeduction: 0,
       isSingle: true,
@@ -75,13 +77,13 @@ describe('Form 1040 - U.S. Individual Income Tax Return', () => {
 
     // Income before NOL
     expect(result.f1040_line1z).toBe(100000) // Wages
-    expect(result.f1040_line7).toBe(50000)   // Capital gains
-    
+    expect(result.f1040_line7).toBe(50000) // Capital gains
+
     // NOL deduction should reduce additional income
     expect(result.f1040_line8).toBe(-200000) // NOL deduction from Schedule 1
-    expect(result.f1040_line9).toBe(-50000)  // Total income after NOL (100k + 50k - 200k)
+    expect(result.f1040_line9).toBe(-50000) // Total income after NOL (100k + 50k - 200k)
     expect(result.f1040_line11).toBe(-50000) // AGI
-    expect(result.f1040_line15).toBe(0)      // Taxable income
+    expect(result.f1040_line15).toBe(0) // Taxable income
   })
 
   it('should calculate basic tax return with positive income', () => {
@@ -92,7 +94,7 @@ describe('Form 1040 - U.S. Individual Income Tax Return', () => {
       iraDistributions: 0,
       pensions: 0,
       socialSecurity: 0,
-      capGain: 5000,
+      nonBusinessCapGains: 5000,
       businessIncome: 0,
       otherGains: 0,
       rentalIncome: 0,
@@ -102,6 +104,7 @@ describe('Form 1040 - U.S. Individual Income Tax Return', () => {
       sepSimpleQualifiedPlans: 0,
       selfEmployedHealthInsurance: 0,
       earlyWithdrawalPenalty: 0,
+      businessCapGains: 0,
       standardDeduction: 14600,
       qbiDeduction: 0,
       isSingle: true,
@@ -109,13 +112,13 @@ describe('Form 1040 - U.S. Individual Income Tax Return', () => {
       override_f461_line15: 250000,
     })
 
-    expect(result.f1040_line1z).toBe(75000)  // Wages
-    expect(result.f1040_line2b).toBe(1000)   // Interest
-    expect(result.f1040_line3b).toBe(2000)   // Dividends
-    expect(result.f1040_line7).toBe(5000)    // Capital gains
-    expect(result.f1040_line8).toBe(0)       // No additional income
-    expect(result.f1040_line9).toBe(83000)   // Total income
-    expect(result.f1040_line11).toBe(83000)  // AGI
-    expect(result.f1040_line15).toBe(68400)  // Taxable income (83000 - 14600)
+    expect(result.f1040_line1z).toBe(75000) // Wages
+    expect(result.f1040_line2b).toBe(1000) // Interest
+    expect(result.f1040_line3b).toBe(2000) // Dividends
+    expect(result.f1040_line7).toBe(5000) // Capital gains
+    expect(result.f1040_line8).toBe(0) // No additional income
+    expect(result.f1040_line9).toBe(83000) // Total income
+    expect(result.f1040_line11).toBe(83000) // AGI
+    expect(result.f1040_line15).toBe(68400) // Taxable income (83000 - 14600)
   })
 })

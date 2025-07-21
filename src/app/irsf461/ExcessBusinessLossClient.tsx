@@ -108,7 +108,7 @@ export default function ExcessBusinessLossClient() {
           <TableRow>
             <TableHead>Year</TableHead>
             <TableHead>W-2 income</TableHead>
-            <TableHead>Capital gains</TableHead>
+            <TableHead>Business Cap Gains</TableHead>
             <TableHead>Business income</TableHead>
             <TableHead>Start NOL</TableHead>
             <TableHead>f461 Limit</TableHead>
@@ -226,7 +226,7 @@ export default function ExcessBusinessLossClient() {
             <TableCell>
               <Input
                 type="text"
-                placeholder="Capital Gains"
+                placeholder="Business Cap Gains"
                 className="w-32"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {

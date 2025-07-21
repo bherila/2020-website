@@ -35,7 +35,7 @@ describe('Debug NOL Calculation', () => {
     // Total NOL carryforward: $150,000 (disallowed) + $100,000 (current) = $250,000
 
     expect(year1.disallowedLoss).toBe(150000)
-    expect(year1.allowedLoss).toBe(-250000)
+    expect(year1.allowedLoss).toBe(-200000)
     expect(year1.f1040.f1040_line11).toBe(-100000)
     expect(year1.currentYearNOL).toBe(100000)
   })

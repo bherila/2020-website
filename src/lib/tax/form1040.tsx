@@ -60,7 +60,7 @@ export function form1040({
   iraDistributions = 0,
   pensions = 0,
   socialSecurity = 0,
-  capGain = 0,
+  nonBusinessCapGains = 0,
   businessIncome = 0,
   otherGains = 0,
   rentalIncome = 0,
@@ -70,6 +70,7 @@ export function form1040({
   sepSimpleQualifiedPlans = 0,
   selfEmployedHealthInsurance = 0,
   earlyWithdrawalPenalty = 0,
+  businessCapGains = 0,
   standardDeduction = 14600, // 2024 single
   qbiDeduction = 0,
   isSingle = true,
@@ -82,7 +83,7 @@ export function form1040({
   iraDistributions?: number
   pensions?: number
   socialSecurity?: number
-  capGain?: number
+  nonBusinessCapGains?: number
   businessIncome?: number
   otherGains?: number
   rentalIncome?: number
@@ -92,6 +93,7 @@ export function form1040({
   sepSimpleQualifiedPlans?: number
   selfEmployedHealthInsurance?: number
   earlyWithdrawalPenalty?: number
+  businessCapGains?: number
   standardDeduction?: number
   qbiDeduction?: number
   isSingle?: boolean
@@ -99,7 +101,7 @@ export function form1040({
   override_f461_line15?: number | null // Optional override for the maximum excess business loss
 }): Form1040Data {
   const schedule1Data = schedule1({
-    f1040_line7: capGain,
+    f1040_line7: nonBusinessCapGains + businessCapGains,
     businessIncome,
     otherGains,
     rentalIncome,
@@ -112,6 +114,8 @@ export function form1040({
     taxYear,
     isSingle,
     override_f461_line15,
+    businessCapGains,
+    nonBusinessCapGains,
   })
 
   // Income lines
@@ -121,7 +125,7 @@ export function form1040({
   const line4b = iraDistributions
   const line5b = pensions
   const line6b = socialSecurity
-  const line7 = capGain
+  const line7 = nonBusinessCapGains + businessCapGains
   const line8 = schedule1Data.sch1_line10
   const line9 = line1z + line2b + line3b + line4b + line5b + line6b + line7 + line8
 
@@ -150,11 +154,11 @@ export function form1040({
     isIndividual: true,
     isMarriedFilingSeparately: !isSingle,
     p1_nonbusinessCapitalLosses: 0,
-    p1_nonbusinessCapitalGains: capGain ?? 0,
+    p1_nonbusinessCapitalGains: nonBusinessCapGains ?? 0,
     p1_nonbusinessDeductions: 0,
     p1_nonbusinessIncomeOtherThanCapitalGains: 0,
     p1_businessCapitalLosses: 0,
-    p1_businessCapitalGains: 0,
+    p1_businessCapitalGains: businessCapGains ?? 0,
     p1_section1202Exclusion: 0,
     p1_nolDeductionFromOtherYears: nolDeductionFromOtherYears ?? 0,
     part2Inputs: [],

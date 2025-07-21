@@ -29,36 +29,37 @@ export function form461({
   taxYear,
   isSingle,
   schedule1_line3 = 0,
-  f1040_line7 = 0,
+  nonBusinessCapGains = 0,
+  businessCapGains = 0,
   schedule1_line4 = 0,
   schedule1_line5 = 0,
   schedule1_line6 = 0,
   f461_line8 = 0,
-  f461_line10 = 0,
   f461_line11 = 0,
   override_f461_line15 = null,
 }: {
   taxYear: number
   isSingle: boolean
   schedule1_line3?: number
-  f1040_line7?: number
+  nonBusinessCapGains?: number
+  businessCapGains?: number
   schedule1_line4?: number
   schedule1_line5?: number
   schedule1_line6?: number
   f461_line8?: number
-  f461_line10?: number
   f461_line11?: number
   override_f461_line15: number | null // Optional override for the maximum excess business loss
 }): Form461Data {
   const f461_line15 = override_f461_line15 ?? ExcessBusinessLossLimitation({ taxYear, isSingle })
   // Lines 1 and 7 are reserved for future use (blank)
   const f461_line2 = schedule1_line3
-  const f461_line3 = f1040_line7
+  const f461_line3 = nonBusinessCapGains + businessCapGains
   const f461_line4 = schedule1_line4
   const f461_line5 = schedule1_line5
   const f461_line6 = schedule1_line6
   // ...existing code...
   const f461_line9 = f461_line2 + f461_line3 + f461_line4 + f461_line5 + f461_line6 + f461_line8
+  const f461_line10 = nonBusinessCapGains // Income/gain reported not attributable to a trade or business
   const f461_line12 = f461_line10 - f461_line11
   const f461_line13 = f461_line12 < 0 ? Math.abs(f461_line12) : -Math.abs(f461_line12)
   const f461_line14 = f461_line9 + f461_line13
