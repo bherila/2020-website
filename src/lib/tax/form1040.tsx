@@ -102,7 +102,7 @@ export function form1040({
   taxYear?: number
   override_f461_line15?: number | null // Optional override for the maximum excess business loss
 }): Form1040Data {
-  // Calculate Schedule D first 
+  // Calculate Schedule D first
   const scheduleDData = scheduleD({
     line1a_gain_loss: nonBusinessCapGains, // Personal capital gains
     line5: businessCapGains, // Business capital gains

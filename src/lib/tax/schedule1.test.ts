@@ -9,7 +9,7 @@ describe('Schedule 1 - Additional Income and Adjustments to Income', () => {
       line5: 0, // Business capital gains
       isSingle: true,
     })
-    
+
     const result = schedule1({
       scheduleDData,
       businessIncome: -400000, // Business loss
@@ -46,7 +46,7 @@ describe('Schedule 1 - Additional Income and Adjustments to Income', () => {
       line5: 0,
       isSingle: true,
     })
-    
+
     const result = schedule1({
       scheduleDData,
       businessIncome: 0,
@@ -75,7 +75,7 @@ describe('Schedule 1 - Additional Income and Adjustments to Income', () => {
       line5: 0,
       isSingle: true,
     })
-    
+
     const result = schedule1({
       scheduleDData,
       businessIncome: 0,
@@ -105,7 +105,7 @@ describe('Schedule 1 - Additional Income and Adjustments to Income', () => {
       line5: 0,
       isSingle: true,
     })
-    
+
     const result = schedule1({
       scheduleDData,
       businessIncome: 0,
@@ -136,7 +136,7 @@ describe('Schedule 1 - Additional Income and Adjustments to Income', () => {
       line5: 0,
       isSingle: true,
     })
-    
+
     const result = schedule1({
       scheduleDData,
       businessIncome: 50000, // Small business income

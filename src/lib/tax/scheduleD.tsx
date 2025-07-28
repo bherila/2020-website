@@ -53,7 +53,7 @@ export interface ScheduleDData {
   // Part III - Summary
   schD_line16: number // Combine lines 7 and 15
   schD_line21: number // Limited loss amount for Form 1040 line 7
-  
+
   // Additional breakdown for Form 461 calculations
   totalBusinessCapGains: number // Total business capital gains (line 5 + line 12)
   totalPersonalCapGains: number // Total personal capital gains (everything else)
@@ -110,7 +110,15 @@ export function scheduleD({
   const line7 = line1a_gain_loss + line1b_gain_loss + line2_gain_loss + line3_gain_loss + line4 + line5 + line6_carryover
 
   // Part II - Long-term calculations
-  const line15 = line8a_gain_loss + line8b_gain_loss + line9_gain_loss + line10_gain_loss + line11 + line12 + line13_capital_gain_distributions + line14_carryover
+  const line15 =
+    line8a_gain_loss +
+    line8b_gain_loss +
+    line9_gain_loss +
+    line10_gain_loss +
+    line11 +
+    line12 +
+    line13_capital_gain_distributions +
+    line14_carryover
 
   // Part III - Summary
   const line16 = line7 + line15
@@ -118,17 +126,17 @@ export function scheduleD({
   // Line 21 - Loss limitation
   const lossLimit = isSingle ? -3000 : -1500
   const line21 = line16 < 0 ? Math.max(line16, lossLimit) : line16
-  
+
   // Calculate business vs personal breakdown
   const totalBusinessCapGains = line5 + line12 // Business gains from line 5 (short-term) and line 12 (long-term)
   const totalPersonalCapGains = line16 - totalBusinessCapGains // Everything else is personal
-  
+
   // Calculate limited breakdown
   // If line21 equals line16, no limitation was applied
   // If limitation was applied, we need to proportionally reduce both business and personal
   let limitedBusinessCapGains: number
   let limitedPersonalCapGains: number
-  
+
   if (line21 === line16) {
     // No limitation applied
     limitedBusinessCapGains = totalBusinessCapGains
@@ -197,7 +205,7 @@ export function scheduleD({
     // Part III - Summary
     schD_line16: line16,
     schD_line21: line21,
-    
+
     // Additional breakdown for Form 461 calculations
     totalBusinessCapGains,
     totalPersonalCapGains,

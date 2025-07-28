@@ -1,11 +1,60 @@
 'use client'
 import { useState } from 'react'
+// Helper to convert chart data to TSV string
+function generateTSV({
+  data,
+  labels,
+  isNegative,
+  isRetirement,
+  includeLiabilities,
+  includeRetirement,
+  groupByAccount,
+}: {
+  data: (string | number)[][]
+  labels?: string[]
+  isNegative?: boolean[]
+  isRetirement?: boolean[]
+  includeLiabilities: boolean
+  includeRetirement: boolean
+  groupByAccount: boolean
+}) {
+  // Filtered labels (accounts to include)
+  const filteredLabels = labels
+    ? labels.filter((_, i) => (!isNegative?.[i] || includeLiabilities) && (!isRetirement?.[i] || includeRetirement))
+    : Array.from({ length: data[0].length - 1 }, (_, i) => `balance${i + 1}`)
+
+  // Header row: Date + account columns
+  const header = ['Date', ...filteredLabels]
+
+  // Only include rows for quarters (date string includes 'Q')
+  const rows = data
+    .filter((row) => typeof row[0] === 'string' && row[0].includes('Q'))
+    .map((row) => {
+      const [date, ...balances] = row
+      // For each filtered label, find its index in the original labels
+      const values = filteredLabels.map((label) => {
+        const idx = labels ? labels.indexOf(label) : parseInt(label.replace('balance', '')) - 1
+        let val = balances[idx]
+        // Convert to number, handle negatives
+        if (typeof val === 'string') {
+          val = val.replace(/,/g, '')
+          val = val.startsWith('-') ? -parseFloat(val.slice(1)) : parseFloat(val)
+        }
+        return val
+      })
+      return [date, ...values]
+    })
+
+  // Build TSV string
+  return [header, ...rows].map((row) => row.join('\t')).join('\n')
+}
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts'
 import currency from 'currency.js'
 import { format } from 'date-fns'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { formatFriendlyAmount } from '@/lib/formatCurrency'
+import { Button } from '@/components/ui/button'
 
 const colors = [
   // Blues
@@ -54,6 +103,27 @@ interface StackedBalanceChartProps {
 }
 
 export default function StackedBalanceChart({ data, labels, isNegative, isRetirement }: StackedBalanceChartProps) {
+  const [copyButtonText, setCopyButtonText] = useState('Copy raw data')
+  // Handler for copying TSV to clipboard
+  const handleCopyRawData = async () => {
+    const tsv = generateTSV({
+      data,
+      labels,
+      isNegative,
+      isRetirement,
+      includeLiabilities,
+      includeRetirement,
+      groupByAccount,
+    })
+    try {
+      await navigator.clipboard.writeText(tsv)
+      setCopyButtonText('Copied!')
+      setTimeout(() => setCopyButtonText('Copy raw data'), 2000)
+    } catch (e) {
+      setCopyButtonText('Failed')
+      setTimeout(() => setCopyButtonText('Copy raw data'), 2000)
+    }
+  }
   const [includeLiabilities, setIncludeLiabilities] = useState(true)
   const [includeRetirement, setIncludeRetirement] = useState(true)
   const [groupByAccount, setGroupByAccount] = useState(true)
@@ -197,6 +267,9 @@ export default function StackedBalanceChart({ data, labels, isNegative, isRetire
           />
           <Label htmlFor="includeRetirement">Include Retirement</Label>
         </div>
+        <Button onClick={handleCopyRawData} type="button">
+          {copyButtonText}
+        </Button>
       </div>
     </div>
   )

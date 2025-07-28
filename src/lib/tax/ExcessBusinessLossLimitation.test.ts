@@ -54,7 +54,7 @@ describe('ExcessBusinessLossLimitation', () => {
     const expectedMarried2026 = Math.round((634000 * 1.03) / 1000) * 1000
     expect(ExcessBusinessLossLimitation({ taxYear: 2026, isSingle: true })).toBe(expectedSingle2026)
     expect(ExcessBusinessLossLimitation({ taxYear: 2026, isSingle: false })).toBe(expectedMarried2026)
-    
+
     // Test 2027 (first year after P.L. 119-21 limitation period extension)
     const expectedSingle2027 = Math.round((317000 * Math.pow(1.03, 2)) / 1000) * 1000
     const expectedMarried2027 = Math.round((634000 * Math.pow(1.03, 2)) / 1000) * 1000
@@ -72,10 +72,18 @@ describe('ExcessBusinessLossLimitation', () => {
 
   it('handles very large cost of living adjustments', () => {
     // Test with high inflation scenario
-    const highInflation = 1.10 // 10% annual inflation
-    const result2030Single = ExcessBusinessLossLimitation({ taxYear: 2030, isSingle: true, costOfLivingAdjustment: highInflation })
-    const result2030Married = ExcessBusinessLossLimitation({ taxYear: 2030, isSingle: false, costOfLivingAdjustment: highInflation })
-    
+    const highInflation = 1.1 // 10% annual inflation
+    const result2030Single = ExcessBusinessLossLimitation({
+      taxYear: 2030,
+      isSingle: true,
+      costOfLivingAdjustment: highInflation,
+    })
+    const result2030Married = ExcessBusinessLossLimitation({
+      taxYear: 2030,
+      isSingle: false,
+      costOfLivingAdjustment: highInflation,
+    })
+
     expect(result2030Single).toBeGreaterThan(317000)
     expect(result2030Married).toBeGreaterThan(634000)
     expect(result2030Single % 1000).toBe(0) // Should be rounded to nearest $1,000

@@ -1,9 +1,9 @@
 // Test to reproduce and verify the fix for the bug with personal capital loss limitation in Form 461
-// 
+//
 // BUG DESCRIPTION:
-// When calculating excess business losses, Form 461 was incorrectly using unlimited personal 
-// capital gains/losses instead of the limited amounts from Schedule D. This caused incorrect 
-// NOL calculations when personal capital losses exceeded the annual limitation ($3,000 for 
+// When calculating excess business losses, Form 461 was incorrectly using unlimited personal
+// capital gains/losses instead of the limited amounts from Schedule D. This caused incorrect
+// NOL calculations when personal capital losses exceeded the annual limitation ($3,000 for
 // single filers, $1,500 for married filing separately).
 //
 // THE FIX:
@@ -29,7 +29,7 @@ describe('Excess Business Loss Bug - Personal Capital Loss Limitation', () => {
     // Scenario: W2=0, personalCapGain=-50k, businessCapGain=0, businessIncome=-300k
     // The -50k personal capital loss should be limited to -3k by Schedule D
     // Form 461 should use the limited -3k amount, not the unlimited -50k
-    
+
     const result = form1040({
       wages: 0,
       interest: 0,
@@ -62,7 +62,7 @@ describe('Excess Business Loss Bug - Personal Capital Loss Limitation', () => {
 
     // Form 461 should use the LIMITED capital gains amount (-3k), not unlimited (-50k)
     const form461Data = result.schedule1.form461output!
-    
+
     // These should be the CORRECT values:
     expect(form461Data.f461_line2).toBe(-300000) // Business income
     expect(form461Data.f461_line3).toBe(-3000) // Should be Form 1040 line 7 (LIMITED amount)
@@ -86,15 +86,15 @@ describe('Excess Business Loss Bug - Personal Capital Loss Limitation', () => {
     // -50k personal capital loss becomes:
     // - 3k deductible this year (on Schedule D line 21)
     // - 47k capital loss carryforward (separate from NOL)
-    
+
     const scheduleDResult = scheduleD({
       line1a_gain_loss: -50000,
       isSingle: true,
     })
-    
+
     expect(scheduleDResult.schD_line16).toBe(-50000) // Total capital loss
     expect(scheduleDResult.schD_line21).toBe(-3000) // Limited for current year
-    
+
     // The remaining 47k would be a capital loss carryforward for future years
     // This is handled separately from NOL calculations
     const capitalLossCarryforward = scheduleDResult.schD_line16 - scheduleDResult.schD_line21
@@ -107,7 +107,7 @@ describe('Excess Business Loss Bug - Personal Capital Loss Limitation', () => {
       taxYear: 2024,
       isSingle: true,
       schedule1_line3: -300000, // Business income
-      f1040_line7: -3000, // LIMITED capital gains from Schedule D 
+      f1040_line7: -3000, // LIMITED capital gains from Schedule D
       businessCapGains: 0,
       nonBusinessCapGains: -50000, // This should be ignored when f1040_line7 is provided
       schedule1_line4: 0,
@@ -121,8 +121,8 @@ describe('Excess Business Loss Bug - Personal Capital Loss Limitation', () => {
     // When f1040_line7 is provided, Form 461 should use the LIMITED amounts:
     expect(form461Result.f461_line3).toBe(-3000) // Uses f1040_line7 (LIMITED)
     expect(form461Result.f461_line10).toBe(-3000) // Uses limited amount for non-business calculation
-    expect(form461Result.f461_line12).toBe(-3000) // 
-    expect(form461Result.f461_line13).toBe(3000) // 
+    expect(form461Result.f461_line12).toBe(-3000) //
+    expect(form461Result.f461_line13).toBe(3000) //
     expect(form461Result.f461_line14).toBe(-300000) // Line 9 + Line 13 = -303000 + 3000
     expect(form461Result.f461_line16).toBe(50000) // Excess business loss
   })

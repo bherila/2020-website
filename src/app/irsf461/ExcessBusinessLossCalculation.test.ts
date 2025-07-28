@@ -165,7 +165,7 @@ describe('ExcessBusinessLossCalculation', () => {
     // W-2: $50k, Business capital gains: $200k, Business loss: -$300k
     // Schedule D: Business cap gains = $200k (line 5), total gains = $200k
     // Form 1040 line 7: $200k (from Schedule D)
-    // Form 1040 line 8: -$300k (business loss from Schedule 1) 
+    // Form 1040 line 8: -$300k (business loss from Schedule 1)
     // Form 1040 line 9: $50k + $200k - $300k = -$50k
     // Form 461 line 9: -$300k + $200k = -$100k (net business)
     // Since net business loss (-$100k) is under limit ($250k), no disallowed loss

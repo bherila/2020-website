@@ -37,12 +37,12 @@ export function ExcessBusinessLossLimitation({
   if (known) {
     return isSingle ? known.single_filers : known.married_filing_jointly
   }
-  
+
   // For future years, use 2025 as base and apply inflation
   const baseYear = 2025
   const baseSingle = 317000
   const baseMarried = 634000
-  
+
   if (taxYear > baseYear) {
     const yearsSinceBase = taxYear - baseYear
     const multiplier = Math.pow(costOfLivingAdjustment, yearsSinceBase)
@@ -51,7 +51,7 @@ export function ExcessBusinessLossLimitation({
     const rounded = Math.round(raw / 1000) * 1000
     return Math.max(rounded, 1000)
   }
-  
+
   // For years before 2018, use 2018 value
   return isSingle ? 250000 : 500000
 }

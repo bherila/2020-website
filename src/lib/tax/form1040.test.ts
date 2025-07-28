@@ -155,7 +155,7 @@ describe('Form 1040 - U.S. Individual Income Tax Return', () => {
     expect(result.f1040_line9).toBe(-250000) // Total income
     expect(result.f1040_line11).toBe(-250000) // AGI
     expect(result.f1040_line15).toBe(0) // Taxable income (can't be negative)
-    
+
     // Form 461 should disallow $50k excess loss ($300k - $250k)
     expect(result.schedule1.sch1_line3).toBe(-300000)
     expect(result.schedule1.sch1_line8p).toBe(50000)
@@ -234,7 +234,7 @@ describe('Form 1040 - U.S. Individual Income Tax Return', () => {
     expect(result.f1040_line9).toBe(30000) // Total income (60k + 20k - 50k)
     expect(result.f1040_line11).toBe(30000) // AGI
     expect(result.f1040_line15).toBe(15400) // Taxable income (30k - 14.6k)
-    
+
     // Schedule 1 shows business profit and NOL usage
     expect(result.schedule1.sch1_line3).toBe(100000)
     expect(result.schedule1.sch1_line8a).toBe(-150000)

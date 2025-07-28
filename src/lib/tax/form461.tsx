@@ -58,14 +58,14 @@ export function form461({
   nonBusinessCapGains?: number
 }): Form461Data {
   const f461_line15 = override_f461_line15 ?? ExcessBusinessLossLimitation({ taxYear, isSingle })
-  
+
   // Lines 1 and 7 are reserved for future use (blank)
   const f461_line2 = schedule1_line3
-  
+
   // Determine capital gains amounts to use
   let f461_line3: number
   let nonBusinessPortionOfCapGains: number
-  
+
   if (scheduleDData) {
     // Use the new Schedule D data (preferred)
     f461_line3 = scheduleDData.schD_line21 // LIMITED amount from Schedule D
@@ -73,7 +73,7 @@ export function form461({
   } else if (f1040_line7 !== undefined) {
     // Use the LIMITED amount from Form 1040 line 7 (legacy)
     f461_line3 = f1040_line7
-    
+
     // Calculate the non-business portion of the capital gains
     // If f1040_line7 is negative (loss), all of it is non-business since business gains would be positive
     // If f1040_line7 is positive, we need to separate business from non-business portions
@@ -83,13 +83,13 @@ export function form461({
     f461_line3 = (nonBusinessCapGains || 0) + (businessCapGains || 0)
     nonBusinessPortionOfCapGains = nonBusinessCapGains || 0
   }
-  
+
   const f461_line4 = schedule1_line4
   const f461_line5 = schedule1_line5
   const f461_line6 = schedule1_line6
   // ...existing code...
   const f461_line9 = f461_line2 + f461_line3 + f461_line4 + f461_line5 + f461_line6 + f461_line8
-  
+
   const f461_line10 = nonBusinessPortionOfCapGains // Income/gain reported not attributable to a trade or business
   const f461_line12 = f461_line10 - f461_line11
   const f461_line13 = f461_line12 < 0 ? Math.abs(f461_line12) : -Math.abs(f461_line12)

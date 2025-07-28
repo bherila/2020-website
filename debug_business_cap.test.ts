@@ -15,7 +15,7 @@ describe('Debug EBL Business Cap Gains', () => {
     const isSingle = true
 
     const result = calculateExcessBusinessLoss({ rows, isSingle })
-    
+
     console.log('High Income Debug:', {
       w2: 500000,
       personalCapGain: 0,

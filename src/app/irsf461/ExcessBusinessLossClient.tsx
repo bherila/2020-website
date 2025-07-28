@@ -49,7 +49,11 @@ export default function ExcessBusinessLossClient() {
   )
 
   // Update local input value as user types
-  const handleInputChange = (idx: number, field: 'w2' | 'personalCapGain' | 'capGain' | 'businessNetIncome', value: string) => {
+  const handleInputChange = (
+    idx: number,
+    field: 'w2' | 'personalCapGain' | 'capGain' | 'businessNetIncome',
+    value: string,
+  ) => {
     setInputValues((prev) => {
       const copy = [...prev]
       copy[idx] = { ...copy[idx], [field]: value }
