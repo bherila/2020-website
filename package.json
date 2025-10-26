@@ -14,17 +14,9 @@
     "preview": "yarn pages:build && wrangler pages dev",
     "prisma:generate": "prisma generate",
     "prisma:push": "dotenv -e .env.local -- prisma db push",
-    "deploy": "yarn pages:build && wrangler pages deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts",
     "test": "jest",
-    "test-all": "yarn lint && yarn type-check && yarn test",
-    "build:worker": "opennextjs-cloudflare",
-    "dev:worker": "wrangler dev --port 8771",
-    "preview:worker": "yarn build:worker && yarn dev:worker",
-    "deploy:worker": "yarn build:worker && wrangler deploy",
-    "upload:app": "rsync -ac --delete --progress --exclude='.DS_Store' .next/standalone/ bherila@web1.dal.cloudplatform.net:~/bherila.net/",
-    "upload:static": "rsync -ac --delete --progress --exclude='.DS_Store' .next/static bherila@web1.dal.cloudplatform.net:~/bherila.net/_next/",
-    "upload:public": "rsync -a --delete --progress public/ bherila@web1.dal.cloudplatform.net:~/bherila.net/_next/public"
+    "test-all": "yarn lint && yarn type-check && yarn test"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -84,7 +76,6 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241224.0",
     "@next/bundle-analyzer": "15.2.4",
-    "@opennextjs/cloudflare": "https://pkg.pr.new/@opennextjs/cloudflare@7654867",
     "@tailwindcss/postcss": "^4.0.0",
     "@tailwindcss/typography": "^0.5.15",
     "@types/jest": "^29.5.14",
