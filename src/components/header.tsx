@@ -16,7 +16,6 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import CustomLink from './link'
 import authClient from '@/lib/auth-client'
-import { L } from 'node_modules/better-auth/dist/auth-CLCpBhSV'
 
 interface HeaderProps {
   session: any
