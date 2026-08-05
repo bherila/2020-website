@@ -59,7 +59,7 @@ export async function savePayslip(
   } catch (error) {
     if (error instanceof ZodError) {
       // Collect all validation errors
-      const errorMessages = error.errors.map((err) => `${err.path.join('.')}: ${err.message}`).join('; ')
+      const errorMessages = error.issues.map((err) => `${err.path.join('.')}: ${err.message}`).join('; ')
       throw new Error(`Validation failed: ${errorMessages}`)
     }
     console.error('Error saving payslip:', error)

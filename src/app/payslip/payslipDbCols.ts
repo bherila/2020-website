@@ -10,20 +10,17 @@ export const fin_payslip_schema = z
   .object({
     period_start: z
       .string({
-        required_error: 'Period start date is required',
-        invalid_type_error: 'Period start date must be a valid date string',
+        error: 'Period start date is required',
       })
       .min(1, { message: 'Period start date cannot be empty' }),
     period_end: z
       .string({
-        required_error: 'Period end date is required',
-        invalid_type_error: 'Period end date must be a valid date string',
+        error: 'Period end date is required',
       })
       .min(1, { message: 'Period end date cannot be empty' }),
     pay_date: z
       .string({
-        required_error: 'Pay date is required',
-        invalid_type_error: 'Pay date must be a valid date string',
+        error: 'Pay date is required',
       })
       .min(1, { message: 'Pay date cannot be empty' }),
 
